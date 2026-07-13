@@ -112,6 +112,24 @@ export interface ProcessStep {
   text: string;
 }
 
+/** Inquiry-form payload. The server action in src/lib/leads.ts and the
+ *  InquiryForm component must both use exactly this shape. */
+export interface LeadInput {
+  intent: "retailer" | "brand" | "franchise" | "other";
+  name: string;
+  phone: string;
+  email?: string;
+  city?: string;
+  company?: string;
+  message?: string;
+  sourcePage: string;
+}
+
+export interface LeadResult {
+  ok: boolean;
+  error?: string;
+}
+
 export interface PageCopy {
   hero: Hero;
   metaTitle: string;

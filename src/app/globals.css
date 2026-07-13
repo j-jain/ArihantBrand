@@ -1,26 +1,881 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ */
+/* Design tokens — OKLCH, from DESIGN.md (identity-preserving)          */
+/* ------------------------------------------------------------------ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /* Color */
+  --paper: oklch(0.985 0.002 30); /* body bg — near-neutral, NOT cream */
+  --paper-shade: oklch(0.955 0.004 30); /* alternating quiet band */
+  --ink: oklch(0.215 0.01 30); /* headings, body on paper */
+  --ink-soft: oklch(0.44 0.012 30); /* secondary text on paper (>=7:1) */
+  --charcoal: oklch(0.245 0.01 30); /* full-bleed dark bands */
+  --charcoal-raise: oklch(0.3 0.012 30); /* raised surface on charcoal */
+  --on-charcoal: oklch(0.975 0.003 30);
+  --on-charcoal-soft: oklch(0.81 0.008 30); /* >=4.5:1 on charcoal */
+  --vermillion: oklch(0.58 0.19 29); /* brand red — large type, marks, drench */
+  --vermillion-deep: oklch(0.485 0.185 29); /* buttons + red text on paper */
+  --vermillion-drench: oklch(0.52 0.19 29); /* drenched band bg; white text >=4.5:1 */
+  --line: oklch(0.885 0.006 35); /* hairlines on paper */
+  --line-dark: oklch(0.38 0.012 30); /* hairlines on charcoal */
+  --focus: var(--vermillion-deep);
+  /* unit accents (decorative identity only — CTAs stay vermillion sitewide) */
+  --unit-marketing: oklch(0.4 0.15 28); /* maroon from their logo */
+  --unit-apparels: oklch(0.28 0.012 30); /* ink — crown-black identity */
+  --unit-retail: oklch(0.46 0.17 310); /* purple from their logo */
+
+  /* Typography scale (fluid, ratio >=1.25) */
+  --text-display: clamp(2.7rem, 1.2rem + 6.2vw, 5.6rem);
+  --text-h2: clamp(2rem, 1.1rem + 3.4vw, 3.4rem);
+  --text-h3: clamp(1.45rem, 1.1rem + 1.4vw, 2.05rem);
+  --text-h4: 1.3rem;
+  --text-lead: clamp(1.13rem, 1rem + 0.5vw, 1.3rem);
+  --text-body: 1.0625rem;
+  --text-small: 0.9375rem;
+  --text-label: 0.8125rem;
+  --text-stat: clamp(2.6rem, 2rem + 3vw, 4.4rem);
+
+  /* Motion */
+  --dur-fast: 180ms;
+  --dur: 320ms;
+  --dur-slow: 560ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Dark-scope indirection — defaults to the paper (light) palette. */
+  --_text: var(--ink);
+  --_text-soft: var(--ink-soft);
+  --_line: var(--line);
+
+  /* Semantic z-index scale */
+  --z-sticky: 100;
+  --z-header: 200;
+  --z-sheet: 300;
+  --z-actionbar: 250;
 }
+
+/* ------------------------------------------------------------------ */
+/* Tailwind theme mapping — makes bg-paper / text-ink / font-display   */
+/* utilities resolve to the tokens above.                             */
+/* ------------------------------------------------------------------ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-paper-shade: var(--paper-shade);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-charcoal: var(--charcoal);
+  --color-charcoal-raise: var(--charcoal-raise);
+  --color-on-charcoal: var(--on-charcoal);
+  --color-on-charcoal-soft: var(--on-charcoal-soft);
+  --color-vermillion: var(--vermillion);
+  --color-vermillion-deep: var(--vermillion-deep);
+  --color-vermillion-drench: var(--vermillion-drench);
+  --color-line: var(--line);
+  --color-line-dark: var(--line-dark);
+  --color-focus: var(--focus);
+  --color-unit-marketing: var(--unit-marketing);
+  --color-unit-apparels: var(--unit-apparels);
+  --color-unit-retail: var(--unit-retail);
+
+  --font-display: var(--font-besley);
+  --font-sans: var(--font-archivo);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ------------------------------------------------------------------ */
+/* Base styles                                                          */
+/* ------------------------------------------------------------------ */
+
+html {
+  /* Lets FaqAccordion animate height:auto in browsers that support it. */
+  interpolate-size: allow-keywords;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-besley), Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  color: var(--_text);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Long-form reading columns */
+.prose p {
+  max-width: 68ch;
+}
+
+/* Measure helper for leads and standfirsts */
+.measure {
+  max-width: 68ch;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+picture,
+svg {
+  max-width: 100%;
+}
+
+/* Focus + selection ------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* On charcoal grounds the vermillion ring is low-contrast — use light. */
+.on-dark :focus-visible {
+  outline-color: var(--on-charcoal);
+}
+
+::selection {
+  background: var(--vermillion-deep);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion — kill non-essential motion globally                 */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout utilities                                                    */
+/* ------------------------------------------------------------------ */
+
+.container-site {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.container-wide {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.section-pad {
+  padding-block: clamp(4.5rem, 9vw, 8.5rem);
+}
+
+/* Charcoal full-bleed scope: swaps text/line indirection vars so plain
+   descendants read correctly on dark. */
+.on-dark {
+  background: var(--charcoal);
+  color: var(--on-charcoal);
+  --_text: var(--on-charcoal);
+  --_text-soft: var(--on-charcoal-soft);
+  --_line: var(--line-dark);
+}
+
+.on-dark p,
+.on-dark li {
+  line-height: 1.72; /* +0.07 rhythm on dark grounds */
+}
+
+/* Skip link ---------------------------------------------------------- */
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1000;
+  padding: 0.6rem 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 2px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: var(--text-small);
+  transform: translateY(-150%);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ------------------------------------------------------------------ */
+/* Type classes — bundle family + size + line-height + weight + tracking */
+/* ------------------------------------------------------------------ */
+
+.t-display {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: var(--text-display);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.t-h2 {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: var(--text-h2);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.t-h3 {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.008em;
+  text-wrap: balance;
+}
+
+.t-h4 {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: var(--text-h4);
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.t-lead {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.t-body {
+  font-size: var(--text-body);
+  line-height: 1.65;
+}
+
+.t-small {
+  font-size: var(--text-small);
+  line-height: 1.5;
+}
+
+.t-label {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: var(--text-label);
+  font-weight: 650;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-stretch: 87%;
+}
+
+.t-stat {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: var(--text-stat);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-stretch: 85%;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ */
+/* Button                                                              */
+/* ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5ch;
+  min-height: 44px;
+  padding-inline: 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.975rem;
+  line-height: 1;
+  letter-spacing: 0.005em;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.btn-lg {
+  min-height: 48px;
+  padding-inline: 1.6rem;
+  font-size: 1.03rem;
+}
+
+.btn-primary {
+  background: var(--vermillion-deep);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: color-mix(in oklch, var(--vermillion-deep), black 14%);
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  background: var(--paper-shade);
+}
+
+/* onDark: white plate on charcoal grounds */
+.btn-ondark {
+  background: #fff;
+  color: var(--ink);
+}
+
+.btn-ondark:hover {
+  background: color-mix(in oklch, #fff, var(--ink) 8%);
+}
+
+.btn__chevron {
+  display: inline-block;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.btn:hover .btn__chevron {
+  transform: translateX(2px);
+}
+
+/* ------------------------------------------------------------------ */
+/* Thread label — the ONE stitched fabric-label kicker (hero only)     */
+/* ------------------------------------------------------------------ */
+
+.thread-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5ch;
+  padding: 0.45em 0.9em;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.8125rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-stretch: 87%;
+  color: var(--_text);
+  /* inner dashed stitch line */
+  outline: 1px dashed color-mix(in oklch, var(--line), transparent 30%);
+  outline-offset: -4px;
+}
+
+.thread-label__mark {
+  color: var(--_thread-accent, var(--vermillion));
+}
+
+/* ------------------------------------------------------------------ */
+/* Stat band                                                           */
+/* ------------------------------------------------------------------ */
+
+.stat-band {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+}
+
+@media (min-width: 768px) {
+  .stat-band {
+    grid-template-columns: repeat(var(--stat-count, 4), 1fr);
+  }
+}
+
+.stat-item {
+  padding: clamp(1.1rem, 2.5vw, 1.75rem) clamp(1rem, 3vw, 2rem);
+  border-top: 1px solid var(--_line);
+  border-left: 1px solid var(--_line);
+}
+
+/* Left edge of each row has no separator (grid handles the outer frame). */
+.stat-item:nth-child(2n + 1) {
+  border-left: 0;
+}
+
+@media (min-width: 768px) {
+  .stat-item {
+    border-left: 1px solid var(--_line);
+  }
+  .stat-item:nth-child(2n + 1) {
+    border-left: 1px solid var(--_line);
+  }
+  .stat-item:first-child {
+    border-left: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Logo marquee                                                        */
+/* ------------------------------------------------------------------ */
+
+@keyframes arihant-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: arihant-marquee var(--marquee-duration, 48s) linear infinite;
+}
+
+/* Two identical groups sit flush; each carries the inter-item gap AS its own
+   trailing padding, so translating the track by exactly -50% loops seamlessly. */
+.marquee__group {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding-right: clamp(1.5rem, 4vw, 3rem);
+}
+
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow: visible;
+  }
+  .marquee__track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    row-gap: 1rem;
+  }
+  .marquee__group {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+    row-gap: 1rem;
+  }
+  /* the duplicated group is redundant when static */
+  .marquee__group[data-clone="true"] {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* FAQ accordion (native details/summary)                              */
+/* ------------------------------------------------------------------ */
+
+.faq-item {
+  border-top: 1px solid var(--_line);
+}
+
+.faq-item:last-child {
+  border-bottom: 1px solid var(--_line);
+}
+
+.faq-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 1.15rem 0;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: var(--_text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-summary::after {
+  content: "";
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  background:
+    linear-gradient(var(--vermillion-deep), var(--vermillion-deep)) center /
+      0.95rem 2px no-repeat,
+    linear-gradient(var(--vermillion-deep), var(--vermillion-deep)) center /
+      2px 0.95rem no-repeat;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.faq-item[open] .faq-summary::after {
+  transform: rotate(45deg);
+  /* collapse the vertical bar into the horizontal to read as a minus */
+  background:
+    linear-gradient(var(--vermillion-deep), var(--vermillion-deep)) center /
+      0.95rem 2px no-repeat;
+}
+
+.faq-answer {
+  overflow: hidden;
+  padding-bottom: 1.15rem;
+  color: var(--_text-soft);
+  max-width: 68ch;
+}
+
+/* Smooth open where supported (interpolate-size on html enables 0->auto);
+   snaps cleanly in browsers without ::details-content. */
+.faq-item::details-content {
+  height: 0;
+  overflow: clip;
+  transition:
+    height var(--dur) var(--ease),
+    content-visibility var(--dur) allow-discrete;
+}
+
+.faq-item[open]::details-content {
+  height: auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* Timeline                                                            */
+/* ------------------------------------------------------------------ */
+
+.timeline {
+  position: relative;
+}
+
+.timeline__spine {
+  position: absolute;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  left: 0;
+  width: 1px;
+  background: var(--_line);
+}
+
+/* ------------------------------------------------------------------ */
+/* Contact channels (adaptive to light / on-dark scope)                */
+/* ------------------------------------------------------------------ */
+
+.channel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  color: var(--_text);
+  font-size: var(--text-small);
+  line-height: 1.4;
+}
+
+.channel-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.channel-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--_text-soft);
+}
+
+/* ------------------------------------------------------------------ */
+/* Site header nav                                                     */
+/* ------------------------------------------------------------------ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.975rem;
+  color: var(--ink-soft);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.nav-link:hover {
+  color: var(--ink);
+}
+
+.nav-link[data-active="true"] {
+  color: var(--ink);
+}
+
+.nav-link[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.35rem;
+  height: 2px;
+  background: var(--vermillion-deep);
+}
+
+.nav-disclosure {
+  position: absolute;
+  top: calc(100% - 0.35rem);
+  left: 0;
+  min-width: 15rem;
+  padding: 0.5rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px -12px oklch(0.215 0.01 30 / 0.22);
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-disclosure a {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  padding-inline: 0.65rem;
+  border-radius: 4px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.nav-disclosure a:hover {
+  background: var(--paper-shade);
+}
+
+/* Mobile menu sheet */
+.menu-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+}
+
+.menu-sheet__overlay {
+  position: absolute;
+  inset: 0;
+  background: oklch(0.215 0.01 30 / 0.45);
+}
+
+.menu-sheet__panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  overflow-y: auto;
+}
+
+.menu-link {
+  font-family: var(--font-besley), Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  line-height: 1.15;
+  color: var(--ink);
+  padding-block: 0.5rem;
+}
+
+.menu-link[data-active="true"] {
+  color: var(--vermillion-deep);
+}
+
+.menu-sublink {
+  font-family: var(--font-besley), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.15rem, 4vw, 1.4rem);
+  color: var(--ink-soft);
+  padding-block: 0.35rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sticky mobile action bar                                            */
+/* ------------------------------------------------------------------ */
+
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-actionbar);
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  transform: translateY(110%);
+  transition: transform var(--dur) var(--ease);
+}
+
+.action-bar[data-visible="true"] {
+  transform: translateY(0);
+}
+
+.action-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.action-bar__btn + .action-bar__btn {
+  border-left: 1px solid var(--line);
+}
+
+.action-bar__btn--primary {
+  background: var(--vermillion-deep);
+  color: #fff;
+  border-left-color: transparent;
+}
+
+/* ------------------------------------------------------------------ */
+/* Inquiry form                                                        */
+/* ------------------------------------------------------------------ */
+
+.intent-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 44px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.intent-card:hover {
+  background: var(--paper-shade);
+}
+
+.intent-card:has(input:checked) {
+  border-color: var(--vermillion-deep);
+  background: color-mix(in oklch, var(--vermillion-deep), transparent 94%);
+}
+
+.intent-card:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.field-input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 1rem;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.field-input::placeholder {
+  color: var(--ink-soft);
+}
+
+.field-input:hover {
+  border-color: var(--ink-soft);
+}
+
+.field-input[aria-invalid="true"] {
+  border-color: var(--vermillion-deep);
+}
+
+textarea.field-input {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.field-help {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.field-error {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vermillion-deep);
 }
