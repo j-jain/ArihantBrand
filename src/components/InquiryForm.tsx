@@ -59,13 +59,13 @@ const FIELD_ORDER: FieldName[] = [
   "message",
 ];
 
-function companyLabel(intent: Intent): string {
+function companyLabel(intent: Intent | null): string {
   if (intent === "retailer") return "Store name";
   if (intent === "brand") return "Brand name";
   return "Company";
 }
 
-function messagePlaceholder(intent: Intent): string {
+function messagePlaceholder(intent: Intent | null): string {
   switch (intent) {
     case "retailer":
       return "Which city is your store in, and what do you currently stock?";
@@ -108,11 +108,13 @@ export function InquiryForm({
     message: "",
   });
   const [errors, setErrors] = useState<Errors>({});
+  const [intentError, setIntentError] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const honeypotRef = useRef<HTMLInputElement>(null);
+  const firstIntentRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -167,7 +169,12 @@ export function InquiryForm({
       setSubmitted(true);
       return;
     }
-    if (!intent) return;
+    // Intent is required — surface an error on the radiogroup and focus it.
+    if (!intent) {
+      setIntentError(true);
+      firstIntentRef.current?.focus();
+      return;
+    }
 
     const nextErrors: Errors = {};
     for (const field of FIELD_ORDER) {
@@ -238,20 +245,24 @@ export function InquiryForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
-      {/* Step 1 — intent */}
+      {/* Step 1 — intent (required) */}
       <fieldset className="flex flex-col gap-3 border-0 p-0">
-        <legend className="field-label mb-1 p-0">
+        <legend id={`${baseId}-intent-legend`} className="field-label mb-1 p-0">
           What brings you to Arihant?
         </legend>
         <div
+          role="radiogroup"
+          aria-labelledby={`${baseId}-intent-legend`}
+          aria-describedby={intentError ? `${baseId}-intent-err` : undefined}
           className={cn(
             "grid gap-3",
             compact ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-4",
           )}
         >
-          {INTENTS.map((option) => (
+          {INTENTS.map((option, i) => (
             <label key={option.value} className="intent-card">
               <input
+                ref={i === 0 ? firstIntentRef : undefined}
                 type="radio"
                 name="intent"
                 value={option.value}
@@ -259,6 +270,7 @@ export function InquiryForm({
                 onChange={() => {
                   wantFocus.current = true;
                   setIntent(option.value);
+                  setIntentError(false);
                 }}
                 className="sr-only"
               />
@@ -267,11 +279,19 @@ export function InquiryForm({
             </label>
           ))}
         </div>
+        {intentError ? (
+          <p
+            id={`${baseId}-intent-err`}
+            className="field-error"
+            aria-live="polite"
+          >
+            Please choose what brings you to Arihant.
+          </p>
+        ) : null}
       </fieldset>
 
-      {/* Step 2 — details (revealed after an intent is chosen) */}
-      {intent ? (
-        <div className="flex flex-col gap-5">
+      {/* Step 2 — details (always shown; labels adapt to the chosen intent) */}
+      <div className="flex flex-col gap-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="field-label" htmlFor={fieldId("name")}>
@@ -460,7 +480,6 @@ export function InquiryForm({
             </button>
           </div>
         </div>
-      ) : null}
     </form>
   );
 }

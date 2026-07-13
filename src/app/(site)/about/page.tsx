@@ -227,11 +227,11 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* 6 — Soft CTA (charcoal) ------------------------------------------- */}
-      <section className="on-dark">
+      {/* 6 — Soft CTA (vermillion drench) ---------------------------------- */}
+      <section className="on-dark" style={{ background: "var(--vermillion-drench)" }}>
         <div className="container-site section-pad flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
           <p
-            className="font-display max-w-[26ch] text-on-charcoal"
+            className="font-display max-w-[26ch] text-white"
             style={{ fontSize: "var(--text-h3)", fontWeight: 700, lineHeight: 1.2 }}
           >
             Work with the house the trade trusts.

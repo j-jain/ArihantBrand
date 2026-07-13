@@ -7,7 +7,6 @@ import {
   JsonLd,
   Reveal,
   SectionHeading,
-  StatBand,
   StoreCard,
   ThreadLabel,
   cn,
@@ -218,12 +217,11 @@ export default async function ArihantRetailPage() {
         </div>
       </section>
 
-      {/* 4 — Expansion (paper): StatBand + a temporal roadmap rail */}
+      {/* 4 — Expansion (paper): one temporal roadmap rail carrying the figures */}
       <section className="section-pad bg-paper">
         <div className="container-site">
           <Reveal className="flex flex-col gap-12">
             <SectionHeading heading={expansion.heading} lead={expansion.lead} />
-            {stats.length ? <StatBand stats={stats} /> : null}
 
             {roadmap.length ? (
               <div className="relative pt-2">
@@ -232,7 +230,7 @@ export default async function ArihantRetailPage() {
                   className="absolute left-0 right-0"
                   style={{ top: "9px", height: 1, background: "var(--line)" }}
                 />
-                <ol className="relative grid gap-6 sm:grid-cols-3">
+                <ol className="relative grid gap-x-6 gap-y-10 sm:grid-cols-3">
                   {roadmap.map((node) => (
                     <li key={node.stage} className="flex flex-col gap-3">
                       <span
@@ -240,10 +238,9 @@ export default async function ArihantRetailPage() {
                         className="block rounded-full"
                         style={{ height: 14, width: 14, background: "var(--unit-accent)" }}
                       />
-                      <span className="t-label text-ink">{node.stage}</span>
-                      <span className="t-small text-ink-soft">
-                        {node.value} &middot; {node.label}
-                      </span>
+                      <span className="t-label text-ink-soft">{node.stage}</span>
+                      <span className="t-stat text-ink">{node.value}</span>
+                      <span className="t-small text-ink-soft">{node.label}</span>
                     </li>
                   ))}
                 </ol>

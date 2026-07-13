@@ -147,8 +147,8 @@ export const businesses: Business[] = [
     ],
     stats: [
       { value: 4, label: "Stores open" },
-      { value: 2, label: "In fit-out" },
-      { value: 10, label: "Planned by FY 26-27" },
+      { value: 2, label: "Stores in fit-out" },
+      { value: 10, label: "Stores planned by FY 26-27" },
     ],
     audienceCtas: [
       { label: "Own a managed store", href: "/partner" },

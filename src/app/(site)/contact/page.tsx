@@ -107,15 +107,18 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* 3 — Quiet close */}
+      {/* 3 — Quiet close (vermillion drench) */}
       <section
         className="on-dark"
-        style={{ paddingBlock: "clamp(2.75rem, 5vw, 4rem)" }}
+        style={{
+          background: "var(--vermillion-drench)",
+          paddingBlock: "clamp(2.75rem, 5vw, 4rem)",
+        }}
       >
         <div className="container-site">
           <div className="flex flex-col gap-2">
-            <p className="t-h3 text-on-charcoal">{settings.tagline}.</p>
-            <p className="t-body text-on-charcoal-soft">
+            <p className="t-h3 text-white">{settings.tagline}.</p>
+            <p className="t-body text-white/90">
               We respond within two working days.
             </p>
           </div>

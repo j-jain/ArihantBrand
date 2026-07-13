@@ -414,6 +414,18 @@ svg {
   gap: 0;
 }
 
+/* Keep the value and its suffix on one line; the suffix sits on the value's
+   baseline at a smaller size so a unit like "sq ft" never wraps to its own
+   full-size line. */
+.stat-figure {
+  white-space: nowrap;
+}
+
+.stat-suffix {
+  font-size: 0.4em;
+  font-weight: 650;
+}
+
 @media (min-width: 768px) {
   .stat-band {
     grid-template-columns: repeat(var(--stat-count, 4), 1fr);

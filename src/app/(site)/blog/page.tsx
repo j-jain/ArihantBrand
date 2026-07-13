@@ -90,11 +90,14 @@ export default async function BlogPage() {
         </div>
       </section>
 
-      {/* 3 — CTA band */}
-      <section className="section-pad on-dark">
+      {/* 3 — CTA band (vermillion drench) */}
+      <section
+        className="on-dark section-pad"
+        style={{ background: "var(--vermillion-drench)" }}
+      >
         <div className="container-site">
           <div className="flex flex-col items-start gap-7">
-            <h2 className="t-h2 text-on-charcoal measure">
+            <h2 className="t-h2 measure text-white">
               {"Have a question the notes don't answer?"}
             </h2>
             <Button href={hero.primaryCta.href} variant="onDark" size="lg">

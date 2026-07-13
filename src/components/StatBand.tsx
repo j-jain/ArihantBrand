@@ -10,21 +10,21 @@ interface StatBandProps {
   onDark?: boolean;
 }
 
-/** Format a stat en-IN. Four-digit bare numbers in a plausible year range are
- *  left ungrouped ("2013", not "2,013"); everything else groups (24,000). */
-function formatStat(n: number, suffix?: string): string {
-  const isYear = !suffix && Number.isInteger(n) && n >= 1900 && n <= 2999;
-  const body = isYear ? String(n) : new Intl.NumberFormat("en-IN").format(n);
-  return suffix ? `${body}${suffix}` : body;
+/** Format a stat's numeric body en-IN. Four-digit bare numbers in a plausible
+ *  year range are left ungrouped ("2013", not "2,013"); everything else groups
+ *  (24,000). The suffix is rendered separately so it can be scaled down. */
+function formatBody(n: number, hasSuffix: boolean): string {
+  const isYear = !hasSuffix && Number.isInteger(n) && n >= 1900 && n <= 2999;
+  return isYear ? String(n) : new Intl.NumberFormat("en-IN").format(n);
 }
 
 function CountUp({
   value,
-  suffix,
+  hasSuffix,
   run,
 }: {
   value: number;
-  suffix?: string;
+  hasSuffix: boolean;
   run: boolean;
 }) {
   // null → render the final value (SSR + no-JS + reduced motion are safe).
@@ -52,7 +52,7 @@ function CountUp({
     return () => cancelAnimationFrame(raf);
   }, [run, value]);
 
-  return <>{formatStat(n ?? value, suffix)}</>;
+  return <>{formatBody(n ?? value, hasSuffix)}</>;
 }
 
 /** Horizontal stat band with hairline separators. Counts up once on first
@@ -73,7 +73,16 @@ export function StatBand({ stats, onDark = false }: StatBandProps) {
       {stats.map((stat) => (
         <div key={stat.label} className="stat-item">
           <p className={cn("t-stat", onDark ? "text-on-charcoal" : "text-ink")}>
-            <CountUp value={stat.value} suffix={stat.suffix} run={run} />
+            <span className="stat-figure">
+              <CountUp
+                value={stat.value}
+                hasSuffix={Boolean(stat.suffix)}
+                run={run}
+              />
+              {stat.suffix ? (
+                <span className="stat-suffix">{stat.suffix}</span>
+              ) : null}
+            </span>
           </p>
           <p
             className={cn(

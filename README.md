@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arihant Group — Website
 
-## Getting Started
+Unified web presence for the Arihant group, Guwahati: **Arihant Marketing**, **Arihant Apparels** and **Arihant Retail** — Northeast India's leading readymade garments distribution and retail house.
 
-First, run the development server:
+Premium, conversion-focused marketing site: intent-routed homepage, a dedicated page per business, a franchise landing page (`/partner`), a 77-label brand portfolio, trade-focused blog, and an inquiry form that captures intent-tagged leads.
+
+## Stack
+
+- **Next.js 16** (App Router, fully static routes) + TypeScript + **Tailwind v4**
+- **Sanity CMS** embedded at `/studio` — every piece of copy, imagery and data is client-editable; leads land in the same Studio
+- **Seed fallback** — the site builds and renders 100% from `src/content/` with zero env vars; Sanity activates via env (see [SETUP.md](SETUP.md))
+- Typography: **Besley + Archivo** (Google Fonts, via `next/font`); OKLCH design tokens; JSON-LD (Organization, WholesaleStore/ClothingStore, FAQ, Article), sitemap, robots, OG
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # production build (all routes static)
+npm run seed    # import seed content into a configured Sanity project
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Handover
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Everything a non-technical editor needs is in **[SETUP.md](SETUP.md)**: Vercel deploy, 10-minute Sanity activation, the editing guide per document type, where form leads appear, and the local-SEO checklist.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Design and content rules for future development are binding in **[PRODUCT.md](PRODUCT.md)** and **[DESIGN.md](DESIGN.md)**.
 
-## Learn More
+## Structure
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/app/(site)/     public routes (home, 3 business pages, partner, brands, about, blog, contact)
+src/app/studio/     embedded Sanity Studio
+src/components/     design-system components (see DESIGN.md)
+src/content/        typed seed content — the fallback data source
+src/lib/            content data layer, Sanity client, leads, SEO helpers
+src/sanity/         schemas + desk structure
+public/images/      unit logos, 77 partner logos, store photos, brand motifs
+```

@@ -99,12 +99,15 @@ export default async function BrandsPage() {
         </div>
       </section>
 
-      {/* 3 — CTA band (charcoal) */}
-      <section className="section-pad on-dark">
+      {/* 3 — CTA band (vermillion drench) */}
+      <section
+        className="section-pad on-dark"
+        style={{ background: "var(--vermillion-drench)" }}
+      >
         <div className="container-site">
           <div className="flex max-w-3xl flex-col gap-6">
-            <h2 className="t-h2 text-on-charcoal">{cta.heading}</h2>
-            {cta.lead ? <p className="t-lead text-on-charcoal-soft">{cta.lead}</p> : null}
+            <h2 className="t-h2 text-white">{cta.heading}</h2>
+            {cta.lead ? <p className="t-lead text-white/90">{cta.lead}</p> : null}
             <div className="mt-1">
               <Button href="/contact?intent=brand" variant="onDark" size="lg">
                 {hero.primaryCta.label}

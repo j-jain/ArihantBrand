@@ -17,7 +17,7 @@ export function Timeline({ items }: TimelineProps) {
       {items.map((item) => (
         <li key={item.year} className="relative pb-12 last:pb-0">
           <span
-            className="absolute left-0 top-[0.45rem] block h-2.5 w-2.5 -translate-x-1/2 rounded-sm bg-vermillion-deep"
+            className="absolute -left-8 top-[0.5rem] block h-2.5 w-2.5 -translate-x-1/2 rounded-sm bg-vermillion-deep"
             aria-hidden="true"
           />
           <p
