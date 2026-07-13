@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { sanityConfigured } from "@/lib/sanity";
+import StudioClient from "./StudioClient";
 
 /**
  * Embedded Sanity Studio at /studio.
  *
- * Guard: when NEXT_PUBLIC_SANITY_PROJECT_ID is absent the Studio (and its
- * config, which pulls in the whole `sanity` client bundle) is never imported —
- * a small explainer renders instead, so `npm run build` succeeds with no env.
+ * Guard: when NEXT_PUBLIC_SANITY_PROJECT_ID is absent a small explainer
+ * renders instead of the Studio. The Studio itself mounts through the
+ * StudioClient "use client" boundary so the `sanity` package stays out of the
+ * RSC module graph (see StudioClient.tsx).
  *
  * The catch-all `[[...tool]]` segment is handled by the Studio's own client
  * router, so the route is rendered dynamically rather than statically
@@ -62,10 +64,5 @@ export default async function StudioPage() {
     );
   }
 
-  const [{ NextStudio }, { default: config }] = await Promise.all([
-    import("next-sanity/studio"),
-    import("../../../../sanity.config"),
-  ]);
-
-  return <NextStudio config={config} />;
+  return <StudioClient />;
 }

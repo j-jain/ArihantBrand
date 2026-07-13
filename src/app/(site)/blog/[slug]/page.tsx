@@ -1,0 +1,125 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import type { Post } from "@/content/types";
+import { getPost, getPosts } from "@/lib/content";
+import { articleJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { Button, JsonLd } from "@/components";
+import { PostBody } from "./_components/PostBody";
+
+const dateFmt = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+/** End-matter call to action, keyed on who the note was written for. */
+const CTA_BY_AUDIENCE: Record<Post["audience"], { label: string; href: string }> = {
+  Retailers: { label: "Become a retail partner", href: "/contact?intent=retailer" },
+  Brands: { label: "Distribute your brand", href: "/contact?intent=brand" },
+  Investors: { label: "See the partnership model", href: "/partner" },
+};
+
+export async function generateStaticParams() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  if (!post) return {};
+  return pageMetadata({
+    title: post.title,
+    description: post.metaDescription,
+    path: `/blog/${slug}`,
+  });
+}
+
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const [post, allPosts] = await Promise.all([getPost(slug), getPosts()]);
+
+  if (!post) notFound();
+
+  const others = allPosts.filter((p) => p.slug !== post.slug);
+  const cta = CTA_BY_AUDIENCE[post.audience];
+
+  return (
+    <>
+      <JsonLd data={articleJsonLd(post)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Trade Notes", path: "/blog" },
+          { name: post.title, path: `/blog/${post.slug}` },
+        ])}
+      />
+
+      <section className="section-pad bg-paper">
+        <div className="container-site">
+          <div className="mx-auto max-w-[46rem]">
+            {/* Article header */}
+            <header className="flex flex-col gap-4">
+              <p className="t-label text-vermillion-deep">{post.audience}</p>
+              <h1 className="t-h2 text-ink">{post.title}</h1>
+              <p className="t-small text-ink-soft">
+                {dateFmt.format(new Date(post.date))} · {post.readMinutes} min read
+              </p>
+            </header>
+
+            {/* Body */}
+            <div className="mt-10">
+              <PostBody blocks={post.body} />
+            </div>
+
+            {/* End matter — contextual CTA */}
+            <aside
+              className="mt-14 flex flex-col items-start gap-5 border border-line bg-paper-shade p-7"
+              style={{ borderRadius: "8px" }}
+            >
+              <p className="t-h4 text-ink">Put these notes to work.</p>
+              <Button href={cta.href} variant="primary" size="lg">
+                {cta.label}
+              </Button>
+            </aside>
+
+            {/* More notes */}
+            {others.length > 0 ? (
+              <div className="mt-14 border-t border-line pt-8">
+                <h2 className="t-h3 text-ink">More notes</h2>
+                <ul className="mt-5 flex flex-col">
+                  {others.map((other) => (
+                    <li key={other.slug} className="border-t border-line first:border-t-0">
+                      <Link
+                        href={`/blog/${other.slug}`}
+                        className="flex flex-col gap-1 py-4 group"
+                      >
+                        <span className="t-label text-vermillion-deep">
+                          {other.audience}
+                        </span>
+                        <span className="t-body text-ink underline-offset-4 group-hover:underline" style={{ fontWeight: 650 }}>
+                          {other.title}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
