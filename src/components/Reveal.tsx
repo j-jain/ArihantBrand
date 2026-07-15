@@ -1,14 +1,22 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "motion/react";
 import {
   useRef,
-  useSyncExternalStore,
+  type CSSProperties,
   type ElementType,
   type ReactNode,
 } from "react";
+import { gsap, useGSAP, DUR, EASE } from "@/lib/gsap";
 
-type RevealTag = "div" | "section" | "article" | "li" | "span" | "ul";
+type RevealTag =
+  | "div"
+  | "section"
+  | "article"
+  | "li"
+  | "span"
+  | "ul"
+  | "p";
+type RevealVariant = "rise" | "fade" | "clip";
 
 interface RevealProps {
   children: ReactNode;
@@ -16,52 +24,101 @@ interface RevealProps {
   y?: number;
   as?: RevealTag;
   className?: string;
+  style?: CSSProperties;
+  /** Motion flavour on desktop. Mobile always uses a short whole-block fade. */
+  variant?: RevealVariant;
 }
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-
-// Client detection without a setState-in-effect: server snapshot is false,
-// client snapshot is true, so first paint renders fully visible.
-const subscribe = () => () => {};
-const useIsClient = () =>
-  useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false,
-  );
-
-/** In-view reveal that NEVER strands content. It renders fully visible on the
- *  server and first paint; the hidden→visible slide is applied only after
- *  mount, only when motion is allowed, and only to elements not yet in view
- *  (so elements already on screen never flash, and below-fold elements are
- *  hidden while off-screen). */
+/** Scroll-reveal primitive. Renders fully visible on the server and first paint;
+ *  the hidden→visible state is applied only after mount (in a layout effect,
+ *  before paint) and only to elements below the fold, so content is never
+ *  stranded, above-fold content never flashes, and reduced-motion users see it
+ *  static. Public API is unchanged from the previous motion version; `variant`
+ *  is additive. */
 export function Reveal({
   children,
   delay = 0,
-  y = 16,
+  y = 18,
   as = "div",
   className,
+  style,
+  variant = "rise",
 }: RevealProps) {
   const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const reduce = useReducedMotion();
-  const isClient = useIsClient();
 
-  const animate = !isClient || reduce || inView;
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) return;
 
-  // `as` picks the semantic tag; the union of motion components makes a precise
-  // ref type impossible, so widen to ElementType (motion props stay valid).
-  const MotionComp = motion[as] as ElementType;
+      const mm = gsap.matchMedia();
+      mm.add(
+        {
+          reduced: "(prefers-reduced-motion: reduce)",
+          mobile: "(prefers-reduced-motion: no-preference) and (max-width: 767px)",
+          desktop:
+            "(prefers-reduced-motion: no-preference) and (min-width: 768px)",
+        },
+        (ctx) => {
+          const { reduced, mobile } = ctx.conditions as {
+            reduced: boolean;
+            mobile: boolean;
+            desktop: boolean;
+          };
+          if (reduced) return; // leave fully visible
 
+          // Skip anything already on screen at mount so it neither flashes nor
+          // hides after the server paint; only below-fold elements animate in.
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) return;
+
+          const st = { trigger: el, start: "top 88%", once: true } as const;
+
+          if (mobile || variant === "fade") {
+            gsap.from(el, {
+              autoAlpha: 0,
+              y: mobile ? 12 : 0,
+              duration: mobile ? 0.42 : DUR,
+              delay,
+              ease: EASE,
+              scrollTrigger: st,
+            });
+          } else if (variant === "clip") {
+            gsap.fromTo(
+              el,
+              { autoAlpha: 0, clipPath: "inset(0 0 100% 0)", y: 20 },
+              {
+                autoAlpha: 1,
+                clipPath: "inset(0 0 0% 0)",
+                y: 0,
+                duration: DUR,
+                delay,
+                ease: EASE,
+                scrollTrigger: st,
+              },
+            );
+          } else {
+            gsap.from(el, {
+              autoAlpha: 0,
+              y,
+              duration: DUR,
+              delay,
+              ease: EASE,
+              scrollTrigger: st,
+            });
+          }
+        },
+      );
+
+      return () => mm.revert();
+    },
+    { scope: ref, dependencies: [variant, delay, y] },
+  );
+
+  const Tag = as as ElementType;
   return (
-    <MotionComp
-      ref={ref}
-      className={className}
-      initial={false}
-      animate={animate ? { opacity: 1, y: 0 } : { opacity: 0, y }}
-      transition={{ duration: 0.56, delay, ease: EASE }}
-    >
+    <Tag ref={ref} className={className} style={style}>
       {children}
-    </MotionComp>
+    </Tag>
   );
 }

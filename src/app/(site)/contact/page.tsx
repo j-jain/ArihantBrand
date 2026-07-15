@@ -6,10 +6,12 @@ import { getPageCopy, getSiteSettings } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import {
   ContactChannels,
+  DrenchBand,
+  HeroIntro,
   JsonLd,
   MapPinIcon,
+  Reveal,
   SectionHeading,
-  ThreadLabel,
 } from "@/components";
 import { ContactForm } from "./_components/ContactForm";
 
@@ -50,80 +52,81 @@ export default async function ContactPage() {
         className="bg-paper"
         style={{ paddingBlock: "clamp(3rem, 6vw, 5.5rem)" }}
       >
-        <div className="container-site">
+        <HeroIntro className="container-site">
           <div className="flex flex-col gap-6">
-            <ThreadLabel>{hero.threadLabel}</ThreadLabel>
-            <h1 className="t-display measure text-ink">{hero.heading}</h1>
-            <p className="t-lead measure text-ink-soft">{hero.lead}</p>
+            <h1
+              data-hero-title
+              className="t-display measure text-ink"
+              style={{ textWrap: "normal" }}
+            >
+              {hero.heading}
+            </h1>
+            <p data-hero-reveal className="t-lead measure text-ink-soft">
+              {hero.lead}
+            </p>
           </div>
-        </div>
+        </HeroIntro>
       </section>
 
       {/* 2 — Form + direct channels split */}
       <section id="inquiry" className="section-pad bg-paper-shade">
         <div className="container-site">
           <div className="grid gap-x-12 gap-y-14 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+            <Reveal variant="clip" className="lg:col-span-7">
               <div className="flex flex-col gap-8">
                 <SectionHeading heading={sections.form.heading} />
                 <Suspense fallback={null}>
                   <ContactForm whatsapp={settings.defaultWhatsapp} />
                 </Suspense>
               </div>
-            </div>
+            </Reveal>
 
-            <aside className="flex flex-col gap-8 lg:col-span-5">
-              <SectionHeading heading={sections.direct.heading} lead={sections.direct.lead} />
+            <Reveal variant="fade" delay={0.08} className="lg:col-span-5">
+              <aside className="flex flex-col gap-8">
+                <SectionHeading heading={sections.direct.heading} lead={sections.direct.lead} />
 
-              <div className="[&>div]:!grid-cols-1">
-                <ContactChannels contacts={settings.contacts} />
-              </div>
+                <div className="[&>div]:!grid-cols-1">
+                  <ContactChannels contacts={settings.contacts} />
+                </div>
 
-              <div className="flex flex-col gap-2 border-t border-line pt-6">
-                <p className="flex items-start gap-2 t-body text-ink">
-                  <span className="mt-0.5 flex-none text-ink-soft">
-                    <MapPinIcon />
-                  </span>
-                  <span>
-                    {settings.addressLine}
-                    <br />
-                    {settings.locality}, {settings.city}, {settings.state}{" "}
-                    {settings.postalCode}
-                  </span>
-                </p>
-                <a
-                  className="channel-link ml-7 text-vermillion-deep"
-                  href={DIRECTIONS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontWeight: 650 }}
-                >
-                  <span>Get directions</span>
-                  <span aria-hidden="true">↗</span>
-                </a>
-              </div>
-            </aside>
+                <div className="flex flex-col gap-2 border-t border-line pt-6">
+                  <p className="flex items-start gap-2 t-body text-ink">
+                    <span className="mt-0.5 flex-none text-ink-soft">
+                      <MapPinIcon />
+                    </span>
+                    <span>
+                      {settings.addressLine}
+                      <br />
+                      {settings.locality}, {settings.city}, {settings.state}{" "}
+                      {settings.postalCode}
+                    </span>
+                  </p>
+                  <a
+                    className="channel-link ml-7 text-vermillion-deep"
+                    href={DIRECTIONS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontWeight: 650 }}
+                  >
+                    <span>Get directions</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              </aside>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* 3 — Quiet close (vermillion drench) */}
-      <section
-        className="on-dark"
-        style={{
-          background: "var(--vermillion-drench)",
-          paddingBlock: "clamp(2.75rem, 5vw, 4rem)",
-        }}
-      >
-        <div className="container-site">
-          <div className="flex flex-col gap-2">
-            <p className="t-h3 text-white">{settings.tagline}.</p>
-            <p className="t-body text-white/90">
-              We respond within two working days.
-            </p>
-          </div>
+      {/* 3 — Quiet close (single vermillion drench) */}
+      <DrenchBand className="py-[clamp(2.75rem,5vw,4rem)]">
+        <div className="container-site flex flex-col gap-2">
+          <p data-drench-reveal className="t-h3">{settings.tagline}.</p>
+          <p data-drench-reveal className="t-body" style={{ color: "var(--_text-soft)" }}>
+            We respond within two working days.
+          </p>
         </div>
-      </section>
+      </DrenchBand>
     </>
   );
 }

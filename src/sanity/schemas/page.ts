@@ -34,7 +34,6 @@ export const page = defineType({
       title: "Hero",
       type: "object",
       fields: [
-        defineField({ name: "threadLabel", title: "Thread label (kicker)", type: "string" }),
         defineField({ name: "heading", title: "Heading", type: "text", rows: 2 }),
         defineField({
           name: "headingEmphasis",

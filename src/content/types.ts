@@ -9,7 +9,6 @@ export interface Cta {
 }
 
 export interface Hero {
-  threadLabel: string;
   heading: string;
   /** Optional word inside heading to set in Besley italic + unit accent. */
   headingEmphasis?: string;
@@ -43,6 +42,9 @@ export interface Partner {
   slug: string;
   unit: Exclude<UnitKey, "retail">;
   image: string;
+  /** Verified product category for well-known national labels (optional —
+   *  design never depends on it; obscure regional labels stay untagged). */
+  category?: string;
 }
 
 export interface Store {
@@ -81,6 +83,8 @@ export interface Post {
   audience: "Retailers" | "Brands" | "Investors";
   readMinutes: number;
   metaDescription: string;
+  /** Thumbnail / header image path (optional — Phase 3 fills it). */
+  image?: string;
   body: PostBlock[];
 }
 

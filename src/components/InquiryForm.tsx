@@ -224,7 +224,7 @@ export function InquiryForm({
       <div className="flex flex-col gap-3" role="status" aria-live="polite">
         <h3 className="t-h2 text-ink">Received.</h3>
         <p className="t-lead measure text-ink-soft">
-          Thank you — we respond within two working days.
+          Thank you. We respond within two working days.
         </p>
         {whatsapp ? (
           <a
@@ -353,7 +353,7 @@ export function InquiryForm({
                 onBlur={() => handleBlur("phone")}
               />
               <p id={`${fieldId("phone")}-help`} className="field-help">
-                10-digit mobile — we&apos;ll call or WhatsApp you.
+                10-digit mobile. We&apos;ll call or WhatsApp you.
               </p>
               {errors.phone ? (
                 <p

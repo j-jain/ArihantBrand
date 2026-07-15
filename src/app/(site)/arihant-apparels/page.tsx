@@ -5,12 +5,15 @@ import Link from "next/link";
 
 import {
   Button,
+  DrenchBand,
   FaqAccordion,
+  HeroIntro,
   JsonLd,
   LogoWall,
+  ParallaxImage,
   Reveal,
   SectionHeading,
-  ThreadLabel,
+  StaggerGroup,
   cn,
 } from "@/components";
 import {
@@ -26,12 +29,15 @@ import {
   faqJsonLd,
   pageMetadata,
 } from "@/lib/seo";
+import { stockImages } from "@/content/images";
+import { unitScope } from "@/lib/units";
+import { EmphasisHeading } from "../_components/EmphasisHeading";
 
 const UNIT = "apparels" as const;
 const PATH = "/arihant-apparels";
 
-const unitScope: CSSProperties = { "--unit-accent": "var(--unit-apparels)" } as CSSProperties;
-
+/* Hero stat figures carry the ink (crown-black) unit identity; CTAs stay
+   vermillion. */
 const railValueStyle: CSSProperties = {
   fontFamily: "var(--font-archivo), system-ui, sans-serif",
   fontWeight: 800,
@@ -40,29 +46,13 @@ const railValueStyle: CSSProperties = {
   fontSize: "clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem)",
   lineHeight: 1,
   letterSpacing: "-0.01em",
-  color: "var(--ink)",
+  color: "var(--unit-accent)",
 };
 
 function formatStat(value: number, suffix?: string): string {
   const isYear = !suffix && Number.isInteger(value) && value >= 1900 && value <= 2999;
   const body = isYear ? String(value) : new Intl.NumberFormat("en-IN").format(value);
   return suffix ? `${body}${suffix}` : body;
-}
-
-function HeroHeading({ heading, emphasis }: { heading: string; emphasis?: string }) {
-  const i = emphasis ? heading.indexOf(emphasis) : -1;
-  if (!emphasis || i === -1) {
-    return <h1 className="t-display text-ink">{heading}</h1>;
-  }
-  return (
-    <h1 className="t-display text-ink">
-      {heading.slice(0, i)}
-      <em className="font-display" style={{ fontStyle: "italic", color: "var(--unit-accent)" }}>
-        {emphasis}
-      </em>
-      {heading.slice(i + emphasis.length)}
-    </h1>
-  );
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -104,7 +94,7 @@ export default async function ArihantApparelsPage() {
   );
 
   return (
-    <div style={unitScope}>
+    <div>
       {business && contact ? (
         <JsonLd data={businessJsonLd(settings, business, contact)} />
       ) : null}
@@ -115,17 +105,22 @@ export default async function ArihantApparelsPage() {
         ])}
       />
 
-      {/* 1 — Hero (paper) */}
-      <section className="section-pad bg-paper">
-        <div className="container-site">
+      {/* 1 — Hero (paper): headline + ink-accented logo/stats rail */}
+      <section className="section-pad bg-paper" style={unitScope(UNIT)}>
+        <HeroIntro className="container-site">
           <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
             <div className="flex flex-col gap-6">
-              <div>
-                <ThreadLabel accent="var(--unit-accent)">{hero.threadLabel}</ThreadLabel>
-              </div>
               <div className="flex flex-col gap-5">
-                <HeroHeading heading={hero.heading} emphasis={hero.headingEmphasis} />
+                <EmphasisHeading
+                  as="h1"
+                  className="t-display text-ink"
+                  text={hero.heading}
+                  emphasis={hero.headingEmphasis}
+                  emphasisColor="var(--unit-accent)"
+                  rest={{ "data-hero-title": "", style: { textWrap: "normal" } }}
+                />
                 <div
+                  data-hero-reveal
                   aria-hidden="true"
                   style={{
                     height: 3,
@@ -134,8 +129,10 @@ export default async function ArihantApparelsPage() {
                   }}
                 />
               </div>
-              <p className="t-lead measure text-ink-soft">{hero.lead}</p>
-              <div className="mt-1 flex flex-wrap gap-3">
+              <p data-hero-reveal className="t-lead measure text-ink-soft">
+                {hero.lead}
+              </p>
+              <div data-hero-reveal className="mt-1 flex flex-wrap gap-3">
                 <Button href={hero.primaryCta.href} variant="primary" size="lg">
                   {hero.primaryCta.label}
                 </Button>
@@ -148,7 +145,7 @@ export default async function ArihantApparelsPage() {
             </div>
 
             {business ? (
-              <aside className="flex flex-col gap-6">
+              <aside data-hero-reveal className="flex flex-col gap-6">
                 <div className="rounded-md border border-line bg-white p-6">
                   <div className="relative aspect-[5/3]">
                     <Image
@@ -177,22 +174,36 @@ export default async function ArihantApparelsPage() {
               </aside>
             ) : null}
           </div>
-        </div>
+        </HeroIntro>
       </section>
 
-      {/* 2 — Mission split (paper-shade, generous, asymmetric 5/7) */}
-      <section className="section-pad bg-paper-shade">
+      {/* 2 — Mission split (ink accent-wash ground): garment-rack image + the mission */}
+      <section
+        className="section-pad"
+        style={{
+          ...unitScope(UNIT),
+          background: "var(--unit-accent-wash)",
+          borderBlock: "1px solid var(--unit-accent-line)",
+        }}
+      >
         <div className="container-site">
-          <Reveal className="grid gap-y-8 gap-x-16 lg:grid-cols-12">
-            <div className="lg:col-span-5">
-              <h2 className="t-h2 text-ink">{mission.heading}</h2>
-              <div
-                aria-hidden="true"
-                className="mt-5"
-                style={{ height: 3, width: "clamp(3rem, 8vw, 4.5rem)", background: "var(--unit-accent)" }}
-              />
-            </div>
+          <Reveal variant="fade" className="grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-center">
+            <ParallaxImage
+              src={stockImages.apparelsRacks1.src}
+              alt={stockImages.apparelsRacks1.alt}
+              ratio="4 / 5"
+              sizes="(max-width: 1023px) 100vw, 40vw"
+              className="border border-line lg:col-span-5"
+            />
             <div className="flex flex-col gap-6 lg:col-span-7">
+              <div>
+                <h2 className="t-h2 text-ink">{mission.heading}</h2>
+                <div
+                  aria-hidden="true"
+                  className="mt-5"
+                  style={{ height: 3, width: "clamp(3rem, 8vw, 4.5rem)", background: "var(--unit-accent)" }}
+                />
+              </div>
               {mission.lead ? (
                 <p
                   className="font-display measure text-ink"
@@ -209,9 +220,25 @@ export default async function ArihantApparelsPage() {
         </div>
       </section>
 
-      {/* 3 — Exhibition band (charcoal): number-led "4 / 4" */}
-      <section className="section-pad on-dark">
-        <div className="container-site">
+      {/* 3 — Exhibition band (charcoal over racks): number-led "4 / 4", static */}
+      <section className="section-pad on-dark relative overflow-hidden">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <Image
+            src={stockImages.apparelsRacks2.src}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-[0.12]"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(90deg, var(--charcoal) 42%, color-mix(in oklch, var(--charcoal), transparent 22%))",
+            }}
+          />
+        </div>
+        <div className="container-site relative">
           <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-16">
             {exhStat ? (
               <p
@@ -248,39 +275,46 @@ export default async function ArihantApparelsPage() {
         </div>
       </section>
 
-      {/* 4 — Category-leaders strip (paper) */}
-      <section className="section-pad bg-paper">
+      {/* 4 — Category-leaders strip (paper): pull-line + accent-marked facts */}
+      <section className="section-pad bg-paper" style={unitScope(UNIT)}>
         <div className="container-site">
-          <Reveal className="grid gap-y-8 gap-x-16 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+          <div className="grid gap-y-8 gap-x-16 lg:grid-cols-[1.4fr_1fr] lg:items-start">
             {leadersPoint ? (
-              <p
+              <Reveal
+                as="p"
+                variant="fade"
                 className="font-display measure text-ink"
                 style={{ fontSize: "var(--text-h3)", lineHeight: 1.3 }}
               >
                 {leadersPoint}
-              </p>
+              </Reveal>
             ) : null}
             {supportingPoints.length ? (
-              <ul className="flex flex-col">
+              <StaggerGroup as="ul" from="right" className="flex flex-col" stagger={0.1}>
                 {supportingPoints.map((point, index) => (
                   <li
                     key={point}
                     className={cn(
-                      "t-body py-4 text-ink-soft",
+                      "flex items-start gap-3 py-4",
                       index > 0 && "border-t border-line",
                     )}
                   >
-                    {point}
+                    <span
+                      aria-hidden="true"
+                      className="mt-[0.6em] flex-none"
+                      style={{ height: 2, width: "1.35rem", background: "var(--unit-accent)" }}
+                    />
+                    <span className="t-body text-ink-soft">{point}</span>
                   </li>
                 ))}
-              </ul>
+              </StaggerGroup>
             ) : null}
-          </Reveal>
+          </div>
         </div>
       </section>
 
       {/* 5 — Brand wall (paper-shade) */}
-      <section className="section-pad bg-paper-shade">
+      <section className="section-pad bg-paper-shade" style={unitScope(UNIT)}>
         <div className="container-wide">
           <Reveal className="flex flex-col gap-8">
             <SectionHeading heading={brandsSection.heading} lead={brandsSection.lead} />
@@ -302,7 +336,9 @@ export default async function ArihantApparelsPage() {
         <section className="section-pad bg-paper">
           <div className="container-site">
             <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
-              <SectionHeading heading={faqSection?.heading ?? "Straight answers"} />
+              <Reveal variant="fade">
+                <SectionHeading heading={faqSection?.heading ?? "Straight answers"} />
+              </Reveal>
               <FaqAccordion faqs={faqs} />
             </div>
           </div>
@@ -310,33 +346,31 @@ export default async function ArihantApparelsPage() {
         </section>
       ) : null}
 
-      {/* 7 — CTA band (vermillion drench) */}
-      <section className="section-pad on-dark" style={{ background: "var(--vermillion-drench)" }}>
-        <div className="container-site">
-          <div className="flex max-w-3xl flex-col gap-6">
-            <h2 className="t-h2 text-on-charcoal">
-              {"Grow with the Northeast’s fastest-rising distributor."}
-            </h2>
-            {business ? (
-              <p className="t-lead" style={{ color: "rgba(255,255,255,0.9)" }}>
-                {business.positioning}
-              </p>
-            ) : null}
-            <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-4">
-              <Button href="/contact?intent=retailer" variant="onDark" size="lg">
-                Stock our brands
-              </Button>
-              <a
-                href="/contact?intent=brand"
-                className="t-small underline-offset-4 hover:underline"
-                style={{ color: "rgba(255,255,255,0.9)" }}
-              >
-                Partner as a brand &rarr;
-              </a>
-            </div>
+      {/* 7 — CTA band (single vermillion drench) */}
+      <DrenchBand className="section-pad">
+        <div className="container-site flex max-w-3xl flex-col gap-6">
+          <h2 data-drench-reveal className="t-h2">
+            {"Grow with one of the Northeast’s five largest distributors."}
+          </h2>
+          {business ? (
+            <p data-drench-reveal className="t-lead" style={{ color: "var(--_text-soft)" }}>
+              {business.positioning}
+            </p>
+          ) : null}
+          <div data-drench-reveal className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Button href="/contact?intent=retailer" variant="onDark" size="lg">
+              Stock our brands
+            </Button>
+            <a
+              href="/contact?intent=brand"
+              className="t-small underline-offset-4 hover:underline"
+              style={{ color: "var(--_text-soft)" }}
+            >
+              Partner as a brand &rarr;
+            </a>
           </div>
         </div>
-      </section>
+      </DrenchBand>
     </div>
   );
 }

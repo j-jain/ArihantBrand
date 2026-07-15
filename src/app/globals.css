@@ -16,9 +16,9 @@
   --charcoal-raise: oklch(0.3 0.012 30); /* raised surface on charcoal */
   --on-charcoal: oklch(0.975 0.003 30);
   --on-charcoal-soft: oklch(0.81 0.008 30); /* >=4.5:1 on charcoal */
-  --vermillion: oklch(0.58 0.19 29); /* brand red — large type, marks, drench */
-  --vermillion-deep: oklch(0.485 0.185 29); /* buttons + red text on paper */
-  --vermillion-drench: oklch(0.52 0.19 29); /* drenched band bg; white text >=4.5:1 */
+  --vermillion: oklch(0.58 0.19 29); /* brand red — large display type + low-alpha motifs only */
+  --vermillion-deep: oklch(0.485 0.185 29); /* the ONE interactive red: buttons, links, drench band */
+  --vermillion-drench: var(--vermillion-deep); /* collapsed to --vermillion-deep so every red matches; white text 7:1 on the band */
   --line: oklch(0.885 0.006 35); /* hairlines on paper */
   --line-dark: oklch(0.38 0.012 30); /* hairlines on charcoal */
   --focus: var(--vermillion-deep);
@@ -26,6 +26,11 @@
   --unit-marketing: oklch(0.4 0.15 28); /* maroon from their logo */
   --unit-apparels: oklch(0.28 0.012 30); /* ink — crown-black identity */
   --unit-retail: oklch(0.46 0.17 310); /* purple from their logo */
+  /* Scoped accent: unitScope() in src/lib/units.ts sets these per unit section;
+     these root defaults keep any unscoped var(--unit-accent*) reference sane. */
+  --unit-accent: var(--vermillion-deep);
+  --unit-accent-wash: color-mix(in oklch, var(--vermillion-deep), transparent 94%);
+  --unit-accent-line: color-mix(in oklch, var(--vermillion-deep), transparent 80%);
 
   /* Typography scale (fluid, ratio >=1.25) */
   --text-display: clamp(2.7rem, 1.2rem + 6.2vw, 5.6rem);
@@ -373,35 +378,6 @@ svg {
 
 .btn:hover .btn__chevron {
   transform: translateX(2px);
-}
-
-/* ------------------------------------------------------------------ */
-/* Thread label — the ONE stitched fabric-label kicker (hero only)     */
-/* ------------------------------------------------------------------ */
-
-.thread-label {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5ch;
-  padding: 0.45em 0.9em;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  font-family: var(--font-archivo), system-ui, sans-serif;
-  font-weight: 650;
-  font-size: 0.8125rem;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-stretch: 87%;
-  color: var(--_text);
-  /* inner dashed stitch line */
-  outline: 1px dashed color-mix(in oklch, var(--line), transparent 30%);
-  outline-offset: -4px;
-}
-
-.thread-label__mark {
-  color: var(--_thread-accent, var(--vermillion));
 }
 
 /* ------------------------------------------------------------------ */
@@ -890,4 +866,146 @@ textarea.field-input {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--vermillion-deep);
+}
+
+/* ------------------------------------------------------------------ */
+/* Drench band — the single vermillion closing band on a page          */
+/* ------------------------------------------------------------------ */
+
+.drench-band {
+  position: relative;
+  isolation: isolate;
+  background: var(--vermillion-drench);
+  color: #fff;
+  /* Re-point the text/line indirection vars for descendants. White soft text
+     keeps >=6:1 on the band; the hairline is a translucent white. */
+  --_text: #fff;
+  --_text-soft: color-mix(in oklch, #fff, transparent 12%);
+  --_line: color-mix(in oklch, #fff, transparent 70%);
+}
+
+.drench-band :focus-visible {
+  outline-color: #fff;
+}
+
+.drench-band p,
+.drench-band li {
+  line-height: 1.72;
+}
+
+/* ------------------------------------------------------------------ */
+/* Parallax image frame                                                */
+/* ------------------------------------------------------------------ */
+
+.parallax-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--paper-shade);
+}
+
+.parallax-img {
+  object-fit: cover;
+}
+
+/* ------------------------------------------------------------------ */
+/* Modal (native <dialog>)                                             */
+/* ------------------------------------------------------------------ */
+
+.modal {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100dvh;
+  margin: 0;
+  padding: clamp(1rem, 4vw, 2rem);
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.modal:not([open]) {
+  display: none;
+}
+
+.modal[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal::backdrop {
+  background: oklch(0.2 0.01 30 / 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.modal__panel {
+  position: relative;
+  width: 100%;
+  max-width: 40rem;
+  max-height: calc(100dvh - 2 * clamp(1rem, 4vw, 2rem));
+  overflow-y: auto;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 30px 60px -20px oklch(0.2 0.01 30 / 0.45);
+}
+
+.modal__close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  background: color-mix(in oklch, var(--paper-shade), transparent 25%);
+  transition:
+    color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.modal__close:hover {
+  color: var(--ink);
+  background: var(--paper-shade);
+}
+
+@media (max-width: 767px) {
+  .modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal__panel {
+    max-width: 100%;
+    max-height: 92dvh;
+    border-radius: 16px 16px 0 0;
+    border-bottom: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Phase 3 additions (append-only)                                     */
+/* ------------------------------------------------------------------ */
+
+/* Interactive brand logo tile: the static tile visual plus a quiet lift and
+   shadow on hover/focus. Reduced-motion users get no transition (killed
+   globally). The visible focus ring is handled by :focus-visible. */
+.logo-tile-btn {
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.logo-tile-btn:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklch, var(--ink), transparent 72%);
+  box-shadow: 0 12px 26px -16px oklch(0.215 0.01 30 / 0.4);
 }

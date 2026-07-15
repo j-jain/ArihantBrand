@@ -34,6 +34,8 @@ export const post = defineType({
     }),
     defineField({ name: "readMinutes", title: "Read minutes", type: "number" }),
     defineField({ name: "metaDescription", title: "Meta description", type: "text", rows: 2 }),
+    defineField({ name: "image", title: "Thumbnail / header image (uploaded — preferred)", type: "image", options: { hotspot: true } }),
+    defineField({ name: "imagePath", title: "Image path (fallback, e.g. /images/stock/blog/x.jpg)", type: "string" }),
     defineField({
       name: "body",
       title: "Body",

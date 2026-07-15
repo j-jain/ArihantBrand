@@ -18,7 +18,7 @@ export function StoreCard({ store }: StoreCardProps) {
         <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-line">
           <Image
             src={store.image as string}
-            alt={store.caption ?? `${store.name} — Arihant Retail store, ${store.city}`}
+            alt={store.caption ?? `${store.name}, an Arihant Retail store in ${store.city}`}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 100vw, 380px"

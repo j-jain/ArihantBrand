@@ -23,7 +23,7 @@ export function pageMetadata(opts: {
       siteName: "Arihant Group",
       locale: "en_IN",
       type: "website",
-      images: [{ url: `${siteUrl()}/og.png`, width: 1200, height: 630, alt: "Arihant Group — Northeast India's leading readymade garments distribution house" }],
+      images: [{ url: `${siteUrl()}/og.png`, width: 1200, height: 630, alt: "Arihant Group, Northeast India's leading readymade garments distribution house" }],
     },
     twitter: { card: "summary_large_image", title: opts.title, description: opts.description },
   };
@@ -54,7 +54,7 @@ export function organizationJsonLd(s: SiteSettings) {
     description: s.tagline,
     foundingDate: "1999",
     address: postalAddress(s),
-    award: "Best Distributor of India 2015 — Clothing Manufacturers Association of India (CMAI)",
+    award: "Best Distributor of India 2015, Clothing Manufacturers Association of India (CMAI)",
     memberOf: { "@type": "Organization", name: "North Eastern Garment Traders Association (NEGTA)" },
     subOrganization: [
       { "@id": `${siteUrl()}/arihant-marketing#business` },

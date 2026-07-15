@@ -29,6 +29,11 @@ export const partner = defineType({
     }),
     defineField({ name: "image", title: "Logo (uploaded — preferred)", type: "image", options: { hotspot: false } }),
     defineField({ name: "imagePath", title: "Logo path (fallback, e.g. /images/partners/x.png)", type: "string" }),
+    defineField({
+      name: "category",
+      title: "Category (optional — only for well-known verifiable labels)",
+      type: "string",
+    }),
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
   ],
   orderings: [

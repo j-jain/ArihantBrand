@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 
 import {
   Button,
+  DrenchBand,
+  HeroIntro,
   JsonLd,
   LogoWall,
   Reveal,
   SectionHeading,
-  ThreadLabel,
 } from "@/components";
 import { getPageCopy, getPartners } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
@@ -16,10 +17,14 @@ const PATH = "/brands";
 function HeroHeading({ heading, emphasis }: { heading: string; emphasis?: string }) {
   const i = emphasis ? heading.indexOf(emphasis) : -1;
   if (!emphasis || i === -1) {
-    return <h1 className="t-display text-ink">{heading}</h1>;
+    return (
+      <h1 data-hero-title className="t-display text-ink">
+        {heading}
+      </h1>
+    );
   }
   return (
-    <h1 className="t-display text-ink">
+    <h1 data-hero-title className="t-display text-ink">
       {heading.slice(0, i)}
       <em className="font-display" style={{ fontStyle: "italic", color: "var(--vermillion-deep)" }}>
         {emphasis}
@@ -58,21 +63,21 @@ export default async function BrandsPage() {
       />
 
       {/* 1 — Hero (paper) */}
-      <section className="section-pad bg-paper">
-        <div className="container-site">
+      <section className="bg-paper">
+        <HeroIntro className="container-site section-pad">
           <div className="flex max-w-3xl flex-col gap-6">
-            <div>
-              <ThreadLabel>{hero.threadLabel}</ThreadLabel>
-            </div>
             <div className="flex flex-col gap-5">
               <HeroHeading heading={hero.heading} emphasis={hero.headingEmphasis} />
               <div
+                data-hero-reveal
                 aria-hidden="true"
                 style={{ height: 3, width: "clamp(3rem, 8vw, 4.5rem)", background: "var(--vermillion)" }}
               />
             </div>
-            <p className="t-lead measure text-ink-soft">{hero.lead}</p>
-            <div className="mt-1 flex flex-wrap gap-3">
+            <p data-hero-reveal className="t-lead measure text-ink-soft">
+              {hero.lead}
+            </p>
+            <div data-hero-reveal className="mt-1 flex flex-wrap gap-3">
               <Button href={hero.primaryCta.href} variant="primary" size="lg">
                 {hero.primaryCta.label}
               </Button>
@@ -82,40 +87,45 @@ export default async function BrandsPage() {
                 </Button>
               ) : null}
             </div>
-            <p className="t-small text-ink-soft">
+            <p data-hero-reveal className="t-small text-ink-soft">
               {marketingCount} labels via Arihant Marketing &middot; {apparelsCount} via Arihant Apparels
             </p>
           </div>
-        </div>
+        </HeroIntro>
       </section>
 
-      {/* 2 — The wall (paper-shade): filterable, all partners */}
+      {/* 2 — The wall (paper-shade): filterable, every tile opens the modal */}
       <section className="section-pad bg-paper-shade">
-        <div className="container-wide">
-          <Reveal className="flex flex-col gap-8">
+        <div className="container-wide flex flex-col gap-8">
+          <Reveal variant="fade">
             <SectionHeading heading={sections.wall?.heading ?? "The portfolio"} />
-            <LogoWall partners={partners} filterable />
           </Reveal>
+          <LogoWall partners={partners} filterable />
         </div>
       </section>
 
-      {/* 3 — CTA band (vermillion drench) */}
-      <section
-        className="section-pad on-dark"
-        style={{ background: "var(--vermillion-drench)" }}
-      >
-        <div className="container-site">
-          <div className="flex max-w-3xl flex-col gap-6">
-            <h2 className="t-h2 text-white">{cta.heading}</h2>
-            {cta.lead ? <p className="t-lead text-white/90">{cta.lead}</p> : null}
-            <div className="mt-1">
-              <Button href="/contact?intent=brand" variant="onDark" size="lg">
-                {hero.primaryCta.label}
-              </Button>
-            </div>
+      {/* 3 — CTA band (single vermillion drench) */}
+      <DrenchBand className="section-pad">
+        <div className="container-site flex max-w-3xl flex-col gap-6">
+          <h2 data-drench-reveal className="t-h2 text-white">
+            {cta.heading}
+          </h2>
+          {cta.lead ? (
+            <p
+              data-drench-reveal
+              className="t-lead"
+              style={{ color: "var(--_text-soft)" }}
+            >
+              {cta.lead}
+            </p>
+          ) : null}
+          <div data-drench-reveal className="mt-1">
+            <Button href="/contact?intent=brand" variant="onDark" size="lg">
+              {hero.primaryCta.label}
+            </Button>
           </div>
         </div>
-      </section>
+      </DrenchBand>
     </div>
   );
 }

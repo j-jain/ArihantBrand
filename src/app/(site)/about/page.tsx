@@ -3,14 +3,17 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   Button,
+  DrenchBand,
+  HeroIntro,
   JsonLd,
+  ParallaxImage,
   Reveal,
   SectionHeading,
-  ThreadLabel,
+  StaggerGroup,
   Timeline,
   cn,
 } from "@/components";
-import type { UnitKey } from "@/content/types";
+import { stockImages } from "@/content/images";
 import {
   getBusinesses,
   getPageCopy,
@@ -18,6 +21,7 @@ import {
   getTimeline,
 } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { UNIT_ACCENT } from "@/lib/units";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("about");
@@ -28,12 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
     path: "/about",
   });
 }
-
-const accentVar: Record<UnitKey, string> = {
-  marketing: "var(--unit-marketing)",
-  apparels: "var(--unit-apparels)",
-  retail: "var(--unit-retail)",
-};
 
 export default async function AboutPage() {
   const [copy, businesses, pillars, timeline] = await Promise.all([
@@ -68,16 +66,19 @@ export default async function AboutPage() {
 
       {/* 1 — Hero (paper) --------------------------------------------------- */}
       <section className="bg-paper">
-        <div className="container-site section-pad">
+        <HeroIntro className="container-site section-pad">
           <div className="grid items-start gap-x-10 gap-y-12 lg:grid-cols-12">
             <div className="flex flex-col items-start gap-6 lg:col-span-7">
-              <ThreadLabel>{hero.threadLabel}</ThreadLabel>
-              <h1 className="t-display text-ink">{hero.heading}</h1>
-              <p className="t-lead measure text-ink-soft">{hero.lead}</p>
+              <h1 data-hero-title className="t-display text-ink">
+                {hero.heading}
+              </h1>
+              <p data-hero-reveal className="t-lead measure text-ink-soft">
+                {hero.lead}
+              </p>
             </div>
 
             {/* Founding-years ticket, echoing the home trade-ticket panel. */}
-            <div className="lg:col-span-5 lg:pt-2">
+            <div data-hero-reveal className="lg:col-span-5 lg:pt-2">
               <div className="overflow-hidden rounded-[2px] border border-line bg-white">
                 {businesses.map((business, i) => (
                   <div
@@ -102,14 +103,14 @@ export default async function AboutPage() {
               </div>
             </div>
           </div>
-        </div>
+        </HeroIntro>
       </section>
 
       {/* 2 — Story (paper) -------------------------------------------------- */}
       <section className="border-t border-line bg-paper">
         <div className="container-site section-pad">
           <div className="grid gap-x-14 gap-y-10 lg:grid-cols-12">
-            <div className="prose lg:col-span-8">
+            <div className="prose lg:col-span-7">
               <h2 className="t-h2 text-ink">{sections.story.heading}</h2>
               {storyBody.map((paragraph, i) => (
                 <p
@@ -124,26 +125,34 @@ export default async function AboutPage() {
               ))}
             </div>
 
-            {/* Pull-quote rail — the values, set as a standing aside. */}
-            <aside className="lg:col-span-4">
-              <div className="lg:sticky lg:top-28">
-                <span
-                  aria-hidden="true"
-                  className="mb-5 block h-[3px] w-16 rounded-full bg-vermillion-deep"
+            {/* Standing aside: the values headline over an editorial craft photo. */}
+            <aside className="lg:col-span-5">
+              <div className="flex flex-col gap-8 lg:sticky lg:top-28">
+                <div>
+                  <span
+                    aria-hidden="true"
+                    className="mb-5 block h-[3px] w-16 rounded-full bg-vermillion-deep"
+                  />
+                  <p
+                    className="font-display text-ink"
+                    style={{ fontWeight: 700, fontSize: "var(--text-h3)", lineHeight: 1.2 }}
+                  >
+                    {sections.values.heading}
+                  </p>
+                </div>
+                <ParallaxImage
+                  src={stockImages.aboutCraft1.src}
+                  alt={stockImages.aboutCraft1.alt}
+                  ratio="4 / 5"
+                  sizes="(max-width: 1023px) 100vw, 40vw"
                 />
-                <p
-                  className="font-display text-ink"
-                  style={{ fontWeight: 700, fontSize: "var(--text-h3)", lineHeight: 1.2 }}
-                >
-                  {sections.values.heading}
-                </p>
               </div>
             </aside>
           </div>
         </div>
       </section>
 
-      {/* 3 — Values (charcoal) --------------------------------------------- */}
+      {/* 3 — Values (charcoal): editorial split, photo + principles --------- */}
       <section className="on-dark relative overflow-hidden">
         <div
           aria-hidden="true"
@@ -158,26 +167,38 @@ export default async function AboutPage() {
           />
         </div>
 
-        <div className="container-site section-pad relative flex flex-col gap-12">
-          <SectionHeading
-            heading={sections.values.heading}
-            lead={sections.values.lead}
-            onDark
-          />
-          <div className="grid gap-x-10 gap-y-10 md:grid-cols-3">
-            {pillars.slice(0, 3).map((pillar, i) => (
-              <div
-                key={pillar.title}
-                className={cn(
-                  "flex flex-col gap-3",
-                  i > 0 &&
-                    "border-t border-line-dark pt-8 md:border-t-0 md:border-l md:pt-0 md:pl-8",
-                )}
-              >
-                <h3 className="t-h3 text-on-charcoal">{pillar.title}</h3>
-                <p className="t-body text-on-charcoal-soft">{pillar.text}</p>
-              </div>
-            ))}
+        <div className="container-site section-pad relative">
+          <div className="grid items-start gap-x-14 gap-y-12 lg:grid-cols-2">
+            <div className="flex flex-col gap-10">
+              <Reveal variant="fade">
+                <SectionHeading
+                  heading={sections.values.heading}
+                  lead={sections.values.lead}
+                  onDark
+                />
+              </Reveal>
+              <ParallaxImage
+                src={stockImages.aboutCraft2.src}
+                alt={stockImages.aboutCraft2.alt}
+                ratio="4 / 5"
+                sizes="(max-width: 1023px) 100vw, 44vw"
+              />
+            </div>
+
+            <StaggerGroup className="flex flex-col" from="up" stagger={0.12}>
+              {pillars.slice(0, 3).map((pillar, i) => (
+                <div
+                  key={pillar.title}
+                  className={cn(
+                    "flex flex-col gap-3",
+                    i > 0 && "mt-8 border-t border-line-dark pt-8",
+                  )}
+                >
+                  <h3 className="t-h3 text-on-charcoal">{pillar.title}</h3>
+                  <p className="t-body text-on-charcoal-soft">{pillar.text}</p>
+                </div>
+              ))}
+            </StaggerGroup>
           </div>
         </div>
       </section>
@@ -185,22 +206,26 @@ export default async function AboutPage() {
       {/* 4 — Leadership (paper) -------------------------------------------- */}
       <section className="bg-paper">
         <div className="container-site section-pad flex flex-col gap-12">
-          <SectionHeading
-            heading={sections.leadership.heading}
-            lead={sections.leadership.lead}
-          />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {leaders.map((leader, i) => (
-              <Reveal
+          <Reveal variant="fade">
+            <SectionHeading
+              heading={sections.leadership.heading}
+              lead={sections.leadership.lead}
+            />
+          </Reveal>
+          <StaggerGroup
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            from="scale"
+            stagger={0.08}
+          >
+            {leaders.map((leader) => (
+              <div
                 key={leader.name}
-                as="div"
-                delay={i * 0.06}
                 className="flex flex-col gap-3 rounded-[2px] border border-line p-6"
               >
                 <span
                   aria-hidden="true"
                   className="block h-[3px] w-10 rounded-full"
-                  style={{ background: accentVar[leader.unit] }}
+                  style={{ background: UNIT_ACCENT[leader.unit].token }}
                 />
                 <p
                   className="font-display text-ink"
@@ -209,9 +234,9 @@ export default async function AboutPage() {
                   {leader.name}
                 </p>
                 <p className="t-small text-ink-soft">{leader.role}</p>
-              </Reveal>
+              </div>
             ))}
-          </div>
+          </StaggerGroup>
         </div>
       </section>
 
@@ -220,27 +245,28 @@ export default async function AboutPage() {
         <div className="container-site section-pad">
           <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_1.5fr]">
             <SectionHeading heading={sections.timeline.heading} />
-            <Reveal as="div">
-              <Timeline items={timeline} />
-            </Reveal>
+            <Timeline items={timeline} />
           </div>
         </div>
       </section>
 
-      {/* 6 — Soft CTA (vermillion drench) ---------------------------------- */}
-      <section className="on-dark" style={{ background: "var(--vermillion-drench)" }}>
-        <div className="container-site section-pad flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+      {/* 6 — Soft CTA (single vermillion drench) --------------------------- */}
+      <DrenchBand className="section-pad">
+        <div className="container-site flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
           <p
+            data-drench-reveal
             className="font-display max-w-[26ch] text-white"
             style={{ fontSize: "var(--text-h3)", fontWeight: 700, lineHeight: 1.2 }}
           >
-            Work with the house the trade trusts.
+            Work with the house the Northeast trade already trusts.
           </p>
-          <Button variant="onDark" href={hero.primaryCta.href}>
-            {hero.primaryCta.label}
-          </Button>
+          <div data-drench-reveal>
+            <Button variant="onDark" href={hero.primaryCta.href}>
+              {hero.primaryCta.label}
+            </Button>
+          </div>
         </div>
-      </section>
+      </DrenchBand>
     </>
   );
 }

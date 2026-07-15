@@ -1,8 +1,12 @@
 export { Button } from "./Button";
-export { ThreadLabel } from "./ThreadLabel";
 export { SectionHeading } from "./SectionHeading";
 export { Reveal } from "./Reveal";
 export { StatBand } from "./StatBand";
+export { Modal } from "./Modal";
+export { HeroIntro } from "./motion/HeroIntro";
+export { StaggerGroup } from "./motion/StaggerGroup";
+export { ParallaxImage } from "./motion/ParallaxImage";
+export { DrenchBand } from "./motion/DrenchBand";
 export { LogoTile } from "./LogoTile";
 export { LogoWall } from "./LogoWall";
 export { LogoMarquee } from "./LogoMarquee";
@@ -20,3 +24,5 @@ export { JsonLd } from "./JsonLd";
 export { cn } from "./cn";
 export { MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "./icons";
 export { businessLinks, primaryNav, type NavItem } from "./nav";
+/* Phase 3 additions */
+export { PartnerModal } from "./PartnerModal";

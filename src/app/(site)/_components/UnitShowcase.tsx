@@ -1,19 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Business, Stat, UnitKey } from "@/content/types";
+import type { Business, Stat } from "@/content/types";
 import { Button } from "@/components";
+import { UNIT_ACCENT } from "@/lib/units";
+import { UnitQuickView } from "./UnitQuickView";
 
 interface UnitShowcaseProps {
   business: Business;
   /** When true, the copy column sits left and the logo/facts column right. */
   flip?: boolean;
 }
-
-const accentVar: Record<UnitKey, string> = {
-  marketing: "var(--unit-marketing)",
-  apparels: "var(--unit-apparels)",
-  retail: "var(--unit-retail)",
-};
 
 /** Format a stat en-IN. Bare four-digit values in a plausible year range stay
  *  ungrouped ("2013"); everything else groups ("15,000"). Mirrors StatBand. */
@@ -29,7 +25,7 @@ function formatStat({ value, suffix }: Stat): string {
  *  alternate row to row via `flip`. The row itself isn't a link — only the name
  *  is — so the CTAs and stats stay independently reachable. */
 export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
-  const accent = accentVar[business.unit];
+  const accent = UNIT_ACCENT[business.unit].token;
   const points = business.points.slice(0, 3);
   const [primaryCta, secondaryCta] = business.audienceCtas;
   const facts = [business.founded, business.leaders.join(" & ")]
@@ -125,6 +121,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
             <span aria-hidden="true">→</span>
           </Link>
         ) : null}
+        <UnitQuickView business={business} />
       </div>
     </div>
   );

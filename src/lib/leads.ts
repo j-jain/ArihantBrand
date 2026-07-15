@@ -22,7 +22,7 @@ import type { LeadInput, LeadResult } from "@/content/types";
 import { getWriteClient, sanityWriteConfigured } from "@/lib/sanity";
 
 const GENERIC_STORAGE_ERROR =
-  "Could not submit — please call or WhatsApp us instead.";
+  "Could not submit. Please call or WhatsApp us instead.";
 
 const phoneSchema = z
   .string()

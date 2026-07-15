@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import type { Post } from "@/content/types";
+import { stockImages } from "@/content/images";
 import { getPost, getPosts } from "@/lib/content";
 import { articleJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
-import { Button, JsonLd } from "@/components";
+import { Button, HeroIntro, JsonLd, ParallaxImage } from "@/components";
 import { PostBody } from "./_components/PostBody";
 
 const dateFmt = new Intl.DateTimeFormat("en-IN", {
@@ -14,6 +16,13 @@ const dateFmt = new Intl.DateTimeFormat("en-IN", {
   year: "numeric",
   timeZone: "UTC",
 });
+
+/** Resolve the manifest alt for a post image by matching its src, so the header
+ *  image carries a real descriptive alt (card thumbnails stay decorative). */
+function altForImage(src?: string): string {
+  if (!src) return "";
+  return Object.values(stockImages).find((img) => img.src === src)?.alt ?? "";
+}
 
 /** End-matter call to action, keyed on who the note was written for. */
 const CTA_BY_AUDIENCE: Record<Post["audience"], { label: string; href: string }> = {
@@ -69,17 +78,35 @@ export default async function ArticlePage({
       <section className="section-pad bg-paper">
         <div className="container-site">
           <div className="mx-auto max-w-[46rem]">
-            {/* Article header */}
-            <header className="flex flex-col gap-4">
-              <p className="t-label text-vermillion-deep">{post.audience}</p>
-              <h1 className="t-h2 text-ink">{post.title}</h1>
-              <p className="t-small text-ink-soft">
-                {dateFmt.format(new Date(post.date))} · {post.readMinutes} min read
-              </p>
-            </header>
+            {/* Article header + hero image, entering as one orchestrated load */}
+            <HeroIntro>
+              <header className="flex flex-col gap-4">
+                <p data-hero-reveal className="t-label text-vermillion-deep">
+                  {post.audience}
+                </p>
+                <h1 data-hero-title className="t-h2 text-ink">
+                  {post.title}
+                </h1>
+                <p data-hero-reveal className="t-small text-ink-soft">
+                  {dateFmt.format(new Date(post.date))} · {post.readMinutes} min read
+                </p>
+              </header>
+
+              {post.image ? (
+                <div data-hero-reveal className="mt-8">
+                  <ParallaxImage
+                    src={post.image}
+                    alt={altForImage(post.image)}
+                    ratio="3 / 2"
+                    priority
+                    sizes="(max-width: 767px) 100vw, 46rem"
+                  />
+                </div>
+              ) : null}
+            </HeroIntro>
 
             {/* Body */}
-            <div className="mt-10">
+            <div className="mt-12">
               <PostBody blocks={post.body} />
             </div>
 
@@ -103,13 +130,29 @@ export default async function ArticlePage({
                     <li key={other.slug} className="border-t border-line first:border-t-0">
                       <Link
                         href={`/blog/${other.slug}`}
-                        className="flex flex-col gap-1 py-4 group"
+                        className="group flex items-center gap-4 py-4"
                       >
-                        <span className="t-label text-vermillion-deep">
-                          {other.audience}
-                        </span>
-                        <span className="t-body text-ink underline-offset-4 group-hover:underline" style={{ fontWeight: 650 }}>
-                          {other.title}
+                        {other.image ? (
+                          <span className="relative aspect-[3/2] w-24 shrink-0 overflow-hidden rounded-[4px] border border-line bg-paper-shade sm:w-28">
+                            <Image
+                              src={other.image}
+                              alt=""
+                              fill
+                              sizes="112px"
+                              className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] group-hover:scale-[1.05]"
+                            />
+                          </span>
+                        ) : null}
+                        <span className="flex flex-col gap-1">
+                          <span className="t-label text-vermillion-deep">
+                            {other.audience}
+                          </span>
+                          <span
+                            className="t-body text-ink underline-offset-4 group-hover:underline"
+                            style={{ fontWeight: 650 }}
+                          >
+                            {other.title}
+                          </span>
                         </span>
                       </Link>
                     </li>

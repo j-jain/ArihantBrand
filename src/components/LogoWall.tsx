@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import type { Partner } from "@/content/types";
+import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
 import { LogoTile } from "./LogoTile";
+import { PartnerModal } from "./PartnerModal";
 import { cn } from "./cn";
 
 interface LogoWallProps {
@@ -22,10 +24,15 @@ const GRID_STYLE: CSSProperties = {
   gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
 };
 
-/** Responsive logo grid. When filterable, unit pills scope the wall and a live
- *  count reports the visible set. */
+/** Responsive logo grid. Every tile is a button opening ONE shared modal keyed
+ *  to the selected partner. When filterable, unit pills scope the wall and a
+ *  live count reports the visible set. Tiles below the fold batch-reveal on
+ *  scroll (reduced-motion + on-screen tiles stay static; nothing is stranded). */
 export function LogoWall({ partners, filterable = false }: LogoWallProps) {
   const [active, setActive] = useState<FilterKey>("all");
+  const [selected, setSelected] = useState<Partner | null>(null);
+  const [open, setOpen] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const visible = useMemo(
     () =>
@@ -33,6 +40,62 @@ export function LogoWall({ partners, filterable = false }: LogoWallProps) {
         ? partners
         : partners.filter((partner) => partner.unit === active),
     [partners, active],
+  );
+
+  const handleSelect = (partner: Partner) => {
+    setSelected(partner);
+    setOpen(true);
+  };
+
+  useGSAP(
+    () => {
+      const grid = gridRef.current;
+      if (!grid) return;
+
+      const mm = gsap.matchMedia();
+      mm.add(
+        {
+          reduced: "(prefers-reduced-motion: reduce)",
+          motion: "(prefers-reduced-motion: no-preference)",
+        },
+        (ctx) => {
+          const { reduced } = ctx.conditions as {
+            reduced: boolean;
+            motion: boolean;
+          };
+          if (reduced) return;
+
+          const tiles = gsap.utils.toArray<HTMLElement>(grid.children);
+          if (!tiles.length) return;
+
+          // Only hide tiles below the fold so on-screen tiles (and the just
+          // filtered set) never flash; the rest reveal in scroll-order batches.
+          const below = tiles.filter(
+            (tile) =>
+              tile.getBoundingClientRect().top >= window.innerHeight * 0.92,
+          );
+          if (!below.length) return;
+
+          gsap.set(below, { autoAlpha: 0, y: 16 });
+          ScrollTrigger.batch(below, {
+            start: "top 92%",
+            once: true,
+            onEnter: (batch) =>
+              gsap.to(batch, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.5,
+                ease: EASE,
+                stagger: 0.05,
+                overwrite: true,
+              }),
+          });
+        },
+      );
+
+      return () => mm.revert();
+    },
+    { scope: gridRef, dependencies: [active] },
   );
 
   return (
@@ -67,11 +130,21 @@ export function LogoWall({ partners, filterable = false }: LogoWallProps) {
         </div>
       ) : null}
 
-      <div className="grid gap-3 sm:gap-4" style={GRID_STYLE}>
+      <div ref={gridRef} className="grid gap-3 sm:gap-4" style={GRID_STYLE}>
         {visible.map((partner) => (
-          <LogoTile key={partner.slug} partner={partner} />
+          <LogoTile
+            key={partner.slug}
+            partner={partner}
+            onSelect={handleSelect}
+          />
         ))}
       </div>
+
+      <PartnerModal
+        partner={selected}
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </div>
   );
 }

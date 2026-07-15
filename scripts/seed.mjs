@@ -123,6 +123,7 @@ async function main() {
   for (const b of seed.businesses) if (b.logo) imageJobs.set(b.logo, publicPath(b.logo));
   for (const p of seed.partners) if (p.image) imageJobs.set(p.image, publicPath(p.image));
   for (const s of seed.stores) if (s.image) imageJobs.set(s.image, publicPath(s.image));
+  for (const p of seed.posts) if (p.image) imageJobs.set(p.image, publicPath(p.image));
 
   const jobList = [...imageJobs.entries()];
   const assetByWebPath = new Map();
@@ -213,6 +214,7 @@ async function main() {
       unit: p.unit,
       ...(image ? { image } : {}),
       imagePath: p.image,
+      ...(p.category ? { category: p.category } : {}),
       order: i,
     });
   });
@@ -261,6 +263,7 @@ async function main() {
 
   // Posts
   seed.posts.forEach((p) => {
+    const image = imageRef(p.image ? assetByWebPath.get(p.image) : undefined);
     docs.push({
       _id: `post-${p.slug}`,
       _type: "post",
@@ -271,6 +274,8 @@ async function main() {
       audience: p.audience,
       readMinutes: p.readMinutes,
       metaDescription: p.metaDescription,
+      ...(image ? { image } : {}),
+      ...(p.image ? { imagePath: p.image } : {}),
       body: p.body.map((block, bi) => {
         const _key = `block-${bi}`;
         if (block.type === "p") return { _type: "pBlock", _key, text: block.text };
@@ -290,7 +295,6 @@ async function main() {
       metaTitle: copy.metaTitle,
       metaDescription: copy.metaDescription,
       hero: {
-        threadLabel: copy.hero.threadLabel,
         heading: copy.hero.heading,
         ...(copy.hero.headingEmphasis ? { headingEmphasis: copy.hero.headingEmphasis } : {}),
         lead: copy.hero.lead,

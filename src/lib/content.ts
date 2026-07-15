@@ -125,6 +125,7 @@ interface RawPartner {
   unit: Partner["unit"];
   image?: SanityImage;
   imagePath?: string | null;
+  category?: string | null;
 }
 interface RawStore {
   name: string;
@@ -159,6 +160,8 @@ interface RawPost {
   audience: Post["audience"];
   readMinutes?: number | null;
   metaDescription?: string | null;
+  image?: SanityImage;
+  imagePath?: string | null;
   body?: RawPostBlock[] | null;
 }
 interface RawContact {
@@ -183,7 +186,6 @@ interface RawSiteSettings {
   contacts?: RawContact[] | null;
 }
 interface RawHero {
-  threadLabel?: string | null;
   heading?: string | null;
   headingEmphasis?: string | null;
   lead?: string | null;
@@ -250,6 +252,7 @@ function mapPartner(p: RawPartner): Partner {
     slug: p.slug ?? "",
     unit: p.unit,
     image: resolveImage(p.image, p.imagePath),
+    ...(p.category ? { category: p.category } : {}),
   };
 }
 
@@ -281,6 +284,7 @@ function mapPostBlock(b: RawPostBlock): PostBlock | null {
 }
 
 function mapPost(p: RawPost): Post {
+  const image = resolveImage(p.image, p.imagePath);
   return {
     title: p.title,
     slug: p.slug ?? "",
@@ -289,6 +293,7 @@ function mapPost(p: RawPost): Post {
     audience: p.audience,
     readMinutes: p.readMinutes ?? 0,
     metaDescription: p.metaDescription ?? "",
+    ...(image ? { image } : {}),
     body: (p.body ?? []).map(mapPostBlock).filter((b): b is PostBlock => b !== null),
   };
 }
@@ -318,7 +323,6 @@ function mapSiteSettings(s: RawSiteSettings): SiteSettings {
 
 function mapHero(h: RawHero): Hero {
   return {
-    threadLabel: h.threadLabel ?? "",
     heading: h.heading ?? "",
     ...(h.headingEmphasis ? { headingEmphasis: h.headingEmphasis } : {}),
     lead: h.lead ?? "",
@@ -361,7 +365,7 @@ const BUSINESSES_QUERY = `*[_type == "business"] | order(order asc){
 }`;
 
 const PARTNERS_QUERY = `*[_type == "partner"] | order(order asc){
-  name, "slug": slug.current, unit, image, imagePath
+  name, "slug": slug.current, unit, image, imagePath, category
 }`;
 
 const STORES_QUERY = `*[_type == "store"] | order(order asc){
@@ -377,6 +381,7 @@ const TESTIMONIALS_QUERY = `*[_type == "testimonial" && published == true] | ord
 
 const POST_PROJECTION = `{
   title, "slug": slug.current, excerpt, date, audience, readMinutes, metaDescription,
+  image, imagePath,
   body[]{ _type, text, items }
 }`;
 const POSTS_QUERY = `*[_type == "post"] | order(date desc)${POST_PROJECTION}`;
@@ -384,7 +389,7 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]${POST_PROJECT
 
 const PAGE_QUERY = `*[_type == "page" && pageId == $pageId][0]{
   metaTitle, metaDescription,
-  hero{ threadLabel, heading, headingEmphasis, lead,
+  hero{ heading, headingEmphasis, lead,
     primaryCta{ label, href }, secondaryCta{ label, href } },
   sections[]{ key, heading, lead, body }
 }`;

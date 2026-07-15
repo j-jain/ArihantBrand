@@ -1,8 +1,9 @@
 "use client";
 
-import { useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Stat } from "@/content/types";
+import { useInViewOnce } from "@/lib/useInViewOnce";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { cn } from "./cn";
 
 interface StatBandProps {
@@ -59,9 +60,8 @@ function CountUp({
  *  in-view; static when reduced motion is set. Final value is always in the
  *  DOM so the band reserves its space (no CLS). */
 export function StatBand({ stats, onDark = false }: StatBandProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  const reduce = useReducedMotion();
+  const [ref, inView] = useInViewOnce<HTMLDivElement>("-60px");
+  const reduce = usePrefersReducedMotion();
   const run = inView && !reduce;
 
   return (

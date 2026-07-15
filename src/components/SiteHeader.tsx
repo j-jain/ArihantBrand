@@ -24,7 +24,7 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
       href="/"
       onClick={onClick}
       className="flex items-baseline gap-1.5"
-      aria-label="Arihant Group — home"
+      aria-label="Arihant Group home"
     >
       <span
         className="font-display text-ink"

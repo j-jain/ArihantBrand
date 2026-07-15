@@ -15,14 +15,16 @@ import {
   Button,
   ContactChannels,
   FaqAccordion,
+  HeroIntro,
   InquiryForm,
   JsonLd,
-  ProcessSteps,
+  ParallaxImage,
   Reveal,
   SectionHeading,
-  ThreadLabel,
+  StaggerGroup,
   cn,
 } from "@/components";
+import { stockImages } from "@/content/images";
 import { submitLeadAction } from "@/app/actions/lead";
 import { PromiseList } from "./_components/PromiseList";
 import { ProofStrip } from "./_components/ProofStrip";
@@ -66,13 +68,20 @@ export default async function PartnerPage() {
 
       {/* 1 — Hero: this page opens dark, for gravitas */}
       <section className="section-pad on-dark">
-        <div className="container-site">
+        <HeroIntro className="container-site">
           <div className="grid items-start gap-12 lg:grid-cols-[1.5fr_1fr]">
             <div className="flex flex-col gap-6">
-              <ThreadLabel>{hero.threadLabel}</ThreadLabel>
-              <h1 className="t-display measure text-on-charcoal">{hero.heading}</h1>
-              <p className="t-lead measure text-on-charcoal-soft">{hero.lead}</p>
-              <div className="mt-1 flex flex-wrap items-center gap-x-7 gap-y-4">
+              <h1
+                data-hero-title
+                className="t-display measure text-on-charcoal"
+                style={{ textWrap: "normal" }}
+              >
+                {hero.heading}
+              </h1>
+              <p data-hero-reveal className="t-lead measure text-on-charcoal-soft">
+                {hero.lead}
+              </p>
+              <div data-hero-reveal className="mt-1 flex flex-wrap items-center gap-x-7 gap-y-4">
                 <Button href={hero.primaryCta.href} variant="primary" size="lg">
                   {hero.primaryCta.label}
                 </Button>
@@ -94,7 +103,7 @@ export default async function PartnerPage() {
             </div>
 
             {heroStats.length > 0 ? (
-              <ul className="flex flex-col" aria-label="Arihant Retail at a glance">
+              <ul data-hero-reveal className="flex flex-col" aria-label="Arihant Retail at a glance">
                 {heroStats.map((stat, i) => (
                   <li
                     key={stat.label}
@@ -124,16 +133,25 @@ export default async function PartnerPage() {
               </ul>
             ) : null}
           </div>
-        </div>
+        </HeroIntro>
       </section>
 
-      {/* 2 — Promise: the objection-handling core */}
+      {/* 2 — Promise: the objection-handling core, beside the storefront image */}
       <section className="section-pad bg-paper">
-        <div className="container-site">
-          <Reveal className="flex flex-col gap-10">
+        <div className="container-site flex flex-col gap-10">
+          <Reveal variant="fade">
             <SectionHeading heading={sections.promise.heading} lead={sections.promise.lead} />
-            <PromiseList items={sections.promise.body ?? []} />
           </Reveal>
+          <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+            <ParallaxImage
+              src={stockImages.partnerStorefront.src}
+              alt={stockImages.partnerStorefront.alt}
+              ratio="4 / 5"
+              sizes="(max-width: 1023px) 100vw, 34vw"
+              className="border border-line"
+            />
+            <PromiseList items={sections.promise.body ?? []} />
+          </div>
         </div>
       </section>
 
@@ -141,18 +159,44 @@ export default async function PartnerPage() {
       <section className="section-pad bg-paper-shade">
         <div className="container-site">
           <div className="flex flex-col gap-10">
-            <SectionHeading heading={sections.proof.heading} lead={sections.proof.lead} />
+            <Reveal variant="fade">
+              <SectionHeading heading={sections.proof.heading} lead={sections.proof.lead} />
+            </Reveal>
             <ProofStrip stores={stores} />
           </div>
         </div>
       </section>
 
-      {/* 4 — How it works */}
+      {/* 4 — How it works: the four franchise steps, sequenced in */}
       <section id="how-it-works" className="section-pad bg-paper">
         <div className="container-site">
           <div className="flex flex-col gap-12">
-            <SectionHeading heading={sections.how.heading} lead={sections.how.lead} />
-            <ProcessSteps steps={steps} />
+            <Reveal variant="fade">
+              <SectionHeading heading={sections.how.heading} lead={sections.how.lead} />
+            </Reveal>
+            <StaggerGroup
+              as="ol"
+              from="up"
+              className="grid gap-x-6 gap-y-10 md:grid-cols-4"
+              stagger={0.12}
+            >
+              {steps.map((step, index) => (
+                <li
+                  key={step.title}
+                  className="flex flex-col gap-3 border-t border-line pt-5"
+                >
+                  <span
+                    className="t-h3 font-display text-vermillion-deep"
+                    style={{ fontVariantNumeric: "tabular-nums" }}
+                    aria-hidden="true"
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="t-h4 text-ink">{step.title}</h3>
+                  <p className="t-body text-ink-soft">{step.text}</p>
+                </li>
+              ))}
+            </StaggerGroup>
           </div>
         </div>
       </section>
@@ -185,7 +229,7 @@ export default async function PartnerPage() {
                 <aside className="flex flex-col gap-5 lg:col-span-5">
                   <p className="t-h4 text-ink">Prefer to talk first?</p>
                   <p className="t-body text-ink-soft measure">
-                    Skip the form — call or WhatsApp the Arihant Retail desk directly.
+                    Skip the form. Call or WhatsApp the Arihant Retail desk directly.
                   </p>
                   <ContactChannels contacts={[retailContact]} compact />
                 </aside>

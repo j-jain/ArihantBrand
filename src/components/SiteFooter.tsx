@@ -54,7 +54,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
             <MapPinIcon />
           </span>
           <p className="t-small text-on-charcoal-soft">
-            {settings.orgName} — {nap}
+            {settings.orgName} · {nap}
           </p>
         </address>
 

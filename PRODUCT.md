@@ -41,7 +41,8 @@ Steadfast, industrious, warm-handshake. Short declarative sentences. Numbers ove
 - No invented numbers, clients, or testimonials. Testimonial section renders only when real entries are published in the CMS.
 - Franchise economics stay qualitative ("high-ROI, minimal-risk, proven ROIC record" — the PDF's own claims); no fabricated investment figures or return percentages.
 - Every stat used comes from the brand profile PDF or public records (CMAI 2015 award, NEGTA founding membership, 1999 registration).
+- Imagery stays honest: the 3 real store photos are the only images presented as Arihant's own operations. Curated royalty-free stock (committed under `public/images/stock/`, referenced only via the `src/content/images.ts` manifest) is generic trade context and never masquerades as Arihant facilities, staff, or stores. Real photos always outrank stock.
 
 ## CMS
 
-Sanity, embedded Studio at `/studio`. All copy, images, brand partners, stores, testimonials, FAQs, posts, and contact info are editable documents. Code falls back to `src/content/seed.ts` when Sanity env vars are absent — the site must always build and render fully without external services.
+Sanity, embedded Studio at `/studio`. All copy, images, brand partners, stores, testimonials, FAQs, posts, and contact info are editable documents. Code falls back to `src/content/seed.ts` when Sanity env vars are absent — the site must always build and render fully without external services. The blog ("Trade Notes") ships with 8 seeded posts; posts carry an optional thumbnail (`image`) rendered as 3:2 cards, and partners carry an optional verified `category` tag shown in the partner modal.

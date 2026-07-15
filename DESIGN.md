@@ -21,7 +21,7 @@ The brand already committed: vermillion chevron + charcoal + white (identity pre
   --on-charcoal-soft: oklch(0.81 0.008 30);   /* ≥4.5:1 on charcoal */
   --vermillion:       oklch(0.58 0.19 29);    /* brand red #D04030 — large type, marks, drench */
   --vermillion-deep:  oklch(0.485 0.185 29);  /* buttons + red text on paper (≥4.5:1 white-on-it) */
-  --vermillion-drench:oklch(0.52 0.19 29);    /* drenched band bg; white text ≥4.5:1 */
+  --vermillion-drench:var(--vermillion-deep); /* red canon: equals --vermillion-deep — one drench/interactive red */
   --line:             oklch(0.885 0.006 35);  /* hairlines on paper */
   --line-dark:        oklch(0.38 0.012 30);   /* hairlines on charcoal */
   --focus:            var(--vermillion-deep);
@@ -32,12 +32,12 @@ The brand already committed: vermillion chevron + charcoal + white (identity pre
 }
 ```
 
-Rules: buttons/CTAs are always `--vermillion-deep` (one primary action color sitewide). `--unit-*` may color the unit plate, index marks, underlines, and motif tints on that unit's page only. Never gray text on colored grounds — use deeper same-hue or alpha of the text color. No gradients anywhere (flat trade palette); no gradient text; no glassmorphism.
+Rules: buttons/CTAs are always `--vermillion-deep` (one primary action color sitewide). Red canon: `--vermillion-drench` is set equal to `--vermillion-deep` — a single interactive/drench red sitewide (the token name survives for compatibility); `--vermillion` is reserved for large display type and low-alpha motifs. `--unit-*` may color the unit plate, index marks, underlines, and motif tints on that unit's page only. Never gray text on colored grounds — use deeper same-hue or alpha of the text color. No gradients anywhere (flat trade palette); no gradient text; no glassmorphism.
 
 ## Typography — Google Fonts, via `next/font`
 
 - **Besley** (variable; weights 500–900 + italic) — display and headings. Clarendon-slab trade-poster DNA: sturdy, warm, established. Set dark and tight; italic only for one-word emphasis inside headings, never whole headlines.
-- **Archivo** (variable; width + weight axes) — body, UI, labels, numbers. Signage heritage. Condensed-width caps for the thread-label system and big stat figures (`font-stretch` ~85%); `font-variant-numeric: tabular-nums` on all stats.
+- **Archivo** (variable; width + weight axes) — body, UI, labels, numbers. Signage heritage. Condensed-width caps for big stat figures (`font-stretch` ~85%); `font-variant-numeric: tabular-nums` on all stats.
 
 Both chosen by the register's font procedure (voice words: steadfast / industrious / warm-handshake; reflex picks Fraunces·Inter·Playfair rejected per skill ban list).
 
@@ -57,9 +57,9 @@ Scale (fluid, ratio ≥1.25):
 
 `text-wrap: balance` on h1–h3; `text-wrap: pretty` on prose; body measure ≤ 68ch. On charcoal, add +0.07 to line-heights. Display letter-spacing never tighter than −0.04em.
 
-## The thread-label system (the ONE kicker — named brand system)
+## Hero grammar (kickers retired)
 
-A small bordered tag styled like a stitched fabric label: Archivo condensed caps, 1px `--line` border, tiny chevron glyph, e.g. `▸ ARIHANT MARKETING · SINCE THE 1990s`. **Used exactly once per page, in the hero.** Inner sections get plain scaled headings — no eyebrows, no numbered markers (numbers allowed only inside true sequences like the 4-step partner process).
+There are no kickers, eyebrows, or thread labels anywhere — the thread-label system was retired. Heroes carry their weight through oversized Besley display type, imagery, and the accent rule alone; headings are written to stand without a tag above them. Inner sections get plain scaled headings — no eyebrows, no numbered markers (numbers allowed only inside true sequences like the 4-step partner process).
 
 ## Layout grammar
 
@@ -72,19 +72,25 @@ A small bordered tag styled like a stitched fabric label: Archivo condensed caps
 
 ## Imagery
 
-Real assets only (from the brand profile): 3 store photos (`public/images/photos/`), 77 partner logos (`public/images/partners/`), 3 unit logos, chevron + wave motifs. Logo tiles: white tile, 1px `--line` border, logo `object-contain` with ~20% padding, uniform 3:2, full color. Photos: full color, slight contrast, 6px radius, 1px border; alt text in brand voice ("Urban Closet, Guwahati — Arihant Retail multi-brand store at night"). No stock photography unless a fold is truly empty — and then only verified-URL Unsplash, searched for the physical object.
+Real assets first (from the brand profile): 3 store photos (`public/images/photos/`), 77 partner logos (`public/images/partners/`), 3 unit logos, chevron + wave motifs. **The 3 real store photos always outrank stock in placement.**
 
-## Motion — `motion` library + CSS
+Stock policy: curated local royalty-free photography (Unsplash/Pexels licenses; commercial use, no attribution required) is downloaded once and committed under `public/images/stock/{hero,trade,retail,blog}/`, ≤450KB each, ~2000–2400px long edge. Pages reference stock ONLY via the typed manifest `src/content/images.ts` (`{src, alt, width, height, credit, sourceUrl}`) — never by ad-hoc path. Authenticity filter: Indian garment-trade context (fabric bolts, garment racks, warehouse shelving, cartons, Indian storefronts/markets, tailoring hands); reject Western-office clichés, visible third-party logos, and AI-looking imagery. Stock is generic trade context and never masquerades as Arihant's own facilities.
 
-- Tokens: `--dur-fast: 180ms; --dur: 320ms; --dur-slow: 560ms; --ease: cubic-bezier(0.16, 1, 0.3, 1)` (ease-out-quint family). Exits ~65% of enter.
-- Hero: one orchestrated load — headline lines rise with clip reveal (stagger 70ms), thread label fades, stat band counts up on view. Content visible by default; animation enhances (no opacity-0 initial states that can strand content).
-- Scroll: each section gets a reveal fitted to its content (logo wall = row stagger; splits = directional slide 16px; charcoal bands = none — they land static for weight). Never one uniform fade for everything.
+Logo tiles: white tile, 1px `--line` border, logo `object-contain` with ~20% padding, uniform 3:2, full color. Photos: full color, slight contrast, 6px radius, 1px border; alt text in brand voice ("Urban Closet, Guwahati — Arihant Retail multi-brand store at night"). Blog cards and post headers use 3:2 thumbnails (`next/image`, explicit dimensions, accurate `sizes`).
+
+## Motion — GSAP
+
+- Stack: `gsap` + `@gsap/react` (`useGSAP`). ScrollTrigger and SplitText are registered exactly once in `src/lib/gsap.ts` (`"use client"`); every animated component imports GSAP only from there. Motion primitives live in `src/components/motion/`.
+- All animation is created inside `gsap.matchMedia()` with three contexts: reduced-motion → no-op (content fully visible); mobile ≤767px → short whole-block fades only (no parallax, no SplitText); desktop → full choreography.
+- Initial hidden states are set only from JS (`gsap.from`/`gsap.set`), never CSS — content is never stranded if JS fails to run.
+- Hero: one orchestrated load; SplitText headline timelines gate on `document.fonts.ready` and revert on cleanup. Stat band counts up on view (rAF, no CLS).
+- Scroll: each section gets a reveal fitted to its content (logo wall = batch stagger; splits = directional slide; charcoal bands = none — they land static for weight). Never one uniform fade for everything.
 - Marquee (brand logos): CSS transform loop, pauses on hover/focus, duplicated track for seamlessness, `prefers-reduced-motion` → static wrapped grid.
-- All motion inside `@media (prefers-reduced-motion: no-preference)`.
+- CSS-side transition tokens stay: `--dur-fast: 180ms; --dur: 320ms; --dur-slow: 560ms; --ease: cubic-bezier(0.16, 1, 0.3, 1)` (ease-out-quint family). Exits ~65% of enter.
 
 ## Components (src/components/)
 
-`Button` (primary/secondary/on-dark, 2px radius, 44px min, chevron-nudge hover) · `ThreadLabel` · `SectionHeading` (h2 + optional lead, balance) · `StatBand` (Archivo condensed tabular count-up) · `LogoTile`/`LogoWall` (filterable) + `LogoMarquee` · `UnitShowcase` (asymmetric split row per business, unit-accent themed) · `Timeline` (about) · `ProcessSteps` (numbered — true sequence) · `FaqAccordion` (native details/summary styled, JSON-LD paired) · `TestimonialRail` (renders only with published entries) · `StoreCard` · `ContactChannels` (tel/WhatsApp/email per unit) · `InquiryForm` (intent-first multi-step, labeled fields, blur validation, server action) · `StickyActionBar` (mobile: call + WhatsApp + inquiry, appears past hero, safe-area padded) · `SiteHeader` (paper, hairline border, CTA button; mobile sheet menu) · `SiteFooter` (charcoal, full NAP ×3 units, nav, legal) · `JsonLd` · `Reveal` (in-view wrapper honoring reduced motion).
+`Button` (primary/secondary/on-dark, 2px radius, 44px min, chevron-nudge hover) · `SectionHeading` (h2 + optional lead, balance) · `StatBand` (Archivo condensed tabular count-up) · `LogoTile`/`LogoWall` (filterable; tiles are buttons that open the partner `Modal`) + `LogoMarquee` · `UnitShowcase` (asymmetric split row per business, unit-accent themed; opens a business quick-view `Modal`) · `Modal` (native `<dialog>`/`showModal()`: top-layer, Escape, focus containment; body scroll-lock + focus return; GSAP entrance, reduced-motion aware; token-styled paper panel) · `Timeline` (about) · `ProcessSteps` (numbered — true sequence) · `FaqAccordion` (native details/summary styled, JSON-LD paired) · `TestimonialRail` (renders only with published entries) · `StoreCard` · `ContactChannels` (tel/WhatsApp/email per unit) · `InquiryForm` (intent-first multi-step, labeled fields, blur validation, server action) · `StickyActionBar` (mobile: call + WhatsApp + inquiry, appears past hero, safe-area padded) · `SiteHeader` (paper, hairline border, CTA button; mobile sheet menu) · `SiteFooter` (charcoal, full NAP ×3 units, nav, legal) · `JsonLd` · `Reveal` (in-view wrapper honoring reduced motion; GSAP internals).
 
 ## Accessibility & performance bar
 

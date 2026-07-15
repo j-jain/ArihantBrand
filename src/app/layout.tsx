@@ -7,7 +7,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arihantgroup.in";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   // No title template: each page's generateMetadata sets its own complete title.
-  title: "Arihant Group — Garment Distribution & Retail, Northeast India",
+  title: "Arihant Group: Garment Distribution & Retail in Northeast India",
   description:
     "Northeast India's leading readymade garments distribution and retail house, Guwahati.",
 };
