@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./motion.css";
+@import "./form.css";
 
 /* ------------------------------------------------------------------ */
 /* Design tokens — OKLCH, from DESIGN.md (identity-preserving)          */
@@ -33,7 +35,7 @@
   --unit-accent-line: color-mix(in oklch, var(--vermillion-deep), transparent 80%);
 
   /* Typography scale (fluid, ratio >=1.25) */
-  --text-display: clamp(2.7rem, 1.2rem + 6.2vw, 5.6rem);
+  --text-display: clamp(2.6rem, 1.1rem + 5.2vw, 4.75rem);
   --text-h2: clamp(2rem, 1.1rem + 3.4vw, 3.4rem);
   --text-h3: clamp(1.45rem, 1.1rem + 1.4vw, 2.05rem);
   --text-h4: 1.3rem;
@@ -97,6 +99,18 @@ html {
   /* Lets FaqAccordion animate height:auto in browsers that support it. */
   interpolate-size: allow-keywords;
   -webkit-text-size-adjust: 100%;
+  /* Native anchor jumps clear the sticky header; Lenis uses its own offset. */
+  scroll-padding-top: 5.5rem;
+}
+
+/* Lenis smooth-scroll reset (only active when the provider adds .lenis). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
 body {
@@ -187,6 +201,15 @@ svg {
   padding-inline: clamp(1.25rem, 4vw, 2.5rem);
 }
 
+/* Header bar + Businesses panel: a touch wider than content so the desktop nav
+   has room at 1024–1200px and never wraps. */
+.container-header {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
 .container-wide {
   width: 100%;
   max-width: 80rem;
@@ -243,9 +266,17 @@ svg {
   font-family: var(--font-besley), Georgia, serif;
   font-size: var(--text-display);
   font-weight: 800;
-  line-height: 1.04;
+  line-height: 1.06;
   letter-spacing: -0.015em;
   text-wrap: balance;
+}
+
+/* SplitText line mask (HeroIntro): the extra bottom padding, cancelled by a
+   matching negative margin, keeps descenders from being clipped by the line
+   mask during the rise-in reveal without changing layout. */
+.hero-line {
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
 }
 
 .t-h2 {
@@ -450,15 +481,15 @@ svg {
   -webkit-mask-image: linear-gradient(
     to right,
     transparent,
-    #000 8%,
-    #000 92%,
+    #000 4%,
+    #000 96%,
     transparent
   );
   mask-image: linear-gradient(
     to right,
     transparent,
-    #000 8%,
-    #000 92%,
+    #000 4%,
+    #000 96%,
     transparent
   );
 }
@@ -474,8 +505,8 @@ svg {
 .marquee__group {
   display: flex;
   align-items: center;
-  gap: clamp(1.5rem, 4vw, 3rem);
-  padding-right: clamp(1.5rem, 4vw, 3rem);
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding-right: clamp(1.25rem, 2.5vw, 2rem);
 }
 
 .marquee:hover .marquee__track,
@@ -642,6 +673,7 @@ svg {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  white-space: nowrap;
   font-family: var(--font-archivo), system-ui, sans-serif;
   font-weight: 600;
   font-size: 0.975rem;
@@ -657,7 +689,8 @@ svg {
   color: var(--ink);
 }
 
-.nav-link[data-active="true"]::after {
+/* Underline as an animated draw: scaleX from the left on hover / when active. */
+.nav-link::after {
   content: "";
   position: absolute;
   left: 0;
@@ -665,35 +698,27 @@ svg {
   bottom: 0.35rem;
   height: 2px;
   background: var(--vermillion-deep);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease);
 }
 
-.nav-disclosure {
-  position: absolute;
-  top: calc(100% - 0.35rem);
-  left: 0;
-  min-width: 15rem;
-  padding: 0.5rem;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: 0 12px 32px -12px oklch(0.215 0.01 30 / 0.22);
-  display: flex;
-  flex-direction: column;
+.nav-link:hover::after,
+.nav-link[data-active="true"]::after {
+  transform: scaleX(1);
 }
 
-.nav-disclosure a {
-  display: flex;
-  min-height: 44px;
-  align-items: center;
-  padding-inline: 0.65rem;
-  border-radius: 4px;
-  font-weight: 600;
-  color: var(--ink);
+.nav-caret {
+  display: inline-block;
+  transition: transform var(--dur-fast) var(--ease);
 }
 
-.nav-disclosure a:hover {
-  background: var(--paper-shade);
+.nav-link[aria-expanded="true"] .nav-caret {
+  transform: rotate(180deg);
 }
+
+/* The old compact disclosure is replaced by the full-width .nav-panel
+   (rules appended after this nav region). */
 
 /* Mobile menu sheet */
 .menu-sheet {
@@ -732,11 +757,120 @@ svg {
 }
 
 .menu-sublink {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-family: var(--font-besley), Georgia, serif;
   font-weight: 600;
   font-size: clamp(1.15rem, 4vw, 1.4rem);
   color: var(--ink-soft);
   padding-block: 0.35rem;
+}
+
+.menu-sublink__logo {
+  height: 1.5rem; /* h-6 */
+  width: auto;
+  object-fit: contain;
+}
+
+/* ------------------------------------------------------------------ */
+/* Businesses mega-panel (desktop, full-width under the header)        */
+/* ------------------------------------------------------------------ */
+
+.nav-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-header);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 24px 48px -32px rgb(0 0 0 / 0.18);
+}
+
+.nav-panel__inner {
+  padding-block: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.nav-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.nav-panel__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.nav-panel__col:hover {
+  background: var(--paper-shade);
+}
+
+.nav-panel__logo {
+  height: 2.25rem; /* h-9 */
+  width: auto;
+  object-fit: contain;
+}
+
+.nav-panel__name {
+  font-family: var(--font-besley), Georgia, serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.nav-panel__pos {
+  max-width: 32ch;
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.nav-panel__explore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+  color: var(--vermillion-deep);
+}
+
+.nav-panel__arrow {
+  display: inline-block;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.nav-panel__col:hover .nav-panel__arrow {
+  transform: translateX(3px);
+}
+
+.nav-panel__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.nav-panel__footlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink-soft);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.nav-panel__footlink:hover {
+  color: var(--ink);
 }
 
 /* ------------------------------------------------------------------ */
@@ -787,27 +921,50 @@ svg {
 /* ------------------------------------------------------------------ */
 
 .intent-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
   min-height: 44px;
-  padding: 1rem 1.1rem;
+  padding: 1.1rem 1.25rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #fff;
   cursor: pointer;
   transition:
     border-color var(--dur-fast) var(--ease),
-    background-color var(--dur-fast) var(--ease);
+    background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.intent-card__title {
+  font-weight: 650;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  color: var(--ink);
+  padding-right: 1.4rem;
 }
 
 .intent-card:hover {
+  border-color: var(--ink-soft);
   background: var(--paper-shade);
 }
 
 .intent-card:has(input:checked) {
   border-color: var(--vermillion-deep);
   background: color-mix(in oklch, var(--vermillion-deep), transparent 94%);
+  box-shadow: inset 0 0 0 1px var(--vermillion-deep);
+}
+
+.intent-card:has(input:checked)::after {
+  content: "";
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--vermillion-deep);
 }
 
 .intent-card:has(input:focus-visible) {

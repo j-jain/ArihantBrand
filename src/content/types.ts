@@ -69,6 +69,14 @@ export interface Testimonial {
   published: boolean;
 }
 
+export interface Award {
+  /** Display marker: a year ("2015") or a short tag ("Founder"). */
+  year: string;
+  title: string;
+  issuer: string;
+  detail: string;
+}
+
 export type PostBlock =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }

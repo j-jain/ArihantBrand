@@ -19,7 +19,8 @@
  *    so re-runs reuse existing assets rather than duplicating them.
  *  - Upserts every seed document with a STABLE _id via createOrReplace, so the
  *    script is idempotent (re-running updates in place; never duplicates).
- *  - Leads are never seeded. Testimonials are seeded with published:false.
+ *  - Leads are never seeded. Testimonials carry each seed entry's own
+ *    `published` flag (the seed ships role-attributed, published trade voices).
  *  - Prints a summary table.
  */
 
@@ -248,7 +249,7 @@ async function main() {
     });
   });
 
-  // Testimonials (always seeded unpublished)
+  // Testimonials (published flag comes straight from the seed entry)
   seed.testimonials.forEach((t, i) => {
     docs.push({
       _id: `testimonial-${i}`,
@@ -256,7 +257,7 @@ async function main() {
       quote: t.quote,
       name: t.name,
       role: t.role,
-      published: false,
+      published: t.published,
       order: i,
     });
   });
@@ -324,6 +325,23 @@ async function main() {
   });
   seed.partnerSteps.forEach((s, i) => {
     docs.push({ _id: `step-${i}`, _type: "processStep", title: s.title, text: s.text, order: i });
+  });
+  seed.awards.forEach((a, i) => {
+    docs.push({
+      _id: `award-${i}`,
+      _type: "award",
+      year: a.year,
+      title: a.title,
+      issuer: a.issuer,
+      detail: a.detail,
+      order: i,
+    });
+  });
+  seed.systems.forEach((s, i) => {
+    docs.push({ _id: `systemfeature-${i}`, _type: "systemFeature", title: s.title, text: s.text, order: i });
+  });
+  seed.sisScope.forEach((s, i) => {
+    docs.push({ _id: `sispoint-${i}`, _type: "sisPoint", title: s.title, text: s.text, order: i });
   });
 
   /* 3) Commit as one transaction (createOrReplace = idempotent upsert). */

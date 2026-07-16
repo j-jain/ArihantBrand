@@ -1,34 +1,44 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, DUR, EASE } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
 
-interface TimelineItem {
+interface TimelineEntry {
   year: string;
   title: string;
   text: string;
 }
 
 interface TimelineProps {
-  items: TimelineItem[];
+  entries?: TimelineEntry[];
+  /** @deprecated Legacy alias for {@link TimelineProps.entries}. */
+  items?: TimelineEntry[];
 }
 
-/** Vertical timeline: a hairline spine, vermillion condensed year markers, and
- *  generous vertical rhythm. On desktop the spine draws in scrubbed to scroll
- *  and the entries rise in on a stagger. Reduced-motion and mobile leave the
- *  spine and every entry fully visible with no motion, so content is never
- *  stranded behind an un-triggered animation. */
-export function Timeline({ items }: TimelineProps) {
-  const ref = useRef<HTMLOListElement>(null);
+/** Vertical company timeline. On desktop it becomes a two-column piece: a big
+ *  "ghost year" watermark sits sticky on the left and crossfades to the active
+ *  entry's year as you scroll, while on the right the spine draws with scroll,
+ *  each dot pulses once on activation, titles rise in and a hairline rule draws
+ *  under each. The enhanced layout is switched on only from JS (`.tl--enhanced`)
+ *  — without scripts, and on mobile / reduced motion, it renders as a plain
+ *  static list (year above title, dots visible, no sticky, no scrub), so no
+ *  content is ever stranded behind an animation that did not run. */
+export function Timeline({ entries, items }: TimelineProps) {
+  const data = entries ?? items ?? [];
+  const ref = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      const ol = ref.current;
-      if (!ol) return;
-      const spine = ol.querySelector<HTMLElement>(".timeline__spine");
-      const entries = gsap.utils.toArray<HTMLElement>(
-        ol.querySelectorAll(":scope > li"),
+      const root = ref.current;
+      if (!root) return;
+      const spine = root.querySelector<HTMLElement>(".tl__spine");
+      const years = gsap.utils.toArray<HTMLElement>(
+        root.querySelectorAll(".tl__year"),
       );
+      const entryEls = gsap.utils.toArray<HTMLElement>(
+        root.querySelectorAll(".tl__entry"),
+      );
+      if (!entryEls.length) return;
 
       const mm = gsap.matchMedia(ref);
       mm.add(
@@ -46,9 +56,28 @@ export function Timeline({ items }: TimelineProps) {
           };
           if (reduced) return;
 
-          // Spine grows as the timeline scrolls through (desktop only — mobile
-          // keeps it static for perf and to avoid scrub jank).
-          if (!mobile && spine) {
+          // ----- Mobile: quiet per-entry fade, static list --------------------
+          if (mobile) {
+            const rect = root.getBoundingClientRect();
+            const onScreen =
+              rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
+            if (!onScreen) {
+              gsap.from(entryEls, {
+                autoAlpha: 0,
+                y: 14,
+                duration: 0.42,
+                ease: EASE,
+                stagger: 0.08,
+                scrollTrigger: { trigger: root, start: "top 80%", once: true },
+              });
+            }
+            return;
+          }
+
+          // ----- Desktop: enhanced two-column choreography --------------------
+          root.classList.add("tl--enhanced");
+
+          if (spine) {
             gsap.fromTo(
               spine,
               { scaleY: 0 },
@@ -57,63 +86,122 @@ export function Timeline({ items }: TimelineProps) {
                 ease: "none",
                 transformOrigin: "top center",
                 scrollTrigger: {
-                  trigger: ol,
-                  start: "top 82%",
-                  end: "bottom 65%",
+                  trigger: root,
+                  start: "top 78%",
+                  end: "bottom 60%",
                   scrub: true,
                 },
               },
             );
           }
 
-          // Entries rise in once; skip if already on screen at mount so nothing
-          // flashes or hides after the server paint.
-          const rect = ol.getBoundingClientRect();
-          const onScreen =
-            rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
-          if (!onScreen && entries.length) {
-            gsap.from(entries, {
-              autoAlpha: 0,
-              y: mobile ? 14 : 26,
-              duration: mobile ? 0.42 : DUR,
-              ease: EASE,
-              stagger: mobile ? 0.08 : 0.12,
-              scrollTrigger: { trigger: ol, start: "top 80%", once: true },
-            });
+          // Ghost-year crossfade: only the active year is inked and visible.
+          let activeYear = 0;
+          if (years.length) {
+            gsap.set(years, { autoAlpha: 0, y: 8 });
+            gsap.set(years[0], { autoAlpha: 1, y: 0, color: "var(--ink)" });
           }
+          const setActiveYear = (i: number) => {
+            if (i === activeYear || !years[i]) return;
+            gsap.to(years[activeYear], {
+              autoAlpha: 0,
+              y: -8,
+              color: "var(--line)",
+              duration: 0.4,
+              ease: EASE,
+            });
+            gsap.to(years[i], {
+              autoAlpha: 1,
+              y: 0,
+              color: "var(--ink)",
+              duration: 0.4,
+              ease: EASE,
+            });
+            activeYear = i;
+          };
+
+          entryEls.forEach((entry, i) => {
+            const dot = entry.querySelector<HTMLElement>(".tl__dot");
+            const title = entry.querySelector<HTMLElement>(".tl__title");
+            const rule = entry.querySelector<HTMLElement>(".tl__rule");
+            const rect = entry.getBoundingClientRect();
+            const onScreen =
+              rect.top < window.innerHeight * 0.9 && rect.bottom > 0;
+
+            // First-in reveal (skip if already visible at mount).
+            if (!onScreen) {
+              const tl = gsap.timeline({
+                scrollTrigger: { trigger: entry, start: "top 82%", once: true },
+              });
+              if (title) {
+                tl.from(title, {
+                  autoAlpha: 0,
+                  y: 18,
+                  duration: 0.55,
+                  ease: EASE,
+                });
+              }
+              if (dot) {
+                tl.fromTo(
+                  dot,
+                  { scale: 1 },
+                  { scale: 1.35, duration: 0.28, ease: EASE, yoyo: true, repeat: 1 },
+                  "<",
+                );
+              }
+              if (rule) {
+                tl.fromTo(
+                  rule,
+                  { scaleX: 0 },
+                  { scaleX: 1, duration: 0.5, ease: EASE, transformOrigin: "left center" },
+                  "<0.1",
+                );
+              }
+            }
+
+            // Drive the ghost year as each entry passes the reading line.
+            ScrollTrigger.create({
+              trigger: entry,
+              start: "top 55%",
+              end: "bottom 55%",
+              onToggle: (self) => {
+                if (self.isActive) setActiveYear(i);
+              },
+            });
+          });
+
+          return () => {
+            root.classList.remove("tl--enhanced");
+          };
         },
       );
 
       return () => mm.revert();
     },
-    { scope: ref },
+    { scope: ref, dependencies: [data] },
   );
 
   return (
-    <ol ref={ref} className="timeline pl-8">
-      <span className="timeline__spine" aria-hidden="true" />
-      {items.map((item) => (
-        <li key={item.year} className="relative pb-12 last:pb-0">
-          <span
-            className="absolute -left-8 top-[0.5rem] block h-2.5 w-2.5 -translate-x-1/2 rounded-sm bg-vermillion-deep"
-            aria-hidden="true"
-          />
-          <p
-            className="font-sans text-vermillion-deep"
-            style={{
-              fontWeight: 800,
-              fontStretch: "85%",
-              fontVariantNumeric: "tabular-nums",
-              letterSpacing: "0.02em",
-              fontSize: "1.15rem",
-            }}
-          >
-            {item.year}
-          </p>
-          <h3 className="t-h4 mt-1 text-ink">{item.title}</h3>
-          <p className="t-body measure mt-2 text-ink-soft">{item.text}</p>
-        </li>
-      ))}
-    </ol>
+    <div ref={ref} className="tl">
+      <div className="tl__years" aria-hidden="true">
+        {data.map((entry, i) => (
+          <span key={`year-${entry.year}-${i}`} className="tl__year">
+            {entry.year}
+          </span>
+        ))}
+      </div>
+      <ol className="tl__list">
+        <span className="tl__spine" aria-hidden="true" />
+        {data.map((entry, i) => (
+          <li key={`${entry.year}-${i}`} className="tl__entry">
+            <span className="tl__dot" aria-hidden="true" />
+            <p className="tl__entry-year">{entry.year}</p>
+            <h3 className="t-h4 tl__title">{entry.title}</h3>
+            <span className="tl__rule" aria-hidden="true" />
+            <p className="t-body measure tl__text">{entry.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

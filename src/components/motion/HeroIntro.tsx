@@ -87,10 +87,16 @@ export function HeroIntro({ children, className }: HeroIntroProps) {
                 aria: "auto",
               });
               gsap.from(split.lines, {
-                yPercent: 118,
+                yPercent: 112,
                 duration: 0.9,
-                stagger: 0.12,
+                stagger: 0.1,
                 ease: EASE,
+                onComplete: () => {
+                  // Restore the clean, unsplit headline once the reveal lands;
+                  // null the ref so the matchMedia cleanup can't revert twice.
+                  split?.revert();
+                  split = null;
+                },
               });
             } catch {
               /* headline stays visible and unsplit */
@@ -99,7 +105,10 @@ export function HeroIntro({ children, className }: HeroIntroProps) {
           if (document.fonts?.status === "loaded") runSplit();
           else document.fonts.ready.then(runSplit);
 
-          return () => split?.revert();
+          return () => {
+            split?.revert();
+            split = null;
+          };
         },
       );
 

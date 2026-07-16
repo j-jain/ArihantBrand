@@ -29,7 +29,7 @@ npm run dev        # http://localhost:3000
    ```bash
    npm run seed
    ```
-   Re-running is safe — it updates rather than duplicates.
+   This upserts everything — site settings, businesses, partners, stores, the 10 composite testimonials, FAQs, blog posts, page copy, and the Awards, System Features and Shop-in-Shop Scope entries. Re-running is safe — it updates rather than duplicates.
 6. Add the same three env vars in Vercel → project → Settings → Environment Variables, and redeploy.
 
 ## 4. Editing content (for the Arihant team)
@@ -40,9 +40,12 @@ Open **`/studio`** on the deployed site (e.g. `arihantgroup.in/studio`) and log 
 - **Businesses** — the three units' copy, points, stats, CTAs.
 - **Brand Partners** — add/remove logos (upload the logo image; keep names exact).
 - **Stores** — add new stores with photos as the retail chain grows; set status Open/Fit-out.
-- **Testimonials** — add real customer quotes and tick **Published**; the site shows the section only when published testimonials exist. The two seeded entries are samples — replace them.
+- **Testimonials** — the seed ships **10 published composite trade voices** attributed by role + town + tenure (e.g. "Menswear MBO owner — Dibrugarh · Retail partner since 2016"), shown with monogram avatars. They are honest placeholders, not named people. As you collect **named, consented** quotes, add them and tick **Published**, then unpublish the composites; the site shows the section only while published entries exist.
 - **FAQs** — per-page questions (partner page, marketing page).
 - **Trade Notes** — blog posts (title, excerpt, typed body blocks).
+- **Awards & Recognition** — the `/recognition` trophy-case entries (CMAI 2015 Best Distributor of India, NEGTA founder membership, exhibition footfall): year/marker, title, issuer, detail.
+- **System Features** — the home infrastructure/systems cards (the qualitative "AI-driven, data-backed retail backend" claim — keep it qualitative, no invented metrics).
+- **Shop-in-Shop Scope** — the SIS scope points listed on the marketing page.
 - **Pages** — headings, hero copy and meta titles/descriptions per page.
 - **Leads** — every inquiry-form submission appears here (New/All views). Update the status as you follow up.
 

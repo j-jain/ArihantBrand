@@ -1,0 +1,527 @@
+/* ================================================================== */
+/* Motion-component styles (Wave B)                                    */
+/* Tokens/utilities come from globals.css. No gradients; radius ≤ 12px; */
+/* the single interactive/accent red is var(--vermillion-deep).        */
+/* Initial hidden states are set from JS, never here.                  */
+/* ================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* FlipWords / FlipLead                                                 */
+/* ------------------------------------------------------------------ */
+
+.flip-words {
+  display: inline-block;
+  position: relative;
+  vertical-align: baseline;
+  border-bottom: 2px solid var(--vermillion-deep);
+  line-height: inherit;
+}
+
+.flip-words__slot {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  /* Give risen descenders room without shifting the baseline. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.flip-words__word {
+  display: inline-block;
+  white-space: nowrap;
+  font-weight: 650;
+  color: var(--_text);
+}
+
+/* Laid out for measurement only — never seen or read. */
+.flip-words__measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+  height: 0;
+  overflow: hidden;
+}
+
+.flip-words__measure > span {
+  display: inline-block;
+  white-space: nowrap;
+  font-weight: 650;
+}
+
+/* ------------------------------------------------------------------ */
+/* VapourText                                                           */
+/* ------------------------------------------------------------------ */
+
+.vapour {
+  position: relative;
+}
+
+.vapour__text {
+  display: inline;
+}
+
+.vapour__canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* CardsStack                                                           */
+/* ------------------------------------------------------------------ */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stack__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(13rem, 30vh, 16rem);
+  padding: clamp(1.5rem, 2.5vw, 2rem);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.stack__mark {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  background: var(--vermillion-deep);
+}
+
+.stack__title {
+  color: var(--ink);
+}
+
+.stack__text {
+  margin-top: 0.75rem;
+  max-width: 60ch;
+  color: var(--ink-soft);
+}
+
+@media (min-width: 768px) {
+  .stack {
+    display: block;
+  }
+  .stack__card {
+    position: sticky;
+    /* per-card `top` (var(--stack-top) + index step) set inline */
+  }
+  .stack__card:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Reduced motion: no sticky, no overlap — a plain gapped column. */
+@media (prefers-reduced-motion: reduce) {
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .stack__card {
+    position: static;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* TestimonialColumns                                                   */
+/* ------------------------------------------------------------------ */
+
+.tcols {
+  position: relative;
+}
+
+/* Mobile: a short static list. */
+.tcols__mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tcols__grid {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .tcols__mobile {
+    display: none;
+  }
+  .tcols__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    max-height: 720px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 10%,
+      #000 90%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 10%,
+      #000 90%,
+      transparent
+    );
+  }
+  /* Third column only appears once there is room for three. */
+  .tcol:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tcols__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .tcol:nth-child(3) {
+    display: block;
+  }
+}
+
+.tcol {
+  min-height: 0;
+}
+
+.tcol__track {
+  display: flex;
+  flex-direction: column;
+  animation: vert-marquee var(--tcol-dur, 42s) linear infinite;
+  will-change: transform;
+}
+
+/* Even inter-card spacing that tiles cleanly for the -50% loop. */
+.tcol__track > .tcol__card {
+  margin-bottom: 1.5rem;
+}
+
+.tcols__grid:hover .tcol__track,
+.tcols__grid:focus-within .tcol__track {
+  animation-play-state: paused;
+}
+
+@keyframes vert-marquee {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tcol__track {
+    animation: none;
+  }
+}
+
+.tcol__card {
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.tcol__quote {
+  position: relative;
+  margin: 0 0 1.25rem;
+  padding-left: 1.1rem;
+  font-family: var(--font-besley), Georgia, serif;
+  font-style: italic;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.tcol__quote::before {
+  content: "\201C";
+  position: absolute;
+  left: -0.15rem;
+  top: 0.05em;
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--vermillion-deep);
+}
+
+.tcol__foot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tcol__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.tcol__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tcol__name {
+  font-size: var(--text-small);
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.tcol__role {
+  font-size: var(--text-small);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ */
+/* Timeline (rebuilt)                                                  */
+/* ------------------------------------------------------------------ */
+
+.tl {
+  position: relative;
+}
+
+/* Ghost-year column: hidden until JS enhances (desktop, non-reduced). */
+.tl__years {
+  display: none;
+}
+
+.tl__year {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 800;
+  font-stretch: 85%;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-stat);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--line);
+}
+
+.tl__list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 2rem;
+}
+
+.tl__spine {
+  position: absolute;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  left: 0;
+  width: 1px;
+  background: var(--_line);
+  transform-origin: top center;
+}
+
+.tl__entry {
+  position: relative;
+  padding-bottom: 3rem;
+}
+
+.tl__entry:last-child {
+  padding-bottom: 0;
+}
+
+.tl__dot {
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: var(--vermillion-deep);
+}
+
+.tl__entry-year {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 800;
+  font-stretch: 85%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  font-size: 1.15rem;
+  color: var(--vermillion-deep);
+}
+
+.tl__title {
+  margin-top: 0.25rem;
+  color: var(--ink);
+}
+
+.tl__rule {
+  display: block;
+  height: 1px;
+  margin: 0.85rem 0;
+  background: var(--_line);
+  transform-origin: left center;
+}
+
+.tl__text {
+  color: var(--ink-soft);
+}
+
+/* Enhanced desktop layout — switched on from JS only. */
+@media (min-width: 768px) {
+  .tl--enhanced {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.7fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: start;
+  }
+  .tl--enhanced .tl__years {
+    display: block;
+    position: sticky;
+    top: 40vh;
+    align-self: start;
+    height: 1em;
+  }
+  .tl--enhanced .tl__entry-year {
+    display: none;
+  }
+}
+
+/* Reduced motion always wins: plain static list, no ghost, no sticky. */
+@media (prefers-reduced-motion: reduce) {
+  .tl {
+    display: block;
+  }
+  .tl__years {
+    display: none;
+  }
+  .tl__entry-year {
+    display: block;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* InfrastructureSection (home "systems" band)                         */
+/* Charcoal ground: the systems are a hairline ledger beside a photo;   */
+/* node squares use --vermillion (decorative, legible on charcoal).     */
+/* ------------------------------------------------------------------ */
+
+.infra {
+  position: relative;
+}
+
+/* Ledger list: a single stacked column of rows. The 7/5 split against the
+   photo, and each row's [node | title+text] grid, are Tailwind classes on the
+   component; the CSS keeps only what Tailwind can't express cleanly — the node
+   rail alignment and the on-charcoal type tokens. */
+.infra__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.infra__node {
+  width: 10px;
+  height: 10px;
+  margin-top: 0.55rem; /* drops the square onto the title's first line */
+  border-radius: 2px;
+  background: var(--vermillion);
+}
+
+.infra__title {
+  color: var(--on-charcoal);
+}
+
+.infra__text {
+  margin-top: 0.5rem;
+  max-width: 56ch;
+  color: var(--on-charcoal-soft);
+}
+
+/* ------------------------------------------------------------------ */
+/* NetworkMap (footer)                                                 */
+/* Dotted silhouette of the Northeast on the charcoal footer: a        */
+/* Guwahati hub with slow reach arcs. Decorative marks use --vermillion */
+/* (the large-mark red, as on the .infra nodes); the dot field and the  */
+/* spoke nodes use the on-charcoal ink. Arcs render solid at 0.35       */
+/* opacity by default, so they are never hidden if scripts don't run —  */
+/* the dash/draw state is applied only from JS (see NetworkMap.tsx).    */
+/* ------------------------------------------------------------------ */
+
+.nm-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 768px) {
+  .nm-svg {
+    max-height: 360px;
+  }
+}
+
+.nm-dots circle {
+  fill: var(--on-charcoal-soft);
+  opacity: 0.28;
+}
+
+.nm-arc {
+  fill: none;
+  stroke: var(--vermillion);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: 0.35; /* static rest state; JS lifts it to 0.85 while drawing */
+}
+
+.nm-node {
+  fill: var(--on-charcoal-soft);
+  opacity: 0.9;
+}
+
+.nm-hub {
+  fill: var(--vermillion);
+}
+
+/* Hub label in the t-label idiom. Sized in user units so it renders at
+   ~11px at the footer's map width (~450px), and carved off the dots and
+   arcs behind it with a charcoal halo (paint-order: stroke under fill). */
+.nm-label {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 15px;
+  font-stretch: 87%;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  fill: var(--on-charcoal);
+  paint-order: stroke fill;
+  stroke: var(--charcoal);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+}

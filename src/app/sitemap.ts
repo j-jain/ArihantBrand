@@ -9,6 +9,7 @@ const STATIC_ROUTES = [
   "/arihant-retail",
   "/partner",
   "/brands",
+  "/recognition",
   "/about",
   "/blog",
   "/contact",

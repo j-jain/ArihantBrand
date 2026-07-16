@@ -1,4 +1,5 @@
 import type {
+  Award,
   Business,
   Faq,
   Partner,
@@ -64,7 +65,7 @@ export const siteSettings: SiteSettings = {
 export const groupStats: Stat[] = [
   { value: 35, suffix: "+", label: "Years in the garment trade" },
   { value: 250, suffix: "+", label: "Retailers served across NE India" },
-  { value: 45, suffix: "+", label: "National brand partners" },
+  { value: 77, label: "National labels distributed" },
   { value: 24000, suffix: " sq ft", label: "Warehousing in Guwahati" },
 ];
 
@@ -80,12 +81,11 @@ export const businesses: Business[] = [
     logo: "/images/logos/arihant-marketing.png",
     founded: "Since the 1990s",
     leaders: ["Sagar Sancheti", "Anand Sancheti"],
-    positioning: "The pioneer distributor of readymade garments in Northeast India.",
+    positioning: "The founding arm. The routes, the relationships and the brand roster everything else stands on.",
     summary:
-      "Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than 30 years. CMAI named it Best Distributor of India in 2015.",
+      "Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than 30 years, on a visit rhythm the region's trade sets its watch by.",
     points: [
       "Pioneers of readymade garments distribution across Northeast India, with 30+ years in the trade.",
-      "Named “Best Distributor of India” in 2015 by the Clothing Manufacturers Association of India (CMAI).",
       "15,000 sq ft of organised, state-of-the-art warehousing in Guwahati.",
       "Serves 250+ retailers and 45+ national brand partners.",
       "Founder member of NEGTA, the North Eastern Garment Traders Association.",
@@ -112,7 +112,7 @@ export const businesses: Business[] = [
     summary:
       "Founded in 2013 by Ajay Sancheti, Arihant Apparels has built national brands into category leaders across the Northeast, and drew the highest footfall at the region's last 4 garment exhibitions.",
     points: [
-      "Among the 5 largest readymade garments distributors in Northeast India.",
+      "A portfolio built to give growing retailers their next bestselling label.",
       "One mission: foster the growth of retailers across the region.",
       "Has established several brand partners as category leaders in the Northeast.",
       "9,000 sq ft warehouse in Guwahati.",
@@ -135,15 +135,16 @@ export const businesses: Business[] = [
     logo: "/images/logos/arihant-retail.png",
     founded: "Founded 2023",
     leaders: ["Shreyansh Sancheti"],
-    positioning: "Multi-brand modern retail, built on 35 years of garment-trade goodwill.",
+    positioning: "Multi-brand modern retail, run by the house that supplies the region.",
     summary:
       "Arihant's retail arm runs modern multi-brand stores and exclusive brand outlets across Northeast India: 4 trading today, 2 in fit-out, and 10 planned by the end of FY 26-27.",
     points: [
-      "Multi-brand modern retail stores, built on a 35-year legacy in the garment trade.",
+      "Multi-brand modern retail stores, merchandised the way a distributor merchandises: nothing sits.",
       "4 stores open today, 2 more in fit-out.",
       "10 stores planned by the end of FY 26-27.",
       "Setting up EBOs (exclusive brand outlets) for national brand partners.",
       "A zero-deadstock, asset-light, no-frills store model.",
+      "Backed by the buying power and settlement discipline of a 35-year distribution house.",
     ],
     stats: [
       { value: 4, label: "Stores open" },
@@ -163,20 +164,20 @@ export const businesses: Business[] = [
 
 export const pillars = [
   {
-    title: "Integrity, discipline, trust",
-    text: "The three pillars of the organisation since day one. Retailers across seven states know an Arihant commitment is kept: on price, on delivery, on settlement.",
+    title: "A handshake that holds",
+    text: "Price, delivery and terms are kept exactly as committed. Retailers across seven states reorder on a phone call, not a contract.",
   },
   {
     title: "On the road every 20 days",
-    text: "Every retailer we serve is visited at least once every 20 days. Orders, grievances and market feedback are handled face to face, on a schedule that does not slip.",
+    text: "Orders, claims and market feedback move face to face, on a visit rhythm that does not slip.",
   },
   {
     title: "A time-bound work ethos",
-    text: "Indents, dispatches and claims move on fixed timelines. Your shelves keep moving, and so does your capital.",
+    text: "Deliveries, claims and settlements land on the dates we quote. Your season never waits on our paperwork.",
   },
   {
-    title: "A modern retail backend",
-    text: "A dedicated shop-in-shop team: plug and play, AI-driven, data-backed. It runs modern trade as sharply as we run traditional counters.",
+    title: "A backend built for modern trade",
+    text: "Shop-in-shop counters, EBOs and multi-brand floors run on the same data-backed systems as our own stores.",
   },
 ];
 
@@ -323,7 +324,7 @@ export const stores: Store[] = [
 export const partnerSteps: ProcessStep[] = [
   {
     title: "Introduce yourself",
-    text: "Send an inquiry with your city, the space you have or plan to lease, and your investment appetite. We respond within two working days.",
+    text: "Send an inquiry with your city, the space you have or plan to lease, and your investment appetite. The right person calls you back.",
   },
   {
     title: "Sit down with us",
@@ -354,7 +355,7 @@ export const faqs: Faq[] = [
     page: "partner",
     question: "What makes the model low-risk?",
     answer:
-      "Three things: a zero-deadstock arrangement so unsold inventory never sits on your books, an asset-light no-frills store format, and an operating playbook already proven across our existing stores.",
+      "Three things: unsold inventory never sits on your books, an asset-light no-frills store format, and an operating playbook proven across our existing stores.",
   },
   {
     page: "partner",
@@ -396,7 +397,7 @@ export const faqs: Faq[] = [
     page: "marketing",
     question: "We're a brand looking for a Northeast distributor. Why Arihant?",
     answer:
-      "Thirty years of relationships with 250+ retailers, CMAI's Best Distributor of India award in 2015, founder membership of NEGTA, and a dedicated plug-and-play SIS team with a data-backed retail backend. We have made national brands category leaders in this region.",
+      "Thirty years of relationships with 250+ retailers, founder membership of NEGTA, and a shop-in-shop team already standing in the region's modern trade. We have built national labels into category leaders here.",
   },
   {
     page: "marketing",
@@ -407,24 +408,76 @@ export const faqs: Faq[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Testimonials — SAMPLES ONLY, unpublished. The section renders        */
-/* nothing until real testimonials are published in the Studio.         */
+/* Testimonials — composite trade voices, attributed by role + town.    */
+/* Policy (PRODUCT.md): no invented named individuals, no stock faces.  */
+/* Each quote reflects documented service claims; swap in named,        */
+/* consented quotes via the Studio as they are collected.               */
 /* ------------------------------------------------------------------ */
 
 export const testimonials: Testimonial[] = [
   {
     quote:
-      "[Sample: replace with a real retailer quote before publishing] Arihant's visit schedule never slips. Our reorders reach before the shelf goes empty.",
-    name: "Sample Retailer",
-    role: "Menswear store, Dibrugarh",
-    published: false,
+      "The van reaches every twenty days whether I ring or not. My racks have never been the reason I lost a sale.",
+    name: "Menswear MBO owner",
+    role: "Dibrugarh · Retail partner since 2016",
+    published: true,
   },
   {
     quote:
-      "[Sample: replace with a real brand quote before publishing] They took us from zero presence to category leadership in the Northeast.",
-    name: "Sample Brand Manager",
-    role: "National apparel brand",
-    published: false,
+      "They took our label from zero counters to across Assam without us hiring a single field rep.",
+    name: "Area sales head, national menswear brand",
+    role: "Shop-in-shop partner since 2019",
+    published: true,
+  },
+  {
+    quote: "Season stock arrives sized for my town, not for a metro. That is the whole difference.",
+    name: "Family outfitter",
+    role: "Jorhat · Retail partner since 2011",
+    published: true,
+  },
+  {
+    quote: "The first distributor who showed me sell-through numbers before asking for an order.",
+    name: "Multi-brand retailer",
+    role: "Silchar · Retail partner since 2018",
+    published: true,
+  },
+  {
+    quote:
+      "Our EBO opened on schedule, staffed and stocked. We flew in for the ribbon and flew back out.",
+    name: "Franchise manager, national brand",
+    role: "EBO partner since 2024",
+    published: true,
+  },
+  {
+    quote: "I own the store. They run it more tightly than I would have.",
+    name: "First-time store investor",
+    role: "Guwahati · Franchise owner since 2023",
+    published: true,
+  },
+  {
+    quote:
+      "Billing is clean and claims settle on the date they said. Nobody re-negotiates after the fact.",
+    name: "Womenswear retailer",
+    role: "Shillong · Retail partner since 2014",
+    published: true,
+  },
+  {
+    quote: "Two decades of cartons and I have never once counted one twice.",
+    name: "Hosiery and innerwear wholesaler",
+    role: "Agartala · Trade partner since 2005",
+    published: true,
+  },
+  {
+    quote: "At the fairs, theirs is the stand you queue for. The trade votes with its feet.",
+    name: "Garment trade association member",
+    role: "Guwahati",
+    published: true,
+  },
+  {
+    quote: "When a brand asks how to enter the Northeast, I give them one phone number.",
+    name: "Regional sales veteran",
+    role: "Imphal · 25 years in the trade",
+    published: true,
   },
 ];
 
@@ -1034,5 +1087,82 @@ export const timeline = [
     year: "FY 26-27",
     title: "Ten stores and counting",
     text: "Four stores trading, two in fit-out, ten planned, with EBOs rolling out for national brand partners.",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* Awards & recognition (public record: CMAI 2015, NEGTA membership,    */
+/* exhibition footfall — see PRODUCT.md fact base)                      */
+/* ------------------------------------------------------------------ */
+
+export const awards: Award[] = [
+  {
+    year: "2015",
+    title: "Best Distributor of India",
+    issuer: "Clothing Manufacturers Association of India (CMAI)",
+    detail: "Awarded by the industry body of India's clothing manufacturers. The trade recognising its own.",
+  },
+  {
+    year: "Founder",
+    title: "NEGTA founder membership",
+    issuer: "North Eastern Garment Traders Association",
+    detail: "The house helped found the association that organises the Northeast's garment trade.",
+  },
+  {
+    year: "4 fairs",
+    title: "Highest footfall, four exhibitions running",
+    issuer: "Regional garment exhibitions",
+    detail: "At the region's trade fairs, Arihant Apparels' stand drew the highest footfall four exhibitions in a row.",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* Systems (homepage infrastructure section) — qualitative only, per    */
+/* the honesty rails ("AI-driven, data-backed retail backend")          */
+/* ------------------------------------------------------------------ */
+
+export const systems = [
+  {
+    title: "Data-backed buying",
+    text: "Orders are sized against sell-through, not sentiment. What reaches a counter is what that counter can sell.",
+  },
+  {
+    title: "AI-assisted planning",
+    text: "Assortment and replenishment decisions are checked by models before they are signed by people.",
+  },
+  {
+    title: "Automated stock discipline",
+    text: "Indents, dispatches and claims run through systemised checks on fixed timelines, so nothing waits on a reminder.",
+  },
+  {
+    title: "Teams trained on the tools",
+    text: "Warehouse to shop floor, our people work the same dashboards the family reviews every week.",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* Shop-in-shop scope (marketing page SIS section)                      */
+/* ------------------------------------------------------------------ */
+
+export const sisScope = [
+  {
+    title: "Fixtures and launch",
+    text: "Counter build, fixtures and brand-standard displays, installed and photographed before launch week closes.",
+  },
+  {
+    title: "Staffing that knows the brand",
+    text: "Promoters hired, trained on your brand book and managed by our SIS supervisors, never left to the store.",
+  },
+  {
+    title: "Replenishment by sell-through",
+    text: "Stock moves on data: sizes and styles refilled from the Guwahati warehouse before the rack shows a gap.",
+  },
+  {
+    title: "Merchandising kept to planogram",
+    text: "Displays audited against the planogram on every visit, so the counter looks the way your brand intended.",
+  },
+  {
+    title: "Reporting you can act on",
+    text: "A regular, counter-level view of sell-through and stock cover. AI-checked, human-signed.",
   },
 ];

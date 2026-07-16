@@ -5,7 +5,13 @@ import { notFound } from "next/navigation";
 
 import { getPageCopy, getPosts } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
-import { Button, DrenchBand, HeroIntro, JsonLd, StaggerGroup } from "@/components";
+import {
+  Button,
+  DrenchBand,
+  HeroIntro,
+  JsonLd,
+  StaggerGroup,
+} from "@/components";
 
 const dateFmt = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -59,14 +65,15 @@ export default async function BlogPage() {
         </HeroIntro>
       </section>
 
-      {/* 2 — Post grid: 3:2 thumbnails, batch-revealed */}
+      {/* 2 — Posts index: the full card grid, scannable and crawlable on
+          every device */}
       <section className="section-pad bg-paper" style={{ paddingTop: 0 }}>
         <div className="container-site">
           <StaggerGroup
             as="ul"
             from="up"
             stagger={0.09}
-            className="grid gap-x-6 gap-y-11 sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-12 grid gap-x-6 gap-y-11 sm:grid-cols-2 lg:grid-cols-3"
           >
             {posts.map((post, i) => (
               <li key={post.slug} className="flex">

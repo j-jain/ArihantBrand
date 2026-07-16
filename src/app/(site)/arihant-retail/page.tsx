@@ -76,7 +76,7 @@ export default async function ArihantRetailPage() {
   const points = business?.points ?? [];
   const modelPoints = [
     points.find((p) => p.toLowerCase().includes("zero-deadstock")),
-    points.find((p) => p.toLowerCase().includes("legacy")),
+    points.find((p) => p.toLowerCase().includes("35-year")),
     points.find((p) => p.toLowerCase().includes("ebo")),
   ].filter((p): p is string => Boolean(p));
 
@@ -192,35 +192,49 @@ export default async function ArihantRetailPage() {
         </div>
       </section>
 
-      {/* 3 — Model band (charcoal): a store-interior supplement + the model */}
+      {/* 3 — Model band (charcoal): the model as a closed ledger + an image duo */}
       <section className="section-pad on-dark">
         <div className="container-site">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16 lg:items-start">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-start">
             <div className="flex flex-col gap-8">
               <SectionHeading heading={model.heading} lead={model.lead} onDark />
+              {modelPoints.length ? (
+                <StaggerGroup as="ul" from="left" className="flex flex-col" stagger={0.1}>
+                  {modelPoints.map((point, index) => (
+                    <li
+                      key={point}
+                      className={cn(
+                        "t-h4 border-t border-line-dark py-5 text-on-charcoal",
+                        index === modelPoints.length - 1 && "border-b border-line-dark",
+                      )}
+                    >
+                      {point}
+                    </li>
+                  ))}
+                </StaggerGroup>
+              ) : null}
+            </div>
+
+            {/* Image duo: a portrait interior with a wider carton aisle pulled up
+                over its bottom-left on desktop; a clean stack on mobile. */}
+            <div className="flex flex-col">
               <ParallaxImage
                 src={stockImages.retailInterior1.src}
                 alt={stockImages.retailInterior1.alt}
-                ratio="3 / 2"
-                sizes="(max-width: 1023px) 100vw, 42vw"
+                ratio="4 / 5"
+                sizes="(max-width: 1023px) 100vw, 35vw"
                 className="border border-line-dark"
+                tilt
+              />
+              <ParallaxImage
+                src={stockImages.retailCartons1.src}
+                alt={stockImages.retailCartons1.alt}
+                ratio="3 / 2"
+                sizes="(max-width: 1023px) 100vw, 25vw"
+                className="mt-4 border border-line-dark lg:relative lg:z-10 lg:-mt-[18%] lg:mr-auto lg:w-[72%]"
+                tilt
               />
             </div>
-            {modelPoints.length ? (
-              <StaggerGroup as="ul" from="left" className="flex flex-col self-center" stagger={0.1}>
-                {modelPoints.map((point, index) => (
-                  <li
-                    key={point}
-                    className={cn(
-                      "t-h4 py-5 text-on-charcoal",
-                      index > 0 && "border-t border-line-dark",
-                    )}
-                  >
-                    {point}
-                  </li>
-                ))}
-              </StaggerGroup>
-            ) : null}
           </div>
         </div>
       </section>
@@ -240,34 +254,43 @@ export default async function ArihantRetailPage() {
               <SectionHeading heading={expansion.heading} lead={expansion.lead} />
             </Reveal>
 
-            {roadmap.length ? (
-              <div className="relative pt-2">
-                <div
-                  aria-hidden="true"
-                  className="absolute left-0 right-0"
-                  style={{ top: "9px", height: 1, background: "var(--line)" }}
+            <div className="grid items-center gap-x-14 gap-y-12 lg:grid-cols-[1.4fr_1fr]">
+              {roadmap.length ? (
+                <div className="relative pt-2">
+                  <div
+                    aria-hidden="true"
+                    className="absolute left-0 right-0"
+                    style={{ top: "9px", height: 1, background: "var(--line)" }}
+                  />
+                  <StaggerGroup
+                    as="ol"
+                    from="up"
+                    className="relative grid gap-x-6 gap-y-10 sm:grid-cols-3"
+                    stagger={0.12}
+                  >
+                    {roadmap.map((node) => (
+                      <li key={node.stage} className="flex flex-col gap-3">
+                        <span
+                          aria-hidden="true"
+                          className="block rounded-full"
+                          style={{ height: 14, width: 14, background: "var(--unit-accent)" }}
+                        />
+                        <span className="t-label text-ink-soft">{node.stage}</span>
+                        <span className="t-stat text-ink">{node.value}</span>
+                        <span className="t-small text-ink-soft">{node.label}</span>
+                      </li>
+                    ))}
+                  </StaggerGroup>
+                </div>
+              ) : null}
+              <Reveal variant="clip">
+                <ParallaxImage
+                  src={stockImages.retailInterior2.src}
+                  alt={stockImages.retailInterior2.alt}
+                  ratio="4 / 3"
                 />
-                <StaggerGroup
-                  as="ol"
-                  from="up"
-                  className="relative grid gap-x-6 gap-y-10 sm:grid-cols-3"
-                  stagger={0.12}
-                >
-                  {roadmap.map((node) => (
-                    <li key={node.stage} className="flex flex-col gap-3">
-                      <span
-                        aria-hidden="true"
-                        className="block rounded-full"
-                        style={{ height: 14, width: 14, background: "var(--unit-accent)" }}
-                      />
-                      <span className="t-label text-ink-soft">{node.stage}</span>
-                      <span className="t-stat text-ink">{node.value}</span>
-                      <span className="t-small text-ink-soft">{node.label}</span>
-                    </li>
-                  ))}
-                </StaggerGroup>
-              </div>
-            ) : null}
+              </Reveal>
+            </div>
           </div>
         </div>
       </section>

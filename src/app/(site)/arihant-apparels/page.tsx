@@ -83,15 +83,17 @@ export default async function ArihantApparelsPage() {
   const exhibitions = sections.exhibitions;
   const brandsSection = sections.brands;
   const faqSection = sections.faq;
+  const ctaSection = sections.cta;
 
   const exhStat = business?.stats.find((s) => s.label.toLowerCase().includes("exhibition"));
-  // Category-leaders point drives the strip; two concrete facts support it.
+  // Category-leaders point drives the pull-line; the sq-ft and portfolio points
+  // support it. The exhibition-footfall point already headlines section 3 and
+  // the mission point is carried by section 2, so neither is echoed here.
   const leadersPoint = business?.points.find((p) => p.toLowerCase().includes("category leaders"));
-  const supportingPoints = (business?.points ?? []).filter(
-    (p) =>
-      p.toLowerCase().includes("largest") ||
-      p.toLowerCase().includes("sq ft"),
-  );
+  const supportingPoints = [
+    business?.points.find((p) => p.toLowerCase().includes("sq ft")),
+    business?.points.find((p) => p.toLowerCase().includes("portfolio")),
+  ].filter((p): p is string => Boolean(p));
 
   return (
     <div>
@@ -187,13 +189,14 @@ export default async function ArihantApparelsPage() {
         }}
       >
         <div className="container-site">
-          <Reveal variant="fade" className="grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-center">
+          <Reveal variant="fade" className="grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-start">
             <ParallaxImage
               src={stockImages.apparelsRacks1.src}
               alt={stockImages.apparelsRacks1.alt}
               ratio="4 / 5"
               sizes="(max-width: 1023px) 100vw, 40vw"
               className="border border-line lg:col-span-5"
+              tilt
             />
             <div className="flex flex-col gap-6 lg:col-span-7">
               <div>
@@ -239,7 +242,7 @@ export default async function ArihantApparelsPage() {
           />
         </div>
         <div className="container-site relative">
-          <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-16">
+          <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-16">
             {exhStat ? (
               <p
                 aria-hidden="true"
@@ -295,16 +298,11 @@ export default async function ArihantApparelsPage() {
                   <li
                     key={point}
                     className={cn(
-                      "flex items-start gap-3 py-4",
-                      index > 0 && "border-t border-line",
+                      "t-body border-t border-line py-5 text-ink-soft",
+                      index === supportingPoints.length - 1 && "border-b border-line",
                     )}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="mt-[0.6em] flex-none"
-                      style={{ height: 2, width: "1.35rem", background: "var(--unit-accent)" }}
-                    />
-                    <span className="t-body text-ink-soft">{point}</span>
+                    {point}
                   </li>
                 ))}
               </StaggerGroup>
@@ -350,11 +348,11 @@ export default async function ArihantApparelsPage() {
       <DrenchBand className="section-pad">
         <div className="container-site flex max-w-3xl flex-col gap-6">
           <h2 data-drench-reveal className="t-h2">
-            {"Grow with one of the Northeast’s five largest distributors."}
+            {ctaSection?.heading ?? "Grow with one of the Northeast’s five largest distributors."}
           </h2>
-          {business ? (
+          {ctaSection?.lead ? (
             <p data-drench-reveal className="t-lead" style={{ color: "var(--_text-soft)" }}>
-              {business.positioning}
+              {ctaSection.lead}
             </p>
           ) : null}
           <div data-drench-reveal className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-4">

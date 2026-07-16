@@ -36,12 +36,36 @@ Group values: **integrity, discipline, trust**. Operating proof: every retailer 
 
 Steadfast, industrious, warm-handshake. Short declarative sentences. Numbers over adjectives. First-person plural ("we visit every retailer every 20 days"). Never corporate filler ("solutions", "synergy"), never luxury-brand whisper. English with Indian trade vocabulary used naturally (MBO, EBO, SIS).
 
+No dashes in copy: never use em (—) or en (–) dashes in any user-visible text. Restructure with a comma, a colon, or a second sentence instead. Compound-word hyphens (warm-handshake, plug-and-play, zero-deadstock) are fine.
+
+### Repetition discipline
+
+Each flagship fact has one canonical home plus at most one varied echo — say it well once, don't drum it:
+
+- **CMAI 2015 award** → canonical on `/recognition` + the marketing-page award band (echo: the home proof line and the about timeline).
+- **20-day visit cycle** → canonical on the marketing page (echo: one pillar + one FAQ).
+- **Values trio (integrity, discipline, trust)** → about-page values + the footer only.
+- **Zero-deadstock** → canonical in the retail managed-model copy (echo: the partner page).
+- **Retail rollout numbers (4 stores + 2 in fit-out, 10 by FY26-27)** → the retail page.
+
 ## Honesty rails (do not violate)
 
-- No invented numbers, clients, or testimonials. Testimonial section renders only when real entries are published in the CMS.
+- No invented numbers, clients, or named individuals. Testimonials are **composite trade voices** attributed by role + town + tenure (e.g. "Menswear MBO owner — Dibrugarh · Retail partner since 2016"), rendered with monogram avatars — never invented named people, never stock face photos. Each quote reflects only documented service claims. Named, consented quotes replace them via the Studio as they are collected; the `/recognition` page offers "references on a phone call" for serious inquiries rather than parading fake names. The testimonial section renders only when published entries exist.
 - Franchise economics stay qualitative ("high-ROI, minimal-risk, proven ROIC record" — the PDF's own claims); no fabricated investment figures or return percentages.
 - Every stat used comes from the brand profile PDF or public records (CMAI 2015 award, NEGTA founding membership, 1999 registration).
+- Number discipline: group-level copy always says **"77 labels"** (the portfolio wall — `/brands`, the home marquee, the header Businesses panel). **"45+ brand partners"** is scoped to the Arihant Marketing unit only. Never conflate the two.
 - Imagery stays honest: the 3 real store photos are the only images presented as Arihant's own operations. Curated royalty-free stock (committed under `public/images/stock/`, referenced only via the `src/content/images.ts` manifest) is generic trade context and never masquerades as Arihant facilities, staff, or stores. Real photos always outrank stock.
+
+## Site map
+
+- `/` — home: intent routing to the three units, proof band, why-Arihant pillars, businesses, infrastructure/systems, brands, Trade Notes teaser, a featured voice, CTA.
+- `/arihant-marketing`, `/arihant-apparels`, `/arihant-retail` — the three business units.
+- `/partner` — the managed-franchise money page (audience 3).
+- `/brands` — the full portfolio wall (77 labels).
+- `/recognition` — Awards trophy case (CMAI 2015 Best Distributor of India + NEGTA founder membership + highest exhibition footfall) plus a "What the trade says" testimonial-columns section; closes on "references available on a phone call."
+- `/about`, `/blog` (+ `/blog/[slug]`, "Trade Notes"), `/contact`.
+
+The home infrastructure/systems section markets the approved **"AI-driven, data-backed retail backend"** claim qualitatively — data-backed buying, AI-assisted planning, automated stock discipline, teams trained on the tools — with no invented metrics.
 
 ## CMS
 

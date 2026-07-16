@@ -54,7 +54,9 @@ export function organizationJsonLd(s: SiteSettings) {
     description: s.tagline,
     foundingDate: "1999",
     address: postalAddress(s),
-    award: "Best Distributor of India 2015, Clothing Manufacturers Association of India (CMAI)",
+    // Genuine, documented awards only (honesty rail: no invented awards). The
+    // NEGTA founder role is modelled as membership via `memberOf`, not an award.
+    award: ["Best Distributor of India 2015, CMAI (Clothing Manufacturers Association of India)"],
     memberOf: { "@type": "Organization", name: "North Eastern Garment Traders Association (NEGTA)" },
     subOrganization: [
       { "@id": `${siteUrl()}/arihant-marketing#business` },

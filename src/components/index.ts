@@ -7,6 +7,7 @@ export { HeroIntro } from "./motion/HeroIntro";
 export { StaggerGroup } from "./motion/StaggerGroup";
 export { ParallaxImage } from "./motion/ParallaxImage";
 export { DrenchBand } from "./motion/DrenchBand";
+export { default as SmoothScroll } from "./motion/SmoothScroll";
 export { LogoTile } from "./LogoTile";
 export { LogoWall } from "./LogoWall";
 export { LogoMarquee } from "./LogoMarquee";
@@ -26,3 +27,11 @@ export { MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "./icons";
 export { businessLinks, primaryNav, type NavItem } from "./nav";
 /* Phase 3 additions */
 export { PartnerModal } from "./PartnerModal";
+/* Wave B — motion + display components */
+export { FlipWords, FlipLead } from "./motion/FlipWords";
+export { VapourText } from "./motion/VapourText";
+export { SplitHeading } from "./motion/SplitHeading";
+export { CurtainReveal } from "./motion/CurtainReveal";
+export { CardsStack } from "./CardsStack";
+export { TestimonialColumns } from "./TestimonialColumns";
+export { InfrastructureSection } from "./InfrastructureSection";

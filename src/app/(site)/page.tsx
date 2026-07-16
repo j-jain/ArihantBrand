@@ -4,8 +4,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Button,
+  CardsStack,
+  CurtainReveal,
   DrenchBand,
+  FlipLead,
   HeroIntro,
+  InfrastructureSection,
   JsonLd,
   LogoMarquee,
   ParallaxImage,
@@ -13,7 +17,6 @@ import {
   SectionHeading,
   StaggerGroup,
   StatBand,
-  TestimonialRail,
   cn,
 } from "@/components";
 import { stockImages } from "@/content/images";
@@ -23,7 +26,9 @@ import {
   getPageCopy,
   getPartners,
   getPillars,
+  getPosts,
   getSiteSettings,
+  getSystems,
   getTestimonials,
 } from "@/lib/content";
 import { organizationJsonLd, pageMetadata } from "@/lib/seo";
@@ -47,23 +52,45 @@ function formatTel(digits: string): string {
   return `+91 ${grouped}`;
 }
 
+/** Monogram initials from the first two words of a name. */
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w.charAt(0).toUpperCase())
+    .join("");
+}
+
 export default async function HomePage() {
-  const [copy, groupStats, pillars, businesses, partners, testimonials, settings] =
-    await Promise.all([
-      getPageCopy("home"),
-      getGroupStats(),
-      getPillars(),
-      getBusinesses(),
-      getPartners(),
-      getTestimonials(),
-      getSiteSettings(),
-    ]);
+  const [
+    copy,
+    groupStats,
+    pillars,
+    businesses,
+    partners,
+    posts,
+    systems,
+    testimonials,
+    settings,
+  ] = await Promise.all([
+    getPageCopy("home"),
+    getGroupStats(),
+    getPillars(),
+    getBusinesses(),
+    getPartners(),
+    getPosts(),
+    getSystems(),
+    getTestimonials(),
+    getSiteSettings(),
+  ]);
 
   if (!copy) notFound();
 
   const { hero, sections } = copy;
-  // Every third partner keeps both distribution portfolios represented.
-  const marqueePartners = partners.filter((_, i) => i % 3 === 0);
+  // Every second partner keeps the marquee dense without listing all 77.
+  const marqueePartners = partners.filter((_, i) => i % 2 === 0);
+  const latestPosts = posts.slice(0, 3);
+  const featured = testimonials[0];
 
   return (
     <>
@@ -81,24 +108,36 @@ export default async function HomePage() {
                 emphasis={hero.headingEmphasis}
                 rest={{ "data-hero-title": "", style: { textWrap: "normal" } }}
               />
-              <p
+              {/* FlipLead can't carry data-* through its props, so the reveal
+                  hook lives on this wrapper — HeroIntro selects it either way. */}
+              <div data-hero-reveal className="measure">
+                <FlipLead
+                  text={hero.lead}
+                  className="t-lead text-ink-soft"
+                />
+              </div>
+              <div
                 data-hero-reveal
-                className="t-lead measure text-ink-soft"
+                className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-3"
               >
-                {hero.lead}
-              </p>
-              <div data-hero-reveal className="mt-1 flex flex-wrap gap-3">
                 <Button variant="primary" size="lg" href={hero.primaryCta.href}>
                   {hero.primaryCta.label}
                 </Button>
                 {hero.secondaryCta ? (
-                  <Button
-                    variant="secondary"
-                    size="lg"
+                  <Link
                     href={hero.secondaryCta.href}
+                    className="group inline-flex min-h-11 items-center gap-1.5 font-sans font-semibold text-ink-soft transition-colors hover:text-ink"
                   >
-                    {hero.secondaryCta.label}
-                  </Button>
+                    <span className="underline-offset-4 group-hover:underline">
+                      {hero.secondaryCta.label}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="text-vermillion-deep transition-transform group-hover:translate-x-0.5"
+                    >
+                      ▸
+                    </span>
+                  </Link>
                 ) : null}
               </div>
             </div>
@@ -110,6 +149,7 @@ export default async function HomePage() {
                 ratio="4 / 5"
                 priority
                 sizes="(max-width: 1023px) 100vw, 42vw"
+                tilt
               />
             </div>
           </div>
@@ -124,8 +164,17 @@ export default async function HomePage() {
                 <Link
                   key={business.slug}
                   href={`/${business.slug}`}
-                  className="group flex flex-col gap-1 bg-white px-5 py-4 transition-colors hover:bg-paper-shade"
+                  className="group flex flex-col gap-3 bg-white px-5 py-5 transition-colors hover:bg-paper-shade"
                 >
+                  <span className="relative block h-10 w-full">
+                    <Image
+                      src={business.logo}
+                      alt=""
+                      fill
+                      sizes="(max-width: 639px) 80vw, 22vw"
+                      className="object-contain object-left"
+                    />
+                  </span>
                   <span className="flex items-center justify-between gap-3">
                     <span
                       className="font-display text-ink"
@@ -150,66 +199,59 @@ export default async function HomePage() {
         </HeroIntro>
       </section>
 
-      {/* 2 — Proof band (charcoal over a working warehouse) ------------------ */}
-      <section className="on-dark relative overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <Image
-            src={stockImages.marketingWarehouse2.src}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover opacity-[0.16]"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, var(--charcoal) 30%, transparent)",
-            }}
-          />
-        </div>
+      {/* 2 — Proof band (charcoal over a working warehouse), curtain-revealed */}
+      <CurtainReveal>
+        <section className="on-dark relative overflow-hidden">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            <Image
+              src={stockImages.marketingWarehouse2.src}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover opacity-[0.16]"
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(90deg, var(--charcoal) 30%, transparent)",
+              }}
+            />
+          </div>
 
-        <div className="container-site section-pad relative flex flex-col gap-10">
-          <Reveal
-            as="p"
-            variant="fade"
-            className="font-display measure italic text-on-charcoal"
-            style={{ fontSize: "var(--text-h3)", fontWeight: 700, lineHeight: 1.25 }}
-          >
-            Named{" "}
-            <span style={{ color: "var(--vermillion)" }}>
-              Best Distributor of India
-            </span>{" "}
-            by CMAI in 2015. We have held the line every season since.
-          </Reveal>
-          <StatBand stats={groupStats} onDark />
-        </div>
-      </section>
+          <div className="container-site section-pad relative flex flex-col gap-10">
+            <div className="flex max-w-3xl flex-col gap-5">
+              <SectionHeading heading={sections.proof.heading} onDark />
+              <span
+                aria-hidden="true"
+                className="block h-[3px] w-14 rounded-full"
+                style={{ background: "var(--vermillion)" }}
+              />
+              {sections.proof.lead ? (
+                <p
+                  className="font-display measure italic text-on-charcoal"
+                  style={{
+                    fontSize: "var(--text-h3)",
+                    fontWeight: 700,
+                    lineHeight: 1.28,
+                  }}
+                >
+                  {sections.proof.lead}
+                </p>
+              ) : null}
+            </div>
+            <StatBand stats={groupStats} onDark />
+          </div>
+        </section>
+      </CurtainReveal>
 
-      {/* 3 — Why Arihant (paper) ------------------------------------------- */}
+      {/* 3 — Why Arihant (paper): the four pillars as a sticky card stack ---- */}
       <section className="bg-paper">
         <div className="container-site section-pad flex flex-col gap-12">
           <Reveal variant="fade">
             <SectionHeading heading={sections.why.heading} lead={sections.why.lead} />
           </Reveal>
-          <StaggerGroup
-            className="grid gap-x-12 gap-y-10 md:grid-cols-2"
-            from="up"
-            stagger={0.12}
-          >
-            {pillars.slice(0, 4).map((pillar, i) => (
-              <div
-                key={pillar.title}
-                className={cn(
-                  "border-t border-line pt-6",
-                  i % 2 === 1 && "md:mt-10",
-                )}
-              >
-                <h3 className="t-h3 text-ink">{pillar.title}</h3>
-                <p className="t-body measure mt-3 text-ink-soft">{pillar.text}</p>
-              </div>
-            ))}
-          </StaggerGroup>
+          <CardsStack items={pillars.slice(0, 4)} />
         </div>
       </section>
 
@@ -237,7 +279,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 5 — Brand marquee (paper) ----------------------------------------- */}
+      {/* 5 — Infrastructure / systems (charcoal) --------------------------- */}
+      <InfrastructureSection
+        heading={sections.systems.heading}
+        lead={sections.systems.lead}
+        closing={sections.systems.body?.[0]}
+        systems={systems}
+      />
+
+      {/* 6 — Brand marquee (paper) ----------------------------------------- */}
       <section className="bg-paper">
         <div className="container-site section-pad flex flex-col gap-10">
           <Reveal variant="fade">
@@ -260,16 +310,154 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6 — Testimonials (only when real entries are published) ------------ */}
-      {testimonials.length > 0 ? (
+      {/* 7 — Trade Notes teaser (paper-shade) ------------------------------ */}
+      {latestPosts.length > 0 ? (
         <section className="bg-paper-shade">
-          <div className="container-site section-pad">
-            <TestimonialRail testimonials={testimonials} />
+          <div className="container-site section-pad flex flex-col gap-10">
+            <Reveal variant="fade">
+              <SectionHeading
+                heading={sections.notes.heading}
+                lead={sections.notes.lead}
+              />
+            </Reveal>
+            <StaggerGroup
+              as="ul"
+              from="up"
+              stagger={0.1}
+              className="grid gap-x-6 gap-y-10 sm:grid-cols-3"
+            >
+              {latestPosts.map((post) => (
+                <li key={post.slug} className="flex">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group flex h-full w-full flex-col"
+                  >
+                    <div className="relative aspect-[3/2] overflow-hidden rounded-[6px] border border-line bg-paper">
+                      {post.image ? (
+                        <Image
+                          src={post.image}
+                          alt=""
+                          fill
+                          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 30vw"
+                          className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] will-change-transform group-hover:scale-[1.045]"
+                        />
+                      ) : null}
+                    </div>
+                    <p className="t-label mt-5 text-vermillion-deep">
+                      {post.audience}
+                    </p>
+                    <h3 className="t-h4 mt-2 text-ink">
+                      <span className="underline-offset-4 group-hover:underline">
+                        {post.title}
+                      </span>
+                    </h3>
+                    <p
+                      className="t-small mt-2.5 text-ink-soft"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {post.excerpt}
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </StaggerGroup>
+            <p>
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
+              >
+                All Trade Notes
+                <span aria-hidden="true">→</span>
+              </Link>
+            </p>
           </div>
         </section>
       ) : null}
 
-      {/* 7 — CTA band (single vermillion drench) --------------------------- */}
+      {/* 8 — Voice strip (paper): featured quote (7) beside a real store photo (5) */}
+      {featured ? (
+        <section className="bg-paper">
+          <div className="container-site section-pad flex flex-col gap-8">
+            <div className="grid gap-y-10 lg:grid-cols-12 lg:items-start lg:gap-16">
+              <div className="flex flex-col gap-8 lg:col-span-7">
+                <Reveal variant="fade">
+                  <h2 className="t-h4 text-ink-soft">{sections.voice.heading}</h2>
+                </Reveal>
+                <Reveal variant="clip">
+                  <figure className="flex flex-col gap-8">
+                    <blockquote
+                      className="font-display measure italic text-ink"
+                      style={{ fontSize: "var(--text-h3)", lineHeight: 1.35 }}
+                    >
+                      <span aria-hidden="true" className="text-vermillion-deep">
+                        “
+                      </span>
+                      {featured.quote}
+                      <span aria-hidden="true" className="text-vermillion-deep">
+                        ”
+                      </span>
+                    </blockquote>
+                    <figcaption className="flex items-center gap-4">
+                      <span
+                        aria-hidden="true"
+                        className="flex h-12 w-12 flex-none items-center justify-center rounded-full border border-line bg-paper-shade font-sans text-ink"
+                        style={{ fontWeight: 650, fontSize: "0.9rem" }}
+                      >
+                        {initialsOf(featured.name)}
+                      </span>
+                      <span className="flex flex-col">
+                        <span
+                          className="t-small text-ink"
+                          style={{ fontWeight: 650 }}
+                        >
+                          {featured.name}
+                        </span>
+                        {featured.role ? (
+                          <span className="t-small text-ink-soft">
+                            {featured.role}
+                          </span>
+                        ) : null}
+                      </span>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              </div>
+
+              <Reveal as="div" variant="clip" className="lg:col-span-5">
+                <figure className="flex flex-col gap-3">
+                  <ParallaxImage
+                    src="/images/photos/store-urban-closet.jpg"
+                    alt="Urban Closet in Guwahati, an Arihant Retail multi-brand store"
+                    ratio="4 / 5"
+                    sizes="(max-width: 1023px) 100vw, 32vw"
+                    className="border border-line"
+                    tilt
+                  />
+                  <figcaption className="t-small text-ink-soft">
+                    Urban Closet, Guwahati · Arihant Retail
+                  </figcaption>
+                </figure>
+              </Reveal>
+            </div>
+            <p>
+              <Link
+                href="/recognition"
+                className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
+              >
+                Awards &amp; testimonials
+                <span aria-hidden="true">→</span>
+              </Link>
+            </p>
+          </div>
+        </section>
+      ) : null}
+
+      {/* 9 — CTA band (single vermillion drench) --------------------------- */}
       <DrenchBand id="cta" className="section-pad">
         <div className="container-site flex flex-col items-start gap-6">
           <h2 data-drench-reveal className="t-h2 max-w-[20ch]">

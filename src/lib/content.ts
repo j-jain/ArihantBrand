@@ -11,6 +11,7 @@
  */
 
 import type {
+  Award,
   Business,
   Cta,
   Faq,
@@ -27,6 +28,7 @@ import type {
 } from "@/content/types";
 
 import {
+  awards as seedAwards,
   businesses as seedBusinesses,
   faqs as seedFaqs,
   groupStats as seedGroupStats,
@@ -34,8 +36,10 @@ import {
   partnerSteps as seedPartnerSteps,
   pillars as seedPillars,
   posts as seedPosts,
+  sisScope as seedSisScope,
   siteSettings as seedSiteSettings,
   stores as seedStores,
+  systems as seedSystems,
   testimonials as seedTestimonials,
   timeline as seedTimeline,
 } from "@/content/seed";
@@ -216,6 +220,12 @@ interface RawTimeline {
 interface RawStep {
   title: string;
   text: string;
+}
+interface RawAward {
+  year: string;
+  title: string;
+  issuer: string;
+  detail?: string | null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -398,6 +408,9 @@ const GROUP_STATS_QUERY = `*[_type == "groupStat"] | order(order asc){ value, su
 const PILLARS_QUERY = `*[_type == "pillar"] | order(order asc){ title, text }`;
 const TIMELINE_QUERY = `*[_type == "timelineEntry"] | order(order asc){ year, title, text }`;
 const STEPS_QUERY = `*[_type == "processStep"] | order(order asc){ title, text }`;
+const AWARDS_QUERY = `*[_type == "award"] | order(order asc){ year, title, issuer, detail }`;
+const SYSTEMS_QUERY = `*[_type == "systemFeature"] | order(order asc){ title, text }`;
+const SIS_SCOPE_QUERY = `*[_type == "sisPoint"] | order(order asc){ title, text }`;
 
 /* ------------------------------------------------------------------ */
 /* Getters                                                              */
@@ -554,5 +567,39 @@ export function getPartnerSteps(): Promise<ProcessStep[]> {
     isEmptyArray,
     (rows) => rows.map((s) => ({ title: s.title, text: s.text })),
     seedPartnerSteps,
+  );
+}
+
+export function getAwards(): Promise<Award[]> {
+  return fromSanity<RawAward[], Award[]>(
+    "getAwards",
+    AWARDS_QUERY,
+    {},
+    isEmptyArray,
+    (rows) =>
+      rows.map((a) => ({ year: a.year, title: a.title, issuer: a.issuer, detail: a.detail ?? "" })),
+    seedAwards,
+  );
+}
+
+export function getSystems(): Promise<Pillar[]> {
+  return fromSanity<RawPillar[], Pillar[]>(
+    "getSystems",
+    SYSTEMS_QUERY,
+    {},
+    isEmptyArray,
+    (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
+    seedSystems,
+  );
+}
+
+export function getSisScope(): Promise<Pillar[]> {
+  return fromSanity<RawPillar[], Pillar[]>(
+    "getSisScope",
+    SIS_SCOPE_QUERY,
+    {},
+    isEmptyArray,
+    (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
+    seedSisScope,
   );
 }

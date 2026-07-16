@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
-import { SiteFooter, SiteHeader, StickyActionBar } from "@/components";
+import {
+  SiteFooter,
+  SiteHeader,
+  SmoothScroll,
+  StickyActionBar,
+} from "@/components";
 import { getSiteSettings } from "@/lib/content";
 
 /** The public site shell: paper header, the main content region (the skip-link
@@ -10,6 +15,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
 
   return (
     <>
+      <SmoothScroll />
       <SiteHeader />
       <main id="main" className="flex-1">
         {children}

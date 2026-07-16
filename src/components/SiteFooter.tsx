@@ -1,38 +1,40 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { SiteSettings } from "@/content/types";
 import { ContactChannels } from "./ContactChannels";
 import { MapPinIcon } from "./icons";
-import { businessLinks, primaryNav } from "./nav";
+import { NetworkMap } from "./motion/NetworkMap";
+import { businessLinks, partnerLink, primaryNav } from "./nav";
 
 interface SiteFooterProps {
   settings: SiteSettings;
 }
 
-/** Charcoal full-bleed footer: three unit contact columns, nav, full NAP and
- *  legal line, with an oversized cropped chevron motif as quiet texture. */
+/** Charcoal full-bleed footer. A top row pairs a Besley reach line and the unit
+ *  contact channels with a dotted NetworkMap of the Northeast (Guwahati hub);
+ *  the nav, full NAP and legal line run full-width beneath it. */
 export function SiteFooter({ settings }: SiteFooterProps) {
   const year = new Date().getFullYear();
   const nap = `${settings.addressLine}, ${settings.locality}, ${settings.city}, ${settings.state} ${settings.postalCode}`;
-  const footerNav = [...businessLinks, ...primaryNav];
+  const footerNav = [...businessLinks, partnerLink, ...primaryNav];
 
   return (
     <footer className="on-dark relative overflow-hidden">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-24 top-1/2 -translate-y-1/2 opacity-[0.08]"
-      >
-        <Image
-          src="/images/motifs/chevron.png"
-          alt=""
-          width={620}
-          height={620}
-          className="h-auto w-[38rem] max-w-none"
-        />
-      </div>
-
       <div className="container-site section-pad relative">
-        <ContactChannels contacts={settings.contacts} compact />
+        {/* Top row: reach line + contact channels (left), map (right). On
+            mobile the columns stack, so the map falls after the channels. */}
+        <div className="grid items-start lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-7">
+            <h2 className="t-h3 text-on-charcoal">
+              From Guwahati to counters across the Northeast.
+            </h2>
+            <div className="mt-8">
+              <ContactChannels contacts={settings.contacts} compact />
+            </div>
+          </div>
+          <div className="mt-12 lg:col-span-5 lg:mt-0">
+            <NetworkMap />
+          </div>
+        </div>
 
         <nav
           className="mt-14 flex flex-wrap gap-x-6 gap-y-2"

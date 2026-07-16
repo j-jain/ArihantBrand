@@ -36,6 +36,9 @@ export const structure: StructureResolver = (S) =>
       S.documentTypeListItem("pillar").title("Why-Arihant Pillars"),
       S.documentTypeListItem("timelineEntry").title("Timeline"),
       S.documentTypeListItem("processStep").title("Partner Process Steps"),
+      S.documentTypeListItem("award").title("Awards & Recognition"),
+      S.documentTypeListItem("systemFeature").title("System Features"),
+      S.documentTypeListItem("sisPoint").title("Shop-in-Shop Scope"),
 
       S.divider(),
 

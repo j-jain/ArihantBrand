@@ -1,0 +1,142 @@
+/* ================================================================== */
+/* Inquiry form — two-step flow (Wave D3).                             */
+/* The base .intent-card / .field-* / .btn / .channel-* styles live in */
+/* globals.css and are reused verbatim; only the new two-step pieces   */
+/* (step container, chip, routing panel, success card) are added here. */
+/* ================================================================== */
+
+/* Disabled affordance, scoped to the inquiry form only. */
+.inquiry-form .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.step-indicator {
+  color: var(--ink-soft);
+}
+
+/* Transition container. overflow:hidden clips the height tween and the
+   inactive (absolute) panel; a 6px inset lets 4px focus rings bleed out
+   un-clipped while the negative margin keeps content visually aligned. */
+.step-shell {
+  position: relative;
+  overflow: hidden;
+  margin: -6px;
+  padding: 6px;
+}
+
+.step-panel {
+  container-type: inline-size;
+}
+
+/* Inactive step: stacked, hidden, out of flow. The active step keeps its
+   default static position so the shell height follows it at rest. */
+.step-panel:not([data-active="true"]) {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* Fields + routing rail. Rail drops below the fields on a narrow form and
+   becomes a right rail once the form's own container is wide enough — a
+   container query, so it is correct on any page/column width. */
+.inquiry-grid {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+@container (min-width: 640px) {
+  .inquiry-grid--rail {
+    grid-template-columns: minmax(0, 1fr) minmax(12.5rem, 15rem);
+    align-items: start;
+  }
+}
+
+/* Routing panel card. */
+.routing-rail {
+  padding: 1.1rem 1.15rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+@container (min-width: 640px) {
+  .routing-rail {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+/* Chosen-intent chip (step 2 header). */
+.intent-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.intent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--vermillion-deep);
+  border-radius: 2px;
+  background: color-mix(in oklch, var(--vermillion-deep), transparent 94%);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.intent-chip__dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 2px;
+  background: var(--vermillion-deep);
+}
+
+.intent-chip__change {
+  min-height: 44px;
+  padding-inline: 0.35rem;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.9rem;
+  color: var(--vermillion-deep);
+  text-underline-offset: 3px;
+}
+
+.intent-chip__change:hover {
+  text-decoration: underline;
+}
+
+/* Confirmation card. */
+.received-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--vermillion-deep);
+}
+
+.received-quiet-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.925rem;
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+.received-quiet-link:hover {
+  color: var(--vermillion-deep);
+  text-decoration: underline;
+}

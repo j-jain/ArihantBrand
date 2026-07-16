@@ -76,7 +76,10 @@ export default async function ContactPage() {
               <div className="flex flex-col gap-8">
                 <SectionHeading heading={sections.form.heading} />
                 <Suspense fallback={null}>
-                  <ContactForm whatsapp={settings.defaultWhatsapp} />
+                  <ContactForm
+                    whatsapp={settings.defaultWhatsapp}
+                    contacts={settings.contacts}
+                  />
                 </Suspense>
               </div>
             </Reveal>

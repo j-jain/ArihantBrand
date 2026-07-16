@@ -15,6 +15,7 @@ import {
   Button,
   ContactChannels,
   FaqAccordion,
+  FlipLead,
   HeroIntro,
   InquiryForm,
   JsonLd,
@@ -78,9 +79,12 @@ export default async function PartnerPage() {
               >
                 {hero.heading}
               </h1>
-              <p data-hero-reveal className="t-lead measure text-on-charcoal-soft">
-                {hero.lead}
-              </p>
+              <div data-hero-reveal className="measure">
+                <FlipLead
+                  text={hero.lead}
+                  className="t-lead text-on-charcoal-soft"
+                />
+              </div>
               <div data-hero-reveal className="mt-1 flex flex-wrap items-center gap-x-7 gap-y-4">
                 <Button href={hero.primaryCta.href} variant="primary" size="lg">
                   {hero.primaryCta.label}

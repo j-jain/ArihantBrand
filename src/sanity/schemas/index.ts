@@ -10,6 +10,7 @@ import { testimonial } from "./testimonial";
 import { post } from "./post";
 import { page } from "./page";
 import { pillar, timelineEntry, processStep, groupStat } from "./groupContent";
+import { award, systemFeature, sisPoint } from "./award";
 import { lead } from "./lead";
 
 /** All schema types registered with the Studio. Object types (cta, stat) must
@@ -31,5 +32,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   timelineEntry,
   processStep,
   groupStat,
+  award,
+  systemFeature,
+  sisPoint,
   lead,
 ];

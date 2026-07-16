@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Business, Stat } from "@/content/types";
 import { Button } from "@/components";
 import { UNIT_ACCENT } from "@/lib/units";
-import { UnitQuickView } from "./UnitQuickView";
 
 interface UnitShowcaseProps {
   business: Business;
@@ -21,13 +20,12 @@ function formatStat({ value, suffix }: Stat): string {
 
 /** One business, rendered as an asymmetric 5/7 split: a white logo tile with a
  *  compact inline stat row on one side, and the name (linked to the unit page),
- *  positioning, a short proof list, and the audience CTAs on the other. Sides
- *  alternate row to row via `flip`. The row itself isn't a link — only the name
- *  is — so the CTAs and stats stay independently reachable. */
+ *  positioning, a short proof list, and a single "Explore" action on the other.
+ *  Sides alternate row to row via `flip`. The row itself isn't a link — only the
+ *  name and the Explore button are — so the stats stay independently reachable. */
 export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
   const accent = UNIT_ACCENT[business.unit].token;
   const points = business.points.slice(0, 3);
-  const [primaryCta, secondaryCta] = business.audienceCtas;
   const facts = [business.founded, business.leaders.join(" & ")]
     .filter(Boolean)
     .join(" · ");
@@ -106,22 +104,10 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
         ))}
       </ul>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-7 gap-y-3">
-        {primaryCta ? (
-          <Button variant="primary" href={primaryCta.href}>
-            {primaryCta.label}
-          </Button>
-        ) : null}
-        {secondaryCta ? (
-          <Link
-            href={secondaryCta.href}
-            className="inline-flex items-center gap-1.5 font-sans font-semibold text-ink underline-offset-4 hover:underline"
-          >
-            {secondaryCta.label}
-            <span aria-hidden="true">→</span>
-          </Link>
-        ) : null}
-        <UnitQuickView business={business} />
+      <div className="mt-3">
+        <Button variant="secondary" href={`/${business.slug}`}>
+          Explore {business.name}
+        </Button>
       </div>
     </div>
   );

@@ -61,6 +61,17 @@ export const stockImages = {
       "https://www.pexels.com/photo/low-angle-shot-of-boxes-standing-on-the-shelves-in-a-warehouse-27111449/",
   },
 
+  systemsWarehouse1: {
+    src: "/images/stock/trade/systems-warehouse-1.jpg",
+    alt: "Tall stacks of sealed kraft cartons on pallets under the blue steel roof of a wholesale godown",
+    width: 2000,
+    height: 1500,
+    credit: "Ihsan Adityawarman",
+    source: "pexels",
+    sourceUrl:
+      "https://www.pexels.com/photo/stacked-boxes-in-a-warehouse-10834810/",
+  },
+
   /* -------------------------------------------- trade: Arihant Apparels */
   apparelsRacks1: {
     src: "/images/stock/trade/apparels-racks-1.jpg",
@@ -136,6 +147,17 @@ export const stockImages = {
     source: "pexels",
     sourceUrl:
       "https://www.pexels.com/photo/interior-of-a-clothing-store-8311878/",
+  },
+
+  retailCartons1: {
+    src: "/images/stock/retail/retail-cartons-1.jpg",
+    alt: "A bright distribution aisle with racking loaded on both sides with wrapped cartons",
+    width: 2000,
+    height: 1125,
+    credit: "Handi Boyz LLC",
+    source: "pexels",
+    sourceUrl:
+      "https://www.pexels.com/photo/stacks-of-cardboard-boxes-5775099/",
   },
 
   /* ------------------------------------------------- blog thumbnails, 3:2 */

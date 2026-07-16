@@ -3,44 +3,60 @@ import type { PageCopy } from "./types";
 /** Per-route copy. Sanity `page` documents mirror this; seed is the fallback. */
 export const pages: Record<string, PageCopy> = {
   home: {
-    metaTitle: "Garment Distribution & Retail, Northeast India | Arihant",
+    metaTitle: "Garment Distributor in Northeast India | Arihant Group",
     metaDescription:
-      "Arihant moves 45+ national apparel brands into 250+ retail counters across Northeast India, and now runs modern stores of its own. Partner with us.",
+      "The garment house of Northeast India: 77 national labels, 250+ retail counters, seven states, and managed stores of our own. Guwahati since the 1990s.",
     hero: {
-      heading: "The garment house behind the Northeast's best-stocked stores",
-      headingEmphasis: "best-stocked",
-      lead: "We move 45+ national apparel brands into 250+ retail counters across seven states, and now build and run modern stores of our own. Three businesses, one standard: integrity, discipline, trust.",
+      heading: "The garment house of Northeast India",
+      headingEmphasis: "garment house",
+      lead: "We keep the Northeast's stores {{stocked|selling|supplied}}: 77 national labels moving into 250+ retail counters across seven states, from Guwahati since the 1990s.",
       primaryCta: { label: "Partner with us", href: "/contact" },
-      secondaryCta: { label: "Meet the three businesses", href: "#businesses" },
+      secondaryCta: { label: "The three businesses", href: "#businesses" },
     },
     sections: {
+      proof: {
+        heading: "Held to a standard the trade can measure",
+        lead: "Best Distributor of India, CMAI 2015. The same discipline still runs every route out of Guwahati.",
+      },
       why: {
         heading: "Why the trade trusts Arihant",
-        lead: "CMAI named us Best Distributor of India in 2015. We earned it the slow way: 35 years without letting a season slip.",
+        lead: "Four working habits, kept season after season. They are the whole pitch.",
       },
       businesses: {
-        heading: "Three businesses, one family standard",
-        lead: "Distribution built this house, and retail is extending it. Find the arm built for you.",
+        heading: "Three businesses, one standard",
+        lead: "Distribution built the house. Retail extends it. Start where your business does.",
+      },
+      systems: {
+        heading: "Old-school handshakes, new-school systems",
+        lead: "Behind the relationships sits a retail backend that runs on data: buying, replenishment and reporting, systematised.",
+        body: ["The systems stay invisible. The shelves stay full."],
       },
       brands: {
         heading: "The brands we carry",
-        lead: "45+ national brand partners across menswear, womenswear, kidswear and denim, on counters in all seven states.",
+        lead: "77 national labels across menswear, womenswear, kidswear, denim, ethnic and footwear, on counters in all seven states.",
+      },
+      notes: {
+        heading: "Trade Notes",
+        lead: "Field notes from the road, written for retailers, brands and first-time store owners.",
+      },
+      voice: {
+        heading: "What the trade says",
       },
       cta: {
         heading: "Bring your business to Arihant",
-        lead: "Retailer, brand or investor: tell us what you're building, and the right Sancheti will call you back.",
+        lead: "Retailer, brand or investor. Tell us what you're building, and the right Sancheti calls you back.",
       },
     },
   },
 
   marketing: {
-    metaTitle: "Readymade Garments Distributor, Guwahati | Arihant Marketing",
+    metaTitle: "Garment Distributor in Guwahati | Arihant Marketing",
     metaDescription:
-      "CMAI's Best Distributor of India, 2015. 30+ years, 250+ retailers, 45+ brands and a 15,000 sq ft Guwahati warehouse. Become an Arihant retail partner.",
+      "Northeast India's pioneer readymade garments distributor: 30+ years, 250+ retailers, 45+ brand partners, 15,000 sq ft Guwahati warehouse, 20-day visit cycles.",
     hero: {
       heading: "The pioneer distributor of readymade garments in Northeast India",
       headingEmphasis: "pioneer",
-      lead: "We have moved national brands into the region's counters for more than 30 years, and we still stand in every retailer's store at least once every 20 days. CMAI named us Best Distributor of India in 2015.",
+      lead: "For more than 30 years we have moved national brands into the region's counters, and we still stand in every retailer's store at least once every 20 days.",
       primaryCta: { label: "Become a retail partner", href: "/contact?intent=retailer" },
       secondaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
     },
@@ -54,20 +70,24 @@ export const pages: Record<string, PageCopy> = {
         lead: "A fixed rhythm the whole region can set its watch by.",
         body: [
           "We map your counter to the right mix from our 45+ brand portfolio: depth where your customer shops, nothing that will sit.",
-          "A representative stands in your store at least once every 20 days. Reorders, claims and market feedback move face to face.",
+          "A representative stands in your store on a fixed cycle. Reorders, claims and market feedback move face to face.",
           "Indents are picked and dispatched from 15,000 sq ft of organised Guwahati warehousing, on fixed timelines.",
           "Claims and settlements move on paper, on schedule, so your capital keeps rotating.",
         ],
       },
       sis: {
         heading: "A shop-in-shop team that plugs straight in",
-        lead: "Our dedicated SIS team runs fixtures, planograms and replenishment for national brands: plug and play, AI-driven, data-backed.",
+        lead: "Brands entering the Northeast do not need to build a field force. Ours is already standing in the region's modern trade. Plug and play, AI-driven, data-backed.",
       },
       brands: {
         heading: "The labels we move",
         lead: "National menswear, womenswear and kidswear, all serviced from our Guwahati warehouse.",
       },
       faq: { heading: "Straight answers" },
+      cta: {
+        heading: "Put thirty years of distribution behind your counter.",
+        lead: "45+ national brands, a 15,000 sq ft Guwahati warehouse, and every retailer seen face to face, cycle after cycle.",
+      },
     },
   },
 
@@ -78,7 +98,7 @@ export const pages: Record<string, PageCopy> = {
     hero: {
       heading: "The apparel distributor that builds category leaders",
       headingEmphasis: "category leaders",
-      lead: "Founded in 2013 by Ajay Sancheti, Arihant Apparels has grown into one of the five largest garment distributors in Northeast India. Several of our brand partners now lead their categories here.",
+      lead: "Founded in 2013 by Ajay Sancheti and built brand by brand into the distributor the trade queues for at every regional fair.",
       primaryCta: { label: "Stock our brands", href: "/contact?intent=retailer" },
       secondaryCta: { label: "Partner as a brand", href: "/contact?intent=brand" },
     },
@@ -96,17 +116,21 @@ export const pages: Record<string, PageCopy> = {
         lead: "Ethnic wear, westernwear, kidswear and footwear, distributed across the region from our Guwahati warehouse.",
       },
       faq: { heading: "Straight answers" },
+      cta: {
+        heading: "Grow with one of the Northeast’s five largest distributors.",
+        lead: "Founded in 2013, running a 9,000 sq ft Guwahati warehouse, and holding the busiest stand at the region's last four garment fairs.",
+      },
     },
   },
 
   retail: {
     metaTitle: "Multi-brand Retail Stores in Guwahati | Arihant Retail",
     metaDescription:
-      "Modern multi-brand apparel stores and EBOs across Northeast India: 4 open, 2 in fit-out, 10 planned by FY 26-27 on 35 years of trade. Own one with us.",
+      "Modern multi-brand apparel stores and EBOs across Northeast India: 4 open, 2 in fit-out, 10 planned by FY 26-27. Zero-deadstock, asset-light, fully managed.",
     hero: {
-      heading: "Multi-brand retail, run on 35 years of trade muscle",
-      headingEmphasis: "trade muscle",
-      lead: "We merchandise and manage modern stores and exclusive brand outlets across the Northeast: 4 trading today, 2 in fit-out, 10 planned by FY 26-27. The house that has supplied the region's counters since the 1990s now runs its own.",
+      heading: "Retail, run the way a distributor runs it",
+      headingEmphasis: "distributor",
+      lead: "Modern multi-brand stores and exclusive brand outlets, run with distributor discipline. The house that has supplied the region's counters since the 1990s now runs its own.",
       primaryCta: { label: "Own a managed store", href: "/partner" },
       secondaryCta: { label: "Open your brand's EBO", href: "/contact?intent=brand" },
     },
@@ -117,11 +141,11 @@ export const pages: Record<string, PageCopy> = {
       },
       model: {
         heading: "The zero-deadstock model",
-        lead: "Asset-light stores, disciplined merchandising, and inventory risk kept off the owner's books. This is retail the way a distributor builds it.",
+        lead: "The store carries what sells and returns what does not. Buying, rotation and markdowns stay with the house. This is retail the way a distributor builds it.",
       },
       expansion: {
-        heading: "4 today. 10 by FY 26-27.",
-        lead: "2 stores are in fit-out right now, and EBOs are rolling out for national brand partners.",
+        heading: "The map fills in",
+        lead: "EBOs are rolling out for national brand partners, and the next multi-brand doors are already in fit-out.",
       },
       cta: {
         heading: "One of the next stores could be yours",
@@ -136,7 +160,7 @@ export const pages: Record<string, PageCopy> = {
       "Own an apparel store in Northeast India that Arihant Retail staffs, stocks and markets for you. Zero deadstock, asset-light. Request franchise details.",
     hero: {
       heading: "Own the store. We run everything else.",
-      lead: "A managed apparel store in Northeast India: your capital and property, our 35 years of trade craft. No retail experience needed.",
+      lead: "We run {{the hiring|the stock|the marketing|the targets}}. You own the asset. A managed apparel store backed by three decades in the trade. No retail experience needed.",
       primaryCta: { label: "Request franchise details", href: "#inquiry" },
       secondaryCta: { label: "See how it works", href: "#how-it-works" },
     },
@@ -145,33 +169,33 @@ export const pages: Record<string, PageCopy> = {
         heading: "What “fully managed” actually means",
         lead: "Every operating risk that sinks first-time store owners is carried by our team instead.",
         body: [
-          "Hiring, training and managing the floor team: ours.",
-          "Target-setting, merchandising and stock rotation: ours.",
-          "Marketing, calibrated influencer and social campaigns, and the central CRM: ours.",
+          "Ours: hiring, training and managing the floor team.",
+          "Ours: target-setting, merchandising and stock rotation.",
+          "Ours: marketing, calibrated influencer and social campaigns, and the central CRM.",
           "Deadstock: engineered out of your books entirely.",
           "Yours: the store, the asset, and a clear performance review rhythm.",
         ],
       },
       proof: {
         heading: "Tried, tested, already trading",
-        lead: "4 stores already trade on this exact model across Northeast India, backed by a strong, proven ROIC record. Behind them stands the house that has supplied the region's retailers for 35 years.",
+        lead: "4 stores already trade on this model, backed by a proven ROIC record and by the house that supplies the region's retailers.",
       },
-      how: { heading: "How it works", lead: "Four steps from inquiry to a trading store." },
+      how: { heading: "How it works", lead: "Four steps from inquiry to a trading store. FOCO, done properly." },
       faq: { heading: "The questions serious investors ask" },
       inquiry: {
         heading: "Request the franchise details",
-        lead: "Tell us your city and your space. We respond within two working days.",
+        lead: "Tell us your city and your space. We reply within two working days.",
       },
     },
   },
 
   brands: {
-    metaTitle: "Apparel Brands Distributed Across Northeast India | Arihant",
+    metaTitle: "77 Apparel Brands Distributed in Northeast India | Arihant",
     metaDescription:
-      "45+ national apparel brands in menswear, womenswear, kidswear, denim and ethnic wear, distributed to 250+ Northeast retailers. Put them on your racks.",
+      "Browse the 77 national apparel labels Arihant distributes across Northeast India: menswear, womenswear, kidswear, denim, ethnic, footwear. Put them on your racks.",
     hero: {
       heading: "The apparel brands we put on the Northeast's racks",
-      lead: "Menswear, womenswear, kidswear, denim, ethnic and sportswear: 45+ national brand partners, distributed to 250+ counters in seven states by Arihant Marketing and Arihant Apparels.",
+      lead: "Menswear, womenswear, kidswear, denim, ethnic and footwear. 77 national labels distributed to counters in all seven states by Arihant Marketing and Arihant Apparels.",
       primaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
       secondaryCta: { label: "Stock these labels", href: "/contact?intent=retailer" },
     },
@@ -187,18 +211,19 @@ export const pages: Record<string, PageCopy> = {
   about: {
     metaTitle: "About Arihant Group | 35 Years in the Northeast Trade",
     metaDescription:
-      "From a 1990s Guwahati counter to CMAI's Best Distributor of India: the Sancheti family's three businesses, still run by the names on the door. Meet us.",
+      "From a 1990s Guwahati counter to three businesses run by the Sancheti family: distribution, wholesale and modern retail, still answered by the names on the door.",
     hero: {
       heading: "35 years, three businesses, one name on the door",
-      lead: "Arihant is the Sancheti family's garment house in Guwahati, built on integrity, discipline and trust. It is still run by the people who answer its phones.",
+      lead: "Arihant is the Sancheti family's garment house in Guwahati, still run by the people who answer its phones.",
       primaryCta: { label: "Work with us", href: "/contact" },
     },
     sections: {
       story: {
         heading: "From one counter to the whole Northeast",
+        lead: "Rhythm first. Scale later.",
         body: [
           "The Arihant story begins in Guwahati's garment trade in the early 1990s, when the Sancheti family started supplying readymade garments to the city's retailers. Scale came later. What set the house apart first was rhythm: visits that happened on schedule, claims that settled on paper, commitments that held.",
-          "That rhythm built Arihant Marketing into the pioneer distributor of the Northeast, named Best Distributor of India by CMAI in 2015. The house helped found NEGTA alongside the region's leading traders. A second distribution business, Arihant Apparels, grew into one of the region's five largest within a decade.",
+          "That rhythm built Arihant Marketing into the pioneer distributor of the Northeast and made the house a founder member of NEGTA alongside the region's leading traders. A second distribution business, Arihant Apparels, grew into one of the region's five largest within a decade.",
           "In 2023 the family carried the same discipline into retail itself: modern multi-brand stores and exclusive brand outlets, staffed and stocked by the house's own team.",
         ],
       },
@@ -214,13 +239,37 @@ export const pages: Record<string, PageCopy> = {
     },
   },
 
+  recognition: {
+    metaTitle: "Awards & Testimonials | Arihant Group Recognition",
+    metaDescription:
+      "CMAI's Best Distributor of India 2015, NEGTA founder membership, and what retailers, brands and store owners across the Northeast say about Arihant.",
+    hero: {
+      heading: "Recognition, earned the slow way",
+      headingEmphasis: "slow way",
+      lead: "One national award, one founding membership, four fairs led on footfall, and the word of the trade itself.",
+      primaryCta: { label: "Work with us", href: "/contact" },
+    },
+    sections: {
+      awards: { heading: "The trophy case", lead: "A short list. Heavy items." },
+      milestones: { heading: "The years behind it" },
+      voices: {
+        heading: "What the trade says",
+        lead: "Retailers, brands and store owners across seven states, in their own words. Names shared privately on request.",
+      },
+      cta: {
+        heading: "References available on a phone call",
+        lead: "Serious inquiries get real numbers to call, not just quotes on a page.",
+      },
+    },
+  },
+
   blog: {
     metaTitle: "Trade Notes | Garment Distribution & Retail, Northeast India",
     metaDescription:
-      "Practical notes from 35 years in the Northeast garment trade: choosing distributors, entering the region, managed retail. Written for the counter.",
+      "Practical notes from the Northeast garment trade: choosing a distributor, entering the region, managed retail. Written for the counter.",
     hero: {
-      heading: "Notes from 35 years in the trade",
-      lead: "What we have learned moving garments across seven states, written for the retailers, brands and investors we work with.",
+      heading: "Notes from the road",
+      lead: "What moving garments across seven states has taught us, written for the retailers, brands and investors we work with.",
       primaryCta: { label: "Talk to us", href: "/contact" },
     },
     sections: {},

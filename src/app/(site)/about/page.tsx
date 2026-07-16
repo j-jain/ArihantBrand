@@ -137,7 +137,7 @@ export default async function AboutPage() {
                     className="font-display text-ink"
                     style={{ fontWeight: 700, fontSize: "var(--text-h3)", lineHeight: 1.2 }}
                   >
-                    {sections.values.heading}
+                    {sections.story.lead}
                   </p>
                 </div>
                 <ParallaxImage
@@ -145,6 +145,7 @@ export default async function AboutPage() {
                   alt={stockImages.aboutCraft1.alt}
                   ratio="4 / 5"
                   sizes="(max-width: 1023px) 100vw, 40vw"
+                  tilt
                 />
               </div>
             </aside>
@@ -182,6 +183,7 @@ export default async function AboutPage() {
                 alt={stockImages.aboutCraft2.alt}
                 ratio="4 / 5"
                 sizes="(max-width: 1023px) 100vw, 44vw"
+                tilt
               />
             </div>
 
@@ -240,13 +242,11 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* 5 — Timeline (paper-shade) ---------------------------------------- */}
+      {/* 5 — Timeline (paper-shade): full-width so its ghost-year column breathes */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad">
-          <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_1.5fr]">
-            <SectionHeading heading={sections.timeline.heading} />
-            <Timeline items={timeline} />
-          </div>
+        <div className="container-site section-pad flex flex-col gap-10">
+          <SectionHeading heading={sections.timeline.heading} />
+          <Timeline entries={timeline} />
         </div>
       </section>
 

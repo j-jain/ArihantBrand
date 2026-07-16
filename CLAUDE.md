@@ -10,11 +10,12 @@ Premium, conversion-focused marketing site for the Arihant group (Guwahati): Ari
 
 - All copy/data comes from `src/content/` (seed) or Sanity — never hardcode contact info, stats, or partner names in components.
 - No invented facts, numbers, or testimonials. Franchise economics stay qualitative.
+- No em/en dashes in user-visible copy — restructure the sentence instead.
 - Fonts: Besley (headings) + Archivo (body/UI) via `next/font/google` only.
 - Colors: OKLCH tokens from DESIGN.md; CTAs are always `--vermillion-deep`; a single interactive red sitewide (`--vermillion-drench` equals `--vermillion-deep`); unit accents are decorative only.
 - No kickers/eyebrows anywhere — the thread-label system is retired; heroes carry their weight through type and imagery. No numbered markers on inner sections (numbered steps allowed only for true sequences).
 - Imagery: the 3 real store photos always outrank stock. Stock is curated local royalty-free files committed under `public/images/stock/`, referenced only via the typed manifest `src/content/images.ts`.
-- Motion is GSAP-based (`gsap` + `@gsap/react`; plugins registered once in `src/lib/gsap.ts`), gated via `gsap.matchMedia()` for reduced-motion and mobile; initial hidden states set only from JS.
+- Motion is GSAP-based (`gsap` + `@gsap/react`; plugins registered once in `src/lib/gsap.ts`), gated via `gsap.matchMedia()` for reduced-motion and mobile; initial hidden states set only from JS. Lenis (`lenis`) drives smooth scroll on desktop fine-pointers only (synced to the GSAP ticker). The Wave-B motion primitives (FlipWords/FlipLead, VapourText, SplitHeading, CurtainReveal, CardsStack, TestimonialColumns, NetworkMap [footer dotted map of the Northeast, reach arcs pause offscreen], rebuilt Timeline) live in `src/components/motion/` + `src/app/motion.css`. ParallaxImage's `tilt` prop adds pointer-tracked tilt on photographic images only (fine pointers ≥1024px).
 - Contrast ≥ 4.5:1 body text everywhere; visible focus rings; `prefers-reduced-motion` alternatives for all animation; content never hidden behind un-triggered animations.
 - Every route must build statically and render fully without Sanity env vars (seed fallback via `src/lib/content.ts`).
 
@@ -25,7 +26,8 @@ Premium, conversion-focused marketing site for the Arihant group (Guwahati): Ari
 
 ## Structure
 
-- `src/app/(site)/` — public routes · `src/app/studio/` — Sanity Studio
+- `src/app/(site)/` — public routes (incl. `/recognition`) · `src/app/studio/` — Sanity Studio
+- `src/app/globals.css` imports `src/app/motion.css` (Wave-B component styles) + `src/app/form.css`
 - `src/components/` — shared components (see DESIGN.md component list)
 - `src/content/` — types + seed content (fallback data source)
 - `src/lib/` — content data layer, sanity client, seo helpers
