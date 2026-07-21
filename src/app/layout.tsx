@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { besley, archivo } from "./fonts";
 import "./globals.css";
 
@@ -10,6 +10,18 @@ export const metadata: Metadata = {
   title: "Arihant Group: Garment Distribution & Retail in Northeast India",
   description:
     "Northeast India's leading readymade garments distribution and retail house, Guwahati.",
+};
+
+/** Mobile browser chrome only — no effect on desktop rendering.
+ *  `viewportFit: "cover"` lets the sticky action bar and the menu sheet pad
+ *  themselves against `env(safe-area-inset-*)` on notched handsets. Zoom is
+ *  deliberately left unrestricted (no maximumScale / userScalable). */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  // sRGB of --paper: oklch(0.985 0.002 30)
+  themeColor: "#faf9f8",
 };
 
 export default function RootLayout({

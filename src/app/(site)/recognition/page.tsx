@@ -67,15 +67,15 @@ export default async function RecognitionPage() {
       {/* 1 — Hero (paper) --------------------------------------------------- */}
       <section className="bg-paper">
         <HeroIntro className="container-site section-pad">
-          <div className="flex max-w-3xl flex-col items-start gap-6">
+          <div className="m-flow flex max-w-3xl flex-col items-start gap-6">
             <h1 data-hero-title className="t-display text-ink">
               {hero.heading}
             </h1>
             <p data-hero-reveal className="t-lead measure text-ink-soft">
               {hero.lead}
             </p>
-            <div data-hero-reveal className="mt-1">
-              <Button variant="primary" size="lg" href={hero.primaryCta.href}>
+            <div data-hero-reveal className="m-cta mt-1 w-full">
+              <Button variant="primary" size="lg" href={hero.primaryCta.href} className="press">
                 {hero.primaryCta.label}
               </Button>
             </div>
@@ -86,22 +86,22 @@ export default async function RecognitionPage() {
       {/* 2 — Trophy case (charcoal, curtain-revealed) ----------------------- */}
       <section className="on-dark">
         <CurtainReveal className="container-site section-pad">
-          <div className="flex flex-col gap-12 lg:gap-16">
+          <div className="m-flow flex flex-col gap-12 lg:gap-16">
             <SectionHeading
               heading={sections.awards.heading}
               lead={sections.awards.lead}
               onDark
             />
 
-            <div className="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
+            <div className="m-flow grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
               {/* Centerpiece: the CMAI award, oversized. */}
               {headlineAward ? (
-                <div className="flex flex-col gap-4 lg:col-span-7">
+                <div className="award-lead m-flow-tight flex flex-col gap-4 lg:col-span-7">
                   <span
                     className="t-stat"
                     style={{
                       color: "var(--vermillion)",
-                      fontSize: "clamp(3.75rem, 9vw, 7rem)",
+                      fontSize: "var(--m-award-year, clamp(3.75rem, 9vw, 7rem))",
                       lineHeight: 0.95,
                     }}
                   >
@@ -121,11 +121,11 @@ export default async function RecognitionPage() {
 
               {/* Flanking cards: the remaining recognitions. */}
               {otherAwards.length > 0 ? (
-                <div className="flex flex-col gap-6 lg:col-span-5">
+                <div className="award-cards m-flow-tight flex flex-col gap-6 lg:col-span-5">
                   {otherAwards.map((award) => (
                     <div
                       key={award.title}
-                      className="flex flex-col gap-2 p-6"
+                      className="award-card flex flex-col gap-2 p-6"
                       style={{
                         background: "var(--charcoal-raise)",
                         border: "1px solid var(--line-dark)",
@@ -159,7 +159,7 @@ export default async function RecognitionPage() {
       {/* 2b — Cabinet gallery (paper): real certificate & trophy photos ----- */}
       {photos.length ? (
         <section className="bg-paper">
-          <div className="container-site section-pad flex flex-col gap-10">
+          <div className="container-site section-pad m-flow flex flex-col gap-10">
             <SectionHeading
               heading={sections.gallery.heading}
               lead={sections.gallery.lead}
@@ -171,14 +171,14 @@ export default async function RecognitionPage() {
 
       {/* 3 — Milestones strip (paper-shade) --------------------------------- */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad flex flex-col gap-8">
+        <div className="container-site section-pad m-flow flex flex-col gap-8">
           <SectionHeading heading={sections.milestones.heading} />
           <Reveal variant="fade">
-            <ol className="grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
+            <ol className="milestones grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
               {timeline.map((entry) => (
                 <li
                   key={entry.year}
-                  className="flex flex-col gap-1 bg-paper px-4 py-5"
+                  className="milestone flex flex-col gap-1 bg-paper px-4 py-5"
                 >
                   <span
                     className="font-display text-ink"
@@ -196,7 +196,7 @@ export default async function RecognitionPage() {
 
       {/* 4 — Voices (paper) ------------------------------------------------- */}
       <section className="bg-paper">
-        <div className="container-site section-pad flex flex-col gap-12">
+        <div className="container-site section-pad m-flow flex flex-col gap-12">
           <SectionHeading
             heading={sections.voices.heading}
             lead={sections.voices.lead}
@@ -207,7 +207,7 @@ export default async function RecognitionPage() {
 
       {/* 5 — Closing CTA (single vermillion drench) ------------------------- */}
       <DrenchBand className="section-pad">
-        <div className="container-site flex flex-col items-start gap-6">
+        <div className="container-site m-flow flex flex-col items-start gap-6">
           <h2 data-drench-reveal className="t-h2 max-w-[20ch]">
             {sections.cta.heading}
           </h2>
@@ -220,14 +220,14 @@ export default async function RecognitionPage() {
           </p>
           <div
             data-drench-reveal
-            className="mt-1 flex flex-wrap items-center gap-x-7 gap-y-4"
+            className="m-cta mt-1 flex flex-wrap items-center gap-x-7 gap-y-4"
           >
-            <Button variant="onDark" href={hero.primaryCta.href}>
+            <Button variant="onDark" href={hero.primaryCta.href} className="press">
               {hero.primaryCta.label}
             </Button>
             <a
               href={`tel:+${settings.defaultWhatsapp}`}
-              className="font-sans font-semibold text-white underline-offset-4 hover:underline"
+              className="m-tap font-sans font-semibold text-white underline-offset-4 hover:underline"
             >
               Call {formatTel(settings.defaultWhatsapp)}
             </a>

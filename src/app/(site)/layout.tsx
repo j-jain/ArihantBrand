@@ -16,7 +16,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
   return (
     <>
       <SmoothScroll />
-      <SiteHeader />
+      <SiteHeader whatsapp={settings.defaultWhatsapp} />
       <main id="main" className="flex-1">
         {children}
       </main>

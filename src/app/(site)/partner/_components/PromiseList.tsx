@@ -12,7 +12,7 @@ function PromiseEntry({ text }: { text: string }) {
     const [, term, rest] = colon;
     const isOwner = /^(ours|yours)$/i.test(term.trim());
     return (
-      <div className="flex flex-col gap-1 border-t border-line pt-4">
+      <div className="promise m-ledger-row flex flex-col gap-1 border-t border-line pt-4">
         <p
           className={
             isOwner ? "font-display italic text-vermillion-deep" : "t-body text-ink"
@@ -31,7 +31,7 @@ function PromiseEntry({ text }: { text: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-1 border-t border-line pt-4">
+    <div className="promise m-ledger-row flex flex-col gap-1 border-t border-line pt-4">
       <p className="t-body text-ink-soft">{text}</p>
     </div>
   );
@@ -42,8 +42,9 @@ export function PromiseList({ items }: { items: string[] }) {
     <StaggerGroup
       as="div"
       from="up"
-      className="grid gap-x-10 gap-y-6 sm:grid-cols-2"
+      className="promise-list grid gap-x-10 gap-y-6 sm:grid-cols-2"
       stagger={0.08}
+      mLedger
     >
       {items.map((text) => (
         <PromiseEntry key={text} text={text} />

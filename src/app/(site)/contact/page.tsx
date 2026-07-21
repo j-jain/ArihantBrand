@@ -50,10 +50,12 @@ export default async function ContactPage() {
       {/* 1 — Hero (compact) */}
       <section
         className="bg-paper"
-        style={{ paddingBlock: "clamp(3rem, 6vw, 5.5rem)" }}
+        style={{
+          paddingBlock: "var(--m-hero-compact-pad, clamp(3rem, 6vw, 5.5rem))",
+        }}
       >
         <HeroIntro className="container-site">
-          <div className="flex flex-col gap-6">
+          <div className="m-flow-tight flex flex-col gap-6">
             <h1
               data-hero-title
               className="t-display measure text-ink"
@@ -71,9 +73,9 @@ export default async function ContactPage() {
       {/* 2 — Form + direct channels split */}
       <section id="inquiry" className="section-pad bg-paper-shade">
         <div className="container-site">
-          <div className="grid gap-x-12 gap-y-14 lg:grid-cols-12">
+          <div className="m-flow-loose grid gap-x-12 gap-y-14 lg:grid-cols-12">
             <Reveal variant="clip" className="lg:col-span-7">
-              <div className="flex flex-col gap-8">
+              <div className="m-flow flex flex-col gap-8">
                 <SectionHeading heading={sections.form.heading} />
                 <Suspense fallback={null}>
                   <ContactForm
@@ -85,14 +87,14 @@ export default async function ContactPage() {
             </Reveal>
 
             <Reveal variant="fade" delay={0.08} className="lg:col-span-5">
-              <aside className="flex flex-col gap-8">
+              <aside className="m-flow flex flex-col gap-8">
                 <SectionHeading heading={sections.direct.heading} lead={sections.direct.lead} />
 
                 <div className="[&>div]:!grid-cols-1">
                   <ContactChannels contacts={settings.contacts} />
                 </div>
 
-                <div className="flex flex-col gap-2 border-t border-line pt-6">
+                <div className="contact-address flex flex-col gap-2 border-t border-line pt-6">
                   <p className="flex items-start gap-2 t-body text-ink">
                     <span className="mt-0.5 flex-none text-ink-soft">
                       <MapPinIcon />
@@ -123,7 +125,7 @@ export default async function ContactPage() {
 
       {/* 3 — Quiet close (single vermillion drench) */}
       <DrenchBand className="py-[clamp(2.75rem,5vw,4rem)]">
-        <div className="container-site flex flex-col gap-2">
+        <div className="container-site m-flow-tight flex flex-col gap-2">
           <p data-drench-reveal className="t-h3">{settings.tagline}.</p>
           <p data-drench-reveal className="t-body" style={{ color: "var(--_text-soft)" }}>
             We respond within two working days.

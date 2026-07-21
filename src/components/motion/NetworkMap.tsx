@@ -158,6 +158,56 @@ export function NetworkMap() {
         },
       );
 
+      // Mobile: the reach draws ONCE when the footer comes into view, then
+      // rests inked in. A perpetual loop at the very bottom of every page is a
+      // battery tax on a handset for an effect nobody is still watching, but a
+      // dead map is the wrong last impression too — so it plays exactly once
+      // and stops. The rest state matches the CSS default (opacity 0.35), so
+      // nothing depends on this having run.
+      mm.add(
+        "(prefers-reduced-motion: no-preference) and (max-width: 767px)",
+        () => {
+          const arcs = gsap.utils.toArray<SVGPathElement>(
+            svg.querySelectorAll(".nm-arc"),
+          );
+          if (!arcs.length) return;
+
+          const tl = gsap.timeline({ paused: true });
+          arcs.forEach((arc, i) => {
+            const len = arc.getTotalLength();
+            gsap.set(arc, {
+              strokeDasharray: len,
+              strokeDashoffset: len,
+              opacity: 0.35,
+            });
+            tl.to(
+              arc,
+              {
+                strokeDashoffset: 0,
+                opacity: 0.7,
+                duration: 1.1,
+                ease: "power2.inOut",
+              },
+              i * 0.16,
+            );
+          });
+
+          const io = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (!entry.isIntersecting) continue;
+                tl.play();
+                io.disconnect();
+              }
+            },
+            { threshold: 0.25 },
+          );
+          io.observe(svg);
+
+          return () => io.disconnect();
+        },
+      );
+
       return () => mm.revert();
     },
     { scope: ref },

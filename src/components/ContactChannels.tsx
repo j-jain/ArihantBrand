@@ -26,12 +26,12 @@ export function ContactChannels({
   return (
     <div
       className={cn(
-        "grid gap-x-8 gap-y-10",
+        "channels grid gap-x-8 gap-y-10",
         compact ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-3",
       )}
     >
       {contacts.map((contact) => (
-        <div key={contact.unit} className="flex flex-col gap-3">
+        <div key={contact.unit} className="channels__unit flex flex-col gap-3">
           <div className="flex flex-col gap-0.5">
             <p
               className="font-display"

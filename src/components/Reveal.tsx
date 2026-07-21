@@ -25,7 +25,8 @@ interface RevealProps {
   as?: RevealTag;
   className?: string;
   style?: CSSProperties;
-  /** Motion flavour on desktop. Mobile always uses a short whole-block fade. */
+  /** Motion flavour. Mobile runs its own shorter, shallower version of each
+   *  variant rather than collapsing all three into one fade. */
   variant?: RevealVariant;
 }
 
@@ -72,13 +73,67 @@ export function Reveal({
           const rect = el.getBoundingClientRect();
           if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) return;
 
-          const st = { trigger: el, start: "top 88%", once: true } as const;
+          // Mobile triggers a touch later: a phone viewport is short, so
+          // "top 88%" fires while the block is still well below the thumb.
+          const st = {
+            trigger: el,
+            start: mobile ? "top 92%" : "top 88%",
+            once: true,
+          } as const;
 
-          if (mobile || variant === "fade") {
+          // On a phone the three variants used to collapse into one identical
+          // fade, which is most of why the old build read as a scaled-down
+          // desktop: sixty sections, one move. They stay three distinct moves
+          // here, just shorter and shallower than their desktop counterparts.
+          if (mobile) {
+            if (variant === "clip") {
+              // Wipe up from the bottom edge — used on imagery and quotes.
+              gsap.fromTo(
+                el,
+                { autoAlpha: 0, clipPath: "inset(0 0 42% 0)", y: 14 },
+                {
+                  autoAlpha: 1,
+                  clipPath: "inset(0 0 0% 0)",
+                  y: 0,
+                  duration: 0.55,
+                  delay,
+                  ease: EASE,
+                  scrollTrigger: st,
+                  // A resting inset(0) still clips to the border box and would
+                  // slice focus rings off edge-flush children. Drop it.
+                  onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
+                },
+              );
+            } else if (variant === "fade") {
+              // The quiet one: opacity only, for headings that shouldn't move.
+              gsap.from(el, {
+                autoAlpha: 0,
+                duration: 0.45,
+                delay,
+                ease: EASE,
+                scrollTrigger: st,
+              });
+            } else {
+              // Rise, with a whisper of scale so it reads as approaching
+              // rather than sliding.
+              gsap.from(el, {
+                autoAlpha: 0,
+                y: 22,
+                scale: 0.985,
+                duration: 0.5,
+                delay,
+                ease: EASE,
+                scrollTrigger: st,
+              });
+            }
+            return;
+          }
+
+          if (variant === "fade") {
             gsap.from(el, {
               autoAlpha: 0,
-              y: mobile ? 12 : 0,
-              duration: mobile ? 0.42 : DUR,
+              y: 0,
+              duration: DUR,
               delay,
               ease: EASE,
               scrollTrigger: st,

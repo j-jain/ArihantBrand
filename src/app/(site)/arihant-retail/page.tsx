@@ -34,7 +34,7 @@ const railValueStyle: CSSProperties = {
   fontWeight: 800,
   fontStretch: "85%",
   fontVariantNumeric: "tabular-nums",
-  fontSize: "clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem)",
+  fontSize: "var(--m-unit-stat, clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem))",
   lineHeight: 1,
   letterSpacing: "-0.01em",
   color: "var(--unit-accent)",
@@ -103,9 +103,9 @@ export default async function ArihantRetailPage() {
       {/* 1 — Hero (paper): headline + purple-accented logo/stats rail */}
       <section className="hero-pad bg-paper" style={unitScope(UNIT)}>
         <HeroIntro className="container-site">
-          <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-5">
+          <div className="m-flow grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
+            <div className="m-flow flex flex-col gap-6">
+              <div className="m-flow-tight flex flex-col gap-5">
                 <EmphasisHeading
                   as="h1"
                   className="t-display text-ink"
@@ -127,7 +127,7 @@ export default async function ArihantRetailPage() {
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              <div data-hero-reveal className="mt-1 flex flex-wrap gap-3">
+              <div data-hero-reveal className="m-cta mt-1 flex flex-wrap gap-3">
                 <Button href={hero.primaryCta.href} variant="primary" size="lg">
                   {hero.primaryCta.label}
                 </Button>
@@ -140,9 +140,9 @@ export default async function ArihantRetailPage() {
             </div>
 
             {business ? (
-              <aside data-hero-reveal className="flex flex-col gap-6">
-                <div className="rounded-md border border-line bg-white p-6">
-                  <div className="relative aspect-[5/3]">
+              <aside data-hero-reveal className="unit-hero__aside flex flex-col gap-6">
+                <div className="unit-hero__plate rounded-md border border-line bg-white p-6">
+                  <div className="unit-hero__logo relative aspect-[5/3]">
                     <Image
                       src={business.logo}
                       alt={`${business.name} logo`}
@@ -152,17 +152,17 @@ export default async function ArihantRetailPage() {
                     />
                   </div>
                 </div>
-                <dl className="flex flex-col">
+                <dl className="unit-hero__stats flex flex-col">
                   {business.stats.map((stat, index) => (
                     <div
                       key={stat.label}
                       className={cn(
-                        "flex items-baseline justify-between gap-4 py-4",
+                        "unit-hero__stat flex items-baseline justify-between gap-4 py-4",
                         index > 0 && "border-t border-line",
                       )}
                     >
                       <dd style={railValueStyle}>{formatStat(stat.value, stat.suffix)}</dd>
-                      <dt className="t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
+                      <dt className="unit-hero__stat-label t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
                     </div>
                   ))}
                 </dl>
@@ -175,13 +175,13 @@ export default async function ArihantRetailPage() {
       {/* 2 — Stores (paper-shade): the three REAL store photos lead, staggered */}
       <section className="section-pad bg-paper-shade">
         <div className="container-site">
-          <div className="flex flex-col gap-10">
+          <div className="m-flow flex flex-col gap-10">
             <Reveal variant="fade">
               <SectionHeading heading={storesSection.heading} lead={storesSection.lead} />
             </Reveal>
             <StaggerGroup
               from="scale"
-              className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]"
+              className="m-rail grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]"
               stagger={0.12}
             >
               {stores.map((store, i) => (
@@ -195,16 +195,16 @@ export default async function ArihantRetailPage() {
       {/* 3 — Model band (charcoal): the model as a closed ledger + an image duo */}
       <section className="section-pad on-dark">
         <div className="container-site">
-          <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-start">
-            <div className="flex flex-col gap-8">
+          <div className="m-flow grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-start">
+            <div className="m-flow flex flex-col gap-8">
               <SectionHeading heading={model.heading} lead={model.lead} onDark />
               {modelPoints.length ? (
-                <StaggerGroup as="ul" from="left" className="flex flex-col" stagger={0.1}>
+                <StaggerGroup as="ul" from="left" className="flex flex-col" stagger={0.1} mLedger>
                   {modelPoints.map((point, index) => (
                     <li
                       key={point}
                       className={cn(
-                        "t-h4 border-t border-line-dark py-5 text-on-charcoal",
+                        "m-ledger-row t-h4 border-t border-line-dark py-5 text-on-charcoal",
                         index === modelPoints.length - 1 && "border-b border-line-dark",
                       )}
                     >
@@ -217,22 +217,24 @@ export default async function ArihantRetailPage() {
 
             {/* Image duo: a portrait interior with a wider carton aisle pulled up
                 over its bottom-left on desktop; a clean stack on mobile. */}
-            <div className="flex flex-col">
+            <div className="m-duo flex flex-col">
               <ParallaxImage
                 src={stockImages.retailInterior1.src}
                 alt={stockImages.retailInterior1.alt}
                 ratio="4 / 5"
                 sizes="(max-width: 1023px) 100vw, 35vw"
-                className="border border-line-dark"
+                className="m-ar-4-3 border border-line-dark"
                 tilt
+                mBleed
               />
               <ParallaxImage
                 src={stockImages.retailCartons1.src}
                 alt={stockImages.retailCartons1.alt}
                 ratio="3 / 2"
                 sizes="(max-width: 1023px) 100vw, 25vw"
-                className="mt-4 border border-line-dark lg:relative lg:z-10 lg:-mt-[18%] lg:mr-auto lg:w-[72%]"
+                className="m-ar-16-9 mt-4 border border-line-dark lg:relative lg:z-10 lg:-mt-[18%] lg:mr-auto lg:w-[72%]"
                 tilt
+                mBleed
               />
             </div>
           </div>
@@ -249,30 +251,37 @@ export default async function ArihantRetailPage() {
         }}
       >
         <div className="container-site">
-          <div className="flex flex-col gap-12">
+          <div className="m-flow flex flex-col gap-12">
             <Reveal variant="fade">
               <SectionHeading heading={expansion.heading} lead={expansion.lead} />
             </Reveal>
 
-            <div className="grid items-center gap-x-14 gap-y-12 lg:grid-cols-[1.4fr_1fr]">
+            <div className="m-flow grid items-center gap-x-14 gap-y-12 lg:grid-cols-[1.4fr_1fr]">
               {roadmap.length ? (
-                <div className="relative pt-2">
+                <div className="roadmap relative pt-2">
                   <div
                     aria-hidden="true"
-                    className="absolute left-0 right-0"
-                    style={{ top: "9px", height: 1, background: "var(--line)" }}
+                    className="roadmap__spine absolute left-0 right-0"
+                    // Horizontal rule joining three columns on desktop; the
+                    // mobile layer stands it up into a vertical spine, because
+                    // once the nodes stack a horizontal line connects nothing.
+                    style={{
+                      top: "var(--m-spine-top, 9px)",
+                      height: "var(--m-spine-height, 1px)",
+                      background: "var(--line)",
+                    }}
                   />
                   <StaggerGroup
                     as="ol"
                     from="up"
-                    className="relative grid gap-x-6 gap-y-10 sm:grid-cols-3"
+                    className="roadmap__list relative grid gap-x-6 gap-y-10 sm:grid-cols-3"
                     stagger={0.12}
                   >
                     {roadmap.map((node) => (
-                      <li key={node.stage} className="flex flex-col gap-3">
+                      <li key={node.stage} className="roadmap__node flex flex-col gap-3">
                         <span
                           aria-hidden="true"
-                          className="block rounded-full"
+                          className="roadmap__dot block rounded-full"
                           style={{ height: 14, width: 14, background: "var(--unit-accent)" }}
                         />
                         <span className="t-label text-ink-soft">{node.stage}</span>
@@ -288,6 +297,7 @@ export default async function ArihantRetailPage() {
                   src={stockImages.retailInterior2.src}
                   alt={stockImages.retailInterior2.alt}
                   ratio="4 / 3"
+                  mBleed
                 />
               </Reveal>
             </div>
@@ -297,15 +307,15 @@ export default async function ArihantRetailPage() {
 
       {/* 5 — Partner cross-sell (single vermillion drench) */}
       <DrenchBand className="section-pad">
-        <div className="container-site flex max-w-3xl flex-col gap-6">
+        <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
           <h2 data-drench-reveal className="t-h2">{cta.heading}</h2>
           {cta.lead ? (
             <p data-drench-reveal className="t-lead" style={{ color: "var(--_text-soft)" }}>
               {cta.lead}
             </p>
           ) : null}
-          <div data-drench-reveal className="mt-1">
-            <Button href="/partner" variant="onDark" size="lg">
+          <div data-drench-reveal className="m-cta mt-1">
+            <Button href="/partner" variant="onDark" size="lg" className="press">
               See the partnership model
             </Button>
           </div>

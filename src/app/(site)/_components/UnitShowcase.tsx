@@ -31,10 +31,10 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
     .join(" · ");
 
   const media = (
-    <div className="lg:col-span-5">
+    <div className="unit-showcase__media lg:col-span-5">
       {/* White card: logo and stats centered within the box (not the page). */}
-      <div className="flex flex-col items-center gap-7 rounded-md border border-line bg-white p-8 text-center">
-        <div className="relative h-16 w-full">
+      <div className="unit-showcase__plate flex flex-col items-center gap-7 rounded-md border border-line bg-white p-8 text-center">
+        <div className="unit-showcase__logo relative h-16 w-full">
           <Image
             src={business.logo}
             alt={business.name}
@@ -44,7 +44,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
           />
         </div>
 
-        <dl className="flex w-full flex-wrap justify-center gap-x-9 gap-y-5 border-t border-line pt-7">
+        <dl className="unit-showcase__stats flex w-full flex-wrap justify-center gap-x-9 gap-y-5 border-t border-line pt-7">
           {business.stats.map((stat) => (
             <div key={stat.label} className="flex flex-col items-center">
               <dt className="sr-only">{stat.label}</dt>
@@ -54,7 +54,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
                   fontWeight: 800,
                   fontStretch: "85%",
                   fontVariantNumeric: "tabular-nums",
-                  fontSize: "1.7rem",
+                  fontSize: "var(--m-showcase-stat, 1.7rem)",
                   lineHeight: 1.05,
                   letterSpacing: "-0.01em",
                 }}
@@ -70,7 +70,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
   );
 
   const copy = (
-    <div className="flex flex-col gap-4 lg:col-span-7">
+    <div className="unit-showcase__copy flex flex-col gap-4 lg:col-span-7">
       <div>
         <h3 className="t-h3">
           <Link
@@ -90,7 +90,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
       <p className="t-small text-ink-soft">{facts}</p>
       <p className="t-lead measure text-ink">{business.positioning}</p>
 
-      <ul className="mt-1 flex flex-col gap-2.5">
+      <ul className="unit-showcase__points mt-1 flex flex-col gap-2.5">
         {points.map((point) => (
           <li key={point} className="flex gap-2.5 text-ink-soft">
             <span
@@ -105,8 +105,8 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
         ))}
       </ul>
 
-      <div className="mt-3">
-        <Button variant="secondary" href={`/${business.slug}`}>
+      <div className="unit-showcase__action mt-3">
+        <Button variant="secondary" href={`/${business.slug}`} className="press">
           Explore {business.name}
         </Button>
       </div>
@@ -114,7 +114,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
   );
 
   return (
-    <div className="grid items-center gap-x-12 gap-y-8 lg:grid-cols-12">
+    <div className="unit-showcase grid items-center gap-x-12 gap-y-8 lg:grid-cols-12">
       {flip ? (
         <>
           {copy}

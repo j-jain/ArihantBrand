@@ -85,8 +85,8 @@ export default async function AboutPage() {
       {/* 1 — Hero (paper) --------------------------------------------------- */}
       <section className="bg-paper">
         <HeroIntro className="container-site hero-pad">
-          <div className="grid gap-x-14 gap-y-12 lg:grid-cols-12 lg:items-stretch">
-            <div className="flex flex-col items-start gap-6 lg:col-span-7">
+          <div className="m-flow grid gap-x-14 gap-y-12 lg:grid-cols-12 lg:items-stretch">
+            <div className="m-flow-tight flex flex-col items-start gap-6 lg:col-span-7">
               <h1 data-hero-title className="t-display text-ink">
                 {hero.heading}
               </h1>
@@ -106,7 +106,7 @@ export default async function AboutPage() {
                 <Link
                   key={business.slug}
                   href={`/${business.slug}`}
-                  className="group flex flex-1 flex-col justify-center gap-2.5 border-b border-line py-5 transition-colors hover:bg-paper-shade"
+                  className="about-house press group flex flex-1 flex-col justify-center gap-2.5 border-b border-line py-5 transition-colors hover:bg-paper-shade"
                 >
                   <span
                     aria-hidden="true"
@@ -138,7 +138,7 @@ export default async function AboutPage() {
       {/* 2 — Story (paper) -------------------------------------------------- */}
       <section className="border-t border-line bg-paper">
         <div className="container-site section-pad">
-          <div className="grid gap-x-14 gap-y-10 lg:grid-cols-12">
+          <div className="m-flow grid gap-x-14 gap-y-10 lg:grid-cols-12">
             <div className="prose lg:col-span-7">
               <h2 className="t-h2 text-ink">{sections.story.heading}</h2>
               {storyBody.map((paragraph, i) => (
@@ -156,7 +156,7 @@ export default async function AboutPage() {
 
             {/* Standing aside: the values headline over an editorial craft photo. */}
             <aside className="lg:col-span-5">
-              <div className="flex flex-col gap-8 lg:sticky lg:top-28">
+              <div className="m-flow flex flex-col gap-8 lg:sticky lg:top-28">
                 <div>
                   <span
                     aria-hidden="true"
@@ -175,6 +175,8 @@ export default async function AboutPage() {
                   ratio="4 / 5"
                   sizes="(max-width: 1023px) 100vw, 40vw"
                   tilt
+                  mBleed
+                  className="m-ar-4-3"
                 />
               </div>
             </aside>
@@ -196,7 +198,7 @@ export default async function AboutPage() {
 
       {/* 4 — Leadership (paper) -------------------------------------------- */}
       <section className="bg-paper">
-        <div className="container-site section-pad flex flex-col gap-12">
+        <div className="container-site section-pad m-flow flex flex-col gap-12">
           <Reveal variant="fade">
             <SectionHeading
               heading={sections.leadership.heading}
@@ -204,7 +206,7 @@ export default async function AboutPage() {
             />
           </Reveal>
           <StaggerGroup
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="leaders grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
             from="scale"
             stagger={0.08}
           >
@@ -213,7 +215,7 @@ export default async function AboutPage() {
               return (
                 <figure
                   key={leader.name}
-                  className="flex flex-col overflow-hidden rounded-[2px] border border-line"
+                  className="leader press-soft flex flex-col overflow-hidden rounded-[2px] border border-line"
                 >
                   {/* Portrait frame. Until a real photograph is dropped in, the
                       monogram plate holds the space deliberately rather than
@@ -243,7 +245,7 @@ export default async function AboutPage() {
                       </span>
                     )}
                   </div>
-                  <figcaption className="flex flex-col gap-3 p-6">
+                  <figcaption className="leader__cap flex flex-col gap-3 p-6">
                     <span
                       aria-hidden="true"
                       className="block h-[3px] w-10 rounded-full"
@@ -266,7 +268,7 @@ export default async function AboutPage() {
 
       {/* 5 — Timeline (paper-shade): full-width so its ghost-year column breathes */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad flex flex-col gap-10">
+        <div className="container-site section-pad m-flow flex flex-col gap-10">
           <SectionHeading heading={sections.timeline.heading} />
           <Timeline entries={timeline} />
         </div>
@@ -274,7 +276,7 @@ export default async function AboutPage() {
 
       {/* 6 — Soft CTA (single vermillion drench) --------------------------- */}
       <DrenchBand className="section-pad">
-        <div className="container-site flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="container-site m-flow flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
           <p
             data-drench-reveal
             className="font-display max-w-[26ch] text-white"
@@ -282,8 +284,8 @@ export default async function AboutPage() {
           >
             Work with the house the Northeast trade already trusts.
           </p>
-          <div data-drench-reveal>
-            <Button variant="onDark" href={hero.primaryCta.href}>
+          <div data-drench-reveal className="m-cta w-full">
+            <Button variant="onDark" href={hero.primaryCta.href} className="press">
               {hero.primaryCta.label}
             </Button>
           </div>

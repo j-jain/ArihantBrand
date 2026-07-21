@@ -57,8 +57,10 @@ export function InfrastructureSection({
               className="infra-band__photo border border-line-dark"
               tilt
               // Height comes from CSS, not an inline ratio: 4:5 while stacked,
-              // then the full height of the copy column once side by side.
+              // 16:10 and edge to edge on a phone, then the full height of the
+              // copy column once side by side.
               fillHeight
+              mBleed
             />
 
             <div className="infra-band__body">

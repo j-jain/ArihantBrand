@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type CSSProperties } from "react";
+import { cn } from "./cn";
 
 interface VideoFeatureProps {
   /** MP4 source path (required — universal fallback). */
@@ -37,11 +38,15 @@ export function VideoFeature({
     void v.play();
   };
 
-  const frameStyle: CSSProperties = { aspectRatio: ratio };
+  // Same var-with-desktop-fallback indirection as ParallaxImage, so the mobile
+  // layer can reframe the player without an inline style fighting it.
+  const frameStyle: CSSProperties = {
+    aspectRatio: `var(--m-frame-ratio, ${ratio})`,
+  };
 
   return (
     <div
-      className={className}
+      className={cn("video-feature", className)}
       style={{
         position: "relative",
         overflow: "hidden",

@@ -8,11 +8,11 @@ interface HeroIntroProps {
   className?: string;
 }
 
-/** Hero headline choreography. On desktop it splits the `[data-hero-title]`
- *  element into lines (after webfonts settle, so breaks are correct) and rises
- *  them out of a mask, while every `[data-hero-reveal]` element (lead, CTAs,
- *  media, trade nav) rises in on its own self-completing tween. Mobile does one
- *  short quiet fade with no SplitText (perf); reduced-motion leaves everything
+/** Hero headline choreography. It splits the `[data-hero-title]` element into
+ *  lines (after webfonts settle, so breaks are correct) and rises them out of a
+ *  mask, while every `[data-hero-reveal]` element (lead, CTAs, media, trade nav)
+ *  rises in on its own self-completing tween. Mobile runs the same masked line
+ *  rise at a quicker, shallower cadence; reduced-motion leaves everything
  *  visible.
  *
  *  The reveal tweens are `gsap.from()` created synchronously, so they always
@@ -59,22 +59,16 @@ export function HeroIntro({ children, className }: HeroIntroProps) {
             });
           }
 
-          // Mobile: fade the title as one block (no SplitText, for perf).
-          if (mobile) {
-            if (title) {
-              gsap.from(title, {
-                autoAlpha: 0,
-                y: 14,
-                duration: 0.5,
-                ease: EASE,
-              });
-            }
-            return;
-          }
-
-          // Desktop: mask-and-rise the split title once webfonts settle. The
-          // title is set visible before splitting, so a split failure still
-          // leaves a readable headline.
+          // Mask-and-rise the split title once webfonts settle. The title is
+          // set visible before splitting, so a split failure still leaves a
+          // readable headline.
+          //
+          // Mobile runs the same move, tuned quicker and shallower: a phone
+          // headline breaks into 2-4 short lines, so a slow desktop cadence
+          // reads as a stall, and the mask has less distance to travel. This
+          // is the one place SplitText is worth its cost on a handset — it is
+          // the first thing the reader sees, and a flat block fade is exactly
+          // what made the old mobile build feel like a shrunken desktop.
           if (!title) return;
           let split: SplitText | null = null;
           const runSplit = () => {
@@ -87,9 +81,9 @@ export function HeroIntro({ children, className }: HeroIntroProps) {
                 aria: "auto",
               });
               gsap.from(split.lines, {
-                yPercent: 112,
-                duration: 0.9,
-                stagger: 0.1,
+                yPercent: mobile ? 106 : 112,
+                duration: mobile ? 0.62 : 0.9,
+                stagger: mobile ? 0.07 : 0.1,
                 ease: EASE,
                 onComplete: () => {
                   // Restore the clean, unsplit headline once the reveal lands;

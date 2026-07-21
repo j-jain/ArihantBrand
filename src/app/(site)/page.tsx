@@ -110,7 +110,7 @@ export default async function HomePage() {
               </div>
               <div
                 data-hero-reveal
-                className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-3"
+                className="m-cta mt-1 flex flex-wrap items-center gap-x-6 gap-y-3"
               >
                 <Button variant="primary" size="lg" href={hero.primaryCta.href}>
                   {hero.primaryCta.label}
@@ -135,6 +135,9 @@ export default async function HomePage() {
             </div>
 
             <div data-hero-reveal className="lg:col-span-5">
+              {/* Portrait beside the headline on desktop; edge to edge and
+                  landscape on a phone, where a 4:5 frame at full width eats an
+                  entire screen before the reader has reached anything. */}
               <ParallaxImage
                 src={stockImages.homeTexture.src}
                 alt={stockImages.homeTexture.alt}
@@ -142,6 +145,8 @@ export default async function HomePage() {
                 priority
                 sizes="(max-width: 1023px) 100vw, 42vw"
                 tilt
+                mBleed
+                className="m-ar-4-3"
               />
             </div>
           </div>
@@ -149,14 +154,14 @@ export default async function HomePage() {
           {/* Trade-ticket quick nav to the three businesses. */}
           <div
             data-hero-reveal
-            className="mt-14 overflow-hidden rounded-[2px] border border-line bg-line"
+            className="ticket-nav mt-14 overflow-hidden rounded-[2px] border border-line bg-line"
           >
-            <div className="grid gap-px bg-line sm:grid-cols-3">
+            <div className="ticket-nav__grid m-rail grid gap-px bg-line sm:grid-cols-3">
               {businesses.map((business) => (
                 <Link
                   key={business.slug}
                   href={`/${business.slug}`}
-                  className="group flex flex-col gap-3 bg-white px-5 py-5 transition-colors hover:bg-paper-shade"
+                  className="ticket press group flex flex-col gap-3 bg-white px-5 py-5 transition-colors hover:bg-paper-shade"
                 >
                   <span className="relative block h-10 w-full">
                     <Image
@@ -170,7 +175,11 @@ export default async function HomePage() {
                   <span className="flex items-center justify-between gap-3">
                     <span
                       className="font-display text-ink"
-                      style={{ fontWeight: 700, fontSize: "1.1rem", lineHeight: 1.2 }}
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "var(--m-ticket-name, 1.1rem)",
+                        lineHeight: 1.2,
+                      }}
                     >
                       {business.name}
                     </span>
@@ -202,17 +211,20 @@ export default async function HomePage() {
               sizes="100vw"
               className="object-cover opacity-[0.16]"
             />
+            {/* Horizontal scrim on desktop, where the copy occupies the left
+                two thirds. On a phone the copy is full width, so the mobile
+                layer swaps this for a vertical one (see .proof-scrim). */}
             <div
-              className="absolute inset-0"
+              className="proof-scrim absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(90deg, var(--charcoal) 30%, transparent)",
+                  "var(--m-proof-scrim, linear-gradient(90deg, var(--charcoal) 30%, transparent))",
               }}
             />
           </div>
 
-          <div className="container-site section-pad relative flex flex-col gap-10">
-            <div className="flex max-w-3xl flex-col gap-5">
+          <div className="container-site section-pad relative m-flow flex flex-col gap-10">
+            <div className="m-flow-tight flex max-w-3xl flex-col gap-5">
               <SectionHeading heading={sections.proof.heading} onDark />
               <span
                 aria-hidden="true"
@@ -240,7 +252,7 @@ export default async function HomePage() {
       {/* 3 — Why Arihant (paper): sticky heading beside the pillar card stack */}
       <section className="bg-paper">
         <div className="container-site section-pad">
-          <div className="grid gap-x-12 gap-y-10 md:grid-cols-12">
+          <div className="m-flow grid gap-x-12 gap-y-10 md:grid-cols-12">
             <Reveal variant="fade" className="md:col-span-5">
               <div className="stack-heading">
                 <SectionHeading heading={sections.why.heading} lead={sections.why.lead} />
@@ -255,7 +267,7 @@ export default async function HomePage() {
 
       {/* 4 — Businesses (paper-shade) -------------------------------------- */}
       <section id="businesses" className="bg-paper-shade">
-        <div className="container-site section-pad flex flex-col gap-12">
+        <div className="container-site section-pad m-flow flex flex-col gap-12">
           <Reveal variant="fade">
             <SectionHeading
               heading={sections.businesses.heading}
@@ -268,7 +280,7 @@ export default async function HomePage() {
                 key={business.slug}
                 as="div"
                 variant={i % 2 === 0 ? "rise" : "clip"}
-                className={cn(i > 0 && "mt-16 border-t border-line pt-16")}
+                className={cn(i > 0 && "m-divide mt-16 border-t border-line pt-16")}
               >
                 <UnitShowcase business={business} flip={i % 2 === 1} />
               </Reveal>
@@ -287,7 +299,7 @@ export default async function HomePage() {
 
       {/* 6 — Brand marquee (paper) ----------------------------------------- */}
       <section className="bg-paper">
-        <div className="container-site section-pad flex flex-col gap-10">
+        <div className="container-site section-pad m-flow flex flex-col gap-10">
           <Reveal variant="fade">
             <SectionHeading
               heading={sections.brands.heading}
@@ -311,24 +323,26 @@ export default async function HomePage() {
       {/* 7 — Trade Notes teaser (paper-shade) ------------------------------ */}
       {latestPosts.length > 0 ? (
         <section className="bg-paper-shade">
-          <div className="container-site section-pad flex flex-col gap-10">
+          <div className="container-site section-pad m-flow flex flex-col gap-10">
             <Reveal variant="fade">
               <SectionHeading
                 heading={sections.notes.heading}
                 lead={sections.notes.lead}
               />
             </Reveal>
+            {/* Three stacked cards is three screens of scroll on a phone; as a
+                rail the whole teaser reads in one band. */}
             <StaggerGroup
               as="ul"
               from="up"
               stagger={0.1}
-              className="grid gap-x-6 gap-y-10 sm:grid-cols-3"
+              className="m-rail grid gap-x-6 gap-y-10 sm:grid-cols-3"
             >
               {latestPosts.map((post) => (
                 <li key={post.slug} className="flex">
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="group flex h-full w-full flex-col"
+                    className="press group flex h-full w-full flex-col"
                   >
                     <div className="relative aspect-[3/2] overflow-hidden rounded-[6px] border border-line bg-paper">
                       {post.image ? (
@@ -380,9 +394,9 @@ export default async function HomePage() {
       {/* 8 — Voice strip (paper): featured quote (7) beside a real store photo (5) */}
       {featured ? (
         <section className="bg-paper">
-          <div className="container-site section-pad flex flex-col gap-8">
-            <div className="grid gap-y-10 lg:grid-cols-12 lg:items-start lg:gap-16">
-              <div className="flex flex-col gap-8 lg:col-span-7">
+          <div className="container-site section-pad m-flow flex flex-col gap-8">
+            <div className="m-flow grid gap-y-10 lg:grid-cols-12 lg:items-start lg:gap-16">
+              <div className="m-flow flex flex-col gap-8 lg:col-span-7">
                 <Reveal variant="fade">
                   <h2 className="t-h4 text-ink-soft">{sections.voice.heading}</h2>
                 </Reveal>
@@ -433,8 +447,9 @@ export default async function HomePage() {
                     alt="Urban Closet in Guwahati, an Arihant Retail multi-brand store"
                     ratio="4 / 5"
                     sizes="(max-width: 1023px) 100vw, 32vw"
-                    className="border border-line"
+                    className="m-ar-4-3 border border-line"
                     tilt
+                    mBleed
                   />
                   <figcaption className="t-small text-ink-soft">
                     Urban Closet, Guwahati · Arihant Retail
@@ -457,7 +472,7 @@ export default async function HomePage() {
 
       {/* 9 — CTA band (single vermillion drench) --------------------------- */}
       <DrenchBand id="cta" className="section-pad">
-        <div className="container-site flex flex-col items-start gap-6">
+        <div className="container-site m-flow flex flex-col items-start gap-6">
           <h2 data-drench-reveal className="t-h2 max-w-[20ch]">
             {sections.cta.heading}
           </h2>
@@ -470,14 +485,14 @@ export default async function HomePage() {
           </p>
           <div
             data-drench-reveal
-            className="mt-1 flex flex-wrap items-center gap-x-7 gap-y-4"
+            className="m-cta mt-1 flex flex-wrap items-center gap-x-7 gap-y-4"
           >
-            <Button variant="onDark" href={hero.primaryCta.href}>
+            <Button variant="onDark" href={hero.primaryCta.href} className="press">
               {hero.primaryCta.label}
             </Button>
             <a
               href={`tel:+${settings.defaultWhatsapp}`}
-              className="font-sans font-semibold text-white underline-offset-4 hover:underline"
+              className="m-tap font-sans font-semibold text-white underline-offset-4 hover:underline"
             >
               Call {formatTel(settings.defaultWhatsapp)}
             </a>

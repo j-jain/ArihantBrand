@@ -33,6 +33,11 @@ export function CardFan({ photos, label }: CardFanProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [fanned, setFanned] = useState(false);
   const [active, setActive] = useState(0);
+  // True only while the mobile snap rail is the live layout (see .fan__stage in
+  // mobile.css). A scroll container whose children are plain figures needs to be
+  // focusable itself, but adding that tab stop to the static desktop grid would
+  // be a focus trap for nothing — so it is driven off the same media query.
+  const [railed, setRailed] = useState(false);
 
   // Read by the GSAP layout function, which lives outside the React render.
   const activeRef = useRef(0);
@@ -59,6 +64,12 @@ export function CardFan({ photos, label }: CardFanProps) {
       if (cards.length < 2) return;
 
       const mm = gsap.matchMedia(ref);
+
+      mm.add("(max-width: 767px)", () => {
+        setRailed(true);
+        return () => setRailed(false);
+      });
+
       mm.add(
         "(prefers-reduced-motion: no-preference) and (min-width: 1024px) and (pointer: fine)",
         () => {
@@ -190,8 +201,9 @@ export function CardFan({ photos, label }: CardFanProps) {
   return (
     <div ref={ref} className="fan">
       <ul
-        className="fan__stage"
+        className="fan__stage m-rail"
         aria-label={label}
+        tabIndex={railed ? 0 : undefined}
         onPointerEnter={fanned ? () => setSpread(true) : undefined}
         onPointerLeave={fanned ? () => setSpread(false) : undefined}
         onKeyDown={

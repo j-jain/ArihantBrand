@@ -9,6 +9,7 @@ import { getPost, getPosts } from "@/lib/content";
 import { articleJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { Button, HeroIntro, JsonLd, ParallaxImage } from "@/components";
 import { PostBody } from "./_components/PostBody";
+import { ReadingProgress } from "./_components/ReadingProgress";
 
 const dateFmt = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -77,10 +78,10 @@ export default async function ArticlePage({
 
       <section className="section-pad bg-paper">
         <div className="container-site">
-          <div className="mx-auto max-w-[46rem]">
+          <div className="article mx-auto max-w-[46rem]">
             {/* Article header + hero image, entering as one orchestrated load */}
             <HeroIntro>
-              <header className="flex flex-col gap-4">
+              <header className="m-flow-tight flex flex-col gap-4">
                 <p data-hero-reveal className="t-label text-vermillion-deep">
                   {post.audience}
                 </p>
@@ -100,37 +101,39 @@ export default async function ArticlePage({
                     ratio="3 / 2"
                     priority
                     sizes="(max-width: 767px) 100vw, 46rem"
+                    mBleed
                   />
                 </div>
               ) : null}
             </HeroIntro>
 
             {/* Body */}
-            <div className="mt-12">
+            <div id="article-body" className="article__body mt-12">
               <PostBody blocks={post.body} />
             </div>
+            <ReadingProgress targetId="article-body" />
 
             {/* End matter — contextual CTA */}
             <aside
-              className="mt-14 flex flex-col items-start gap-5 border border-line bg-paper-shade p-7"
+              className="article__cta m-cta mt-14 flex flex-col items-start gap-5 border border-line bg-paper-shade p-7"
               style={{ borderRadius: "8px" }}
             >
               <p className="t-h4 text-ink">Put these notes to work.</p>
-              <Button href={cta.href} variant="primary" size="lg">
+              <Button href={cta.href} variant="primary" size="lg" className="press">
                 {cta.label}
               </Button>
             </aside>
 
             {/* More notes */}
             {others.length > 0 ? (
-              <div className="mt-14 border-t border-line pt-8">
+              <div className="article__more mt-14 border-t border-line pt-8">
                 <h2 className="t-h3 text-ink">More notes</h2>
                 <ul className="mt-5 flex flex-col">
                   {others.map((other) => (
                     <li key={other.slug} className="border-t border-line first:border-t-0">
                       <Link
                         href={`/blog/${other.slug}`}
-                        className="group flex items-center gap-4 py-4"
+                        className="press group flex items-center gap-4 py-4"
                       >
                         {other.image ? (
                           <span className="relative aspect-[3/2] w-24 shrink-0 overflow-hidden rounded-[4px] border border-line bg-paper-shade sm:w-28">

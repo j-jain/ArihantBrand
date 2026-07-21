@@ -7,7 +7,14 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { businesses } from "@/content/seed";
 import { DUR, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { Button } from "./Button";
+import { PhoneIcon, WhatsAppIcon } from "./icons";
 import { primaryNav } from "./nav";
+
+interface SiteHeaderProps {
+  /** Digits with country code, e.g. "919435045528". Powers the direct-contact
+   *  row at the foot of the mobile sheet; omit it and the row is not rendered. */
+  whatsapp?: string;
+}
 
 function useActive() {
   const pathname = usePathname();
@@ -44,7 +51,7 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
   const isActive = useActive();
   const pathname = usePathname();
 
@@ -548,11 +555,17 @@ export function SiteHeader() {
               </button>
             </div>
 
+            {/* The sheet is `lg:hidden`, so it is also what a 768-1023px tablet
+                sees. Every original utility class stays exactly as it was and
+                the new hooks only carry rules inside the mobile media query,
+                which keeps that range byte-identical. */}
             <nav
-              className="mt-8 flex flex-1 flex-col"
+              className="menu-sheet__nav mt-8 flex flex-1 flex-col"
               aria-label="Primary (mobile)"
             >
-              <span className="t-label mb-1 text-ink-soft">Businesses</span>
+              <span className="t-label menu-sheet__eyebrow mb-1 text-ink-soft">
+                Businesses
+              </span>
               {businesses.map((b) => (
                 <Link
                   key={b.slug}
@@ -572,7 +585,7 @@ export function SiteHeader() {
                   {b.name}
                 </Link>
               ))}
-              <span className="mt-4" />
+              <span className="menu-sheet__gap mt-4" />
               {primaryNav.map((item) => (
                 <Link
                   key={item.href}
@@ -586,15 +599,38 @@ export function SiteHeader() {
               ))}
             </nav>
 
-            <div className="mt-6" data-sheet-item>
+            {/* Foot of the sheet: the ask, then the two things a trade visitor
+                actually reaches for on a phone. Kept together so the thumb
+                never has to travel back up. */}
+            <div className="menu-sheet__foot mt-6" data-sheet-item>
               <Button
                 href="/partner"
                 variant="primary"
                 size="lg"
-                className="w-full"
+                className="w-full press"
               >
                 Partner with us
               </Button>
+
+              {/* Phone-only: `md:hidden` keeps the 768-1023px sheet exactly as
+                  it was, since this row is new. */}
+              {whatsapp ? (
+                <div className="menu-sheet__contact md:hidden">
+                  <a className="menu-sheet__action press" href={`tel:+${whatsapp}`}>
+                    <PhoneIcon />
+                    Call
+                  </a>
+                  <a
+                    className="menu-sheet__action press"
+                    href={`https://wa.me/${whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <WhatsAppIcon />
+                    WhatsApp
+                  </a>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

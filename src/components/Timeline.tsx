@@ -56,21 +56,64 @@ export function Timeline({ entries, items }: TimelineProps) {
           };
           if (reduced) return;
 
-          // ----- Mobile: quiet per-entry fade, static list --------------------
+          // ----- Mobile: the spine draws with the thumb, entries ink in -------
+          // The single-column list stays exactly as it renders on the server;
+          // what changes is that the vertical rule now grows as you scroll it
+          // and each entry arrives on its own, so the section reads as a
+          // history being written rather than a block that faded in.
           if (mobile) {
-            const rect = root.getBoundingClientRect();
-            const onScreen =
-              rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
-            if (!onScreen) {
-              gsap.from(entryEls, {
-                autoAlpha: 0,
-                y: 14,
-                duration: 0.42,
-                ease: EASE,
-                stagger: 0.08,
-                scrollTrigger: { trigger: root, start: "top 80%", once: true },
-              });
+            if (spine) {
+              gsap.fromTo(
+                spine,
+                { scaleY: 0 },
+                {
+                  scaleY: 1,
+                  ease: "none",
+                  transformOrigin: "top center",
+                  scrollTrigger: {
+                    trigger: root,
+                    start: "top 82%",
+                    end: "bottom 72%",
+                    scrub: true,
+                  },
+                },
+              );
             }
+
+            entryEls.forEach((entry) => {
+              const rect = entry.getBoundingClientRect();
+              if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) return;
+
+              const dot = entry.querySelector<HTMLElement>(".tl__dot");
+              const rule = entry.querySelector<HTMLElement>(".tl__rule");
+              const tl = gsap.timeline({
+                scrollTrigger: { trigger: entry, start: "top 88%", once: true },
+              });
+              tl.from(entry, {
+                autoAlpha: 0,
+                y: 16,
+                duration: 0.5,
+                ease: EASE,
+              });
+              if (dot) {
+                tl.fromTo(
+                  dot,
+                  { scale: 0.4 },
+                  { scale: 1, duration: 0.42, ease: "back.out(2)" },
+                  "<0.05",
+                );
+              }
+              if (rule) {
+                // The hairline draws from the spine outward — the same gesture
+                // the ledgers elsewhere on mobile use.
+                tl.fromTo(
+                  rule,
+                  { scaleX: 0 },
+                  { scaleX: 1, duration: 0.5, ease: EASE },
+                  "<0.08",
+                );
+              }
+            });
             return;
           }
 

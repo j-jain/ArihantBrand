@@ -20,8 +20,12 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "apparels", label: "Arihant Apparels" },
 ];
 
+/* The track minimum is indirected so the mobile layer can pack the wall three
+   up instead of two; an inline grid-template-columns would otherwise be
+   unreachable from CSS. Undefined above 767px, so this computes to the
+   original `minmax(150px, 1fr)`. */
 const GRID_STYLE: CSSProperties = {
-  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fill, minmax(var(--m-logo-min, 150px), 1fr))",
 };
 
 /** Responsive logo grid. Every tile is a button opening ONE shared modal keyed
@@ -101,8 +105,12 @@ export function LogoWall({ partners, filterable = false }: LogoWallProps) {
   return (
     <div className="flex flex-col gap-6">
       {filterable ? (
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter labels by business">
+        <div className="brand-filters flex flex-col gap-3">
+          <div
+            className="brand-filters__row flex flex-wrap gap-2"
+            role="group"
+            aria-label="Filter labels by business"
+          >
             {FILTERS.map((filter) => {
               const isActive = active === filter.key;
               return (
@@ -124,7 +132,7 @@ export function LogoWall({ partners, filterable = false }: LogoWallProps) {
               );
             })}
           </div>
-          <p className="t-small text-ink-soft" aria-live="polite">
+          <p className="brand-filters__count t-small text-ink-soft" aria-live="polite">
             Showing {visible.length} of {partners.length} labels
           </p>
         </div>

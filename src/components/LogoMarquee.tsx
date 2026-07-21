@@ -25,7 +25,7 @@ function MarqueeGroup({
       {partners.map((partner) => (
         <div
           key={`${clone ? "clone-" : ""}${partner.slug}`}
-          className="relative h-16 w-32 shrink-0 rounded-md border border-line bg-white p-3"
+          className="marquee__tile relative h-16 w-32 shrink-0 rounded-md border border-line bg-white p-3"
         >
           <div className="relative h-full w-full">
             <Image
@@ -84,7 +84,13 @@ export function LogoMarquee({ partners }: LogoMarqueeProps) {
     <div
       ref={rootRef}
       className="marquee py-2"
-      style={{ "--marquee-duration": "48s" } as CSSProperties}
+      // Indirected through --m-marquee-duration so the mobile layer can retime
+      // it; an inline custom property would otherwise outrank any stylesheet.
+      style={
+        {
+          "--marquee-duration": "var(--m-marquee-duration, 48s)",
+        } as CSSProperties
+      }
     >
       <div className="marquee__track">
         <MarqueeGroup partners={partners} />

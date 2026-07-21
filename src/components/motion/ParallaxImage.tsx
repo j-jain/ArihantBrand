@@ -22,6 +22,11 @@ interface ParallaxImageProps {
    *  layout instead (e.g. a stretched grid column). `ratio` is then ignored and
    *  the caller owns the height. */
   fillHeight?: boolean;
+  /** Mobile (<=767px) only: run the frame edge to edge and give the picture a
+   *  low-amplitude scroll drift. Desktop is untouched — the class it adds has
+   *  rules only inside the mobile media query, and the drift lives in its own
+   *  matchMedia context. */
+  mBleed?: boolean;
 }
 
 /** Image in a clipping frame with a gentle scroll-scrubbed parallax on desktop.
@@ -44,6 +49,7 @@ export function ParallaxImage({
   parallax = true,
   tilt = false,
   fillHeight = false,
+  mBleed = false,
 }: ParallaxImageProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -78,6 +84,33 @@ export function ParallaxImage({
               );
             },
           );
+
+          // Mobile counterpart, edge-to-edge frames only. Half the desktop
+          // amplitude and a smaller overscale: on a phone the frame is as wide
+          // as the screen, so a 6% drift reads as a lurch. One transform on one
+          // element, so it stays cheap on a mid-range handset.
+          if (mBleed) {
+            mm.add(
+              "(prefers-reduced-motion: no-preference) and (max-width: 767px)",
+              () => {
+                gsap.set(img, { scale: 1.08 });
+                gsap.fromTo(
+                  img,
+                  { yPercent: -3 },
+                  {
+                    yPercent: 3,
+                    ease: "none",
+                    scrollTrigger: {
+                      trigger: frame,
+                      start: "top bottom",
+                      end: "bottom top",
+                      scrub: true,
+                    },
+                  },
+                );
+              },
+            );
+          }
         }
       }
 
@@ -167,14 +200,22 @@ export function ParallaxImage({
 
       return () => mm.revert();
     },
-    { scope: ref, dependencies: [parallax, tilt, fillHeight] },
+    { scope: ref, dependencies: [parallax, tilt, fillHeight, mBleed] },
   );
 
   return (
     <div
       ref={ref}
-      className={cn("parallax-frame", className)}
-      style={fillHeight ? undefined : { aspectRatio: ratio }}
+      className={cn("parallax-frame", mBleed && "m-bleed", className)}
+      // The ratio is written as a var with the desktop value as its fallback,
+      // so mobile.css can retarget the frame by defining --m-frame-ratio inside
+      // its media query. With the var undefined (every width >= 768px) this
+      // computes to exactly `ratio` — no !important, no cascade change.
+      style={
+        fillHeight
+          ? undefined
+          : { aspectRatio: `var(--m-frame-ratio, ${ratio})` }
+      }
     >
       <Image
         data-parallax-img=""

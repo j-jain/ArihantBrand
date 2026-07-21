@@ -52,8 +52,11 @@ export default async function BlogPage() {
           // Compact editorial hero — lighter than the full page heroes.
         >
           <div
-            className="flex flex-col gap-6"
-            style={{ paddingBlock: "clamp(3rem, 6vw, 5.5rem)" }}
+            className="m-flow flex flex-col gap-6"
+            style={{
+              paddingBlock:
+                "var(--m-hero-compact-pad, clamp(3rem, 6vw, 5.5rem))",
+            }}
           >
             <h1 data-hero-title className="t-display measure text-ink">
               {hero.heading}
@@ -73,16 +76,16 @@ export default async function BlogPage() {
             as="ul"
             from="up"
             stagger={0.09}
-            className="mt-12 grid gap-x-6 gap-y-11 sm:grid-cols-2 lg:grid-cols-3"
+            className="post-grid mt-12 grid gap-x-6 gap-y-11 sm:grid-cols-2 lg:grid-cols-3"
           >
             {posts.map((post, i) => (
-              <li key={post.slug} className="flex">
+              <li key={post.slug} className="post-item flex">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="group flex h-full w-full flex-col"
+                  className="post-card press group flex h-full w-full flex-col"
                 >
                   {/* Thumbnail — decorative (title is adjacent), so alt="" */}
-                  <div className="relative aspect-[3/2] overflow-hidden rounded-[6px] border border-line bg-paper-shade">
+                  <div className="post-card__thumb relative aspect-[3/2] overflow-hidden rounded-[6px] border border-line bg-paper-shade">
                     {post.image ? (
                       <Image
                         src={post.image}
@@ -95,12 +98,16 @@ export default async function BlogPage() {
                     ) : null}
                   </div>
 
-                  <p className="t-label mt-5 text-vermillion-deep">
+                  <p className="post-card__kicker t-label mt-5 text-vermillion-deep">
                     {post.audience}
                   </p>
                   <h2
                     className="mt-2.5 font-display text-ink"
-                    style={{ fontWeight: 700, fontSize: "1.28rem", lineHeight: 1.24 }}
+                    style={{
+                      fontWeight: 700,
+                      fontSize: "var(--m-blogcard-title, 1.28rem)",
+                      lineHeight: 1.24,
+                    }}
                   >
                     <span className="underline-offset-4 group-hover:underline">
                       {post.title}
@@ -117,7 +124,7 @@ export default async function BlogPage() {
                   >
                     {post.excerpt}
                   </p>
-                  <p className="t-small mt-4 pt-4 border-t border-line text-ink-soft">
+                  <p className="post-card__meta t-small mt-4 pt-4 border-t border-line text-ink-soft">
                     {dateFmt.format(new Date(post.date))} · {post.readMinutes} min read
                   </p>
                 </Link>
@@ -129,12 +136,12 @@ export default async function BlogPage() {
 
       {/* 3 — CTA band (single vermillion drench) */}
       <DrenchBand className="section-pad">
-        <div className="container-site flex flex-col items-start gap-7">
+        <div className="container-site m-flow flex flex-col items-start gap-7">
           <h2 data-drench-reveal className="t-h2 measure text-white">
             Some answers only come from a conversation.
           </h2>
-          <div data-drench-reveal>
-            <Button href={hero.primaryCta.href} variant="onDark" size="lg">
+          <div data-drench-reveal className="m-cta w-full">
+            <Button href={hero.primaryCta.href} variant="onDark" size="lg" className="press">
               {hero.primaryCta.label}
             </Button>
           </div>

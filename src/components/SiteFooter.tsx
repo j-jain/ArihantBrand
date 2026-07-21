@@ -22,22 +22,22 @@ export function SiteFooter({ settings }: SiteFooterProps) {
       <div className="container-site section-pad relative">
         {/* Top row: reach line + contact channels (left), map (right). On
             mobile the columns stack, so the map falls after the channels. */}
-        <div className="grid items-start lg:grid-cols-12 lg:gap-16">
+        <div className="footer-top grid items-start lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <h2 className="t-h3 text-on-charcoal">
               From Guwahati to counters across the Northeast.
             </h2>
-            <div className="mt-8">
+            <div className="footer-channels mt-8">
               <ContactChannels contacts={settings.contacts} compact />
             </div>
           </div>
-          <div className="mt-12 lg:col-span-5 lg:mt-0">
+          <div className="footer-map mt-12 lg:col-span-5 lg:mt-0">
             <NetworkMap />
           </div>
         </div>
 
         <nav
-          className="mt-14 flex flex-wrap gap-x-6 gap-y-2"
+          className="footer-nav mt-14 flex flex-wrap gap-x-6 gap-y-2"
           aria-label="Footer"
         >
           {footerNav.map((item) => (
@@ -51,7 +51,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
           ))}
         </nav>
 
-        <address className="mt-10 flex items-start gap-2 not-italic">
+        <address className="footer-nap mt-10 flex items-start gap-2 not-italic">
           <span className="channel-icon mt-0.5">
             <MapPinIcon />
           </span>
@@ -60,7 +60,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
           </p>
         </address>
 
-        <div className="mt-8 flex flex-col gap-1 border-t border-line-dark pt-6">
+        <div className="footer-legal mt-8 flex flex-col gap-1 border-t border-line-dark pt-6">
           <p className="t-small text-on-charcoal-soft">
             © {year} {settings.orgName}, {settings.city}
           </p>

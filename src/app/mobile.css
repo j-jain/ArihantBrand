@@ -1,0 +1,994 @@
+/* ================================================================== */
+/* MOBILE LAYER — the dedicated phone experience (<= 767px)            */
+/*                                                                     */
+/* CONTRACT: every rule in this file lives inside a                     */
+/* `@media (max-width: 767px)` block. Nothing here may reach a 768px    */
+/* viewport, so desktop rendering is frozen by construction. Adding a   */
+/* hook class in JSX is inert at every other width.                     */
+/*                                                                     */
+/* These rules are UNLAYERED, and Tailwind ships its utilities inside   */
+/* `@layer utilities`, so a plain selector here beats `gap-12`,         */
+/* `grid-cols-3`, `aspect-[4/5]` and friends without `!important` and   */
+/* without touching the utility. Same mechanism `.container-site` and   */
+/* `.btn` in globals.css already rely on.                               */
+/*                                                                     */
+/* Inline `style` attributes still win over CSS, so page-level inline   */
+/* sizes are written as `var(--m-x, <desktop value>)` and retargeted    */
+/* by defining `--m-x` in the token block below.                        */
+/*                                                                     */
+/* Same sections, same order, same copy, same palette as desktop —      */
+/* only the composition, rhythm and interaction are phone-native.       */
+/* ================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1 — Tokens                                                          */
+/* The desktop scale bottoms out on its clamp floor at phone widths,    */
+/* which leaves display (2.6rem) barely above h2 (2.0rem) — the         */
+/* hierarchy step the whole design rests on collapses. These sizes      */
+/* scale with the handset instead of freezing, and deliberately widen   */
+/* the display-to-h2 gap rather than shrinking everything uniformly.    */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  :root {
+    --text-display: clamp(2.35rem, 9.6vw, 3.05rem);
+    --text-h2: clamp(1.72rem, 6.4vw, 2.05rem);
+    --text-h3: clamp(1.28rem, 4.6vw, 1.5rem);
+    --text-h4: 1.14rem;
+    --text-lead: clamp(1.04rem, 3.5vw, 1.14rem);
+    --text-body: 1rem;
+    --text-small: 0.9rem;
+    --text-label: 0.75rem;
+    --text-stat: clamp(2.2rem, 8.6vw, 2.9rem);
+
+    /* Mirrors the .container-site gutter so bleeds and rails can cancel
+       it exactly. Kept as one source of truth. */
+    --m-gutter: clamp(1.25rem, 4vw, 2.5rem);
+
+    /* Sticky offsets. The header bar is 4rem tall; sticky things clear it
+       with a little air. */
+    --m-header-h: 4rem;
+    --m-sticky-top: 4.75rem;
+
+    /* Retargeted inline sizes (see the var(--m-x, …) fallbacks in JSX). */
+    --m-unit-stat: 1.85rem;
+    --m-exh-figure: clamp(4.5rem, 26vw, 7rem);
+    --m-showcase-stat: 1.45rem;
+    --m-ticket-name: 1.05rem;
+    --m-hero-compact-pad: 2rem;
+    --m-award-year: clamp(3.25rem, 17vw, 4.5rem);
+    --m-partner-stat: 1.85rem;
+    --m-blogcard-title: 1.2rem;
+  }
+
+  .t-display {
+    line-height: 1.04;
+    letter-spacing: -0.022em;
+  }
+
+  .t-h2 {
+    line-height: 1.14;
+    letter-spacing: -0.014em;
+  }
+
+  .t-h3 {
+    line-height: 1.24;
+  }
+
+  .t-lead {
+    line-height: 1.5;
+  }
+
+  .t-body,
+  body {
+    line-height: 1.6;
+  }
+
+  /* The dark-ground rhythm bump stays proportional. */
+  .on-dark p,
+  .on-dark li,
+  .drench-band p,
+  .drench-band li {
+    line-height: 1.68;
+  }
+
+  /* Native anchor jumps clear the shorter mobile header. */
+  html {
+    scroll-padding-top: 4.75rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 2 — Rhythm                                                          */
+/* `.section-pad` bottoms out at 4.5rem top AND bottom on a phone, so   */
+/* ~144px of empty paper sits between every one of ~9 sections. Roughly */
+/* half of that comes back as content here.                             */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .section-pad {
+    padding-block: clamp(2.5rem, 8vw, 3.25rem);
+  }
+
+  .hero-pad {
+    padding-top: 1.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  /* Section-internal grouping. One class replaces the desktop
+     gap-8/10/12/14 wherever a section wrapper needs phone rhythm. */
+  .m-flow {
+    gap: 1.5rem;
+  }
+
+  .m-flow-tight {
+    gap: 1rem;
+  }
+
+  .m-flow-loose {
+    gap: 2rem;
+  }
+
+  /* Row rhythm inside the businesses list and similar repeated blocks. */
+  .m-divide {
+    margin-top: 2rem;
+    padding-top: 2rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 3 — Full bleed                                                      */
+/* Nothing on the current site ever reaches the screen edge. Letting    */
+/* photography and dark bands run edge to edge is the single strongest  */
+/* "made for this screen" cue, and it buys back 40-60px of width.       */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .m-bleed {
+    margin-inline: calc(var(--m-gutter) * -1);
+    border-inline: 0;
+    border-radius: 0;
+    max-width: none;
+    width: auto;
+  }
+
+}
+
+/* ------------------------------------------------------------------ */
+/* 4 — Snap rails                                                      */
+/* Stores, blog cards, portraits, awards, business tickets and brand    */
+/* tiles are all tall vertical stacks today. A horizontal snap rail     */
+/* shows the same content in a fraction of the scroll, and reads as     */
+/* native on a touch screen. Cards peek at the right edge, so the       */
+/* affordance is the layout itself — no arrows, no dots.                */
+/*                                                                     */
+/* Pure CSS: works with JS disabled, scrolls with a thumb, and every    */
+/* rail's children are links or buttons so keyboard users reach them    */
+/* by tabbing (the browser scrolls focus into view).                    */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .m-rail {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.875rem;
+    margin-inline: calc(var(--m-gutter) * -1);
+    padding-inline: var(--m-gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    /* Setting overflow-x makes the block axis compute to `auto` too, which
+       would clip a 2px ring at 2px offset. Four pixels of inner room, cancelled
+       by the negative margin, keeps focus rings whole without moving anything. */
+    padding-block: 4px;
+    margin-block: -4px;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline-start: var(--m-gutter);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .m-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .m-rail > * {
+    flex: 0 0 var(--m-rail-w, 78%);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Trailing air so the last card can settle at the left gutter even in
+     engines that drop padding-inline-end on a flex scroll container. */
+  .m-rail::after {
+    content: "";
+    flex: 0 0 1px;
+    align-self: stretch;
+  }
+
+  .m-rail-wide {
+    --m-rail-w: 86%;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 5 — Touch feedback                                                  */
+/* Every hover affordance on this site is dead on a phone. A quiet      */
+/* press state gives back the "this is tappable" signal.                */
+/* Applied to inner links/cards only — never to an element GSAP drives, */
+/* since GSAP writes an inline transform that would win.                */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .press {
+    transition: transform 140ms var(--ease);
+  }
+
+  .press:active {
+    transform: scale(0.985);
+  }
+
+  /* Plate-like surfaces press a touch less, or the movement reads cheap. */
+  .press-soft:active {
+    transform: scale(0.992);
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .press,
+  .press-soft {
+    transition: none;
+  }
+
+  .press:active,
+  .press-soft:active {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 6 — Shell: menu sheet, action bar, footer                           */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  /* --- Mobile menu sheet ------------------------------------------- */
+
+  .menu-sheet__panel {
+    padding: 1.15rem var(--m-gutter)
+      calc(1.15rem + env(safe-area-inset-bottom, 0px));
+    padding-top: calc(1.15rem + env(safe-area-inset-top, 0px));
+  }
+
+  .menu-sheet__nav {
+    margin-top: 1.75rem;
+    gap: 0;
+  }
+
+  .menu-sheet__eyebrow {
+    margin-bottom: 0.4rem;
+  }
+
+  .menu-sublink {
+    min-height: 44px;
+    padding-block: 0.45rem;
+    font-size: 1.12rem;
+  }
+
+  .menu-sheet__gap {
+    margin-top: 1.15rem;
+  }
+
+  .menu-link {
+    font-size: 1.65rem;
+    padding-block: 0.34rem;
+  }
+
+  .menu-sheet__foot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+
+  /* The two things a trade visitor actually reaches for, sitting under the
+     thumb rather than back up the sheet. */
+  .menu-sheet__contact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .menu-sheet__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 46px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    font-family: var(--font-archivo), system-ui, sans-serif;
+    font-weight: 650;
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+
+  /* --- Sticky action bar ------------------------------------------- */
+
+  .action-bar {
+    box-shadow: 0 -10px 26px -20px oklch(0.215 0.01 30 / 0.55);
+  }
+
+  .action-bar__btn {
+    min-height: 52px;
+  }
+
+  /* --- Footer ------------------------------------------------------ */
+
+  .footer-channels {
+    margin-top: 1.5rem;
+  }
+
+  /* Three units of contact rows stack into a very tall column at phone
+     width; below 480px that is unavoidable, but a landscape handset has
+     room for two. */
+  .channels {
+    gap: 1.5rem 1.25rem;
+  }
+
+  .footer-map {
+    margin-top: 2rem;
+  }
+
+  .footer-map .nm-svg {
+    max-height: 240px;
+  }
+
+  .footer-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.15rem 1rem;
+    margin-top: 2.25rem;
+  }
+
+  .footer-nav a {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .footer-nap {
+    margin-top: 1.75rem;
+  }
+
+  .footer-legal {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .channels {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 7 — Shared components                                               */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  /* Stat band — the 2x2 grid stays, the desktop padding does not. */
+  .stat-item {
+    padding: 0.95rem 0.85rem;
+  }
+
+  .stat-item:nth-child(2n + 1) {
+    padding-left: 0;
+  }
+
+  /* Brand marquee: smaller plates and a quicker loop. At phone width the
+     48s track barely appears to move, which reads as broken rather than calm. */
+  :root {
+    --m-marquee-duration: 32s;
+    /* Three tiles across a 335px column instead of two 150px ones. */
+    --m-logo-min: 96px;
+  }
+
+  .marquee__tile {
+    height: 3.25rem;
+    width: 6.5rem;
+    padding: 0.6rem;
+  }
+
+  .marquee__group {
+    gap: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Logo wall: tighter tiles, less inner padding so small marks stay legible
+     at three across. */
+  .logo-tile {
+    padding: 12%;
+  }
+
+  /* FAQ: the summary is a tap target, so it keeps its height, but the type
+     comes down to the mobile body scale. */
+  .faq-summary {
+    font-size: 1rem;
+    padding: 0.95rem 0;
+    gap: 0.75rem;
+  }
+
+  .faq-answer {
+    padding-bottom: 1rem;
+  }
+
+  /* Testimonials: the short mobile list becomes a snap rail (the .m-rail class
+     is added in TestimonialColumns.tsx; these are the card-level tweaks). */
+  .tcols__mobile > li {
+    display: flex;
+  }
+
+  .tcol__card {
+    width: 100%;
+    padding: 1.15rem;
+  }
+
+  .tcol__quote {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    line-height: 1.55;
+  }
+
+  /* Recognition cabinet: the 2-up grid becomes a rail of taller plates, so a
+     certificate is actually readable instead of thumbnail-sized. */
+  .fan__stage {
+    --m-rail-w: 56%;
+  }
+
+  .fan__card {
+    gap: 0.6rem;
+  }
+
+  .fan__img {
+    padding: 0.5rem;
+  }
+
+  .fan__cap {
+    font-size: 0.85rem;
+  }
+
+  /* Systems ledger (home infrastructure band). */
+  .infra__row {
+    padding-block: 0.85rem 1rem;
+    column-gap: 0.8rem;
+  }
+
+  .infra__node {
+    margin-top: 0.45rem;
+  }
+
+  .infra__text {
+    margin-top: 0.35rem;
+  }
+
+  .infra-band__inner {
+    padding-block: clamp(2.5rem, 8vw, 3.25rem);
+  }
+
+  .infra-band__grid {
+    gap: 1.5rem;
+  }
+
+  .infra-band__body {
+    gap: 1.25rem;
+  }
+
+  /* The godown photo runs edge to edge in a landscape frame instead of a
+     screen-tall 4:5 portrait. */
+  .infra-band__photo {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* Timeline: the spine sits closer in, and entries pack tighter. */
+  .tl {
+    --tl-pad: 1.35rem;
+  }
+
+  .tl__entry {
+    padding-bottom: 1.85rem;
+  }
+
+  .tl__rule {
+    margin: 0.6rem 0;
+  }
+
+  /* Pillar cards. */
+  .stack__card {
+    padding: 1.35rem 1.25rem;
+  }
+
+  .stack__mark {
+    margin-bottom: 0.75rem;
+  }
+
+  .stack__text {
+    margin-top: 0.55rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 8 — Shared phone idioms                                             */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  /* Frame ratios. Applied as a class rather than a prop so the desktop
+     `aspect-ratio` inline value is never touched — ParallaxImage writes it
+     as var(--m-frame-ratio, <desktop>). */
+  .m-ar-4-3 {
+    --m-frame-ratio: 4 / 3;
+  }
+
+  .m-ar-16-9 {
+    --m-frame-ratio: 16 / 9;
+  }
+
+  /* Call-to-action rows: a thumb wants one full-width target, not two
+     half-width ones sharing a line. */
+  .m-cta {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+  }
+
+  .m-cta .btn {
+    width: 100%;
+  }
+
+  /* A text link promoted to a proper touch row. */
+  .m-tap {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 9 — Home                                                            */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  /* Proof band: the desktop scrim runs left-to-right because the copy sits
+     in the left two thirds. Full-width copy on a phone needs it top-down or
+     the last lines sit on the warehouse photo. */
+  :root {
+    --m-proof-scrim: linear-gradient(
+      180deg,
+      var(--charcoal) 42%,
+      color-mix(in oklch, var(--charcoal), transparent 12%)
+    );
+  }
+
+  /* Business tickets: the framed 3-up grid becomes a peeking rail. The
+     wrapper gives up its border and clipping so the rail can bleed. */
+  .ticket-nav {
+    overflow: visible;
+    margin-top: 1.75rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .ticket-nav__grid {
+    --m-rail-w: 74%;
+    gap: 0.7rem;
+    background: transparent;
+  }
+
+  .ticket {
+    gap: 0.6rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+  }
+
+  /* Businesses: name and proof first, identity plate second — and the same
+     way round for all three, since alternating sides means nothing once the
+     columns have stacked. */
+  .unit-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .unit-showcase__copy {
+    order: 1;
+    gap: 0.7rem;
+  }
+
+  .unit-showcase__media {
+    order: 2;
+  }
+
+  /* The plate is a large empty white box at phone width. Compact it to a
+     logo strip over a three-up hairline stat row. */
+  .unit-showcase__plate {
+    gap: 1rem;
+    padding: 1.1rem 1rem;
+  }
+
+  .unit-showcase__logo {
+    height: 2.5rem;
+  }
+
+  .unit-showcase__stats {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 1rem;
+  }
+
+  .unit-showcase__points {
+    gap: 0.5rem;
+  }
+
+  .unit-showcase__action {
+    margin-top: 0.5rem;
+  }
+
+  .unit-showcase__action .btn {
+    width: 100%;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 10 — Unit pages (marketing / apparels / retail)                     */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  /* Dark bands: same reason as the home proof band — full-width copy needs a
+     top-down scrim, not a left-to-right one. */
+  :root {
+    --m-band-scrim: linear-gradient(
+      180deg,
+      var(--charcoal) 45%,
+      color-mix(in oklch, var(--charcoal), transparent 14%)
+    );
+  }
+
+  /* Hero identity block: a full-width 5:3 white box is a 200px empty plate on
+     a phone. It becomes a short logo strip over a tight stat ledger. */
+  .unit-hero__aside {
+    gap: 0.85rem;
+  }
+
+  .unit-hero__plate {
+    padding: 0.9rem 1rem;
+  }
+
+  .unit-hero__logo {
+    aspect-ratio: auto;
+    height: 2.75rem;
+  }
+
+  .unit-hero__stat {
+    padding-block: 0.6rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .unit-hero__stat-label {
+    max-width: 11rem;
+  }
+
+  /* Numbered sequences and hairline ledgers. */
+  .m-step {
+    column-gap: 1rem;
+    padding-block: 1rem;
+  }
+
+  .m-ledger-row {
+    padding-block: 0.85rem;
+  }
+
+  /* Pull quote under the "how we work" heading. */
+  .m-pull {
+    margin-top: 1.5rem;
+    gap: 0.85rem;
+  }
+
+  /* Retail: the desktop image duo overlaps; stacked full-bleed it just needs
+     to sit tight enough to read as one pair rather than two lone photos. */
+  .m-duo > * + * {
+    margin-top: 0.5rem;
+  }
+
+  /* Retail roadmap: stand the connecting rule up and hang the nodes off it. */
+  .roadmap {
+    padding-top: 0.25rem;
+  }
+
+  .roadmap__spine {
+    --m-spine-top: 0.4rem;
+    --m-spine-height: auto;
+    bottom: 0.4rem;
+    left: 7px;
+    right: auto;
+    width: 1px;
+  }
+
+  .roadmap__list {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .roadmap__node {
+    position: relative;
+    gap: 0.25rem;
+    padding-left: 1.9rem;
+  }
+
+  .roadmap__dot {
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 11 — About                                                          */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .about-house {
+    padding-block: 0.85rem;
+    gap: 0.4rem;
+  }
+
+  /* Leaders: one 4:5 portrait per row is four screens of monogram plates.
+     Two up halves it and still reads. */
+  .leaders {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .leader__cap {
+    padding: 0.85rem 0.9rem;
+    gap: 0.5rem;
+  }
+
+  /* Values band: the photographic panels run edge to edge and lose a chunk
+     of their desktop height, so all three fit in a comfortable scroll. */
+  .vp-band__inner {
+    padding-block: clamp(2.5rem, 8vw, 3.25rem);
+  }
+
+  .vp {
+    gap: 1.5rem;
+  }
+
+  .vp__rail {
+    gap: 0.85rem;
+  }
+
+  .vp__panels {
+    gap: 0.6rem;
+    margin-inline: calc(var(--m-gutter) * -1);
+  }
+
+  .vp__face {
+    min-height: 13.5rem;
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  .vp__body {
+    padding: 1.15rem var(--m-gutter);
+    gap: 0.4rem;
+  }
+
+  .vp__text {
+    max-width: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 12 — Partner + inquiry form                                         */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .partner-stat {
+    gap: 1rem;
+    padding-block: 0.6rem;
+  }
+
+  /* Promise pairs and the four franchise steps both read as ruled entries. */
+  .promise-list {
+    gap: 0.85rem;
+  }
+
+  .promise {
+    padding-top: 0.85rem;
+  }
+
+  .m-step-card {
+    gap: 0.4rem;
+    padding-top: 0.85rem;
+  }
+
+  /* Form: full-width targets, and enough room under the last control that
+     the sticky bar (which yields near #inquiry anyway) can never sit on it. */
+  .inquiry-form {
+    gap: 1.25rem;
+  }
+
+  .intent-card {
+    padding: 0.9rem 1rem;
+  }
+
+  .intent-card__title {
+    font-size: 1rem;
+  }
+
+  .inquiry-form .btn-lg {
+    width: 100%;
+  }
+
+  .inquiry-grid {
+    gap: 1.5rem;
+  }
+
+  .routing-rail {
+    padding: 1rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 13 — Brands                                                         */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  /* The filter pills follow the reader down the 77-tile wall instead of
+     scrolling away after the first row. */
+  .brand-filters {
+    position: sticky;
+    top: var(--m-header-h);
+    z-index: 1;
+    gap: 0.5rem;
+    margin-inline: calc(var(--m-gutter) * -1);
+    padding: 0.6rem var(--m-gutter);
+    background: var(--paper-shade);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand-filters__row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 0.4rem;
+    padding-block: 2px;
+  }
+
+  .brand-filters__row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .brand-filters__row button {
+    flex: none;
+    min-height: 40px;
+  }
+
+  .brand-filters__count {
+    margin: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 14 — Trade Notes index + article                                    */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .post-grid {
+    margin-top: 2rem;
+    gap: 1.75rem;
+  }
+
+  .post-card__kicker {
+    margin-top: 0.9rem;
+  }
+
+  .post-card__meta {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  /* The article is the one page whose job is sustained reading, so its body
+     runs a notch larger and looser than the marketing pages' 16px/1.6. */
+  .article__body {
+    margin-top: 1.75rem;
+    font-size: 1.0625rem;
+    line-height: 1.72;
+  }
+
+  .article__cta {
+    margin-top: 2.25rem;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .article__more {
+    margin-top: 2.25rem;
+    padding-top: 1.5rem;
+  }
+
+  /* Reading progress: pinned to the very top of the viewport rather than under
+     the header, since the header itself slides away on scroll-down. */
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: calc(var(--z-header) + 1);
+    pointer-events: none;
+  }
+
+  .reading-progress__bar {
+    height: 100%;
+    width: 100%;
+    background: var(--vermillion-deep);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 15 — Contact                                                        */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .contact-address {
+    padding-top: 1.25rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 16 — Recognition                                                    */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .award-lead {
+    gap: 0.6rem;
+  }
+
+  .award-cards {
+    gap: 0.75rem;
+  }
+
+  .award-card {
+    padding: 1.1rem 1.15rem;
+    gap: 0.35rem;
+  }
+
+  .milestone {
+    padding: 0.85rem 0.9rem;
+  }
+}
+
+/* The sticky pillar stack. Guarded on no-preference because motion.css's
+   reduced-motion rule (`position: static`) sits earlier in the cascade and
+   would otherwise lose to this file. */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .stack {
+    display: block;
+  }
+
+  .stack__card {
+    position: sticky;
+    top: var(--m-sticky-top);
+    min-height: 11.5rem;
+  }
+
+  .stack__card:not(:last-child) {
+    margin-bottom: 0.85rem;
+  }
+}

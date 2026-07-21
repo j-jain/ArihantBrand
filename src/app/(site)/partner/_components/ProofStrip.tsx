@@ -13,7 +13,7 @@ export function ProofStrip({ stores }: { stores: Store[] }) {
   return (
     <StaggerGroup
       from="up"
-      className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      className="m-rail grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
       stagger={0.12}
     >
       {shots.map((store) => (

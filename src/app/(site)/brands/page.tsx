@@ -65,8 +65,8 @@ export default async function BrandsPage() {
       {/* 1 — Hero (paper) */}
       <section className="bg-paper">
         <HeroIntro className="container-site hero-pad">
-          <div className="flex max-w-3xl flex-col gap-6">
-            <div className="flex flex-col gap-5">
+          <div className="m-flow flex max-w-3xl flex-col gap-6">
+            <div className="m-flow-tight flex flex-col gap-5">
               <HeroHeading heading={hero.heading} emphasis={hero.headingEmphasis} />
               <div
                 data-hero-reveal
@@ -77,7 +77,7 @@ export default async function BrandsPage() {
             <p data-hero-reveal className="t-lead measure text-ink-soft">
               {hero.lead}
             </p>
-            <div data-hero-reveal className="mt-1 flex flex-wrap gap-3">
+            <div data-hero-reveal className="m-cta mt-1 flex flex-wrap gap-3">
               <Button href={hero.primaryCta.href} variant="primary" size="lg">
                 {hero.primaryCta.label}
               </Button>
@@ -96,7 +96,7 @@ export default async function BrandsPage() {
 
       {/* 2 — The wall (paper-shade): filterable, every tile opens the modal */}
       <section className="section-pad bg-paper-shade">
-        <div className="container-wide flex flex-col gap-8">
+        <div className="container-wide m-flow flex flex-col gap-8">
           <Reveal variant="fade">
             <SectionHeading heading={sections.wall?.heading ?? "The portfolio"} />
           </Reveal>
@@ -106,7 +106,7 @@ export default async function BrandsPage() {
 
       {/* 3 — CTA band (single vermillion drench) */}
       <DrenchBand className="section-pad">
-        <div className="container-site flex max-w-3xl flex-col gap-6">
+        <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
           <h2 data-drench-reveal className="t-h2 text-white">
             {cta.heading}
           </h2>
@@ -119,8 +119,8 @@ export default async function BrandsPage() {
               {cta.lead}
             </p>
           ) : null}
-          <div data-drench-reveal className="mt-1">
-            <Button href="/contact?intent=brand" variant="onDark" size="lg">
+          <div data-drench-reveal className="m-cta mt-1">
+            <Button href="/contact?intent=brand" variant="onDark" size="lg" className="press">
               {hero.primaryCta.label}
             </Button>
           </div>

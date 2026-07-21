@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "./motion.css";
 @import "./form.css";
+/* Last, so the mobile layer can retune anything above it. Every rule in
+   that file is inside `@media (max-width: 767px)` — see its header. */
+@import "./mobile.css";
 
 /* ------------------------------------------------------------------ */
 /* Design tokens — OKLCH, from DESIGN.md (identity-preserving)          */

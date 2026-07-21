@@ -45,7 +45,7 @@ const railValueStyle: CSSProperties = {
   fontWeight: 800,
   fontStretch: "85%",
   fontVariantNumeric: "tabular-nums",
-  fontSize: "clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem)",
+  fontSize: "var(--m-unit-stat, clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem))",
   lineHeight: 1,
   letterSpacing: "-0.01em",
   color: "var(--unit-accent)",
@@ -113,9 +113,9 @@ export default async function ArihantMarketingPage() {
       {/* 1 — Hero (paper): headline + maroon-accented logo/stats rail */}
       <section className="hero-pad bg-paper" style={unitScope(UNIT)}>
         <HeroIntro className="container-site">
-          <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-5">
+          <div className="m-flow grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
+            <div className="m-flow flex flex-col gap-6">
+              <div className="m-flow-tight flex flex-col gap-5">
                 <EmphasisHeading
                   as="h1"
                   className="t-display text-ink"
@@ -137,7 +137,7 @@ export default async function ArihantMarketingPage() {
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              <div data-hero-reveal className="mt-1 flex flex-wrap gap-3">
+              <div data-hero-reveal className="m-cta mt-1 flex flex-wrap gap-3">
                 <Button href={hero.primaryCta.href} variant="primary" size="lg">
                   {hero.primaryCta.label}
                 </Button>
@@ -151,9 +151,9 @@ export default async function ArihantMarketingPage() {
 
             {/* Right rail: unit logo plate + three stacked stats */}
             {business ? (
-              <aside data-hero-reveal className="flex flex-col gap-6">
-                <div className="rounded-md border border-line bg-white p-6">
-                  <div className="relative aspect-[5/3]">
+              <aside data-hero-reveal className="unit-hero__aside flex flex-col gap-6">
+                <div className="unit-hero__plate rounded-md border border-line bg-white p-6">
+                  <div className="unit-hero__logo relative aspect-[5/3]">
                     <Image
                       src={business.logo}
                       alt={`${business.name} logo`}
@@ -163,17 +163,17 @@ export default async function ArihantMarketingPage() {
                     />
                   </div>
                 </div>
-                <dl className="flex flex-col">
+                <dl className="unit-hero__stats flex flex-col">
                   {business.stats.map((stat, index) => (
                     <div
                       key={stat.label}
                       className={cn(
-                        "flex items-baseline justify-between gap-4 py-4",
+                        "unit-hero__stat flex items-baseline justify-between gap-4 py-4",
                         index > 0 && "border-t border-line",
                       )}
                     >
                       <dd style={railValueStyle}>{formatStat(stat.value, stat.suffix)}</dd>
-                      <dt className="t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
+                      <dt className="unit-hero__stat-label t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
                     </div>
                   ))}
                 </dl>
@@ -195,12 +195,15 @@ export default async function ArihantMarketingPage() {
           />
           <div
             className="absolute inset-0"
-            style={{ background: "linear-gradient(90deg, var(--charcoal) 34%, transparent)" }}
+            style={{
+              background:
+                "var(--m-band-scrim, linear-gradient(90deg, var(--charcoal) 34%, transparent))",
+            }}
           />
         </div>
         <div className="container-site relative">
           <div className="grid lg:grid-cols-12">
-            <div className="flex flex-col gap-5 lg:col-span-7">
+            <div className="m-flow-tight flex flex-col gap-5 lg:col-span-7">
               <h2 className="t-h2 text-on-charcoal">{award.heading}</h2>
               <div
                 aria-hidden="true"
@@ -216,15 +219,15 @@ export default async function ArihantMarketingPage() {
 
       {/* 3 — How we work (paper): a warehouse-side intro + a numbered sequence */}
       <section className="section-pad bg-paper" style={unitScope(UNIT)}>
-        <div className="container-site flex flex-col gap-14">
+        <div className="container-site m-flow-loose flex flex-col gap-14">
           <Reveal
             variant="fade"
-            className="grid gap-y-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16"
+            className="m-flow grid gap-y-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16"
           >
             <div className="flex flex-col">
               <SectionHeading heading={how.heading} lead={how.lead} />
               {twentyDayPromise ? (
-                <figure className="mt-10 flex flex-col gap-4">
+                <figure className="m-pull mt-10 flex flex-col gap-4">
                   <span
                     aria-hidden="true"
                     className="block"
@@ -245,17 +248,24 @@ export default async function ArihantMarketingPage() {
               alt={stockImages.marketingWarehouse1.alt}
               ratio="4 / 5"
               sizes="(max-width: 1023px) 100vw, 34vw"
-              className="border border-line"
+              className="m-ar-4-3 border border-line"
               tilt
+              mBleed
             />
           </Reveal>
 
-          <StaggerGroup as="ol" from="left" className="flex flex-col" stagger={0.1}>
+          <StaggerGroup
+            as="ol"
+            from="left"
+            className="flex flex-col"
+            stagger={0.1}
+            mLedger
+          >
             {(how.body ?? []).map((step, index) => (
               <li
                 key={step}
                 className={cn(
-                  "grid grid-cols-[auto_1fr] items-baseline gap-x-6 gap-y-1 py-6",
+                  "m-step grid grid-cols-[auto_1fr] items-baseline gap-x-6 gap-y-1 py-6",
                   index > 0 && "border-t border-line",
                 )}
               >
@@ -282,7 +292,7 @@ export default async function ArihantMarketingPage() {
           borderBlock: "1px solid var(--unit-accent-line)",
         }}
       >
-        <div className="container-site flex flex-col gap-12">
+        <div className="container-site m-flow flex flex-col gap-12">
           <Reveal variant="fade">
             <SectionHeading heading={sis.heading} lead={sis.lead} />
           </Reveal>
@@ -291,11 +301,12 @@ export default async function ArihantMarketingPage() {
             from="up"
             className="flex flex-col border-t border-line"
             stagger={0.08}
+            mLedger
           >
             {sisScope.map((row) => (
               <li
                 key={row.title}
-                className="grid items-baseline gap-x-8 gap-y-1 border-b border-line py-5 md:grid-cols-[minmax(0,15rem)_1fr]"
+                className="m-ledger-row grid items-baseline gap-x-8 gap-y-1 border-b border-line py-5 md:grid-cols-[minmax(0,15rem)_1fr]"
               >
                 <h3
                   className="font-sans text-ink"
@@ -307,8 +318,8 @@ export default async function ArihantMarketingPage() {
               </li>
             ))}
           </StaggerGroup>
-          <div>
-            <Button href="/contact?intent=brand" variant="primary" size="lg">
+          <div className="m-cta">
+            <Button href="/contact?intent=brand" variant="primary" size="lg" className="press">
               Distribute your brand
             </Button>
           </div>
@@ -318,7 +329,7 @@ export default async function ArihantMarketingPage() {
       {/* 5 — Brand wall (paper) */}
       <section className="section-pad bg-paper" style={unitScope(UNIT)}>
         <div className="container-wide">
-          <Reveal className="flex flex-col gap-8">
+          <Reveal className="m-flow flex flex-col gap-8">
             <SectionHeading heading={brandsSection.heading} lead={brandsSection.lead} />
             <LogoWall partners={marketingPartners} />
             <p>
@@ -337,7 +348,7 @@ export default async function ArihantMarketingPage() {
       {faqs.length ? (
         <section className="section-pad bg-paper-shade">
           <div className="container-site">
-            <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+            <div className="m-flow grid gap-10 lg:grid-cols-[1fr_1.4fr]">
               <Reveal variant="fade">
                 <SectionHeading heading={faqSection.heading} />
               </Reveal>
@@ -350,7 +361,7 @@ export default async function ArihantMarketingPage() {
 
       {/* 7 — CTA band (single vermillion drench) */}
       <DrenchBand className="section-pad">
-        <div className="container-site flex max-w-3xl flex-col gap-6">
+        <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
           <h2 data-drench-reveal className="t-h2">
             {ctaSection?.heading ?? "Put thirty years of distribution behind your counter."}
           </h2>
@@ -359,16 +370,16 @@ export default async function ArihantMarketingPage() {
               {ctaSection.lead}
             </p>
           ) : null}
-          <div data-drench-reveal className="mt-1 flex flex-col gap-4">
+          <div data-drench-reveal className="m-cta mt-1 flex flex-col gap-4">
             <div>
-              <Button href="/contact?intent=retailer" variant="onDark" size="lg">
+              <Button href="/contact?intent=retailer" variant="onDark" size="lg" className="press">
                 Become a retail partner
               </Button>
             </div>
             {firstPhone ? (
               <a
                 href={`tel:+91${firstPhone.phone}`}
-                className="t-small w-fit underline-offset-4 hover:underline"
+                className="m-tap t-small w-fit underline-offset-4 hover:underline"
                 style={{ color: "var(--_text-soft)" }}
               >
                 Or call {firstPhone.name} &middot; {formatPhone(firstPhone.phone)}

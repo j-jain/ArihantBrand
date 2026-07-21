@@ -11,21 +11,28 @@ interface StickyActionBarProps {
   inquiryHref?: string;
 }
 
+/** Sections that already put the same ask in front of the reader. While one of
+ *  these is on screen the bar stands down, so a phone visitor never sees the
+ *  page's own CTA and a floating duplicate of it at the same time. */
+const RIVAL_CTA = ".drench-band, #inquiry, .action-bar-yield";
+
 /** Mobile-only bar with Call / WhatsApp / Inquire. Slides up once the reader
- *  is past the hero (~90vh). It duplicates actions available elsewhere, so it
- *  is a pure enhancement — no content depends on it. */
+ *  is past the hero (~90vh), and back down whenever a CTA band or the inquiry
+ *  form is in view. It duplicates actions available elsewhere, so it is a pure
+ *  enhancement — no content depends on it. */
 export function StickyActionBar({
   tel,
   whatsapp,
   inquiryHref = "/contact#inquiry",
 }: StickyActionBarProps) {
-  const [visible, setVisible] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
+  const [ctaOnScreen, setCtaOnScreen] = useState(false);
 
   useEffect(() => {
     let ticking = false;
     const update = () => {
       ticking = false;
-      setVisible(window.scrollY > window.innerHeight * 0.9);
+      setPastHero(window.scrollY > window.innerHeight * 0.9);
     };
     const onScroll = () => {
       if (ticking) return;
@@ -36,6 +43,29 @@ export function StickyActionBar({
     update();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Yield to the page's own calls to action. Counting intersections rather than
+  // tracking a single element keeps this correct on pages with several.
+  useEffect(() => {
+    const targets = document.querySelectorAll(RIVAL_CTA);
+    if (targets.length === 0) return;
+
+    const visible = new Set<Element>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target);
+          else visible.delete(entry.target);
+        }
+        setCtaOnScreen(visible.size > 0);
+      },
+      { threshold: 0 },
+    );
+    targets.forEach((target) => io.observe(target));
+    return () => io.disconnect();
+  }, []);
+
+  const visible = pastHero && !ctaOnScreen;
 
   return (
     <div

@@ -44,7 +44,7 @@ const railValueStyle: CSSProperties = {
   fontWeight: 800,
   fontStretch: "85%",
   fontVariantNumeric: "tabular-nums",
-  fontSize: "clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem)",
+  fontSize: "var(--m-unit-stat, clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem))",
   lineHeight: 1,
   letterSpacing: "-0.01em",
   color: "var(--unit-accent)",
@@ -114,9 +114,9 @@ export default async function ArihantApparelsPage() {
       {/* 1 — Hero (paper): headline + ink-accented logo/stats rail */}
       <section className="hero-pad bg-paper" style={unitScope(UNIT)}>
         <HeroIntro className="container-site">
-          <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-5">
+          <div className="m-flow grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
+            <div className="m-flow flex flex-col gap-6">
+              <div className="m-flow-tight flex flex-col gap-5">
                 <EmphasisHeading
                   as="h1"
                   className="t-display text-ink"
@@ -138,7 +138,7 @@ export default async function ArihantApparelsPage() {
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              <div data-hero-reveal className="mt-1 flex flex-wrap gap-3">
+              <div data-hero-reveal className="m-cta mt-1 flex flex-wrap gap-3">
                 <Button href={hero.primaryCta.href} variant="primary" size="lg">
                   {hero.primaryCta.label}
                 </Button>
@@ -151,9 +151,9 @@ export default async function ArihantApparelsPage() {
             </div>
 
             {business ? (
-              <aside data-hero-reveal className="flex flex-col gap-6">
-                <div className="rounded-md border border-line bg-white p-6">
-                  <div className="relative aspect-[5/3]">
+              <aside data-hero-reveal className="unit-hero__aside flex flex-col gap-6">
+                <div className="unit-hero__plate rounded-md border border-line bg-white p-6">
+                  <div className="unit-hero__logo relative aspect-[5/3]">
                     <Image
                       src={business.logo}
                       alt={`${business.name} logo`}
@@ -163,17 +163,17 @@ export default async function ArihantApparelsPage() {
                     />
                   </div>
                 </div>
-                <dl className="flex flex-col">
+                <dl className="unit-hero__stats flex flex-col">
                   {business.stats.map((stat, index) => (
                     <div
                       key={stat.label}
                       className={cn(
-                        "flex items-baseline justify-between gap-4 py-4",
+                        "unit-hero__stat flex items-baseline justify-between gap-4 py-4",
                         index > 0 && "border-t border-line",
                       )}
                     >
                       <dd style={railValueStyle}>{formatStat(stat.value, stat.suffix)}</dd>
-                      <dt className="t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
+                      <dt className="unit-hero__stat-label t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
                     </div>
                   ))}
                 </dl>
@@ -193,16 +193,17 @@ export default async function ArihantApparelsPage() {
         }}
       >
         <div className="container-site">
-          <Reveal variant="fade" className="grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-start">
+          <Reveal variant="fade" className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-start">
             <ParallaxImage
               src="/images/photos/apparels-warehouse-2.jpg"
               alt="Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati"
               ratio="4 / 5"
               sizes="(max-width: 1023px) 100vw, 40vw"
-              className="border border-line lg:col-span-5"
+              className="m-ar-4-3 border border-line lg:col-span-5"
               tilt
+              mBleed
             />
-            <div className="flex flex-col gap-6 lg:col-span-7">
+            <div className="m-flow flex flex-col gap-6 lg:col-span-7">
               <div>
                 <h2 className="t-h2 text-ink">{mission.heading}</h2>
                 <div
@@ -230,8 +231,8 @@ export default async function ArihantApparelsPage() {
       {/* 2b — Film (paper): the event promo, click-to-play */}
       <section className="section-pad bg-paper" style={unitScope(UNIT)}>
         <div className="container-site">
-          <div className="grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-center">
-            <div className="flex flex-col gap-5 lg:col-span-5">
+          <div className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-center">
+            <div className="m-flow-tight flex flex-col gap-5 lg:col-span-5">
               <div>
                 <h2 className="t-h2 text-ink">{filmSection.heading}</h2>
                 <div
@@ -253,6 +254,7 @@ export default async function ArihantApparelsPage() {
                 mp4="/videos/apparels-promo.mp4"
                 poster="/images/photos/apparels-promo-poster.jpg"
                 label="Play the Arihant Apparels film"
+                className="m-bleed"
               />
             </Reveal>
           </div>
@@ -278,7 +280,7 @@ export default async function ArihantApparelsPage() {
           />
         </div>
         <div className="container-site relative">
-          <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-16">
+          <div className="m-flow-tight grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-16">
             {exhStat ? (
               <p
                 aria-hidden="true"
@@ -290,7 +292,7 @@ export default async function ArihantApparelsPage() {
                   fontVariantNumeric: "tabular-nums",
                   lineHeight: 0.9,
                   letterSpacing: "-0.02em",
-                  fontSize: "clamp(5rem, 3rem + 14vw, 11rem)",
+                  fontSize: "var(--m-exh-figure, clamp(5rem, 3rem + 14vw, 11rem))",
                   color: "var(--on-charcoal)",
                 }}
               >
@@ -299,7 +301,7 @@ export default async function ArihantApparelsPage() {
                 <span>{exhStat.value}</span>
               </p>
             ) : null}
-            <div className="flex flex-col gap-4">
+            <div className="m-flow-tight flex flex-col gap-4">
               <h2 className="t-h2 text-on-charcoal">{exhibitions.heading}</h2>
               {exhibitions.lead ? (
                 <p className="t-lead measure text-on-charcoal-soft">{exhibitions.lead}</p>
@@ -324,11 +326,11 @@ export default async function ArihantApparelsPage() {
             borderBlock: "1px solid var(--unit-accent-line)",
           }}
         >
-          <div className="container-site flex flex-col gap-12">
+          <div className="container-site m-flow flex flex-col gap-12">
             <Reveal variant="fade">
               <SectionHeading heading={teamSection.heading} lead={teamSection.lead} />
             </Reveal>
-            <div className="grid gap-y-10 gap-x-16 lg:grid-cols-12 lg:items-start">
+            <div className="m-flow grid gap-y-10 gap-x-16 lg:grid-cols-12 lg:items-start">
               <ParallaxImage
                 src="/images/photos/apparels-team.jpg"
                 alt="The Arihant Apparels team at their Guwahati office"
@@ -336,17 +338,19 @@ export default async function ArihantApparelsPage() {
                 sizes="(max-width: 1023px) 100vw, 46vw"
                 className="border border-line lg:col-span-6"
                 tilt
+                mBleed
               />
               <StaggerGroup
                 as="ul"
                 from="up"
                 className="flex flex-col border-t border-line lg:col-span-6"
                 stagger={0.08}
+                mLedger
               >
                 {team.map((member) => (
                   <li
                     key={member.name}
-                    className="flex items-baseline justify-between gap-4 border-b border-line py-4"
+                    className="m-ledger-row flex items-baseline justify-between gap-4 border-b border-line py-4"
                   >
                     <span
                       className="font-sans text-ink"
@@ -368,7 +372,7 @@ export default async function ArihantApparelsPage() {
       {/* 4 — Category-leaders strip (paper): pull-line + accent-marked facts */}
       <section className="section-pad bg-paper" style={unitScope(UNIT)}>
         <div className="container-site">
-          <div className="grid gap-y-8 gap-x-16 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+          <div className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-[1.4fr_1fr] lg:items-start">
             {leadersPoint ? (
               <Reveal
                 as="p"
@@ -380,12 +384,12 @@ export default async function ArihantApparelsPage() {
               </Reveal>
             ) : null}
             {supportingPoints.length ? (
-              <StaggerGroup as="ul" from="right" className="flex flex-col" stagger={0.1}>
+              <StaggerGroup as="ul" from="right" className="flex flex-col" stagger={0.1} mLedger>
                 {supportingPoints.map((point, index) => (
                   <li
                     key={point}
                     className={cn(
-                      "t-body border-t border-line py-5 text-ink-soft",
+                      "m-ledger-row t-body border-t border-line py-5 text-ink-soft",
                       index === supportingPoints.length - 1 && "border-b border-line",
                     )}
                   >
@@ -401,7 +405,7 @@ export default async function ArihantApparelsPage() {
       {/* 5 — Brand wall (paper-shade) */}
       <section className="section-pad bg-paper-shade" style={unitScope(UNIT)}>
         <div className="container-wide">
-          <Reveal className="flex flex-col gap-8">
+          <Reveal className="m-flow flex flex-col gap-8">
             <SectionHeading heading={brandsSection.heading} lead={brandsSection.lead} />
             <LogoWall partners={apparelsPartners} />
             <p>
@@ -420,7 +424,7 @@ export default async function ArihantApparelsPage() {
       {faqs.length ? (
         <section className="section-pad bg-paper">
           <div className="container-site">
-            <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+            <div className="m-flow grid gap-10 lg:grid-cols-[1fr_1.4fr]">
               <Reveal variant="fade">
                 <SectionHeading heading={faqSection?.heading ?? "Straight answers"} />
               </Reveal>
@@ -433,7 +437,7 @@ export default async function ArihantApparelsPage() {
 
       {/* 7 — CTA band (single vermillion drench) */}
       <DrenchBand className="section-pad">
-        <div className="container-site flex max-w-3xl flex-col gap-6">
+        <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
           <h2 data-drench-reveal className="t-h2">
             {ctaSection?.heading ?? "Grow with one of the Northeast’s five largest distributors."}
           </h2>
@@ -442,13 +446,13 @@ export default async function ArihantApparelsPage() {
               {ctaSection.lead}
             </p>
           ) : null}
-          <div data-drench-reveal className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <Button href="/contact?intent=retailer" variant="onDark" size="lg">
+          <div data-drench-reveal className="m-cta mt-1 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Button href="/contact?intent=retailer" variant="onDark" size="lg" className="press">
               Stock our brands
             </Button>
             <a
               href="/contact?intent=brand"
-              className="t-small underline-offset-4 hover:underline"
+              className="m-tap t-small underline-offset-4 hover:underline"
               style={{ color: "var(--_text-soft)" }}
             >
               Partner as a brand &rarr;

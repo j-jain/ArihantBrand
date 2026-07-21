@@ -15,6 +15,11 @@ interface StaggerGroupProps {
   from?: FromDir;
   stagger?: number;
   start?: string;
+  /** Mobile (<=767px) only: reveal each row with a left-to-right wipe so the
+   *  hairline rules appear to be ruled in, one after another. Used on the
+   *  ledger-shaped lists (stat rails, systems, SIS scope, team, steps) that
+   *  carry this site's trade-book identity. Desktop is unaffected. */
+  mLedger?: boolean;
 }
 
 function directionVars(from: FromDir) {
@@ -30,10 +35,32 @@ function directionVars(from: FromDir) {
   }
 }
 
+/** Mobile counterpart: the same direction, roughly half the travel, so a group
+ *  still reads as "these arrived from the left" without the swing feeling
+ *  cartoonish at phone scale. */
+function mobileDirectionVars(from: FromDir) {
+  switch (from) {
+    case "left":
+      return { autoAlpha: 0, x: -18 };
+    case "right":
+      return { autoAlpha: 0, x: 18 };
+    case "scale":
+      return { autoAlpha: 0, scale: 0.96, y: 10 };
+    default:
+      return { autoAlpha: 0, y: 18 };
+  }
+}
+
+/** Inside a horizontal snap rail, translating children grows the scrollable
+ *  overflow area and makes the rail twitch mid-reveal. Scale only ever shrinks
+ *  a box, so it is safe there; opacity always is. */
+const RAIL_VARS = { autoAlpha: 0, scale: 0.96 } as const;
+
 /** Reveals its direct children in a staggered sequence when the group scrolls
  *  into view. Direction is configurable so different sections animate
  *  differently. Never strands content: children already on screen at mount stay
- *  visible; reduced-motion is a no-op; mobile uses a short uniform fade. */
+ *  visible; reduced-motion is a no-op; mobile keeps the direction at about half
+ *  the travel, and falls back to scale + opacity inside a snap rail. */
 export function StaggerGroup({
   children,
   className,
@@ -41,6 +68,7 @@ export function StaggerGroup({
   from = "up",
   stagger = 0.1,
   start = "top 82%",
+  mLedger = false,
 }: StaggerGroupProps) {
   const ref = useRef<HTMLElement>(null);
 
@@ -70,19 +98,53 @@ export function StaggerGroup({
           const rect = root.getBoundingClientRect();
           if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) return;
 
+          // `.m-rail` only becomes a scroll container inside the mobile media
+          // query, so the class is inert on desktop and this branch is too.
+          const isRail = mobile && root.classList.contains("m-rail");
+
+          // Ledger wipe: each row is ruled in from the left, hairline and all.
+          // One property on one element, so it stays cheap on a handset.
+          if (mobile && mLedger && !isRail) {
+            gsap.fromTo(
+              items,
+              { clipPath: "inset(0 100% 0 0)", autoAlpha: 0 },
+              {
+                clipPath: "inset(0 0% 0 0)",
+                autoAlpha: 1,
+                duration: 0.5,
+                ease: EASE,
+                stagger: 0.08,
+                scrollTrigger: { trigger: root, start: "top 90%", once: true },
+                // A resting inset(0) still clips to the border box and would
+                // slice focus rings off any control flush with a row edge.
+                onComplete: () =>
+                  gsap.set(items, { clearProps: "clipPath" }),
+              },
+            );
+            return;
+          }
+
           gsap.from(items, {
-            ...(mobile ? { autoAlpha: 0, y: 14 } : directionVars(from)),
-            duration: mobile ? 0.42 : DUR,
+            ...(isRail
+              ? RAIL_VARS
+              : mobile
+                ? mobileDirectionVars(from)
+                : directionVars(from)),
+            duration: mobile ? 0.46 : DUR,
             ease: EASE,
-            stagger: mobile ? 0.06 : stagger,
-            scrollTrigger: { trigger: root, start, once: true },
+            stagger: mobile ? 0.07 : stagger,
+            scrollTrigger: {
+              trigger: root,
+              start: mobile ? "top 90%" : start,
+              once: true,
+            },
           });
         },
       );
 
       return () => mm.revert();
     },
-    { scope: ref, dependencies: [from, stagger, start] },
+    { scope: ref, dependencies: [from, stagger, start, mLedger] },
   );
 
   const Tag = as as ElementType;

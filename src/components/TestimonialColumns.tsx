@@ -38,7 +38,7 @@ function TestimonialCard({
 
 /** A wall of testimonials. Desktop shows three columns of gently self-scrolling
  *  cards (each column a CSS marquee at its own pace, paused on hover/focus);
- *  tablet drops to two columns; mobile collapses to a short static list. The
+ *  tablet drops to two columns; mobile shows the first four as a snap rail. The
  *  duplicated marquee copy is `aria-hidden`, and reduced motion / the global
  *  motion reset leave every column static. All motion is CSS keyframe based —
  *  no JS is required for it to be legible. */
@@ -54,8 +54,15 @@ export function TestimonialColumns({ testimonials }: TestimonialColumnsProps) {
 
   return (
     <div className="tcols">
-      {/* Mobile: a short static list (first four), no marquee. */}
-      <ul className="tcols__mobile">
+      {/* Mobile: the first four as a horizontal snap rail (see .tcols__mobile
+          in mobile.css). `display: none` above 767px keeps this out of the
+          desktop tab order entirely, so the tabindex the scroll region needs
+          costs nothing there. */}
+      <ul
+        className="tcols__mobile m-rail m-rail-wide"
+        tabIndex={0}
+        aria-label="Testimonials"
+      >
         {testimonials.slice(0, 4).map((t) => (
           <li key={`m-${t.name}-${t.role}`}>
             <TestimonialCard testimonial={t} />
