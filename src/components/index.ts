@@ -22,7 +22,7 @@ export { SiteFooter } from "./SiteFooter";
 export { StickyActionBar } from "./StickyActionBar";
 export { InquiryForm } from "./InquiryForm";
 export { JsonLd } from "./JsonLd";
-export { cn } from "./cn";
+export { cn, initialsOf } from "./cn";
 export { MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "./icons";
 export { businessLinks, primaryNav, type NavItem } from "./nav";
 /* Phase 3 additions */
@@ -33,5 +33,8 @@ export { VapourText } from "./motion/VapourText";
 export { SplitHeading } from "./motion/SplitHeading";
 export { CurtainReveal } from "./motion/CurtainReveal";
 export { CardsStack } from "./CardsStack";
+export { CardFan } from "./motion/CardFan";
 export { TestimonialColumns } from "./TestimonialColumns";
 export { InfrastructureSection } from "./InfrastructureSection";
+export { ValuePanels } from "./ValuePanels";
+export { VideoFeature } from "./VideoFeature";

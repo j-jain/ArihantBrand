@@ -44,6 +44,10 @@ next-env.d.ts
 # source material (not part of the site)
 Arihant Brand Profile.pdf
 Video transcript.txt
+Arihant Event Promo.mov
+/Team/
+/Warehouse/
+/Awards/
 
 # local lead fallback store
 /.leads

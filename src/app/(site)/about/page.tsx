@@ -11,11 +11,13 @@ import {
   SectionHeading,
   StaggerGroup,
   Timeline,
+  ValuePanels,
   cn,
 } from "@/components";
 import { stockImages } from "@/content/images";
 import {
   getBusinesses,
+  getLeaderPortraits,
   getPageCopy,
   getPillars,
   getTimeline,
@@ -34,11 +36,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [copy, businesses, pillars, timeline] = await Promise.all([
+  const [copy, businesses, pillars, timeline, portraits] = await Promise.all([
     getPageCopy("about"),
     getBusinesses(),
     getPillars(),
     getTimeline(),
+    getLeaderPortraits(),
   ]);
 
   if (!copy) notFound();
@@ -153,57 +156,17 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* 3 — Values (charcoal): editorial split, photo + principles --------- */}
-      <section className="on-dark relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-40 bottom-0 opacity-[0.06]"
-        >
-          <Image
-            src="/images/motifs/chevron.png"
-            alt=""
-            width={640}
-            height={668}
-            className="h-auto w-[40rem] max-w-none"
-          />
-        </div>
-
-        <div className="container-site section-pad relative">
-          <div className="grid items-start gap-x-14 gap-y-12 lg:grid-cols-2">
-            <div className="flex flex-col gap-10">
-              <Reveal variant="fade">
-                <SectionHeading
-                  heading={sections.values.heading}
-                  lead={sections.values.lead}
-                  onDark
-                />
-              </Reveal>
-              <ParallaxImage
-                src={stockImages.aboutCraft2.src}
-                alt={stockImages.aboutCraft2.alt}
-                ratio="4 / 5"
-                sizes="(max-width: 1023px) 100vw, 44vw"
-                tilt
-              />
-            </div>
-
-            <StaggerGroup className="flex flex-col" from="up" stagger={0.12}>
-              {pillars.slice(0, 3).map((pillar, i) => (
-                <div
-                  key={pillar.title}
-                  className={cn(
-                    "flex flex-col gap-3",
-                    i > 0 && "mt-8 border-t border-line-dark pt-8",
-                  )}
-                >
-                  <h3 className="t-h3 text-on-charcoal">{pillar.title}</h3>
-                  <p className="t-body text-on-charcoal-soft">{pillar.text}</p>
-                </div>
-              ))}
-            </StaggerGroup>
-          </div>
-        </div>
-      </section>
+      {/* 3 — Values (charcoal): one screen of expanding photographic panels -- */}
+      <ValuePanels
+        heading={sections.values.heading}
+        lead={sections.values.lead}
+        items={pillars.slice(0, 3)}
+        images={[
+          stockImages.aboutCraft2,
+          stockImages.apparelsRacks1,
+          stockImages.systemsWarehouse1,
+        ]}
+      />
 
       {/* 4 — Leadership (paper) -------------------------------------------- */}
       <section className="bg-paper">
@@ -219,25 +182,58 @@ export default async function AboutPage() {
             from="scale"
             stagger={0.08}
           >
-            {leaders.map((leader) => (
-              <div
-                key={leader.name}
-                className="flex flex-col gap-3 rounded-[2px] border border-line p-6"
-              >
-                <span
-                  aria-hidden="true"
-                  className="block h-[3px] w-10 rounded-full"
-                  style={{ background: UNIT_ACCENT[leader.unit].token }}
-                />
-                <p
-                  className="font-display text-ink"
-                  style={{ fontWeight: 700, fontSize: "var(--text-h4)", lineHeight: 1.25 }}
+            {leaders.map((leader) => {
+              const portrait = portraits[leader.name];
+              return (
+                <figure
+                  key={leader.name}
+                  className="flex flex-col overflow-hidden rounded-[2px] border border-line"
                 >
-                  {leader.name}
-                </p>
-                <p className="t-small text-ink-soft">{leader.role}</p>
-              </div>
-            ))}
+                  {/* Portrait frame. Until a real photograph is dropped in, the
+                      monogram plate holds the space deliberately rather than
+                      leaving the card a bare nameplate. */}
+                  <div className="relative aspect-[4/5] w-full overflow-hidden bg-paper-shade">
+                    {portrait ? (
+                      <Image
+                        src={portrait.src}
+                        alt={portrait.alt}
+                        fill
+                        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 22vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 flex items-center justify-center font-display"
+                        style={{
+                          fontWeight: 700,
+                          fontSize: "clamp(3rem, 6vw, 4.25rem)",
+                          lineHeight: 1,
+                          letterSpacing: "0.02em",
+                          color: "var(--line)",
+                        }}
+                      >
+                        {leader.name.slice(0, 2).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <figcaption className="flex flex-col gap-3 p-6">
+                    <span
+                      aria-hidden="true"
+                      className="block h-[3px] w-10 rounded-full"
+                      style={{ background: UNIT_ACCENT[leader.unit].token }}
+                    />
+                    <span
+                      className="font-display text-ink"
+                      style={{ fontWeight: 700, fontSize: "var(--text-h4)", lineHeight: 1.25 }}
+                    >
+                      {leader.name}
+                    </span>
+                    <span className="t-small text-ink-soft">{leader.role}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
           </StaggerGroup>
         </div>
       </section>

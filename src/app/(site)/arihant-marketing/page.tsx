@@ -219,7 +219,7 @@ export default async function ArihantMarketingPage() {
         <div className="container-site flex flex-col gap-14">
           <Reveal
             variant="fade"
-            className="grid gap-y-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-16"
+            className="grid gap-y-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16"
           >
             <div className="flex flex-col">
               <SectionHeading heading={how.heading} lead={how.lead} />
@@ -243,7 +243,7 @@ export default async function ArihantMarketingPage() {
             <ParallaxImage
               src={stockImages.marketingWarehouse1.src}
               alt={stockImages.marketingWarehouse1.alt}
-              ratio="3 / 4"
+              ratio="4 / 5"
               sizes="(max-width: 1023px) 100vw, 34vw"
               className="border border-line"
               tilt

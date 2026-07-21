@@ -2,11 +2,14 @@ import type {
   Award,
   Business,
   Faq,
+  LeaderPortrait,
   Partner,
   Post,
+  RecognitionPhoto,
   SiteSettings,
   Stat,
   Store,
+  TeamMember,
   Testimonial,
   ProcessStep,
 } from "./types";
@@ -110,11 +113,12 @@ export const businesses: Business[] = [
     leaders: ["Ajay Sancheti"],
     positioning: "Among the five largest readymade garments distributors in Northeast India.",
     summary:
-      "Founded in 2013 by Ajay Sancheti, Arihant Apparels has built national brands into category leaders across the Northeast, and drew the highest footfall at the region's last 4 garment exhibitions.",
+      "Founded in 2013 by Ajay Sancheti, a second-generation garment entrepreneur, Arihant Apparels has grown into one of the Northeast's five largest apparel distributors. Built on systems and data, it turns national brands into category leaders and carries the Arihant Marketing legacy forward: close to its retailers, trusted by its brand partners.",
     points: [
       "A portfolio built to give growing retailers their next bestselling label.",
-      "One mission: foster the growth of retailers across the region.",
+      "Home to the Northeast's leading ladies' ethnic labels, alongside westernwear, kidswear and footwear.",
       "Has established several brand partners as category leaders in the Northeast.",
+      "Run on systems and data, from buying to the shop floor.",
       "9,000 sq ft warehouse in Guwahati.",
       "Highest footfall at the last 4 regional garment exhibitions.",
     ],
@@ -1113,6 +1117,87 @@ export const awards: Award[] = [
     title: "Highest footfall, four exhibitions running",
     issuer: "Regional garment exhibitions",
     detail: "At the region's trade fairs, Arihant Apparels' stand drew the highest footfall four exhibitions in a row.",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* Team (real, client-supplied people). Currently Arihant Apparels.     */
+/* ------------------------------------------------------------------ */
+
+export const team: TeamMember[] = [
+  { unit: "apparels", name: "Ajay Sancheti", title: "Founder" },
+  { unit: "apparels", name: "Debojit Paul", title: "Head of Store Operations" },
+  { unit: "apparels", name: "Kalyan", title: "Head of Accounts" },
+  { unit: "apparels", name: "Arup", title: "Head of Warehousing" },
+  { unit: "apparels", name: "Dhritiman", title: "SIS team, back-end lead", group: "SIS team" },
+  { unit: "apparels", name: "Anubhav", title: "SIS team, front-end lead", group: "SIS team" },
+];
+
+/* ------------------------------------------------------------------ */
+/* Leader portraits, keyed by the exact name used in business.leaders.  */
+/* Empty until real photographs exist: drop the file at                 */
+/* public/images/photos/leaders/<slug>.jpg and add its entry here, and  */
+/* the about page swaps the monogram placeholder for the photograph     */
+/* with no component change.                                            */
+/* ------------------------------------------------------------------ */
+
+export const leaderPortraits: Record<string, LeaderPortrait> = {};
+
+/* ------------------------------------------------------------------ */
+/* Recognition photos: real certificates and trophies (brand-partner    */
+/* and trade-fair awards to Arihant Marketing). Captions stay factual.  */
+/* ------------------------------------------------------------------ */
+
+export const recognitionPhotos: RecognitionPhoto[] = [
+  {
+    src: "/images/photos/awards/award-tadpole-champion-2122.jpg",
+    alt: "Tadpole 'Champion of the Year 2021-22' trophy engraved for Arihant Marketing, Guwahati",
+    caption: "Tadpole: Champion of the Year 2021-22",
+  },
+  {
+    src: "/images/photos/awards/award-indian-terrain-east-india.jpg",
+    alt: "Indian Terrain Certificate of Excellence naming Arihant Marketing Best Channel Partner, East India",
+    caption: "Indian Terrain: Best Channel Partner, East India",
+  },
+  {
+    src: "/images/photos/awards/award-twills-2021.jpg",
+    alt: "Twills Clothing Distributor Excellence Award 2021 honouring Arihant Marketing",
+    caption: "Twills: Distributor Excellence Award 2021",
+  },
+  {
+    src: "/images/photos/awards/award-indian-terrain-2023.jpg",
+    alt: "Indian Terrain Valued Channel Partner trophy for Arihant Marketing, Distributors Meet 2023",
+    caption: "Indian Terrain: Valued Channel Partner, 2023",
+  },
+  {
+    src: "/images/photos/awards/award-distributor-of-the-year.jpg",
+    alt: "Golden Distributor of the Year trophy presented to Arihant Marketing",
+    caption: "Distributor of the Year trophy",
+  },
+  {
+    src: "/images/photos/awards/award-octave-excellence-2024.jpg",
+    alt: "Certificate of Excellence in distribution presented to Arihant Marketing, 2024",
+    caption: "Certificate of Excellence in distribution, 2024",
+  },
+  {
+    src: "/images/photos/awards/award-tadpole-15yr-thailand.jpg",
+    alt: "Tadpole trophy celebrating 15 years, presented in Thailand in 2024 to Anand Kumar Sancheti",
+    caption: "Tadpole: 15 years, celebrated in Thailand, 2024",
+  },
+  {
+    src: "/images/photos/awards/award-tadpole-launch-2018.jpg",
+    alt: "Tadpole star trophy for the most admired brand launch of 2018-19, Arihant Marketing, Guwahati",
+    caption: "Tadpole: Most Admired Brand Launch, 2018-19",
+  },
+  {
+    src: "/images/photos/awards/award-tadpole-assam.jpg",
+    alt: "Tadpole Certificate of Appreciation naming Arihant Marketing authorised distributor for Assam",
+    caption: "Tadpole: authorised distributor for Assam",
+  },
+  {
+    src: "/images/photos/awards/award-cmai-nigf-2024.jpg",
+    alt: "CMAI North India Garment Fair 2024 Certificate of Appreciation for Arihant Marketing",
+    caption: "CMAI North India Garment Fair, 2024",
   },
 ];
 

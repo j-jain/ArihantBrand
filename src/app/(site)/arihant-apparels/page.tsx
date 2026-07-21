@@ -14,6 +14,7 @@ import {
   Reveal,
   SectionHeading,
   StaggerGroup,
+  VideoFeature,
   cn,
 } from "@/components";
 import {
@@ -22,6 +23,7 @@ import {
   getPageCopy,
   getPartners,
   getSiteSettings,
+  getTeam,
 } from "@/lib/content";
 import {
   breadcrumbJsonLd,
@@ -29,7 +31,6 @@ import {
   faqJsonLd,
   pageMetadata,
 } from "@/lib/seo";
-import { stockImages } from "@/content/images";
 import { unitScope } from "@/lib/units";
 import { EmphasisHeading } from "../_components/EmphasisHeading";
 
@@ -65,12 +66,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ArihantApparelsPage() {
-  const [copy, businesses, partners, faqs, settings] = await Promise.all([
+  const [copy, businesses, partners, faqs, settings, team] = await Promise.all([
     getPageCopy(UNIT),
     getBusinesses(),
     getPartners(),
     getFaqs(UNIT),
     getSiteSettings(),
+    getTeam(UNIT),
   ]);
 
   if (!copy) return null;
@@ -81,6 +83,8 @@ export default async function ArihantApparelsPage() {
   const { hero, sections } = copy;
   const mission = sections.mission;
   const exhibitions = sections.exhibitions;
+  const filmSection = sections.film;
+  const teamSection = sections.team;
   const brandsSection = sections.brands;
   const faqSection = sections.faq;
   const ctaSection = sections.cta;
@@ -191,8 +195,8 @@ export default async function ArihantApparelsPage() {
         <div className="container-site">
           <Reveal variant="fade" className="grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-start">
             <ParallaxImage
-              src={stockImages.apparelsRacks1.src}
-              alt={stockImages.apparelsRacks1.alt}
+              src="/images/photos/apparels-warehouse-2.jpg"
+              alt="Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati"
               ratio="4 / 5"
               sizes="(max-width: 1023px) 100vw, 40vw"
               className="border border-line lg:col-span-5"
@@ -223,11 +227,43 @@ export default async function ArihantApparelsPage() {
         </div>
       </section>
 
+      {/* 2b — Film (paper): the event promo, click-to-play */}
+      <section className="section-pad bg-paper" style={unitScope(UNIT)}>
+        <div className="container-site">
+          <div className="grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-center">
+            <div className="flex flex-col gap-5 lg:col-span-5">
+              <div>
+                <h2 className="t-h2 text-ink">{filmSection.heading}</h2>
+                <div
+                  aria-hidden="true"
+                  className="mt-5"
+                  style={{
+                    height: 3,
+                    width: "clamp(3rem, 8vw, 4.5rem)",
+                    background: "var(--unit-accent)",
+                  }}
+                />
+              </div>
+              {filmSection.lead ? (
+                <p className="t-lead measure text-ink-soft">{filmSection.lead}</p>
+              ) : null}
+            </div>
+            <Reveal variant="clip" className="lg:col-span-7">
+              <VideoFeature
+                mp4="/videos/apparels-promo.mp4"
+                poster="/images/photos/apparels-promo-poster.jpg"
+                label="Play the Arihant Apparels film"
+              />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* 3 — Exhibition band (charcoal over racks): number-led "4 / 4", static */}
       <section className="section-pad on-dark relative overflow-hidden">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <Image
-            src={stockImages.apparelsRacks2.src}
+            src="/images/photos/apparels-fair-2024.jpg"
             alt=""
             fill
             sizes="100vw"
@@ -277,6 +313,57 @@ export default async function ArihantApparelsPage() {
           </div>
         </div>
       </section>
+
+      {/* 3b — Team (accent-wash): the real people who run it */}
+      {team.length ? (
+        <section
+          className="section-pad"
+          style={{
+            ...unitScope(UNIT),
+            background: "var(--unit-accent-wash)",
+            borderBlock: "1px solid var(--unit-accent-line)",
+          }}
+        >
+          <div className="container-site flex flex-col gap-12">
+            <Reveal variant="fade">
+              <SectionHeading heading={teamSection.heading} lead={teamSection.lead} />
+            </Reveal>
+            <div className="grid gap-y-10 gap-x-16 lg:grid-cols-12 lg:items-start">
+              <ParallaxImage
+                src="/images/photos/apparels-team.jpg"
+                alt="The Arihant Apparels team at their Guwahati office"
+                ratio="4 / 3"
+                sizes="(max-width: 1023px) 100vw, 46vw"
+                className="border border-line lg:col-span-6"
+                tilt
+              />
+              <StaggerGroup
+                as="ul"
+                from="up"
+                className="flex flex-col border-t border-line lg:col-span-6"
+                stagger={0.08}
+              >
+                {team.map((member) => (
+                  <li
+                    key={member.name}
+                    className="flex items-baseline justify-between gap-4 border-b border-line py-4"
+                  >
+                    <span
+                      className="font-sans text-ink"
+                      style={{ fontWeight: 650, fontSize: "1.02rem", lineHeight: 1.3 }}
+                    >
+                      {member.name}
+                    </span>
+                    <span className="t-small max-w-[13rem] text-right text-ink-soft">
+                      {member.title}
+                    </span>
+                  </li>
+                ))}
+              </StaggerGroup>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* 4 — Category-leaders strip (paper): pull-line + accent-marked facts */}
       <section className="section-pad bg-paper" style={unitScope(UNIT)}>

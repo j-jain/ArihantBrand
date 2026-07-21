@@ -32,39 +32,40 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
 
   const media = (
     <div className="lg:col-span-5">
-      <div className="rounded-md border border-line bg-white p-6">
+      {/* White card: logo and stats centered within the box (not the page). */}
+      <div className="flex flex-col items-center gap-7 rounded-md border border-line bg-white p-8 text-center">
         <div className="relative h-16 w-full">
           <Image
             src={business.logo}
             alt={business.name}
             fill
             sizes="(min-width: 1024px) 22rem, 60vw"
-            className="object-contain object-left"
+            className="object-contain object-center"
           />
         </div>
-      </div>
 
-      <dl className="mt-7 flex flex-wrap gap-x-9 gap-y-5">
-        {business.stats.map((stat) => (
-          <div key={stat.label} className="flex flex-col">
-            <dt className="sr-only">{stat.label}</dt>
-            <dd
-              className="font-sans text-ink"
-              style={{
-                fontWeight: 800,
-                fontStretch: "85%",
-                fontVariantNumeric: "tabular-nums",
-                fontSize: "1.7rem",
-                lineHeight: 1.05,
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {formatStat(stat)}
-            </dd>
-            <span className="t-small mt-1 text-ink-soft">{stat.label}</span>
-          </div>
-        ))}
-      </dl>
+        <dl className="flex w-full flex-wrap justify-center gap-x-9 gap-y-5 border-t border-line pt-7">
+          {business.stats.map((stat) => (
+            <div key={stat.label} className="flex flex-col items-center">
+              <dt className="sr-only">{stat.label}</dt>
+              <dd
+                className="font-sans text-ink"
+                style={{
+                  fontWeight: 800,
+                  fontStretch: "85%",
+                  fontVariantNumeric: "tabular-nums",
+                  fontSize: "1.7rem",
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {formatStat(stat)}
+              </dd>
+              <span className="t-small mt-1 text-ink-soft">{stat.label}</span>
+            </div>
+          ))}
+        </dl>
+      </div>
     </div>
   );
 

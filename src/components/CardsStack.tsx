@@ -14,10 +14,11 @@ interface CardsStackProps {
 
 /** A stack of sticky cards: on desktop each card pins under the header offset
  *  and the previous cards tuck back (a slight scale and fade) as the
- *  next scrolls over them, scrubbed to scroll. Mobile and reduced motion render
- *  a plain, gapped column with no sticky and no transforms, so nothing depends
- *  on an animation that isn't running. The tuck transforms are applied only
- *  from JS. */
+ *  next scrolls over them, scrubbed to scroll. Cards stay fully opaque
+ *  throughout so the top one always occludes the ones still pinned behind it.
+ *  Mobile and reduced motion render a plain, gapped column with no sticky and
+ *  no transforms, so nothing depends on an animation that isn't running. The
+ *  tuck transforms are applied only from JS. */
 export function CardsStack({ items }: CardsStackProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -37,14 +38,16 @@ export function CardsStack({ items }: CardsStackProps) {
           cards.forEach((card, i) => {
             if (i === cards.length - 1) return;
             const nextCard = cards[i + 1];
+            // Scale only, never opacity: the cards are sticky and stay stacked,
+            // so a translucent card would show the text of the card pinned
+            // behind it straight through.
             gsap.to(card, {
               scale: 0.965,
-              autoAlpha: 0.45,
               transformOrigin: "50% 0%",
               ease: "none",
               scrollTrigger: {
                 trigger: nextCard,
-                start: "top bottom",
+                start: "top 85%",
                 end: `top top+=${96 + i * 12}`,
                 scrub: true,
               },

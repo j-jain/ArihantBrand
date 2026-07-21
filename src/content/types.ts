@@ -47,6 +47,16 @@ export interface Partner {
   category?: string;
 }
 
+/** A named, real team member with a designation. Seeded per unit; the roster
+ *  is only ever real, client-supplied people (honesty rail). */
+export interface TeamMember {
+  name: string;
+  title: string;
+  unit: UnitKey;
+  /** Optional grouping label (e.g. "SIS team") for related roles. */
+  group?: string;
+}
+
 export interface Store {
   name: string;
   city: string;
@@ -75,6 +85,22 @@ export interface Award {
   title: string;
   issuer: string;
   detail: string;
+}
+
+/** A photograph of a real certificate, trophy, or recognition moment. Rendered
+ *  as an honest, captioned gallery on /recognition. */
+export interface RecognitionPhoto {
+  src: string;
+  alt: string;
+  caption: string;
+}
+
+/** A real portrait of a named leader, keyed by that leader's exact name. Absent
+ *  names render a monogram placeholder instead, so the leadership section is
+ *  complete before any photograph exists. */
+export interface LeaderPortrait {
+  src: string;
+  alt: string;
 }
 
 export type PostBlock =

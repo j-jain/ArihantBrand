@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   Button,
+  CardFan,
   CurtainReveal,
   DrenchBand,
   HeroIntro,
@@ -13,6 +14,7 @@ import {
 import {
   getAwards,
   getPageCopy,
+  getRecognitionPhotos,
   getSiteSettings,
   getTestimonials,
   getTimeline,
@@ -37,9 +39,10 @@ function formatTel(digits: string): string {
 }
 
 export default async function RecognitionPage() {
-  const [copy, awards, timeline, testimonials, settings] = await Promise.all([
+  const [copy, awards, photos, timeline, testimonials, settings] = await Promise.all([
     getPageCopy("recognition"),
     getAwards(),
+    getRecognitionPhotos(),
     getTimeline(),
     getTestimonials(),
     getSiteSettings(),
@@ -152,6 +155,19 @@ export default async function RecognitionPage() {
           </div>
         </CurtainReveal>
       </section>
+
+      {/* 2b — Cabinet gallery (paper): real certificate & trophy photos ----- */}
+      {photos.length ? (
+        <section className="bg-paper">
+          <div className="container-site section-pad flex flex-col gap-10">
+            <SectionHeading
+              heading={sections.gallery.heading}
+              lead={sections.gallery.lead}
+            />
+            <CardFan photos={photos} label={sections.gallery.heading} />
+          </div>
+        </section>
+      ) : null}
 
       {/* 3 — Milestones strip (paper-shade) --------------------------------- */}
       <section className="bg-paper-shade">

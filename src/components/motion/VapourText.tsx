@@ -20,10 +20,79 @@ interface Particle {
   p: number;
 }
 
+interface LineBox {
+  text: string;
+  /** Offsets relative to the element's own border box, in CSS pixels. */
+  left: number;
+  top: number;
+  height: number;
+}
+
+/** Recover the browser's own line breaking rather than re-wrapping the string.
+ *  Each word is measured with a Range; consecutive words sharing a line-box top
+ *  form one line. This keeps the particle cloud identical to the settled text
+ *  whatever `text-wrap` (balance/pretty), hyphenation or tracking does, which a
+ *  greedy `measureText` loop cannot. Returns [] if the element is not a single
+ *  text node, in which case the caller leaves the real text visible. */
+function readLineBoxes(el: HTMLElement): LineBox[] {
+  const node = el.firstChild;
+  if (!node || node.nodeType !== Node.TEXT_NODE || el.childNodes.length !== 1) {
+    return [];
+  }
+  const full = node.textContent ?? "";
+  if (!full.trim()) return [];
+
+  const box = el.getBoundingClientRect();
+  const range = document.createRange();
+  const lines: LineBox[] = [];
+  let start = -1;
+  let end = -1;
+  let top = 0;
+  let left = 0;
+  let height = 0;
+
+  const flush = () => {
+    if (start < 0) return;
+    lines.push({
+      text: full.slice(start, end),
+      left: left - box.left,
+      top: top - box.top,
+      height,
+    });
+    start = -1;
+  };
+
+  for (const match of full.matchAll(/\S+/g)) {
+    const from = match.index;
+    const to = from + match[0].length;
+    range.setStart(node, from);
+    range.setEnd(node, to);
+    const rect = range.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) continue;
+
+    if (start < 0 || Math.abs(rect.top - top) > 1) {
+      flush();
+      start = from;
+      top = rect.top;
+      left = rect.left;
+      height = rect.height;
+    } else {
+      left = Math.min(left, rect.left);
+      height = Math.max(height, rect.height);
+    }
+    end = to;
+  }
+  flush();
+  range.detach();
+  return lines;
+}
+
 /** A heading (or any text) that, on first scroll into view, settles out of a
  *  drifting cloud of vapour: the real text is momentarily hidden, its glyphs
  *  are sampled into particles that converge from a dispersed state, then the
- *  real text crossfades back and the canvas is released. It is a pure
+ *  real text crossfades back and the canvas is released. The sample reads the
+ *  browser's own line boxes and waits for webfonts, so the cloud always carries
+ *  the same line breaks as the settled heading and nothing reflows. It is a pure
  *  progressive enhancement — the server always renders real, styled text, and
  *  mobile / coarse-pointer / reduced-motion / no-WebGL simply keep that text.
  *  Everything (canvas, particles, listeners) is torn down on completion and on
@@ -100,6 +169,11 @@ export function VapourText({ text, className, as = "span" }: VapourTextProps) {
             }
           };
 
+          /** Vertical offset of the canvas from the element's top, once the
+           *  glyph boxes are known: the first line's box usually starts above
+           *  the element box (negative half-leading). */
+          let originY = 0;
+
           const measure = () => {
             const rect = textEl.getBoundingClientRect();
             cssW = Math.ceil(rect.width);
@@ -107,19 +181,35 @@ export function VapourText({ text, className, as = "span" }: VapourTextProps) {
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             const cs = getComputedStyle(textEl);
             color = cs.color || "#000";
-            canvas.width = Math.max(1, cssW * dpr);
-            canvas.height = Math.max(1, cssH * dpr);
+            sizeCanvas();
+            return cs;
+          };
+
+          const sizeCanvas = () => {
+            canvas.width = Math.max(1, Math.round(cssW * dpr));
+            canvas.height = Math.max(1, Math.round(cssH * dpr));
             canvas.style.width = `${cssW}px`;
             canvas.style.height = `${cssH}px`;
-            return cs;
+            canvas.style.top = `${originY}px`;
           };
 
           const build = () => {
             const cs = measure();
             if (cssW < 2 || cssH < 2) return false;
 
+            const lines = readLineBoxes(textEl);
+            if (!lines.length) return false;
+
+            // Glyph boxes are taller than the line boxes, so line one usually
+            // starts above the element box and the last descends below it.
+            // Grow the canvas to their union so no ink is clipped away.
+            originY = Math.min(0, ...lines.map((l) => l.top));
+            const bottom = Math.max(cssH, ...lines.map((l) => l.top + l.height));
+            cssH = Math.ceil(bottom - originY);
+            sizeCanvas();
+
             // Sample the glyphs on an offscreen canvas using the element's own
-            // computed font, wrapping words to the measured width.
+            // computed font, drawing each real line at its real position.
             const off = document.createElement("canvas");
             off.width = canvas.width;
             off.height = canvas.height;
@@ -127,25 +217,25 @@ export function VapourText({ text, className, as = "span" }: VapourTextProps) {
             if (!octx) return false;
             octx.scale(dpr, dpr);
             const fontSize = parseFloat(cs.fontSize) || 16;
-            const lineHeight = parseFloat(cs.lineHeight) || fontSize * 1.15;
             octx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-            octx.textBaseline = "top";
+            // Tracking, where the browser supports it on canvas (Chromium).
+            const tracked = octx as CanvasRenderingContext2D & {
+              letterSpacing?: string;
+            };
+            if ("letterSpacing" in tracked) tracked.letterSpacing = cs.letterSpacing;
+            octx.textBaseline = "alphabetic";
             octx.fillStyle = "#fff";
 
-            const wordList = text.split(/\s+/).filter(Boolean);
-            const lines: string[] = [];
-            let line = "";
-            for (const w of wordList) {
-              const testLine = line ? `${line} ${w}` : w;
-              if (octx.measureText(testLine).width > cssW && line) {
-                lines.push(line);
-                line = w;
-              } else {
-                line = testLine;
-              }
+            for (const line of lines) {
+              // Sit the glyphs on the same baseline the browser used: the line
+              // box carries half-leading above and below the font's own box.
+              const m = octx.measureText(line.text);
+              const asc = m.fontBoundingBoxAscent || fontSize * 0.8;
+              const desc = m.fontBoundingBoxDescent || fontSize * 0.2;
+              const baseline =
+                line.top - originY + (line.height - (asc + desc)) / 2 + asc;
+              octx.fillText(line.text, line.left, baseline);
             }
-            if (line) lines.push(line);
-            lines.forEach((ln, i) => octx.fillText(ln, 0, i * lineHeight));
 
             let data: ImageData;
             try {
@@ -218,11 +308,19 @@ export function VapourText({ text, className, as = "span" }: VapourTextProps) {
             finishCall = gsap.delayedCall(1.5 + maxDelay + 0.05, finish);
           };
 
+          // Never sample against the fallback font: its metrics wrap differently
+          // from Besley, which would show a different line count than the text
+          // the reader ends up with.
+          const startWhenReady = () => {
+            if (document.fonts?.status === "loaded") start();
+            else document.fonts.ready.then(() => root.isConnected && start());
+          };
+
           const trigger = ScrollTrigger.create({
             trigger: root,
             start: "top 78%",
             once: true,
-            onEnter: start,
+            onEnter: startWhenReady,
           });
 
           // Re-measure the (still un-started) overlay if the box changes.

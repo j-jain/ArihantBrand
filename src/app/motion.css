@@ -60,8 +60,12 @@
   position: relative;
 }
 
+/* Block, not inline: the particle sampler measures this element's box, and a
+   wrapped inline span reports the union of its line boxes (narrower than the
+   real content width), which made the cloud wrap to a different line count than
+   the settled heading. */
 .vapour__text {
-  display: inline;
+  display: block;
 }
 
 .vapour__canvas {
@@ -91,6 +95,11 @@
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 10px;
+  /* The card ground matches the section ground, so the tucked card behind would
+     read as a seam. A flat hairline plus a soft upward shadow separates them. */
+  box-shadow:
+    0 -1px 0 var(--line),
+    0 -18px 30px -24px rgb(0 0 0 / 0.18);
 }
 
 .stack__mark {
@@ -122,6 +131,22 @@
   }
   .stack__card:not(:last-child) {
     margin-bottom: 1rem;
+  }
+  /* Heading rail beside the stack: held on screen for the whole scroll of the
+     stack. Lives on an inner wrapper because Reveal writes its own inline
+     transform on the grid cell. */
+  .stack-heading {
+    position: sticky;
+    top: 6rem;
+  }
+}
+
+/* Centred only where there is room for it; short viewports keep the top pin so
+   a tall heading can never be cut off at the bottom of the screen. */
+@media (min-width: 768px) and (min-height: 640px) {
+  .stack-heading {
+    top: 50vh;
+    transform: translateY(-50%);
   }
 }
 
@@ -303,11 +328,376 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* ValuePanels (about values band)                                      */
+/* Base = a stacked, fully readable column, which is also the no-JS,     */
+/* mobile, coarse-pointer and reduced-motion render. `.vp-band--on`      */
+/* (added from JS) switches to the one-screen expanding row.             */
+/* ------------------------------------------------------------------ */
+
+.vp-band__inner {
+  padding-block: clamp(4.5rem, 9vw, 8.5rem);
+}
+
+.vp {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 4vw, 3rem);
+}
+
+.vp__rail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.vp__rule {
+  display: block;
+  height: 3px;
+  width: clamp(3rem, 8vw, 4.5rem);
+  border-radius: 999px;
+  background: var(--vermillion);
+}
+
+.vp__lead {
+  color: var(--on-charcoal-soft);
+}
+
+.vp__counter {
+  display: none;
+}
+
+.vp__panels {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Equal share is the resting state in both layouts, so switching the row on
+   never has to animate a panel up from zero width — a throttled or background
+   tab that drops the transition still lands on a usable layout. In the stacked
+   column there is no free space to grow into, so this is inert there. */
+.vp__panel {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.vp__face {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 17rem;
+  overflow: hidden;
+  border: 1px solid var(--line-dark);
+  border-radius: 10px;
+}
+
+.vp__img {
+  object-fit: cover;
+}
+
+.vp__scrim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklch, var(--charcoal), transparent 18%);
+  transition: background var(--dur-slow) var(--ease);
+}
+
+.vp__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  padding: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.vp__index {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.07em;
+  color: var(--vermillion);
+}
+
+.vp__title {
+  font-family: var(--font-besley), Georgia, serif;
+  font-weight: 700;
+  font-size: var(--text-h3);
+  line-height: 1.2;
+  letter-spacing: -0.008em;
+  color: var(--on-charcoal);
+}
+
+.vp__text {
+  color: var(--on-charcoal-soft);
+  max-width: 46ch;
+}
+
+/* One-screen expanding row ------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .vp-band--on .vp-band__inner {
+    display: grid;
+    align-content: center;
+    min-height: 100svh;
+    padding-block: clamp(3rem, 7vh, 5rem);
+  }
+  .vp-band--on .vp {
+    display: grid;
+    grid-template-columns: minmax(0, 3.6fr) minmax(0, 8.4fr);
+    align-items: center;
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+  .vp-band--on .vp__counter {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: var(--font-archivo), system-ui, sans-serif;
+    font-weight: 650;
+    font-size: var(--text-label);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.07em;
+    color: var(--vermillion);
+  }
+  .vp-band--on .vp__panels {
+    flex-direction: row;
+    gap: 0.75rem;
+    height: min(64vh, 34rem);
+  }
+  .vp-band--on .vp__panel {
+    flex-basis: 0%;
+    min-width: 0;
+    transition: flex-grow var(--dur-slow) var(--ease);
+  }
+  .vp-band--on .vp__panel[data-active="true"] {
+    flex-grow: 2.2;
+  }
+  .vp-band--on .vp__face {
+    height: 100%;
+    min-height: 0;
+    cursor: pointer;
+  }
+  /* Collapsed columns are narrow, so they give their padding back to the title;
+     the open panel takes the full section padding. */
+  .vp-band--on .vp__body {
+    padding: 1.25rem;
+  }
+  .vp-band--on .vp__panel[data-active="true"] .vp__body {
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+  }
+  .vp-band--on .vp__face:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+  /* Inactive panels sit back: heavier scrim, smaller title, text folded away
+     behind a live control (never behind an animation that did not run). */
+  .vp-band--on .vp__scrim {
+    background: color-mix(in oklch, var(--charcoal), transparent 6%);
+  }
+  .vp-band--on .vp__panel[data-active="true"] .vp__scrim {
+    background: color-mix(in oklch, var(--charcoal), transparent 28%);
+  }
+  .vp-band--on .vp__title {
+    font-size: 1.12rem;
+    transition:
+      font-size var(--dur-slow) var(--ease),
+      color var(--dur-slow) var(--ease);
+  }
+  .vp-band--on .vp__panel[data-active="true"] .vp__title {
+    font-size: var(--text-h3);
+  }
+  .vp-band--on .vp__text {
+    visibility: hidden;
+    opacity: 0;
+    max-height: 0;
+    transition:
+      opacity var(--dur) var(--ease),
+      visibility var(--dur) var(--ease);
+  }
+  .vp-band--on .vp__panel[data-active="true"] .vp__text {
+    visibility: visible;
+    opacity: 1;
+    max-height: 22rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* CardFan (recognition cabinet)                                        */
+/* Base = the plain captioned grid, which is also the no-JS, mobile,     */
+/* coarse-pointer and reduced-motion render. `.fan--on` (added from JS)  */
+/* switches to the fanned arc stage.                                     */
+/* ------------------------------------------------------------------ */
+
+.fan__stage {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .fan__stage {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .fan__stage {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.fan__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.fan__frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper-shade);
+}
+
+.fan__img {
+  object-fit: contain;
+  padding: 0.75rem;
+}
+
+.fan__cap {
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.fan__controls {
+  display: none;
+}
+
+/* Fanned stage ------------------------------------------------------- */
+
+.fan--on {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.fan--on .fan__stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: clamp(25rem, 30vw, 30rem);
+}
+
+.fan--on .fan__item {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fan--on .fan__card {
+  --fan-card-w: clamp(13rem, 15vw, 15.5rem);
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--fan-card-w);
+  margin-left: calc(var(--fan-card-w) / -2);
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform;
+}
+
+.fan--on .fan__frame {
+  background: var(--paper);
+  box-shadow: 0 20px 44px -30px rgb(0 0 0 / 0.55);
+}
+
+.fan--on .fan__cap {
+  display: none;
+}
+
+.fan--on .fan__card:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 5px;
+  border-radius: 8px;
+}
+
+.fan--on .fan__controls {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.fan__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--vermillion-deep);
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.fan__nav:hover {
+  background: var(--paper-shade);
+  border-color: var(--vermillion-deep);
+}
+
+.fan__readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: min(26rem, 60vw);
+  text-align: center;
+}
+
+.fan__count {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--vermillion-deep);
+}
+
+.fan__active-cap {
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ */
 /* Timeline (rebuilt)                                                  */
 /* ------------------------------------------------------------------ */
 
 .tl {
   position: relative;
+  /* Gutter between the spine and the entry text. The spine sits at the list's
+     padding edge, so the dots must be pulled back by exactly this much to land
+     on it rather than on the copy. */
+  --tl-pad: 2rem;
 }
 
 /* Ghost-year column: hidden until JS enhances (desktop, non-reduced). */
@@ -334,7 +724,7 @@
   position: relative;
   list-style: none;
   margin: 0;
-  padding: 0 0 0 2rem;
+  padding: 0 0 0 var(--tl-pad);
 }
 
 .tl__spine {
@@ -358,7 +748,7 @@
 
 .tl__dot {
   position: absolute;
-  left: 0;
+  left: calc(var(--tl-pad) * -1);
   top: 0.55rem;
   width: 10px;
   height: 10px;

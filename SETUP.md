@@ -49,6 +49,27 @@ Open **`/studio`** on the deployed site (e.g. `arihantgroup.in/studio`) and log 
 - **Pages** — headings, hero copy and meta titles/descriptions per page.
 - **Leads** — every inquiry-form submission appears here (New/All views). Update the status as you follow up.
 
+### Leadership portraits (`/about`, "The people on the door")
+
+These are not in the Studio yet, because no photographs exist. Each of the four
+cards shows a monogram plate sized to a portrait until a real photo is supplied.
+To add one:
+
+1. Drop the file at `public/images/photos/leaders/<first-name>.jpg` (portrait, 4:5, at least 800x1000).
+2. Add an entry to `leaderPortraits` in `src/content/seed.ts`, keyed by the leader's exact name as it appears in `businesses[].leaders`:
+
+```ts
+export const leaderPortraits: Record<string, LeaderPortrait> = {
+  "Ajay Sancheti": {
+    src: "/images/photos/leaders/ajay.jpg",
+    alt: "Ajay Sancheti, founder of Arihant Apparels, at the Guwahati office",
+  },
+};
+```
+
+The card swaps the monogram for the photograph with no component change. Names
+with no entry keep the monogram, so the section is never half-finished.
+
 Publishing in the Studio is instant on the CMS side; the live site picks changes up on the next revalidation/deploy. For instant updates, add a Sanity webhook (sanity.io → API → Webhooks) pointing to a Vercel deploy hook URL (Vercel → Settings → Git → Deploy Hooks).
 
 ## 5. Where do form leads go?

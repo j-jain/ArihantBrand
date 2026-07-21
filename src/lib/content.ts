@@ -16,14 +16,17 @@ import type {
   Cta,
   Faq,
   Hero,
+  LeaderPortrait,
   PageCopy,
   Partner,
   Post,
   PostBlock,
   ProcessStep,
+  RecognitionPhoto,
   SiteSettings,
   Stat,
   Store,
+  TeamMember,
   Testimonial,
 } from "@/content/types";
 
@@ -32,14 +35,17 @@ import {
   businesses as seedBusinesses,
   faqs as seedFaqs,
   groupStats as seedGroupStats,
+  leaderPortraits as seedLeaderPortraits,
   partners as seedPartners,
   partnerSteps as seedPartnerSteps,
   pillars as seedPillars,
   posts as seedPosts,
+  recognitionPhotos as seedRecognitionPhotos,
   sisScope as seedSisScope,
   siteSettings as seedSiteSettings,
   stores as seedStores,
   systems as seedSystems,
+  team as seedTeam,
   testimonials as seedTestimonials,
   timeline as seedTimeline,
 } from "@/content/seed";
@@ -580,6 +586,24 @@ export function getAwards(): Promise<Award[]> {
       rows.map((a) => ({ year: a.year, title: a.title, issuer: a.issuer, detail: a.detail ?? "" })),
     seedAwards,
   );
+}
+
+/** Team roster (seed-only; real, client-supplied people). Optionally scoped to
+ *  a unit. No Sanity mirror yet, so this returns the seed directly. */
+export function getTeam(unit?: TeamMember["unit"]): Promise<TeamMember[]> {
+  const rows = unit ? seedTeam.filter((m) => m.unit === unit) : seedTeam;
+  return Promise.resolve(rows);
+}
+
+/** Real recognition photographs (seed-only). */
+export function getRecognitionPhotos(): Promise<RecognitionPhoto[]> {
+  return Promise.resolve(seedRecognitionPhotos);
+}
+
+/** Portraits of named leaders, keyed by name (seed-only). Names with no entry
+ *  fall back to a monogram placeholder at the call site. */
+export function getLeaderPortraits(): Promise<Record<string, LeaderPortrait>> {
+  return Promise.resolve(seedLeaderPortraits);
 }
 
 export function getSystems(): Promise<Pillar[]> {

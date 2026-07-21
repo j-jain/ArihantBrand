@@ -221,6 +221,14 @@ svg {
   padding-block: clamp(4.5rem, 9vw, 8.5rem);
 }
 
+/* Hero variant: the sticky header already supplies air above the headline, so
+   the top runs much tighter than a mid-page band. The bottom keeps the full
+   section rhythm so whatever follows the hero still breathes. */
+.hero-pad {
+  padding-top: clamp(2rem, 3.2vw, 3.25rem);
+  padding-bottom: clamp(4.5rem, 9vw, 8.5rem);
+}
+
 /* Charcoal full-bleed scope: swaps text/line indirection vars so plain
    descendants read correctly on dark. */
 .on-dark {

@@ -111,9 +111,17 @@ export const pages: Record<string, PageCopy> = {
         heading: "The busiest stand at every fair",
         lead: "Highest footfall at the last 4 regional garment exhibitions. The trade walks to where the season's winners are.",
       },
+      film: {
+        heading: "Inside Arihant Apparels",
+        lead: "A look at the team, the warehouse and the fairs where the season's winners get picked.",
+      },
+      team: {
+        heading: "The people who run it",
+        lead: "Ajay Sancheti built Arihant Apparels on trust, close relationships and mutual growth. Adding value for every retailer and brand partner is the standard the whole team works to.",
+      },
       brands: {
         heading: "The Apparels portfolio",
-        lead: "Ethnic wear, westernwear, kidswear and footwear, distributed across the region from our Guwahati warehouse.",
+        lead: "Home to the Northeast's leading ladies' ethnic labels, with westernwear, kidswear and footwear alongside, distributed across the region from our Guwahati warehouse.",
       },
       faq: { heading: "Straight answers" },
       cta: {
@@ -251,6 +259,10 @@ export const pages: Record<string, PageCopy> = {
     },
     sections: {
       awards: { heading: "The trophy case", lead: "A short list. Heavy items." },
+      gallery: {
+        heading: "In the cabinet",
+        lead: "Certificates and trophies from national brands and trade fairs, photographed as they sit on the shelf.",
+      },
       milestones: { heading: "The years behind it" },
       voices: {
         heading: "What the trade says",

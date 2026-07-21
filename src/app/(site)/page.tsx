@@ -18,6 +18,7 @@ import {
   StaggerGroup,
   StatBand,
   cn,
+  initialsOf,
 } from "@/components";
 import { stockImages } from "@/content/images";
 import {
@@ -50,15 +51,6 @@ function formatTel(digits: string): string {
   const local = digits.replace(/^91/, "");
   const grouped = local.replace(/(\d{5})(\d{5})/, "$1 $2");
   return `+91 ${grouped}`;
-}
-
-/** Monogram initials from the first two words of a name. */
-function initialsOf(name: string): string {
-  return name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w.charAt(0).toUpperCase())
-    .join("");
 }
 
 export default async function HomePage() {
@@ -98,7 +90,7 @@ export default async function HomePage() {
 
       {/* 1 — Hero (paper): split headline + editorial garment image ---------- */}
       <section className="relative overflow-hidden bg-paper">
-        <HeroIntro className="container-site section-pad relative">
+        <HeroIntro className="container-site hero-pad relative">
           <div className="grid items-center gap-x-10 gap-y-12 lg:grid-cols-12">
             <div className="flex flex-col items-start gap-6 lg:col-span-7">
               <EmphasisHeading
@@ -245,13 +237,19 @@ export default async function HomePage() {
         </section>
       </CurtainReveal>
 
-      {/* 3 — Why Arihant (paper): the four pillars as a sticky card stack ---- */}
+      {/* 3 — Why Arihant (paper): sticky heading beside the pillar card stack */}
       <section className="bg-paper">
-        <div className="container-site section-pad flex flex-col gap-12">
-          <Reveal variant="fade">
-            <SectionHeading heading={sections.why.heading} lead={sections.why.lead} />
-          </Reveal>
-          <CardsStack items={pillars.slice(0, 4)} />
+        <div className="container-site section-pad">
+          <div className="grid gap-x-12 gap-y-10 md:grid-cols-12">
+            <Reveal variant="fade" className="md:col-span-5">
+              <div className="stack-heading">
+                <SectionHeading heading={sections.why.heading} lead={sections.why.lead} />
+              </div>
+            </Reveal>
+            <div className="md:col-span-7">
+              <CardsStack items={pillars.slice(0, 4)} />
+            </div>
+          </div>
         </div>
       </section>
 
