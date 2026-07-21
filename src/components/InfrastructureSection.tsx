@@ -18,11 +18,13 @@ interface InfrastructureSectionProps {
 }
 
 /** The home "systems" band: a full-bleed charcoal section whose heading settles
- *  out of drifting vapour, then a 7/5 split — the four systems as a hairline
- *  ledger beside a portrait godown photo — closed by a Besley-italic line. It
+ *  out of drifting vapour. On desktop it composes as a 7/5 split that reads in
+ *  a single screen — heading, lead, the four systems as a 2x2 hairline ledger
+ *  and the closing Besley-italic line stacked in the left seven columns, with
+ *  the godown photo standing the full height of all of it on the right. It
  *  carries no CTA — it is proof of the backend, not an ask. The whole band
  *  wipes in once via {@link CurtainReveal}; all text renders server-side and
- *  legibly without motion. */
+ *  legibly without motion, and below 1024px everything simply stacks. */
 export function InfrastructureSection({
   heading,
   lead,
@@ -31,40 +33,47 @@ export function InfrastructureSection({
 }: InfrastructureSectionProps) {
   return (
     <CurtainReveal>
-      <section className="on-dark">
-        <div className="container-site section-pad flex flex-col gap-12">
-          <div className="flex max-w-3xl flex-col gap-5">
-            <VapourText as="h2" className="t-h2 text-on-charcoal" text={heading} />
-            {lead ? (
-              <p className="t-lead measure text-on-charcoal-soft">{lead}</p>
-            ) : null}
-          </div>
+      <section className="infra-band on-dark">
+        <div className="container-site infra-band__inner">
+          {/* DOM order is the stacked reading order — heading, photo, ledger.
+              Desktop re-places the photo as a full-height right rail beside
+              both copy blocks; see .infra-band__* in motion.css. */}
+          <div className="infra-band__grid">
+            <div className="infra-band__head flex max-w-3xl flex-col gap-4">
+              <VapourText
+                as="h2"
+                className="t-h2 text-on-charcoal"
+                text={heading}
+              />
+              {lead ? (
+                <p className="t-lead measure text-on-charcoal-soft">{lead}</p>
+              ) : null}
+            </div>
 
-          <div className="grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
-            {/* Photo — right rail on desktop, above the rows on mobile. */}
             <ParallaxImage
               src={stockImages.systemsWarehouse1.src}
               alt={stockImages.systemsWarehouse1.alt}
-              ratio="4 / 5"
-              sizes="(max-width: 1023px) 100vw, 40vw"
-              className="border border-line-dark lg:col-span-5 lg:col-start-8 lg:row-start-1"
+              sizes="(max-width: 1023px) 100vw, 36vw"
+              className="infra-band__photo border border-line-dark"
               tilt
+              // Height comes from CSS, not an inline ratio: 4:5 while stacked,
+              // then the full height of the copy column once side by side.
+              fillHeight
             />
-            {/* Systems ledger — left rail on desktop, below the photo on mobile. */}
-            <InfrastructureGrid
-              systems={systems}
-              className="lg:col-span-7 lg:col-start-1 lg:row-start-1"
-            />
-          </div>
 
-          {closing ? (
-            <p
-              className="font-display measure italic text-on-charcoal"
-              style={{ fontSize: "var(--text-h4)", lineHeight: 1.4 }}
-            >
-              {closing}
-            </p>
-          ) : null}
+            <div className="infra-band__body">
+              <InfrastructureGrid systems={systems} />
+
+              {closing ? (
+                <p
+                  className="font-display measure italic text-on-charcoal"
+                  style={{ fontSize: "var(--text-h4)", lineHeight: 1.4 }}
+                >
+                  {closing}
+                </p>
+              ) : null}
+            </div>
+          </div>
         </div>
       </section>
     </CurtainReveal>

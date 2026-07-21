@@ -222,11 +222,12 @@ svg {
 }
 
 /* Hero variant: the sticky header already supplies air above the headline, so
-   the top runs much tighter than a mid-page band. The bottom keeps the full
-   section rhythm so whatever follows the hero still breathes. */
+   the top runs much tighter than a mid-page band. The bottom runs shorter than
+   a mid-page band too, so a hero closes near the fold instead of trailing a
+   wide band of unexplained paper below the last CTA. */
 .hero-pad {
   padding-top: clamp(2rem, 3.2vw, 3.25rem);
-  padding-bottom: clamp(4.5rem, 9vw, 8.5rem);
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
 }
 
 /* Charcoal full-bleed scope: swaps text/line indirection vars so plain

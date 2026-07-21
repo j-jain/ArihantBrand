@@ -15,12 +15,13 @@ interface InfrastructureGridProps {
   className?: string;
 }
 
-/** The four "systems" as a hairline-separated ledger list for {@link
- *  InfrastructureSection}. Every row pairs a small vermillion node square, held
- *  in a shared left rail, with a title and body line. On desktop (non-reduced
- *  motion) each node pulses once as its row enters; mobile and reduced motion
- *  render the plain static list, so nothing is stranded behind an animation
- *  that did not run. */
+/** The four "systems" as a hairline-separated ledger for {@link
+ *  InfrastructureSection}: a single column while stacked, a 2x2 table once
+ *  there is room, so the whole band reads in one screen. Every cell pairs a
+ *  small vermillion node square, held in a shared left rail, with a title and
+ *  body line. On desktop (non-reduced motion) each node pulses once as its row
+ *  enters; mobile and reduced motion render the plain static list, so nothing
+ *  is stranded behind an animation that did not run. */
 export function InfrastructureGrid({
   systems,
   className,
@@ -74,15 +75,12 @@ export function InfrastructureGrid({
 
   return (
     <div ref={ref} className={cn("infra", className)}>
+      {/* Row rules, columns and spacing live in motion.css — the hairlines have
+          to reflow between the 1-column and 2-column arrangements, which is
+          nth-child work rather than per-element classes. */}
       <ol className="infra__rows">
-        {systems.map((row, index) => (
-          <li
-            key={row.title}
-            className={cn(
-              "grid grid-cols-[auto_1fr] gap-x-4 border-t border-line-dark py-6",
-              index === systems.length - 1 && "border-b border-line-dark",
-            )}
-          >
+        {systems.map((row) => (
+          <li key={row.title} className="infra__row">
             <span className="infra__node" aria-hidden="true" />
             <div>
               <h3 className="t-h4 infra__title">{row.title}</h3>

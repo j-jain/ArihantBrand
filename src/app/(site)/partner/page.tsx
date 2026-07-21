@@ -68,7 +68,7 @@ export default async function PartnerPage() {
       <JsonLd data={faqJsonLd(faqs)} />
 
       {/* 1 — Hero: this page opens dark, for gravitas */}
-      <section className="section-pad on-dark">
+      <section className="hero-pad on-dark">
         <HeroIntro className="container-site">
           <div className="grid items-start gap-12 lg:grid-cols-[1.5fr_1fr]">
             <div className="flex flex-col gap-6">

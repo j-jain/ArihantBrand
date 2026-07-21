@@ -95,6 +95,11 @@ export function Reveal({
                 delay,
                 ease: EASE,
                 scrollTrigger: st,
+                // `inset(0)` still clips to the border box, so a lingering
+                // clip-path slices focus rings (outline-offset) off any child
+                // that sits flush against this wrapper's edge. Drop it once the
+                // wipe is done.
+                onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
               },
             );
           } else {

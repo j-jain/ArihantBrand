@@ -125,28 +125,25 @@
   .stack {
     display: block;
   }
+  /* Every card pins on ONE line, shared with the heading rail — no cascade.
+     Depth is carried entirely by the JS tuck (scale about the card's own top
+     edge), so the tucked cards show at the sides instead of stepping down. */
   .stack__card {
     position: sticky;
-    /* per-card `top` (var(--stack-top) + index step) set inline */
+    top: var(--stack-top, 96px);
   }
   .stack__card:not(:last-child) {
     margin-bottom: 1rem;
   }
   /* Heading rail beside the stack: held on screen for the whole scroll of the
-     stack. Lives on an inner wrapper because Reveal writes its own inline
-     transform on the grid cell. */
+     stack, pinned on the same line as the cards. Lives on an inner wrapper
+     because Reveal writes its own inline transform on the grid cell.
+     min-height matches .stack__card so the rail and the last card release
+     their sticky containment together and leave the section level. */
   .stack-heading {
     position: sticky;
-    top: 6rem;
-  }
-}
-
-/* Centred only where there is room for it; short viewports keep the top pin so
-   a tall heading can never be cut off at the bottom of the screen. */
-@media (min-width: 768px) and (min-height: 640px) {
-  .stack-heading {
-    top: 50vh;
-    transform: translateY(-50%);
+    top: var(--stack-top, 96px);
+    min-height: clamp(13rem, 30vh, 16rem);
   }
 }
 
@@ -823,18 +820,97 @@
 /* node squares use --vermillion (decorative, legible on charcoal).     */
 /* ------------------------------------------------------------------ */
 
+/* The band runs tighter than a standard section so heading, lead, ledger,
+   closing line and photo all land inside one screen on a laptop. */
+.infra-band__inner {
+  padding-block: clamp(2.75rem, 5vw, 4.5rem);
+}
+
+.infra-band__grid {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.infra-band__body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 3vw, 2.25rem);
+}
+
+/* Stacked: the photo keeps its portrait frame, sitting between the heading and
+   the ledger exactly as it reads in the DOM. */
+.infra-band__photo {
+  aspect-ratio: 4 / 5;
+}
+
+@media (min-width: 1024px) {
+  .infra-band__grid {
+    grid-template-columns: 8fr 4fr;
+    column-gap: clamp(2.5rem, 4vw, 4rem);
+    row-gap: clamp(1.5rem, 2.5vw, 2rem);
+    align-items: stretch;
+  }
+  /* Heading and lead run the full measure so the h2 lands in two lines rather
+     than three — the single biggest height saving in the band. */
+  .infra-band__head {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .infra-band__body {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  /* Ratio is dropped so the frame stands the full height of the ledger. */
+  .infra-band__photo {
+    grid-column: 2;
+    grid-row: 2;
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+}
+
 .infra {
   position: relative;
 }
 
-/* Ledger list: a single stacked column of rows. The 7/5 split against the
-   photo, and each row's [node | title+text] grid, are Tailwind classes on the
-   component; the CSS keeps only what Tailwind can't express cleanly — the node
-   rail alignment and the on-charcoal type tokens. */
+/* Ledger: one stacked column of rows, a 2x2 table once there is room. Hairlines
+   are drawn per cell so they reflow with the arrangement — every cell rules off
+   at the top, the closing row rules off at the bottom, and the right column
+   carries the vertical rule that turns the pairs into a table. */
 .infra__rows {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.infra__row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 1rem;
+  padding-block: 1rem 1.15rem;
+  border-top: 1px solid var(--line-dark);
+}
+
+.infra__row:last-child {
+  border-bottom: 1px solid var(--line-dark);
+}
+
+@media (min-width: 1024px) {
+  .infra__rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .infra__row:nth-child(odd) {
+    padding-right: clamp(1.25rem, 2vw, 2rem);
+  }
+  .infra__row:nth-child(even) {
+    padding-left: clamp(1.25rem, 2vw, 2rem);
+    border-left: 1px solid var(--line-dark);
+  }
+  /* Two cells share the closing rule now, not one. */
+  .infra__row:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--line-dark);
+  }
 }
 
 .infra__node {

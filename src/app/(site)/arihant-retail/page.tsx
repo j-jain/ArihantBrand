@@ -101,7 +101,7 @@ export default async function ArihantRetailPage() {
       />
 
       {/* 1 — Hero (paper): headline + purple-accented logo/stats rail */}
-      <section className="section-pad bg-paper" style={unitScope(UNIT)}>
+      <section className="hero-pad bg-paper" style={unitScope(UNIT)}>
         <HeroIntro className="container-site">
           <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
             <div className="flex flex-col gap-6">

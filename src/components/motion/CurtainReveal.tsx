@@ -60,6 +60,9 @@ export function CurtainReveal({ children, className }: CurtainRevealProps) {
               duration: 0.9,
               ease: EASE,
               scrollTrigger: { trigger: el, start: "top 75%", once: true },
+              // `inset(0)` still clips to the border box: left in place it would
+              // slice the focus rings off any control flush with the band edge.
+              onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
             },
           );
         },

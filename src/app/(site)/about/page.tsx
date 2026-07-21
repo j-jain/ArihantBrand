@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Button,
@@ -24,6 +26,19 @@ import {
 } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { UNIT_ACCENT } from "@/lib/units";
+
+/* Founding date-stamp on the hero ledger: Archivo condensed with tabular
+   figures, matching the stat treatment on the unit pages but held quiet — it
+   is a date, not a headline number. */
+const foundedStyle: CSSProperties = {
+  fontFamily: "var(--font-archivo), system-ui, sans-serif",
+  fontWeight: 700,
+  fontStretch: "85%",
+  fontVariantNumeric: "tabular-nums",
+  fontSize: "1rem",
+  lineHeight: 1.1,
+  color: "var(--ink)",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("about");
@@ -69,8 +84,8 @@ export default async function AboutPage() {
 
       {/* 1 — Hero (paper) --------------------------------------------------- */}
       <section className="bg-paper">
-        <HeroIntro className="container-site section-pad">
-          <div className="grid items-start gap-x-10 gap-y-12 lg:grid-cols-12">
+        <HeroIntro className="container-site hero-pad">
+          <div className="grid gap-x-14 gap-y-12 lg:grid-cols-12 lg:items-stretch">
             <div className="flex flex-col items-start gap-6 lg:col-span-7">
               <h1 data-hero-title className="t-display text-ink">
                 {hero.heading}
@@ -80,30 +95,41 @@ export default async function AboutPage() {
               </p>
             </div>
 
-            {/* Founding-years ticket, echoing the home trade-ticket panel. */}
-            <div data-hero-reveal className="lg:col-span-5 lg:pt-2">
-              <div className="overflow-hidden rounded-[2px] border border-line bg-white">
-                {businesses.map((business, i) => (
-                  <div
-                    key={business.slug}
-                    className={cn(
-                      "flex items-center gap-4 px-5 py-4",
-                      i > 0 && "border-t border-line",
-                    )}
-                  >
-                    <div className="relative h-8 w-24 shrink-0">
+            {/* The three houses as a hairline ledger: one row per business,
+                stretched to stand level with the headline column rather than
+                floating as a short card. Each row opens that unit's page. */}
+            <div
+              data-hero-reveal
+              className="flex flex-col border-t border-line lg:col-span-5"
+            >
+              {businesses.map((business) => (
+                <Link
+                  key={business.slug}
+                  href={`/${business.slug}`}
+                  className="group flex flex-1 flex-col justify-center gap-2.5 border-b border-line py-5 transition-colors hover:bg-paper-shade"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="block h-[3px] w-8 rounded-full"
+                    style={{ background: UNIT_ACCENT[business.unit].token }}
+                  />
+                  <span className="flex items-end justify-between gap-4">
+                    <span className="relative block h-8 w-28 shrink-0">
                       <Image
                         src={business.logo}
                         alt={business.name}
                         fill
-                        sizes="96px"
+                        sizes="112px"
                         className="object-contain object-left"
                       />
-                    </div>
-                    <p className="t-small text-ink-soft">{business.founded}</p>
-                  </div>
-                ))}
-              </div>
+                    </span>
+                    <span style={foundedStyle}>{business.founded}</span>
+                  </span>
+                  <span className="t-small text-ink-soft">
+                    {business.positioning}
+                  </span>
+                </Link>
+              ))}
             </div>
           </div>
         </HeroIntro>

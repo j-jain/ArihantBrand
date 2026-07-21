@@ -18,6 +18,10 @@ interface ParallaxImageProps {
   /** Add a gentle pointer-follow tilt on the frame. Desktop fine-pointer only;
    *  touch, reduced-motion and < 1024px get zero listeners and zero overhead. */
   tilt?: boolean;
+  /** Drop the intrinsic aspect-ratio so the frame takes its height from the
+   *  layout instead (e.g. a stretched grid column). `ratio` is then ignored and
+   *  the caller owns the height. */
+  fillHeight?: boolean;
 }
 
 /** Image in a clipping frame with a gentle scroll-scrubbed parallax on desktop.
@@ -39,6 +43,7 @@ export function ParallaxImage({
   className,
   parallax = true,
   tilt = false,
+  fillHeight = false,
 }: ParallaxImageProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -162,14 +167,14 @@ export function ParallaxImage({
 
       return () => mm.revert();
     },
-    { scope: ref, dependencies: [parallax, tilt] },
+    { scope: ref, dependencies: [parallax, tilt, fillHeight] },
   );
 
   return (
     <div
       ref={ref}
       className={cn("parallax-frame", className)}
-      style={{ aspectRatio: ratio }}
+      style={fillHeight ? undefined : { aspectRatio: ratio }}
     >
       <Image
         data-parallax-img=""

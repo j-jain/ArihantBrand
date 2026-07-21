@@ -64,7 +64,7 @@ export default async function BrandsPage() {
 
       {/* 1 — Hero (paper) */}
       <section className="bg-paper">
-        <HeroIntro className="container-site section-pad">
+        <HeroIntro className="container-site hero-pad">
           <div className="flex max-w-3xl flex-col gap-6">
             <div className="flex flex-col gap-5">
               <HeroHeading heading={hero.heading} emphasis={hero.headingEmphasis} />
