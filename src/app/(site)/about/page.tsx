@@ -16,7 +16,7 @@ import {
   ValuePanels,
   cn,
 } from "@/components";
-import { stockImages } from "@/content/images";
+import { photoSlots, stockImages } from "@/content/images";
 import {
   getBusinesses,
   getLeaderPortraits,
@@ -173,9 +173,9 @@ export default async function AboutPage() {
                   </p>
                 </div>
                 <ParallaxImage
-                  src={stockImages.aboutCraft1.src}
-                  alt={stockImages.aboutCraft1.alt}
-                  ratio="4 / 5"
+                  src={photoSlots.aboutCraft.src}
+                  alt={photoSlots.aboutCraft.alt}
+                  ratio={photoSlots.aboutCraft.ratio}
                   sizes="(max-width: 1023px) 100vw, 40vw"
                   tilt
                   mBleed

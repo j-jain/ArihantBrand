@@ -16,14 +16,14 @@ const m = (name: string, slug: string, category?: string): Partner => ({
   name,
   slug,
   unit: "marketing",
-  image: `/images/partners/${slug}.png`,
+  image: `/images/partners/${slug}.webp`,
   ...(category ? { category } : {}),
 });
 const a = (name: string, slug: string, category?: string): Partner => ({
   name,
   slug,
   unit: "apparels",
-  image: `/images/partners/${slug}.png`,
+  image: `/images/partners/${slug}.webp`,
   ...(category ? { category } : {}),
 });
 

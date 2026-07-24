@@ -30,7 +30,7 @@ import {
   faqJsonLd,
   pageMetadata,
 } from "@/lib/seo";
-import { stockImages } from "@/content/images";
+import { photoSlots } from "@/content/images";
 import { unitScope } from "@/lib/units";
 import { UnitHero } from "../_components/UnitHero";
 
@@ -95,7 +95,7 @@ export default async function ArihantMarketingPage() {
       <section className="section-pad on-dark relative overflow-hidden">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <Image
-            src={stockImages.marketingWarehouse2.src}
+            src={photoSlots.marketingBandGround.src}
             alt=""
             fill
             sizes="100vw"
@@ -190,9 +190,9 @@ export default async function ArihantMarketingPage() {
             </div>
 
             <ParallaxImage
-              src={stockImages.marketingWarehouse1.src}
-              alt={stockImages.marketingWarehouse1.alt}
-              ratio="4 / 5"
+              src={photoSlots.marketingWarehouse.src}
+              alt={photoSlots.marketingWarehouse.alt}
+              ratio={photoSlots.marketingWarehouse.ratio}
               sizes="(max-width: 1023px) 100vw, 34vw"
               className="m-ar-4-3 border border-line"
               tilt

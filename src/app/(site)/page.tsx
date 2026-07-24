@@ -21,7 +21,7 @@ import {
   cn,
   initialsOf,
 } from "@/components";
-import { stockImages } from "@/content/images";
+import { photoSlots } from "@/content/images";
 import { facts, phrase } from "@/content/facts";
 import { featuredTestimonialIndex } from "@/content/seed";
 import {
@@ -185,9 +185,9 @@ export default async function HomePage() {
                   landscape on a phone, where a 4:5 frame at full width eats an
                   entire screen before the reader has reached anything. */}
               <ParallaxImage
-                src={stockImages.homeTexture.src}
-                alt={stockImages.homeTexture.alt}
-                ratio="4 / 5"
+                src={photoSlots.homeHero.src}
+                alt={photoSlots.homeHero.alt}
+                ratio={photoSlots.homeHero.ratio}
                 priority
                 sizes="(max-width: 1023px) 100vw, 42vw"
                 tilt
@@ -245,7 +245,7 @@ export default async function HomePage() {
         <section className="on-dark relative overflow-hidden">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0">
             <Image
-              src={stockImages.marketingWarehouse2.src}
+              src={photoSlots.homeProofGround.src}
               alt=""
               fill
               sizes="100vw"

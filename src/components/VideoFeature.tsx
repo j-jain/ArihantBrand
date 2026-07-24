@@ -19,7 +19,13 @@ interface VideoFeatureProps {
 
 /** Click-to-play film frame. The poster is always visible and native controls
  *  appear on play, so nothing is hidden behind an animation and there is no
- *  autoplay (safe for reduced-motion and metered data). */
+ *  autoplay (safe for reduced-motion and metered data).
+ *
+ *  Between the tap and the first frame the file still has to arrive, and on a
+ *  phone connection that gap used to be silent: the play button vanished and
+ *  nothing replaced it, which reads as a broken link (change brief, AA8). A
+ *  spinner holds that gap, and a failed load says so in words instead of
+ *  leaving a black rectangle. */
 export function VideoFeature({
   mp4,
   webm,
@@ -30,12 +36,22 @@ export function VideoFeature({
 }: VideoFeatureProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const start = () => {
     const v = videoRef.current;
     if (!v) return;
+    setFailed(false);
+    setLoading(true);
     setPlaying(true);
-    void v.play();
+    void v.play().catch(() => {
+      // Autoplay policy or a decode failure: fall back to the poster and say
+      // so, rather than leaving the reader looking at an empty frame.
+      setLoading(false);
+      setPlaying(false);
+      setFailed(true);
+    });
   };
 
   // Same var-with-desktop-fallback indirection as ParallaxImage, so the mobile
@@ -62,6 +78,13 @@ export function VideoFeature({
         controls={playing}
         preload="none"
         playsInline
+        onPlaying={() => setLoading(false)}
+        onWaiting={() => setLoading(true)}
+        onError={() => {
+          setLoading(false);
+          setPlaying(false);
+          setFailed(true);
+        }}
         onPause={() => videoRef.current?.ended && setPlaying(false)}
         style={{
           position: "absolute",
@@ -75,6 +98,13 @@ export function VideoFeature({
         {webm ? <source src={webm} type="video/webm" /> : null}
         <source src={mp4} type="video/mp4" />
       </video>
+
+      {loading ? (
+        <span className="video-feature__loading" role="status">
+          <span className="video-feature__spinner" aria-hidden="true" />
+          <span className="sr-only">Loading the film</span>
+        </span>
+      ) : null}
 
       {!playing ? (
         <button
@@ -119,6 +149,12 @@ export function VideoFeature({
             </svg>
           </span>
         </button>
+      ) : null}
+
+      {failed ? (
+        <p className="video-feature__error" role="alert">
+          The film could not load. Try again, or ask us for it on WhatsApp.
+        </p>
       ) : null}
     </div>
   );

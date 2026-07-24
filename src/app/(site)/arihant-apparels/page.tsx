@@ -30,6 +30,7 @@ import {
   faqJsonLd,
   pageMetadata,
 } from "@/lib/seo";
+import { photoSlots } from "@/content/images";
 import { unitScope } from "@/lib/units";
 import { UnitHero } from "../_components/UnitHero";
 
@@ -102,9 +103,9 @@ export default async function ArihantApparelsPage() {
         <div className="container-site">
           <Reveal variant="fade" className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-start">
             <ParallaxImage
-              src="/images/photos/apparels-warehouse-2.jpg"
-              alt="Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati"
-              ratio="4 / 5"
+              src={photoSlots.apparelsWarehouse.src}
+              alt={photoSlots.apparelsWarehouse.alt}
+              ratio={photoSlots.apparelsWarehouse.ratio}
               sizes="(max-width: 1023px) 100vw, 40vw"
               className="m-ar-4-3 border border-line lg:col-span-5"
               tilt
@@ -191,9 +192,9 @@ export default async function ArihantApparelsPage() {
             </Reveal>
             <div className="m-flow grid gap-y-10 gap-x-16 lg:grid-cols-12 lg:items-start">
               <ParallaxImage
-                src="/images/photos/apparels-team.jpg"
-                alt="The Arihant Apparels team at their Guwahati office"
-                ratio="4 / 3"
+                src={photoSlots.apparelsTeam.src}
+                alt={photoSlots.apparelsTeam.alt}
+                ratio={photoSlots.apparelsTeam.ratio}
                 sizes="(max-width: 1023px) 100vw, 46vw"
                 className="border border-line lg:col-span-6"
                 tilt

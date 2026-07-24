@@ -18,6 +18,7 @@ import {
   getStores,
   pointsByIds,
 } from "@/lib/content";
+import { photoSlots } from "@/content/images";
 import { breadcrumbJsonLd, businessJsonLd, pageMetadata } from "@/lib/seo";
 import { UnitHero } from "../_components/UnitHero";
 
@@ -130,18 +131,18 @@ export default async function ArihantRetailPage() {
                 are Arihant Retail's own floors, so they outrank stock here. */}
             <div className="m-duo flex flex-col">
               <ParallaxImage
-                src="/images/photos/store-interior.jpg"
-                alt="Inside an Arihant Retail floor: merchandised, staffed and stocked by our own team"
-                ratio="4 / 5"
+                src={photoSlots.retailInterior.src}
+                alt={photoSlots.retailInterior.alt}
+                ratio={photoSlots.retailInterior.ratio}
                 sizes="(max-width: 1023px) 100vw, 35vw"
                 className="m-ar-4-3 border border-line-dark"
                 tilt
                 mBleed
               />
               <ParallaxImage
-                src="/images/photos/store-ebo-indian-terrain.jpg"
-                alt="A national brand partner's outlet run by Arihant Retail"
-                ratio="3 / 2"
+                src={photoSlots.retailShopfront.src}
+                alt={photoSlots.retailShopfront.alt}
+                ratio={photoSlots.retailShopfront.ratio}
                 sizes="(max-width: 1023px) 100vw, 25vw"
                 className="m-ar-16-9 mt-4 border border-line-dark lg:relative lg:z-10 lg:-mt-[18%] lg:mr-auto lg:w-[72%]"
                 tilt

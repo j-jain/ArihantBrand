@@ -1,16 +1,24 @@
-/** Curated stock photography manifest.
+/** The site's photography manifest.
  *
- *  Every stock photo the site uses is listed here; pages must reference
- *  stock imagery only through this file, never by raw path. All files live
- *  under public/images/stock/ and are committed to the repo.
+ *  TWO registers, deliberately separate:
  *
- *  Provenance: Unsplash and Pexels only. Both licenses permit commercial
- *  use without attribution; photographer and source URL are recorded here
- *  for provenance regardless. The three real store photos in
- *  public/images/photos/ always take priority over stock in placement.
+ *  1. `photoSlots` — every position on the site that wants a photograph of
+ *     Arihant's own operation. Each slot is a named key with the aspect the
+ *     layout needs, honest alt text, and `real: true|false`. A slot marked
+ *     `real: false` is standing on stock until the client's photograph lands;
+ *     swapping it in is then a one-line change here and nothing else moves.
+ *     This is what the change brief's photography items (I1-I12, HP3, AM4,
+ *     AA6, AR4, R10) are waiting on.
  *
- *  Alt text rule: describe what is visible, in brand voice. Never claim a
- *  scene shows Arihant's own warehouse, store, or people.
+ *  2. `stockImages` — the curated stock library those slots draw from. All
+ *     files live under public/images/stock/ and are committed to the repo.
+ *     Provenance: Unsplash and Pexels only. Both licenses permit commercial
+ *     use without attribution; photographer and source URL are recorded
+ *     regardless.
+ *
+ *  Alt text rule: describe what is visible, in brand voice. A stock photo's
+ *  alt text NEVER claims the scene shows Arihant's own warehouse, store or
+ *  people. Real photos always outrank stock in placement.
  */
 
 export interface StockImage {
@@ -25,6 +33,19 @@ export interface StockImage {
   source: "unsplash" | "pexels";
   /** Photo page URL (not the CDN file). */
   sourceUrl: string;
+}
+
+/** One photographic position on the site. */
+export interface PhotoSlot {
+  src: string;
+  alt: string;
+  /** CSS aspect the layout reserves, e.g. "4 / 5". Reserving it means
+   *  swapping the photograph never shifts anything around it. */
+  ratio: string;
+  /** True once this is Arihant's own photograph rather than stock. */
+  real: boolean;
+  /** What the client needs to shoot to make this slot real. */
+  wanted?: string;
 }
 
 export const stockImages = {
@@ -243,3 +264,124 @@ export const stockImages = {
 } as const satisfies Record<string, StockImage>;
 
 export type StockImageKey = keyof typeof stockImages;
+
+/* ------------------------------------------------------------------ */
+/* Photographic slots                                                   */
+/*                                                                      */
+/* Every position on the site that wants a photograph of Arihant's own  */
+/* operation. `real: false` means the slot is standing on stock until    */
+/* the shoot lands; `wanted` says what to shoot. Swapping one in is a    */
+/* one-line edit here, and the ratio is already reserved so nothing      */
+/* around it moves.                                                     */
+/* ------------------------------------------------------------------ */
+
+export const photoSlots = {
+  /* ---- Home ---------------------------------------------------- HP3 */
+  homeHero: {
+    src: stockImages.homeTexture.src,
+    alt: stockImages.homeTexture.alt,
+    ratio: "4 / 5",
+    real: false,
+    wanted:
+      "Portrait of the Guwahati godown mid-dispatch: stacked indents, staff working, shot in daylight.",
+  },
+  homeProofGround: {
+    src: stockImages.marketingWarehouse2.src,
+    alt: "",
+    ratio: "16 / 9",
+    real: false,
+    wanted: "Wide shot of the racking in either godown, used at low opacity behind the award band.",
+  },
+  homeSystems: {
+    src: stockImages.systemsWarehouse1.src,
+    alt: stockImages.systemsWarehouse1.alt,
+    ratio: "4 / 5",
+    real: false,
+    wanted: "The dispatch desk with the dashboards on screen.",
+  },
+
+  /* ---- Arihant Marketing --------------------------------------- AM4 */
+  marketingWarehouse: {
+    src: stockImages.marketingWarehouse1.src,
+    alt: stockImages.marketingWarehouse1.alt,
+    ratio: "4 / 5",
+    real: false,
+    wanted:
+      "Portrait of the 15,000 sq ft Marketing godown: binned stock, a picker mid-indent.",
+  },
+  marketingBandGround: {
+    src: stockImages.marketingWarehouse2.src,
+    alt: "",
+    ratio: "16 / 9",
+    real: false,
+    wanted: "Wide godown shot for the award band ground.",
+  },
+
+  /* ---- Arihant Apparels ---------------------------------------- AA6 */
+  apparelsWarehouse: {
+    src: "/images/photos/apparels-warehouse-2.jpg",
+    alt: "Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati",
+    ratio: "4 / 5",
+    real: true,
+  },
+  apparelsTeam: {
+    src: "/images/photos/apparels-team.jpg",
+    alt: "The Arihant Apparels team at their Guwahati office",
+    ratio: "4 / 3",
+    real: true,
+  },
+
+  /* ---- Arihant Retail ------------------------------------------ AR4 */
+  retailInterior: {
+    src: "/images/photos/store-interior.jpg",
+    alt: "Inside an Arihant Retail floor: merchandised, staffed and stocked by our own team",
+    ratio: "4 / 5",
+    real: true,
+  },
+  retailShopfront: {
+    src: "/images/photos/store-ebo-indian-terrain.jpg",
+    alt: "A national brand partner's outlet run by Arihant Retail",
+    ratio: "3 / 2",
+    real: true,
+  },
+
+  /* ---- Partner / About ------------------------------------------ I8 */
+  partnerStorefront: {
+    src: stockImages.partnerStorefront.src,
+    alt: stockImages.partnerStorefront.alt,
+    ratio: "4 / 5",
+    real: false,
+    wanted: "An Arihant Retail store lit at night, shot from the street.",
+  },
+  aboutCraft: {
+    src: stockImages.aboutCraft1.src,
+    alt: stockImages.aboutCraft1.alt,
+    ratio: "4 / 5",
+    real: false,
+    wanted: "The family on the Arihant Tower floor, or the original counter if a photograph exists.",
+  },
+
+  /* ---- Contact --------------------------------------------------- X4 */
+  officeMap: {
+    // AWAITING ASSET: a committed static map image of Arihant Tower,
+    // Jyotikuchi. Not a third-party embed — DESIGN.md forbids external
+    // scripts and CDN calls, so this must be a file in the repo. Until it
+    // exists the address block renders its directions link and no image.
+    src: "",
+    alt: "Map showing Arihant Tower, Jyotikuchi, Guwahati",
+    ratio: "3 / 2",
+    real: false,
+    wanted:
+      "A static map export (PNG/WebP, ~1200x800) centred on Arihant Tower, committed under public/images/photos/.",
+  },
+} as const satisfies Record<string, PhotoSlot>;
+
+export type PhotoSlotKey = keyof typeof photoSlots;
+
+/** Slots still standing on stock, for the status report and for a quick
+ *  answer to "what is the photographer actually shooting?". */
+export function pendingPhotoSlots(): { key: string; wanted: string }[] {
+  return Object.entries(photoSlots)
+    .filter(([, slot]) => !slot.real)
+    .map(([key, slot]) => ({ key, wanted: (slot as PhotoSlot).wanted ?? "" }));
+}

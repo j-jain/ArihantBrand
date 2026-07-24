@@ -1487,3 +1487,53 @@ textarea.field-input {
    inside it is bounded by `@media (max-width: 767px)`, so desktop is
    untouched. See the note at the head of this file. */
 @import "./mobile.css";
+
+/* ------------------------------------------------------------------ */
+/* Video feature: the gap between tap and first frame                  */
+/* ------------------------------------------------------------------ */
+
+.video-feature__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.video-feature__spinner {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 3px solid color-mix(in oklch, var(--on-charcoal), transparent 72%);
+  border-top-color: var(--on-charcoal);
+  animation: arihant-spin 0.9s linear infinite;
+}
+
+@keyframes arihant-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduced motion gets a pulse rather than a spin: the point is only to say
+   "something is happening", and that does not require rotation. */
+@media (prefers-reduced-motion: reduce) {
+  .video-feature__spinner {
+    animation: none;
+    border-top-color: color-mix(in oklch, var(--on-charcoal), transparent 30%);
+  }
+}
+
+.video-feature__error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: color-mix(in oklch, var(--charcoal), transparent 8%);
+  color: var(--on-charcoal);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: var(--text-small);
+}
