@@ -88,16 +88,28 @@ export const businesses: Business[] = [
     summary:
       "Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than 30 years, on a visit rhythm the region's trade sets its watch by.",
     points: [
-      "Pioneers of readymade garments distribution across Northeast India, with 30+ years in the trade.",
-      "15,000 sq ft of organised, state-of-the-art warehousing in Guwahati.",
-      "Serves 250+ retailers and 45+ national brand partners.",
-      "Founder member of NEGTA, the North Eastern Garment Traders Association.",
-      "Every retailer visited at least once every 20 days, season after season.",
+      {
+        id: "pioneer",
+        text: "Pioneers of readymade garments distribution across Northeast India, with 30+ years in the trade.",
+      },
+      {
+        id: "warehouse",
+        text: "15,000 sq ft of organised, state-of-the-art warehousing in Guwahati.",
+      },
+      { id: "reach", text: "Serves 250+ retailers and 45+ national brand partners." },
+      {
+        id: "negta",
+        text: "Founder member of NEGTA, the North Eastern Garment Traders Association.",
+      },
+      {
+        id: "visit-cycle",
+        text: "Every retailer visited at least once every 20 days, season after season.",
+      },
     ],
     stats: [
-      { value: 30, suffix: "+", label: "Years distributing" },
-      { value: 250, suffix: "+", label: "Retailers served" },
-      { value: 15000, suffix: " sq ft", label: "Warehouse" },
+      { id: "years", value: 30, suffix: "+", label: "Years distributing" },
+      { id: "retailers", value: 250, suffix: "+", label: "Retailers served" },
+      { id: "warehouse", value: 15000, suffix: " sq ft", label: "Warehouse" },
     ],
     audienceCtas: [
       { label: "Become a retail partner", href: "/contact?intent=retailer" },
@@ -115,17 +127,29 @@ export const businesses: Business[] = [
     summary:
       "Founded in 2013 by Ajay Sancheti, a second-generation garment entrepreneur, Arihant Apparels has grown into one of the Northeast's five largest apparel distributors. Built on systems and data, it turns national brands into category leaders and carries the Arihant Marketing legacy forward: close to its retailers, trusted by its brand partners.",
     points: [
-      "A portfolio built to give growing retailers their next bestselling label.",
-      "Home to the Northeast's leading ladies' ethnic labels, alongside westernwear, kidswear and footwear.",
-      "Has established several brand partners as category leaders in the Northeast.",
-      "Run on systems and data, from buying to the shop floor.",
-      "9,000 sq ft warehouse in Guwahati.",
-      "Highest footfall at the last 4 regional garment exhibitions.",
+      {
+        id: "portfolio",
+        text: "A portfolio built to give growing retailers their next bestselling label.",
+      },
+      {
+        id: "ethnic-leadership",
+        text: "Home to the Northeast's leading ladies' ethnic labels, alongside westernwear, kidswear and footwear.",
+      },
+      {
+        id: "category-leaders",
+        text: "Has established several brand partners as category leaders in the Northeast.",
+      },
+      { id: "systems", text: "Run on systems and data, from buying to the shop floor." },
+      { id: "warehouse", text: "9,000 sq ft warehouse in Guwahati." },
+      {
+        id: "exhibitions",
+        text: "Highest footfall at the last 4 regional garment exhibitions.",
+      },
     ],
     stats: [
-      { value: 2013, label: "Established" },
-      { value: 9000, suffix: " sq ft", label: "Warehouse" },
-      { value: 4, label: "Exhibitions led on footfall" },
+      { id: "established", value: 2013, label: "Established" },
+      { id: "warehouse", value: 9000, suffix: " sq ft", label: "Warehouse" },
+      { id: "exhibitions", value: 4, label: "Exhibitions led on footfall" },
     ],
     audienceCtas: [
       { label: "Stock our brands", href: "/contact?intent=retailer" },
@@ -143,17 +167,29 @@ export const businesses: Business[] = [
     summary:
       "Arihant's retail arm runs modern multi-brand stores and exclusive brand outlets across Northeast India: 4 trading today, 2 in fit-out, and 10 planned by the end of FY 26-27.",
     points: [
-      "Multi-brand modern retail stores, merchandised the way a distributor merchandises: nothing sits.",
-      "4 stores open today, 2 more in fit-out.",
-      "10 stores planned by the end of FY 26-27.",
-      "Setting up EBOs (exclusive brand outlets) for national brand partners.",
-      "A zero-deadstock, asset-light, no-frills store model.",
-      "Backed by the buying power and settlement discipline of a 35-year distribution house.",
+      {
+        id: "multi-brand",
+        text: "Multi-brand modern retail stores, merchandised the way a distributor merchandises: nothing sits.",
+      },
+      { id: "open-today", text: "4 stores open today, 2 more in fit-out." },
+      { id: "roadmap", text: "10 stores planned by the end of FY 26-27." },
+      {
+        id: "ebo",
+        text: "Setting up EBOs (exclusive brand outlets) for national brand partners.",
+      },
+      {
+        id: "zero-deadstock",
+        text: "A zero-deadstock, asset-light, no-frills store model.",
+      },
+      {
+        id: "legacy",
+        text: "Backed by the buying power and settlement discipline of a 35-year distribution house.",
+      },
     ],
     stats: [
-      { value: 4, label: "Stores open" },
-      { value: 2, label: "Stores in fit-out" },
-      { value: 10, label: "Stores planned by FY 26-27" },
+      { id: "open", value: 4, label: "Stores open" },
+      { id: "fitout", value: 2, label: "Stores in fit-out" },
+      { id: "planned", value: 10, label: "Stores planned by FY 26-27" },
     ],
     audienceCtas: [
       { label: "Own a managed store", href: "/partner" },

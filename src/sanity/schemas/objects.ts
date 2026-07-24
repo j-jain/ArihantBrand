@@ -18,6 +18,13 @@ export const stat = defineType({
   title: "Stat",
   type: "object",
   fields: [
+    defineField({
+      name: "id",
+      title: "Selector id (do not rename)",
+      description:
+        "Stable key the site uses to place this stat. Changing it can blank a section.",
+      type: "string",
+    }),
     defineField({ name: "value", title: "Value (number)", type: "number", validation: (r) => r.required() }),
     defineField({ name: "suffix", title: "Suffix", type: "string" }),
     defineField({ name: "label", title: "Label", type: "string", validation: (r) => r.required() }),
@@ -29,4 +36,31 @@ export const stat = defineType({
       subtitle: label,
     }),
   },
+});
+
+/** One proof point on a business. Mirrors `BusinessPoint` in
+ *  src/content/types.ts. Page code selects points by `id`, never by matching
+ *  the copy, so `text` can be rewritten freely but `id` must not be renamed. */
+export const businessPoint = defineType({
+  name: "businessPoint",
+  title: "Business point",
+  type: "object",
+  fields: [
+    defineField({
+      name: "id",
+      title: "Selector id (do not rename)",
+      description:
+        "Stable key the site uses to place this point, e.g. visit-cycle, zero-deadstock. Changing it can blank a section.",
+      type: "string",
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "text",
+      title: "Text",
+      type: "text",
+      rows: 2,
+      validation: (r) => r.required(),
+    }),
+  ],
+  preview: { select: { title: "text", subtitle: "id" } },
 });

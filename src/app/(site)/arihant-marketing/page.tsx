@@ -23,6 +23,7 @@ import {
   getPartners,
   getSisScope,
   getSiteSettings,
+  pointById,
 } from "@/lib/content";
 import {
   breadcrumbJsonLd,
@@ -95,7 +96,9 @@ export default async function ArihantMarketingPage() {
   const faqSection = sections.faq;
   const ctaSection = sections.cta;
 
-  const twentyDayPromise = business?.points.find((p) => p.includes("20 days"));
+  // Content is selected by stable id, never by matching the copy — a rewrite
+  // must never be able to blank a section.
+  const twentyDayPromise = pointById(business, "visit-cycle");
   const firstPhone = contact?.phones[0];
 
   return (

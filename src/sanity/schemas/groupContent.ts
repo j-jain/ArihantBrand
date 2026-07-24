@@ -49,6 +49,13 @@ export const groupStat = defineType({
   title: "Group Stat",
   type: "document",
   fields: [
+    defineField({
+      name: "id",
+      title: "Selector id (do not rename)",
+      description:
+        "Stable key the site uses to place this stat. Changing it can blank a section.",
+      type: "string",
+    }),
     defineField({ name: "value", title: "Value (number)", type: "number", validation: (r) => r.required() }),
     defineField({ name: "suffix", title: "Suffix", type: "string" }),
     defineField({ name: "label", title: "Label", type: "string", validation: (r) => r.required() }),

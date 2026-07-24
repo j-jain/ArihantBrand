@@ -24,6 +24,9 @@ import {
   getPartners,
   getSiteSettings,
   getTeam,
+  pointById,
+  pointsByIds,
+  statById,
 } from "@/lib/content";
 import {
   breadcrumbJsonLd,
@@ -89,15 +92,14 @@ export default async function ArihantApparelsPage() {
   const faqSection = sections.faq;
   const ctaSection = sections.cta;
 
-  const exhStat = business?.stats.find((s) => s.label.toLowerCase().includes("exhibition"));
-  // Category-leaders point drives the pull-line; the sq-ft and portfolio points
-  // support it. The exhibition-footfall point already headlines section 3 and
-  // the mission point is carried by section 2, so neither is echoed here.
-  const leadersPoint = business?.points.find((p) => p.toLowerCase().includes("category leaders"));
-  const supportingPoints = [
-    business?.points.find((p) => p.toLowerCase().includes("sq ft")),
-    business?.points.find((p) => p.toLowerCase().includes("portfolio")),
-  ].filter((p): p is string => Boolean(p));
+  // Content is selected by stable id, never by matching the copy — a rewrite
+  // must never be able to blank a section.
+  const exhStat = statById(business, "exhibitions");
+  // Category-leaders point drives the pull-line; the warehouse and portfolio
+  // points support it. The exhibition-footfall point already headlines section
+  // 3 and the mission point is carried by section 2, so neither is echoed here.
+  const leadersPoint = pointById(business, "category-leaders");
+  const supportingPoints = pointsByIds(business, ["warehouse", "portfolio"]);
 
   return (
     <div>

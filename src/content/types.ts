@@ -18,9 +18,19 @@ export interface Hero {
 }
 
 export interface Stat {
+  /** Stable selector key. Page code picks a stat by `id`, never by matching
+   *  its label, so copy can be rewritten without blanking a section. */
+  id?: string;
   value: number;
   suffix?: string;
   label: string;
+}
+
+/** One proof point on a business. `id` is the stable selector page code uses;
+ *  `text` is the copy, which is free to change without breaking a layout. */
+export interface BusinessPoint {
+  id: string;
+  text: string;
 }
 
 export interface Business {
@@ -32,7 +42,7 @@ export interface Business {
   leaders: string[];
   positioning: string;
   summary: string;
-  points: string[];
+  points: BusinessPoint[];
   stats: Stat[];
   audienceCtas: Cta[];
 }

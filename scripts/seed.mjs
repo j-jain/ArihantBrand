@@ -77,7 +77,21 @@ async function mapLimit(items, limit, fn) {
 const imageRef = (assetId) =>
   assetId ? { _type: "image", asset: { _type: "reference", _ref: assetId } } : undefined;
 
-const stat = (s, i) => ({ _type: "stat", _key: `stat-${i}`, value: s.value, suffix: s.suffix, label: s.label });
+const stat = (s, i) => ({
+  _type: "stat",
+  _key: s.id ? `stat-${s.id}` : `stat-${i}`,
+  ...(s.id ? { id: s.id } : {}),
+  value: s.value,
+  suffix: s.suffix,
+  label: s.label,
+});
+/** Business points carry a stable selector id; it doubles as the array key. */
+const businessPoint = (p) => ({
+  _type: "businessPoint",
+  _key: `point-${p.id}`,
+  id: p.id,
+  text: p.text,
+});
 const cta = (c) => ({ _type: "cta", label: c.label, href: c.href });
 const ctaKeyed = (c, i) => ({ _type: "cta", _key: `cta-${i}`, label: c.label, href: c.href });
 
@@ -197,7 +211,7 @@ async function main() {
       leaders: b.leaders,
       positioning: b.positioning,
       summary: b.summary,
-      points: b.points,
+      points: b.points.map(businessPoint),
       stats: b.stats.map(stat),
       audienceCtas: b.audienceCtas.map(ctaKeyed),
       order: i,
@@ -315,7 +329,15 @@ async function main() {
 
   // Group content
   seed.groupStats.forEach((s, i) => {
-    docs.push({ _id: `groupstat-${i}`, _type: "groupStat", value: s.value, suffix: s.suffix, label: s.label, order: i });
+    docs.push({
+      _id: s.id ? `groupstat-${s.id}` : `groupstat-${i}`,
+      _type: "groupStat",
+      ...(s.id ? { id: s.id } : {}),
+      value: s.value,
+      suffix: s.suffix,
+      label: s.label,
+      order: i,
+    });
   });
   seed.pillars.forEach((p, i) => {
     docs.push({ _id: `pillar-${i}`, _type: "pillar", title: p.title, text: p.text, order: i });

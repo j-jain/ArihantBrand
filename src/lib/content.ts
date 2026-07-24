@@ -107,6 +107,7 @@ const isEmptyArray = (rows: unknown[]): boolean => !Array.isArray(rows) || rows.
 /* ------------------------------------------------------------------ */
 
 interface RawStat {
+  id?: string | null;
   value: number;
   suffix?: string | null;
   label: string;
@@ -114,6 +115,10 @@ interface RawStat {
 interface RawCta {
   label: string;
   href: string;
+}
+interface RawBusinessPoint {
+  id?: string | null;
+  text?: string | null;
 }
 interface RawBusiness {
   unit: Business["unit"];
@@ -125,7 +130,7 @@ interface RawBusiness {
   leaders?: string[] | null;
   positioning?: string | null;
   summary?: string | null;
-  points?: string[] | null;
+  points?: RawBusinessPoint[] | null;
   stats?: RawStat[] | null;
   audienceCtas?: RawCta[] | null;
 }
@@ -239,6 +244,7 @@ interface RawAward {
 /* ------------------------------------------------------------------ */
 
 const mapStat = (s: RawStat): Stat => ({
+  ...(s.id ? { id: s.id } : {}),
   value: s.value,
   ...(s.suffix ? { suffix: s.suffix } : {}),
   label: s.label,
@@ -256,7 +262,11 @@ function mapBusiness(b: RawBusiness): Business {
     leaders: b.leaders ?? [],
     positioning: b.positioning ?? "",
     summary: b.summary ?? "",
-    points: b.points ?? [],
+    // Points without an id are unselectable by page code, so drop them rather
+    // than let a half-mapped row reach a layout that keys off `id`.
+    points: (b.points ?? [])
+      .filter((p): p is { id: string; text?: string | null } => Boolean(p?.id))
+      .map((p) => ({ id: p.id, text: p.text ?? "" })),
     stats: (b.stats ?? []).map(mapStat),
     audienceCtas: (b.audienceCtas ?? []).map(mapCta),
   };
@@ -377,7 +387,8 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
 
 const BUSINESSES_QUERY = `*[_type == "business"] | order(order asc){
   unit, name, "slug": slug.current, logo, logoPath, founded, leaders, positioning,
-  summary, points, stats[]{ value, suffix, label }, audienceCtas[]{ label, href }
+  summary, points[]{ id, text }, stats[]{ id, value, suffix, label },
+  audienceCtas[]{ label, href }
 }`;
 
 const PARTNERS_QUERY = `*[_type == "partner"] | order(order asc){
@@ -410,13 +421,47 @@ const PAGE_QUERY = `*[_type == "page" && pageId == $pageId][0]{
   sections[]{ key, heading, lead, body }
 }`;
 
-const GROUP_STATS_QUERY = `*[_type == "groupStat"] | order(order asc){ value, suffix, label }`;
+const GROUP_STATS_QUERY = `*[_type == "groupStat"] | order(order asc){ id, value, suffix, label }`;
 const PILLARS_QUERY = `*[_type == "pillar"] | order(order asc){ title, text }`;
 const TIMELINE_QUERY = `*[_type == "timelineEntry"] | order(order asc){ year, title, text }`;
 const STEPS_QUERY = `*[_type == "processStep"] | order(order asc){ title, text }`;
 const AWARDS_QUERY = `*[_type == "award"] | order(order asc){ year, title, issuer, detail }`;
 const SYSTEMS_QUERY = `*[_type == "systemFeature"] | order(order asc){ title, text }`;
 const SIS_SCOPE_QUERY = `*[_type == "sisPoint"] | order(order asc){ title, text }`;
+
+/* ------------------------------------------------------------------ */
+/* Selectors                                                            */
+/*                                                                      */
+/* Page code picks a point or a stat by its stable `id`, never by        */
+/* matching the copy. Rewriting a string must never be able to blank a   */
+/* section, which is exactly what substring lookups used to allow.       */
+/* ------------------------------------------------------------------ */
+
+/** The text of one business point, or undefined if that id is absent. */
+export function pointById(
+  business: Business | undefined,
+  id: string,
+): string | undefined {
+  return business?.points.find((p) => p.id === id)?.text || undefined;
+}
+
+/** Several point texts in the order asked for; missing ids drop out. */
+export function pointsByIds(
+  business: Business | undefined,
+  ids: readonly string[],
+): string[] {
+  return ids
+    .map((id) => pointById(business, id))
+    .filter((text): text is string => Boolean(text));
+}
+
+/** One stat by its stable id, or undefined if that id is absent. */
+export function statById(
+  business: Business | undefined,
+  id: string,
+): Stat | undefined {
+  return business?.stats.find((s) => s.id === id);
+}
 
 /* ------------------------------------------------------------------ */
 /* Getters                                                              */

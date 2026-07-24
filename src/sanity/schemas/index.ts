@@ -1,7 +1,7 @@
 import type { SchemaTypeDefinition } from "sanity";
 
 import { siteSettings } from "./siteSettings";
-import { cta, stat } from "./objects";
+import { businessPoint, cta, stat } from "./objects";
 import { business } from "./business";
 import { partner } from "./partner";
 import { store } from "./store";
@@ -13,10 +13,12 @@ import { pillar, timelineEntry, processStep, groupStat } from "./groupContent";
 import { award, systemFeature, sisPoint } from "./award";
 import { lead } from "./lead";
 
-/** All schema types registered with the Studio. Object types (cta, stat) must
- *  be registered too because documents reference them by name. */
+/** All schema types registered with the Studio. Object types (cta, stat,
+ *  businessPoint) must be registered too because documents reference them by
+ *  name. */
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Objects
+  businessPoint,
   cta,
   stat,
   // Documents

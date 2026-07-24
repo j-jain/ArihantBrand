@@ -92,7 +92,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
 
       <ul className="unit-showcase__points mt-1 flex flex-col gap-2.5">
         {points.map((point) => (
-          <li key={point} className="flex gap-2.5 text-ink-soft">
+          <li key={point.id} className="flex gap-2.5 text-ink-soft">
             <span
               aria-hidden="true"
               className="mt-1 shrink-0 leading-none"
@@ -100,7 +100,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
             >
               ▸
             </span>
-            <span className="t-body">{point}</span>
+            <span className="t-body">{point.text}</span>
           </li>
         ))}
       </ul>

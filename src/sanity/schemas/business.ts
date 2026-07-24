@@ -35,7 +35,14 @@ export const business = defineType({
     defineField({ name: "leaders", title: "Leaders", type: "array", of: [defineArrayMember({ type: "string" })] }),
     defineField({ name: "positioning", title: "Positioning", type: "string" }),
     defineField({ name: "summary", title: "Summary", type: "text", rows: 3 }),
-    defineField({ name: "points", title: "Points", type: "array", of: [defineArrayMember({ type: "text", rows: 2 })] }),
+    defineField({
+      name: "points",
+      title: "Points",
+      description:
+        "Each point carries a stable selector id the site places it by. Edit the text freely; do not rename an id.",
+      type: "array",
+      of: [defineArrayMember({ type: "businessPoint" })],
+    }),
     defineField({ name: "stats", title: "Stats", type: "array", of: [defineArrayMember({ type: "stat" })] }),
     defineField({ name: "audienceCtas", title: "Audience CTAs", type: "array", of: [defineArrayMember({ type: "cta" })] }),
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),

@@ -19,6 +19,7 @@ import {
   getPageCopy,
   getSiteSettings,
   getStores,
+  pointsByIds,
 } from "@/lib/content";
 import { breadcrumbJsonLd, businessJsonLd, pageMetadata } from "@/lib/seo";
 import { stockImages } from "@/content/images";
@@ -73,12 +74,9 @@ export default async function ArihantRetailPage() {
   const expansion = sections.expansion;
   const cta = sections.cta;
 
-  const points = business?.points ?? [];
-  const modelPoints = [
-    points.find((p) => p.toLowerCase().includes("zero-deadstock")),
-    points.find((p) => p.toLowerCase().includes("35-year")),
-    points.find((p) => p.toLowerCase().includes("ebo")),
-  ].filter((p): p is string => Boolean(p));
+  // Content is selected by stable id, never by matching the copy — a rewrite
+  // must never be able to blank a section.
+  const modelPoints = pointsByIds(business, ["zero-deadstock", "legacy", "ebo"]);
 
   const stats = business?.stats ?? [];
   const stages = ["Today", "In fit-out", "By FY 26-27"];
