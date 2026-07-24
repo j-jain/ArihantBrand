@@ -4,11 +4,11 @@
 
 The unified web presence of the Arihant group, Guwahati — three businesses under one family umbrella:
 
-1. **Arihant Marketing** (est. ~1990s, registered 1999) — pioneer readymade-garments (RMG) distributor across Northeast India. 30+ years, 15,000 sq ft warehouse, 250+ retailers, 45+ brand partners. Awarded **"Best Distributor of India" 2015 by the Clothing Manufacturers Association of India (CMAI)**. Led by Sagar and Anand Sancheti; Sagar Jain is a founder member of NEGTA (North Eastern Garment Traders Association).
-2. **Arihant Apparels** (2013, Ajay Sancheti) — among the 5 largest RMG distributors in NE India. 9,000 sq ft warehouse. Highest footfall in the last 4 regional exhibitions. Mission: foster retailer growth across the region.
-3. **Arihant Retail** (2023, Shreyansh Sancheti) — multi-brand modern retail stores (incl. "Urban Closet") and EBOs for brand partners. 4 stores + 2 in fit-out; 10 stores targeted by end FY26-27. Offers a fully-managed franchise/ownership model: hiring, targets, merchandising, marketing, CRM, influencer campaigns all handled by Arihant; zero deadstock; asset-light.
+1. **Arihant Marketing** (est. ~1990s, registered 1999) — pioneer readymade-garments (RMG) distributor across Northeast India. 30+ years, 15,000 sq ft warehouse, 250+ retailers, 48 brand partners. Awarded **"Best Distributor of India" 2015 by the Clothing Manufacturers Association of India (CMAI)**. Led by Sagar and Anand Sancheti; Sagar Jain is a founder member of NEGTA (North Eastern Garment Traders Association).
+2. **Arihant Apparels** (2013, Ajay Sancheti) — the group's second distribution house, carrying 29 labels and building several into Northeast category leaders. 9,000 sq ft warehouse. Highest footfall in the last 4 regional exhibitions. Mission: foster retailer growth across the region.
+3. **Arihant Retail** (2023, Shreyansh Sancheti) — multi-brand modern retail stores (incl. "Urban Closet"). 4 stores + 2 in fit-out; 10 stores targeted by end FY26-27. Offers a fully-managed franchise/ownership model: hiring, targets, merchandising, marketing, CRM, influencer campaigns all handled by Arihant; zero deadstock; asset-light.
 
-Group values: **integrity, discipline, trust**. Operating proof: every retailer visited at least once every 20 days; dedicated plug-and-play SIS (shop-in-shop) team; AI-driven, data-backed retail backend; time-bound work ethos.
+Group values: **integrity, discipline, trust**. Operating proof: every retailer visited at least once every 20 days; plug-and-play shop-in-shop (SIS) counters needing no fixture investment from the brand, with staff optional (change brief, AM6/AM7/AM9 — the "dedicated SIS team" and NEGTA claims came out of the Marketing FAQ); AI-driven, data-backed retail backend; time-bound work ethos.
 
 ## Register
 
@@ -28,13 +28,13 @@ Group values: **integrity, discipline, trust**. Operating proof: every retailer 
 ## Jobs of the site
 
 - Educate all three audiences about the right business unit fast (intent routing from the homepage).
-- Build immediate trust: 35-year legacy, CMAI national award, 250+ retailers, 45+ brands, NEGTA founder membership, real people with real phone numbers.
-- Convert: every page drives to one primary CTA; inquiry form captures intent-tagged leads; WhatsApp + click-to-call everywhere (Indian B2B norm).
+- Build immediate trust: 35-year legacy, CMAI national award, 250+ retailers, 48 brands, NEGTA founder membership, real people with real phone numbers.
+- Convert: WhatsApp first, because that is where this trade already is. A green FAB on desktop and the sticky bar on phones both route by page (Marketing/Apparels to Sagar, Retail/Partner to Shreyansh) and both stand down over a page's own CTA band. Retailer-facing prefills open in Hindi. The inquiry form captures intent-tagged leads and answers "we will call you within one working day"; the brand list is gated on a name and a number.
 - Rank: own the empty SERP for "garment distributor Northeast India / Guwahati" and franchise queries (see SEO notes in DESIGN.md and page metadata).
 
 ## Voice
 
-Steadfast, industrious, warm-handshake. Short declarative sentences. Numbers over adjectives. First-person plural ("we visit every retailer every 20 days"). Never corporate filler ("solutions", "synergy"), never luxury-brand whisper. English with Indian trade vocabulary used naturally (MBO, EBO, SIS).
+Steadfast, industrious, warm-handshake. Short declarative sentences. Numbers over adjectives. First-person plural ("we visit every retailer every 20 days"). Never corporate filler ("solutions", "synergy"), never luxury-brand whisper. English with Indian trade vocabulary used naturally (MBO, SIS). "EBO" is retired from all Arihant-facing copy at the client's request (change brief, AR2); it survives only in the Trade Notes article that explains the format to landlords, where it is industry vocabulary rather than a claim about us.
 
 No dashes in copy: never use em (—) or en (–) dashes in any user-visible text. Restructure with a comma, a colon, or a second sentence instead. Compound-word hyphens (warm-handshake, plug-and-play, zero-deadstock) are fine.
 
@@ -50,19 +50,20 @@ Each flagship fact has one canonical home plus at most one varied echo — say i
 
 ## Honesty rails (do not violate)
 
-- No invented numbers, clients, or named individuals. Testimonials are **composite trade voices** attributed by role + town + tenure (e.g. "Menswear MBO owner — Dibrugarh · Retail partner since 2016"), rendered with monogram avatars — never invented named people, never stock face photos. Each quote reflects only documented service claims. Named, consented quotes replace them via the Studio as they are collected; the `/recognition` page offers "references on a phone call" for serious inquiries rather than parading fake names. The testimonial section renders only when published entries exist.
+- No invented numbers, clients, or named individuals. Testimonials are **composite trade voices** attributed by role + town + tenure. The client has been asked for 3-5 real quotes with name, shop, town and written consent (change brief, R8); until those arrive the composites stand, and the policy below governs them (e.g. "Menswear MBO owner — Dibrugarh · Retail partner since 2016"), rendered with monogram avatars — never invented named people, never stock face photos. Each quote reflects only documented service claims. Named, consented quotes replace them via the Studio as they are collected; the `/recognition` page offers "references on a phone call" for serious inquiries rather than parading fake names. The testimonial section renders only when published entries exist.
 - Franchise economics stay qualitative ("high-ROI, minimal-risk, proven ROIC record" — the PDF's own claims); no fabricated investment figures or return percentages.
 - Every stat used comes from the brand profile PDF or public records (CMAI 2015 award, NEGTA founding membership, 1999 registration).
-- Number discipline: group-level copy always says **"77 labels"** (the portfolio wall — `/brands`, the home marquee, the header Businesses panel). **"45+ brand partners"** is scoped to the Arihant Marketing unit only. Never conflate the two.
+- Number discipline: **every published figure lives in `src/content/facts.ts` and nowhere else.** Copy interpolates from it; nothing types a business number by hand. Figures are explicitly scoped, because group and unit numbers legitimately differ: `facts.group.years` (35+) is the age of the house, `facts.marketing.years` (30+) is how long the distribution arm has traded. The group label count (77) and each arm's brand-partner count (48 Marketing, 29 Apparels) are DERIVED from `src/content/partners.ts`, so they can never disagree with the logo wall that renders them. Never restate a number outside `facts.ts`.
 - Imagery stays honest: the 3 real store photos are the only images presented as Arihant's own operations. Curated royalty-free stock (committed under `public/images/stock/`, referenced only via the `src/content/images.ts` manifest) is generic trade context and never masquerades as Arihant facilities, staff, or stores. Real photos always outrank stock.
 
 ## Site map
 
-- `/` — home: intent routing to the three units, proof band, why-Arihant pillars, businesses, infrastructure/systems, brands, Trade Notes teaser, a featured voice, CTA.
+- `/` — home: headline + three group figures + both CTAs above the fold, then the two funnel cards (retailer / franchise, one card and one CTA each), proof band, why-Arihant pillars, businesses, infrastructure/systems, brands, "Visit our stores", Trade Notes teaser, a featured voice, CTA.
 - `/arihant-marketing`, `/arihant-apparels`, `/arihant-retail` — the three business units.
 - `/partner` — the managed-franchise money page (audience 3).
 - `/brands` — the full portfolio wall (77 labels).
 - `/recognition` — Awards trophy case (CMAI 2015 Best Distributor of India + NEGTA founder membership + highest exhibition footfall) plus a "What the trade says" testimonial-columns section; closes on "references available on a phone call."
+- `/careers` — one page and one form, on a `careers` inquiry intent (change brief, X6).
 - `/about`, `/blog` (+ `/blog/[slug]`, "Trade Notes"), `/contact`.
 
 The home infrastructure/systems section markets the approved **"AI-driven, data-backed retail backend"** claim qualitatively — data-backed buying, AI-assisted planning, automated stock discipline, teams trained on the tools — with no invented metrics.

@@ -3,9 +3,9 @@
  *
  * Why this file exists: the same fact used to be typed by hand in seven or
  * eight places, so group-level and unit-level figures drifted apart and read
- * as contradictions ("30+ years" beside "35 years", "45+ brands" beside a wall
- * of 48 logos). Nothing outside this file may state a number that belongs to
- * the business. Copy interpolates from here; components read `groupStats` and
+ * as contradictions (30+ years beside 35 years, a stated brand count beside a
+ * wall of a different number of logos). Nothing outside this file may state a
+ * number that belongs to the business. Copy interpolates from here; components read `groupStats` and
  * `business.stats`, both of which are built from here.
  *
  * Scoping is the point. `facts.group.years` is the age of the house;

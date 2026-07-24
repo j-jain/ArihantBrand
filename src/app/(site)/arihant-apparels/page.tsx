@@ -286,7 +286,7 @@ export default async function ArihantApparelsPage() {
           <div className="container-site">
             <div className="m-flow grid gap-10 lg:grid-cols-[1fr_1.4fr]">
               <Reveal variant="fade">
-                <SectionHeading heading={faqSection?.heading ?? "Straight answers"} />
+                <SectionHeading heading={faqSection?.heading ?? ""} />
               </Reveal>
               <FaqAccordion faqs={faqs} />
             </div>
@@ -298,9 +298,11 @@ export default async function ArihantApparelsPage() {
       {/* 7 — CTA band (single vermillion drench) */}
       <DrenchBand className="section-pad">
         <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
-          <h2 data-drench-reveal className="t-h2">
-            {ctaSection?.heading ?? "Grow with one of the Northeast’s five largest distributors."}
-          </h2>
+          {ctaSection?.heading ? (
+            <h2 data-drench-reveal className="t-h2">
+              {ctaSection.heading}
+            </h2>
+          ) : null}
           {ctaSection?.lead ? (
             <p data-drench-reveal className="t-lead" style={{ color: "var(--_text-soft)" }}>
               {ctaSection.lead}

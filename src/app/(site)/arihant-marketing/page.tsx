@@ -362,9 +362,11 @@ export default async function ArihantMarketingPage() {
       {/* 7 — CTA band (single vermillion drench) */}
       <DrenchBand className="section-pad">
         <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
-          <h2 data-drench-reveal className="t-h2">
-            {ctaSection?.heading ?? "Put thirty years of distribution behind your counter."}
-          </h2>
+          {ctaSection?.heading ? (
+            <h2 data-drench-reveal className="t-h2">
+              {ctaSection.heading}
+            </h2>
+          ) : null}
           {ctaSection?.lead ? (
             <p data-drench-reveal className="t-lead" style={{ color: "var(--_text-soft)" }}>
               {ctaSection.lead}
