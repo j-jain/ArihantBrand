@@ -115,10 +115,6 @@ export const pages: Record<string, PageCopy> = {
         heading: "Built to grow retailers",
         lead: "Our job is to grow the counters we sell to. When your store grows, our portfolio grows with it.",
       },
-      exhibitions: {
-        heading: "The busiest stand at every fair",
-        lead: `Highest footfall at the last ${facts.apparels.exhibitions} regional garment exhibitions. The trade walks to where the season's winners are.`,
-      },
       film: {
         heading: "Inside Arihant Apparels",
         lead: "A look at the team, the warehouse and the fairs where the season's winners get picked.",
@@ -147,7 +143,7 @@ export const pages: Record<string, PageCopy> = {
       headingEmphasis: "our own",
       lead: `Modern multi-brand stores across Northeast India, staffed, stocked and marketed by our team. ${facts.retail.storesOpen} open, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned by ${facts.retail.planHorizon}.`,
       primaryCta: { label: "Own a managed store", href: "/partner" },
-      secondaryCta: { label: "Open your brand's EBO", href: "/contact?intent=brand" },
+      secondaryCta: { label: "Put your brand in our stores", href: "/contact?intent=brand" },
     },
     sections: {
       stores: {
@@ -157,10 +153,6 @@ export const pages: Record<string, PageCopy> = {
       model: {
         heading: "The zero-deadstock model",
         lead: "The store carries what sells and returns what does not. Buying, rotation and markdowns stay with us, which is the whole reason a first store survives its first bad season.",
-      },
-      expansion: {
-        heading: "The map fills in",
-        lead: "EBOs are rolling out for national brand partners, and the next multi-brand doors are already in fit-out.",
       },
       cta: {
         heading: "One of the next stores could be yours",
@@ -238,7 +230,7 @@ export const pages: Record<string, PageCopy> = {
         body: [
           "The Sancheti family started supplying readymade garments to Guwahati's retailers in the early 1990s. Scale came later. What set the house apart first was simpler than scale: visits happened on schedule, claims settled on paper, and commitments held.",
           "That rhythm built Arihant Marketing into the pioneer distributor of the Northeast and made the house a founder member of NEGTA alongside the region's leading traders. A second distribution business, Arihant Apparels, followed in 2013 and built several national labels into category leaders here.",
-          "In 2023 the family carried the same discipline into retail itself: modern multi-brand stores and exclusive brand outlets, staffed and stocked by the house's own team.",
+          "In 2023 the family carried the same discipline into retail itself: modern multi-brand stores staffed and stocked by the house's own team.",
         ],
       },
       values: {

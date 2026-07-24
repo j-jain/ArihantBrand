@@ -47,8 +47,9 @@
 
     /* Sticky offsets. The header bar is 4rem tall; sticky things clear it
        with a little air. */
-    --m-header-h: 4rem;
-    --m-sticky-top: 4.75rem;
+    /* Bar height plus the 3px vermillion rule above it. */
+    --m-header-h: calc(4rem + 3px);
+    --m-sticky-top: calc(4.75rem + 3px);
 
     /* Retargeted inline sizes (see the var(--m-x, …) fallbacks in JSX). */
     --m-unit-stat: 1.85rem;
@@ -94,7 +95,7 @@
 
   /* Native anchor jumps clear the shorter mobile header. */
   html {
-    scroll-padding-top: 4.75rem;
+    scroll-padding-top: calc(4.75rem + 3px);
   }
 }
 

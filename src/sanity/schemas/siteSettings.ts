@@ -19,6 +19,18 @@ export const siteSettings = defineType({
       title: "Default WhatsApp (digits, with country code)",
       type: "string",
     }),
+    defineField({
+      name: "gstin",
+      title: "GSTIN",
+      description: "Printed in the footer when filled. Leave blank to hide the line.",
+      type: "string",
+    }),
+    defineField({
+      name: "cin",
+      title: "CIN",
+      description: "Printed in the footer when filled. Leave blank to hide the line.",
+      type: "string",
+    }),
     defineField({ name: "metaTitleSuffix", title: "Meta title suffix", type: "string" }),
     defineField({
       name: "contacts",

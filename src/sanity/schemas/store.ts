@@ -13,10 +13,7 @@ export const store = defineType({
       title: "Format",
       type: "string",
       options: {
-        list: [
-          { title: "Multi-brand", value: "Multi-brand" },
-          { title: "EBO", value: "EBO" },
-        ],
+        list: [{ title: "Multi-brand", value: "Multi-brand" }],
       },
       validation: (r) => r.required(),
     }),

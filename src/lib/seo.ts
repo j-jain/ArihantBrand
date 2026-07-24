@@ -1,6 +1,17 @@
 import type { Metadata } from "next";
 import type { Business, Faq, Post, SiteSettings, UnitContact } from "@/content/types";
 
+/** The office address as one line, for maps links and JSON-LD. */
+export function fullAddress(s: SiteSettings): string {
+  return `${s.orgName}, ${s.addressLine}, ${s.locality}, ${s.city}, ${s.state} ${s.postalCode}`;
+}
+
+/** Directions to the office. One definition, used by the footer, /contact and
+ *  any store that has no address of its own. */
+export function mapsUrl(s: SiteSettings): string {
+  return `https://maps.google.com/?q=${encodeURIComponent(fullAddress(s))}`;
+}
+
 /** Canonical site origin. Set NEXT_PUBLIC_SITE_URL in production (no trailing slash). */
 export function siteUrl(): string {
   return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://arihantgroup.in").replace(/\/$/, "");

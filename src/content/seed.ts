@@ -35,6 +35,10 @@ export const siteSettings: SiteSettings = {
   country: "IN",
   defaultWhatsapp: "919435045528",
   metaTitleSuffix: " | Arihant Group, Guwahati",
+  // AWAITING CLIENT (change brief, F5). Each renders in the footer only once
+  // it has a value, so the site never prints an empty label.
+  gstin: "",
+  cin: "",
   contacts: [
     {
       unit: "marketing",
@@ -241,10 +245,6 @@ export const businesses: Business[] = [
         text: `${facts.retail.storesPlanned} stores planned by the end of ${facts.retail.planHorizon}.`,
       },
       {
-        id: "ebo",
-        text: "Setting up EBOs (exclusive brand outlets) for national brand partners.",
-      },
-      {
         id: "zero-deadstock",
         text: "A zero-deadstock, asset-light, no-frills store model.",
       },
@@ -264,7 +264,7 @@ export const businesses: Business[] = [
     ],
     audienceCtas: [
       { label: "Own a managed store", href: "/partner" },
-      { label: "Open your brand's EBO", href: "/contact?intent=brand" },
+      { label: "Put your brand in our stores", href: "/contact?intent=brand" },
     ],
   },
 ];
@@ -579,9 +579,9 @@ export const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Our EBO opened on schedule, staffed and stocked. We flew in for the ribbon and flew back out.",
+      "The store opened on schedule, staffed and stocked. We flew in for the ribbon and flew back out.",
     name: "Franchise manager, national brand",
-    role: "EBO partner since 2024",
+    role: "Store partner since 2024",
     published: true,
   },
   {
@@ -613,6 +613,46 @@ export const testimonials: Testimonial[] = [
     quote: "When a brand asks how to enter the Northeast, I give them one phone number.",
     name: "Regional sales veteran",
     role: "Imphal · 25 years in the trade",
+    published: true,
+  },
+  /* R9: a longer pool, so the vertical columns on /recognition travel further
+     before a reader sees the same quote come round again. Same policy as
+     above: composite trade voices attributed by role and town, each reflecting
+     a documented service claim, until named consented quotes replace them. */
+  {
+    quote: "I ring on a Tuesday and the stock is on my rack by the weekend. That is the whole relationship.",
+    name: "Menswear retailer",
+    role: "Tinsukia · Retail partner since 2013",
+    published: true,
+  },
+  {
+    quote: "They told me not to take a label once. That is when I started trusting the rest of the list.",
+    name: "Family store owner",
+    role: "Tezpur · Retail partner since 2017",
+    published: true,
+  },
+  {
+    quote: "Festival stock lands before the festival. It sounds obvious until you have bought from someone else.",
+    name: "Multi-brand retailer",
+    role: "Nagaon · Retail partner since 2019",
+    published: true,
+  },
+  {
+    quote: "Ethnic depth in my town is not a metro assortment cut down. They size it for who actually walks in.",
+    name: "Ladieswear retailer",
+    role: "Dimapur · Retail partner since 2015",
+    published: true,
+  },
+  {
+    quote: "Our counters went live across four states in one season without us opening a regional office.",
+    name: "National brand, east zone",
+    role: "Distribution partner since 2021",
+    published: true,
+  },
+  {
+    quote: "I get a number for every option, every month. Nobody else in the region reports like that.",
+    name: "Brand merchandising head",
+    role: "Shop-in-shop partner since 2022",
     published: true,
   },
 ];
@@ -877,7 +917,7 @@ export const posts: Post[] = [
       },
       {
         type: "p",
-        text: "We operate on both sides of this question. The group's distribution arms supply MBO counters across seven states, and Arihant Retail runs multi-brand stores of its own while setting up EBOs for national brand partners. What follows is the framing we use internally.",
+        text: "We operate on both sides of this question. The group's distribution arms supply MBO counters across seven states, and Arihant Retail runs multi-brand stores of its own. What follows is the framing we use internally.",
       },
       { type: "h2", text: "What each format actually is" },
       {
@@ -899,7 +939,7 @@ export const posts: Post[] = [
       { type: "h2", text: "What the Northeast specifically rewards" },
       {
         type: "p",
-        text: "This region adds its own weighting. Outside Guwahati and a handful of high streets, destination brand pull thins out quickly, while family MBO counters hold loyalty built over decades. Modern trade is arriving, and EBOs for the right national names are part of our own expansion plan. But arriving is not arrived: most volume today still walks into multi-brand floors, and a format decision should follow the volume.",
+        text: "This region adds its own weighting. Outside Guwahati and a handful of high streets, destination brand pull thins out quickly, while family MBO counters hold loyalty built over decades. Modern trade is arriving, but arriving is not arrived: most volume today still walks into multi-brand floors, and a format decision should follow the volume.",
       },
       { type: "h2", text: "The economics differ in kind" },
       {
@@ -931,7 +971,7 @@ export const posts: Post[] = [
       { type: "h2", text: "The third option: a managed store" },
       {
         type: "p",
-        text: "Format is only half the decision. The other half is who runs the store. Arihant Retail operates multi-brand stores and is setting up EBOs for national brand partners, and in both formats we run a managed model: our team handles hiring, merchandising, marketing and CRM, and deadstock stays off the owner's books.",
+        text: "Format is only half the decision. The other half is who runs the store. Arihant Retail operates multi-brand stores on a managed model: our team handles hiring, merchandising, marketing and CRM, and deadstock stays off the owner's books.",
       },
       {
         type: "p",
@@ -1217,12 +1257,12 @@ export const timeline = [
   {
     year: "2023",
     title: "Arihant Retail launches",
-    text: "Shreyansh Sancheti takes the group into modern retail: multi-brand stores and exclusive brand outlets.",
+    text: "Shreyansh Sancheti takes the group into modern retail with the first multi-brand stores of its own.",
   },
   {
     year: "FY 26-27",
     title: "Ten stores and counting",
-    text: "Four stores trading, two in fit-out, ten planned, with EBOs rolling out for national brand partners.",
+    text: `${facts.retail.storesOpen} stores trading, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned.`,
   },
 ];
 
@@ -1236,7 +1276,7 @@ export const awards: Award[] = [
     year: String(facts.marketing.awardYear),
     title: "Best Distributor of India",
     issuer: "Clothing Manufacturers Association of India (CMAI)",
-    detail: "Awarded by the industry body of India's clothing manufacturers. The trade recognising its own.",
+    detail: "The national distributor award in Indian apparel.",
   },
   {
     year: "Founder",
@@ -1248,7 +1288,7 @@ export const awards: Award[] = [
     year: `${facts.apparels.exhibitions} fairs`,
     title: `Highest footfall, ${facts.apparels.exhibitions} exhibitions running`,
     issuer: "Regional garment exhibitions",
-    detail: `At the region's trade fairs, Arihant Apparels' stand drew the highest footfall ${facts.apparels.exhibitions} exhibitions in a row.`,
+    detail: "",
   },
 ];
 
@@ -1310,16 +1350,6 @@ export const recognitionPhotos: RecognitionPhoto[] = [
     src: "/images/photos/awards/award-octave-excellence-2024.jpg",
     alt: "Certificate of Excellence in distribution presented to Arihant Marketing, 2024",
     caption: "Certificate of Excellence in distribution, 2024",
-  },
-  {
-    src: "/images/photos/awards/award-tadpole-15yr-thailand.jpg",
-    alt: "Tadpole trophy celebrating 15 years, presented in Thailand in 2024 to Anand Kumar Sancheti",
-    caption: "Tadpole: 15 years, celebrated in Thailand, 2024",
-  },
-  {
-    src: "/images/photos/awards/award-tadpole-launch-2018.jpg",
-    alt: "Tadpole star trophy for the most admired brand launch of 2018-19, Arihant Marketing, Guwahati",
-    caption: "Tadpole: Most Admired Brand Launch, 2018-19",
   },
   {
     src: "/images/photos/awards/award-tadpole-assam.jpg",

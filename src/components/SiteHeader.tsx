@@ -29,25 +29,59 @@ function useActive() {
   );
 }
 
+/** The chevron from the group's own logo, drawn rather than loaded so it takes
+ *  the header's colour and stays crisp at any scale.
+ *
+ *  INTERIM (change brief, H2/HP2): the client has no group lockup, only three
+ *  unit logos. This pairs their existing chevron device with the wordmark so
+ *  the header carries a mark instead of type alone. Replace with the real
+ *  lockup the moment one exists. */
+function ChevronMark() {
+  return (
+    <svg
+      className="wordmark__chevron"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M3 4.5 12 12l-9 7.5V15l3.6-3L3 9V4.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M12 4.5 21 12l-9 7.5V15l3.6-3L12 9V4.5Z"
+        fill="currentColor"
+        opacity="0.55"
+      />
+    </svg>
+  );
+}
+
 function Wordmark({ onClick }: { onClick?: () => void }) {
   return (
     <Link
       href="/"
       onClick={onClick}
-      className="flex items-baseline gap-1.5"
+      className="wordmark flex items-center gap-2"
       aria-label="Arihant Group home"
     >
-      <span
-        className="font-display text-ink"
-        style={{ fontWeight: 800, fontSize: "1.4rem", letterSpacing: "-0.01em" }}
-      >
-        ARIHANT
-      </span>
-      <span
-        className="font-sans text-ink-soft"
-        style={{ fontWeight: 650, fontSize: "0.7rem", letterSpacing: "0.18em" }}
-      >
-        GROUP
+      <ChevronMark />
+      <span className="flex items-baseline gap-1.5">
+        <span
+          className="font-display text-ink"
+          style={{ fontWeight: 800, fontSize: "1.4rem", letterSpacing: "-0.01em" }}
+        >
+          ARIHANT
+        </span>
+        <span
+          className="font-sans text-ink-soft"
+          style={{ fontWeight: 650, fontSize: "0.7rem", letterSpacing: "0.18em" }}
+        >
+          GROUP
+        </span>
       </span>
     </Link>
   );
@@ -56,6 +90,27 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
 export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
   const isActive = useActive();
   const pathname = usePathname();
+
+  // Past the first few pixels the header earns a shadow and loses a little
+  // height, so a paper bar on a paper page stops dissolving into the content
+  // it is sitting on (H1/H5). It is a state, not motion, so it is set outside
+  // the reduced-motion gate below; only the transition is gated, in CSS.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      setScrolled(window.scrollY > 24);
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const [businessesOpen, setBusinessesOpen] = useState(false);
   // The panel is kept mounted through its close animation, then unmounted, so
@@ -379,10 +434,14 @@ export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
       <header
         ref={headerRef}
         className="site-header"
+        data-scrolled={scrolled || undefined}
         onMouseEnter={onHeaderEnter}
         onMouseLeave={onHeaderLeave}
       >
-        <div className="container-header flex h-16 items-center justify-between gap-4">
+        {/* A trade-poster rule along the top edge. The bar is paper on paper;
+            this is what tells you it is a bar (H1). */}
+        <span aria-hidden="true" className="site-header__rule" />
+        <div className="site-header__bar container-header flex items-center justify-between gap-4">
           <Wordmark />
 
           {/* Desktop nav */}

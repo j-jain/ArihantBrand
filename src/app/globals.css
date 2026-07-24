@@ -122,7 +122,8 @@ html {
   interpolate-size: allow-keywords;
   -webkit-text-size-adjust: 100%;
   /* Native anchor jumps clear the sticky header; Lenis uses its own offset. */
-  scroll-padding-top: 5.5rem;
+  /* Clears the sticky bar plus its 3px vermillion rule. */
+  scroll-padding-top: calc(5.5rem + 3px);
 }
 
 /* Lenis smooth-scroll reset (only active when the provider adds .lenis). */
@@ -797,6 +798,135 @@ svg {
   z-index: var(--z-header);
   background: var(--paper);
   border-bottom: 1px solid var(--line);
+  transition: box-shadow var(--dur) var(--ease);
+}
+
+/* The vermillion rule along the top edge. A paper bar over a paper page has no
+   edge of its own; this gives it one, in the brand's own red. */
+.site-header__rule {
+  display: block;
+  height: 3px;
+  background: var(--vermillion-deep);
+}
+
+.site-header__bar {
+  height: var(--header-h, 4rem);
+  transition: height var(--dur) var(--ease);
+}
+
+/* Past the fold the bar tightens and casts a shadow, so it reads as chrome
+   sitting above the page rather than a band of it. The height change is
+   desktop-only: on a phone the bar is already short and a moving header eats
+   the little fold budget there is. */
+.site-header[data-scrolled] {
+  box-shadow: 0 10px 24px -18px oklch(0.215 0.01 30 / 0.55);
+}
+
+@media (min-width: 768px) {
+  .site-header[data-scrolled] .site-header__bar {
+    height: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header__bar {
+    transition: none;
+  }
+}
+
+/* The chevron device beside the wordmark, in the brand red. */
+.wordmark__chevron {
+  flex: none;
+  color: var(--vermillion-deep);
+}
+
+/* ------------------------------------------------------------------ */
+/* Unit hero lockup                                                    */
+/* ------------------------------------------------------------------ */
+
+/* Small mark plus the entity name, above the headline. The unit pages used to
+   open on an oversized logo plate in a side rail; this identifies the company
+   in one line and gives the headline the whole measure. */
+.unit-lockup__logo {
+  width: 116px;
+  height: 30px;
+  flex: none;
+}
+
+.unit-lockup__name {
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--line);
+  letter-spacing: 0.08em;
+}
+
+/* The unit stat band runs the full measure at display size: on a page whose
+   whole argument is its numbers, the numbers should not be set in a rail. */
+.unit-hero__figures .stat-band {
+  border-bottom: 1px solid var(--line);
+}
+
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* Award list (/recognition)                                           */
+/* ------------------------------------------------------------------ */
+
+/* One row per award, hairline-ruled. The lead row sits first and larger; the
+   year is a small label under the issuer, not the display figure it used to
+   be. */
+.award-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line-dark);
+}
+
+.award-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-block: clamp(1.5rem, 3vw, 2.25rem);
+  border-bottom: 1px solid var(--line-dark);
+}
+
+.award-row--lead {
+  padding-block: clamp(2rem, 4vw, 3rem);
+}
+
+/* A vermillion tick against the ruled edge, so the list reads as a case of
+   trophies rather than a table. */
+.award-row {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.award-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: clamp(1.5rem, 3vw, 2.25rem);
+  width: 3px;
+  height: 1.15em;
+  background: var(--vermillion);
+}
+
+.award-row--lead::before {
+  top: clamp(2rem, 4vw, 3rem);
+}
+
+.award-row__year {
+  letter-spacing: 0.1em;
+}
+
+/* Store card                                                          */
+/* ------------------------------------------------------------------ */
+
+/* A trading store we have not photographed yet leads with its town. It is the
+   thing a shopper scans for, and it keeps the card from reading as a hole. */
+.store-card__town {
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .nav-link {

@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 import {
   Button,
   DrenchBand,
   FaqAccordion,
-  HeroIntro,
   JsonLd,
   LogoWall,
   ParallaxImage,
@@ -26,7 +23,6 @@ import {
   getTeam,
   pointById,
   pointsByIds,
-  statById,
 } from "@/lib/content";
 import {
   breadcrumbJsonLd,
@@ -35,29 +31,10 @@ import {
   pageMetadata,
 } from "@/lib/seo";
 import { unitScope } from "@/lib/units";
-import { EmphasisHeading } from "../_components/EmphasisHeading";
+import { UnitHero } from "../_components/UnitHero";
 
 const UNIT = "apparels" as const;
 const PATH = "/arihant-apparels";
-
-/* Hero stat figures carry the ink (crown-black) unit identity; CTAs stay
-   vermillion. */
-const railValueStyle: CSSProperties = {
-  fontFamily: "var(--font-archivo), system-ui, sans-serif",
-  fontWeight: 800,
-  fontStretch: "85%",
-  fontVariantNumeric: "tabular-nums",
-  fontSize: "var(--m-unit-stat, clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem))",
-  lineHeight: 1,
-  letterSpacing: "-0.01em",
-  color: "var(--unit-accent)",
-};
-
-function formatStat(value: number, suffix?: string): string {
-  const isYear = !suffix && Number.isInteger(value) && value >= 1900 && value <= 2999;
-  const body = isYear ? String(value) : new Intl.NumberFormat("en-IN").format(value);
-  return suffix ? `${body}${suffix}` : body;
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy(UNIT);
@@ -85,16 +62,13 @@ export default async function ArihantApparelsPage() {
   const apparelsPartners = partners.filter((p) => p.unit === UNIT);
   const { hero, sections } = copy;
   const mission = sections.mission;
-  const exhibitions = sections.exhibitions;
   const filmSection = sections.film;
   const teamSection = sections.team;
   const brandsSection = sections.brands;
   const faqSection = sections.faq;
   const ctaSection = sections.cta;
 
-  // Content is selected by stable id, never by matching the copy — a rewrite
-  // must never be able to blank a section.
-  const exhStat = statById(business, "exhibitions");
+  // Content is selected by stable id, never by matching the copy.
   // Category-leaders point drives the pull-line; the warehouse and portfolio
   // points support it. The exhibition-footfall point already headlines section
   // 3 and the mission point is carried by section 2, so neither is echoed here.
@@ -113,69 +87,8 @@ export default async function ArihantApparelsPage() {
         ])}
       />
 
-      {/* 1 — Hero (paper): headline + ink-accented logo/stats rail */}
-      <section className="hero-pad bg-paper" style={unitScope(UNIT)}>
-        <HeroIntro className="container-site">
-          <div className="m-flow grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-            <div className="m-flow flex flex-col gap-6">
-              <div className="m-flow-tight flex flex-col gap-5">
-                <EmphasisHeading
-                  as="h1"
-                  className="t-display text-ink"
-                  text={hero.heading}
-                  emphasis={hero.headingEmphasis}
-                  emphasisColor="var(--unit-accent)"
-                  rest={{ "data-hero-title": "", style: { textWrap: "normal" } }}
-                />
-                <div
-                  data-hero-reveal
-                  aria-hidden="true"
-                  style={{
-                    height: 3,
-                    width: "clamp(3rem, 8vw, 4.5rem)",
-                    background: "var(--unit-accent)",
-                  }}
-                />
-              </div>
-              {/* No button pair above the fold: the asks sit further down,
-                  once the page has given the reader a reason (AA4). */}
-              <p data-hero-reveal className="t-lead measure text-ink-soft">
-                {hero.lead}
-              </p>
-            </div>
-
-            {business ? (
-              <aside data-hero-reveal className="unit-hero__aside flex flex-col gap-6">
-                <div className="unit-hero__plate rounded-md border border-line bg-white p-6">
-                  <div className="unit-hero__logo relative aspect-[5/3]">
-                    <Image
-                      src={business.logo}
-                      alt={`${business.name} logo`}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 1024px) 80vw, 360px"
-                    />
-                  </div>
-                </div>
-                <dl className="unit-hero__stats flex flex-col">
-                  {business.stats.map((stat, index) => (
-                    <div
-                      key={stat.label}
-                      className={cn(
-                        "unit-hero__stat flex items-baseline justify-between gap-4 py-4",
-                        index > 0 && "border-t border-line",
-                      )}
-                    >
-                      <dd style={railValueStyle}>{formatStat(stat.value, stat.suffix)}</dd>
-                      <dt className="unit-hero__stat-label t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
-                    </div>
-                  ))}
-                </dl>
-              </aside>
-            ) : null}
-          </div>
-        </HeroIntro>
-      </section>
+      {/* 1 — Hero (paper): lockup, headline, then the numbers full-measure */}
+      {business ? <UnitHero business={business} hero={hero} /> : null}
 
       {/* 2 — Mission split (ink accent-wash ground): garment-rack image + the mission */}
       <section
@@ -258,61 +171,6 @@ export default async function ArihantApparelsPage() {
                 className="m-bleed"
               />
             </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* 3 — Exhibition band (charcoal over racks): number-led "4 / 4", static */}
-      <section className="section-pad on-dark relative overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <Image
-            src="/images/photos/apparels-fair-2024.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover opacity-[0.12]"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, var(--charcoal) 42%, color-mix(in oklch, var(--charcoal), transparent 22%))",
-            }}
-          />
-        </div>
-        <div className="container-site relative">
-          <div className="m-flow-tight grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-16">
-            {exhStat ? (
-              <p
-                aria-hidden="true"
-                className="flex items-baseline"
-                style={{
-                  fontFamily: "var(--font-archivo), system-ui, sans-serif",
-                  fontWeight: 800,
-                  fontStretch: "85%",
-                  fontVariantNumeric: "tabular-nums",
-                  lineHeight: 0.9,
-                  letterSpacing: "-0.02em",
-                  fontSize: "var(--m-exh-figure, clamp(5rem, 3rem + 14vw, 11rem))",
-                  color: "var(--on-charcoal)",
-                }}
-              >
-                <span>{exhStat.value}</span>
-                <span style={{ color: "var(--vermillion)", padding: "0 0.08em" }}>/</span>
-                <span>{exhStat.value}</span>
-              </p>
-            ) : null}
-            <div className="m-flow-tight flex flex-col gap-4">
-              <h2 className="t-h2 text-on-charcoal">{exhibitions.heading}</h2>
-              {exhibitions.lead ? (
-                <p className="t-lead measure text-on-charcoal-soft">{exhibitions.lead}</p>
-              ) : null}
-              {exhStat ? (
-                <p className="t-label text-on-charcoal-soft" style={{ letterSpacing: "0.06em" }}>
-                  {exhStat.label}
-                </p>
-              ) : null}
-            </div>
           </div>
         </div>
       </section>

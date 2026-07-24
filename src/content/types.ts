@@ -74,7 +74,10 @@ export interface TeamMember {
 export interface Store {
   name: string;
   city: string;
-  format: "Multi-brand" | "EBO";
+  /** Every store is multi-brand. The "EBO" value was removed at the client's
+   *  request (change brief, AR2); the field stays so a future format can be
+   *  added without a data migration. */
+  format: "Multi-brand";
   status: "Open" | "Fit-out";
   image?: string;
   caption?: string;
@@ -164,6 +167,10 @@ export interface SiteSettings {
   defaultWhatsapp: string;
   contacts: UnitContact[];
   metaTitleSuffix: string;
+  /** Registration identifiers, printed in the footer when present. Empty until
+   *  the client supplies them; nothing ships as a placeholder. */
+  gstin?: string;
+  cin?: string;
 }
 
 export interface ProcessStep {

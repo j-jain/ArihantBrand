@@ -7,9 +7,9 @@ import {
   DrenchBand,
   HeroIntro,
   JsonLd,
-  Reveal,
   SectionHeading,
   TestimonialColumns,
+  Timeline,
 } from "@/components";
 import {
   getAwards,
@@ -58,7 +58,7 @@ export default async function RecognitionPage() {
     (_, i) => i !== featuredTestimonialIndex,
   );
   // Render only the awards the data actually carries (honesty rail): the CMAI
-  // award anchors the trophy case; the rest sit in the flanking cards.
+  // award leads the list; the rest follow at a smaller size.
   const [headlineAward, ...otherAwards] = awards;
 
   return (
@@ -99,65 +99,51 @@ export default async function RecognitionPage() {
               onDark
             />
 
-            <div className="m-flow grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
-              {/* Centerpiece: the CMAI award, oversized. */}
+            {/* R1/R2: the award is the headline, not the year. A 7rem "2015"
+                used to be the largest thing on the page, which told a reader
+                the date mattered more than what was won. Every award now reads
+                as one row: what it is, who gave it, and the year set small
+                underneath. The CMAI award leads at a larger size because it is
+                the one that needs no explaining in this trade. */}
+            <ol className="award-list">
               {headlineAward ? (
-                <div className="award-lead m-flow-tight flex flex-col gap-4 lg:col-span-7">
-                  <span
-                    className="t-stat"
-                    style={{
-                      color: "var(--vermillion)",
-                      fontSize: "var(--m-award-year, clamp(3.75rem, 9vw, 7rem))",
-                      lineHeight: 0.95,
-                    }}
-                  >
-                    {headlineAward.year}
-                  </span>
-                  <h3 className="t-h2 max-w-[16ch] text-on-charcoal">
+                <li className="award-row award-row--lead">
+                  <h3 className="t-h2 max-w-[18ch] text-on-charcoal">
                     {headlineAward.title}
                   </h3>
-                  <p className="t-label text-on-charcoal-soft">
+                  <p className="award-row__issuer t-lead text-on-charcoal-soft">
                     {headlineAward.issuer}
                   </p>
-                  <p className="t-body measure text-on-charcoal-soft">
-                    {headlineAward.detail}
+                  <p className="award-row__year t-label text-on-charcoal-soft">
+                    {headlineAward.year}
                   </p>
-                </div>
+                  {headlineAward.detail ? (
+                    <p className="t-body measure mt-3 text-on-charcoal-soft">
+                      {headlineAward.detail}
+                    </p>
+                  ) : null}
+                </li>
               ) : null}
 
-              {/* Flanking cards: the remaining recognitions. */}
-              {otherAwards.length > 0 ? (
-                <div className="award-cards m-flow-tight flex flex-col gap-6 lg:col-span-5">
-                  {otherAwards.map((award) => (
-                    <div
-                      key={award.title}
-                      className="award-card flex flex-col gap-2 p-6"
-                      style={{
-                        background: "var(--charcoal-raise)",
-                        border: "1px solid var(--line-dark)",
-                        borderRadius: "10px",
-                      }}
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="mb-1 block h-2.5 w-2.5"
-                        style={{ background: "var(--vermillion)" }}
-                      />
-                      <span className="t-label text-on-charcoal-soft">
-                        {award.year}
-                      </span>
-                      <h4 className="t-h4 text-on-charcoal">{award.title}</h4>
-                      <p className="t-small text-on-charcoal-soft">
-                        {award.issuer}
-                      </p>
-                      <p className="t-small text-on-charcoal-soft">
-                        {award.detail}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+              {otherAwards.map((award) => (
+                <li key={award.title} className="award-row">
+                  <h3 className="t-h3 max-w-[22ch] text-on-charcoal">
+                    {award.title}
+                  </h3>
+                  <p className="award-row__issuer t-body text-on-charcoal-soft">
+                    {award.issuer}
+                  </p>
+                  <p className="award-row__year t-label text-on-charcoal-soft">
+                    {award.year}
+                  </p>
+                  {award.detail ? (
+                    <p className="t-small measure mt-2 text-on-charcoal-soft">
+                      {award.detail}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ol>
           </div>
         </CurtainReveal>
       </section>
@@ -175,28 +161,17 @@ export default async function RecognitionPage() {
         </section>
       ) : null}
 
-      {/* 3 — Milestones strip (paper-shade) --------------------------------- */}
+      {/* 3 — Timeline (paper-shade) ----------------------------------------- */}
+      {/* R7: this was a 6-cell grid of year + title, which gave a reader six
+          labels and no account of anything. It is the same Timeline the About
+          page uses, so each year carries its story here too. */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad m-flow flex flex-col gap-8">
-          <SectionHeading heading={sections.milestones.heading} />
-          <Reveal variant="fade">
-            <ol className="milestones grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
-              {timeline.map((entry) => (
-                <li
-                  key={entry.year}
-                  className="milestone flex flex-col gap-1 bg-paper px-4 py-5"
-                >
-                  <span
-                    className="font-display text-ink"
-                    style={{ fontWeight: 700, fontSize: "1.15rem", lineHeight: 1.2 }}
-                  >
-                    {entry.year}
-                  </span>
-                  <span className="t-small text-ink-soft">{entry.title}</span>
-                </li>
-              ))}
-            </ol>
-          </Reveal>
+        <div className="container-site section-pad m-flow flex flex-col gap-10">
+          <SectionHeading
+            heading={sections.milestones.heading}
+            lead={sections.milestones.lead}
+          />
+          <Timeline entries={timeline} />
         </div>
       </section>
 

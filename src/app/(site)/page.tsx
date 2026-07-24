@@ -16,12 +16,13 @@ import {
   SectionHeading,
   StaggerGroup,
   StatBand,
+  StoreCard,
   WhatsAppIcon,
   cn,
   initialsOf,
 } from "@/components";
 import { stockImages } from "@/content/images";
-import { phrase } from "@/content/facts";
+import { facts, phrase } from "@/content/facts";
 import { featuredTestimonialIndex } from "@/content/seed";
 import {
   getBusinesses,
@@ -87,8 +88,16 @@ export default async function HomePage() {
   if (!copy) notFound();
 
   const { hero, sections } = copy;
-  // Every second partner keeps the marquee dense without listing all 77.
-  const marqueePartners = partners.filter((_, i) => i % 2 === 0);
+  // HP10: the marquee used to open on whoever came first alphabetically
+  // (A-Cube, Amidhara, Azzurro), so a retailer scanning it for a name they
+  // already sell saw none. The labels carrying a verified national category
+  // lead now; the rest follow at every second partner, which keeps the track
+  // dense without listing the whole wall.
+  const anchorPartners = partners.filter((p) => p.category);
+  const marqueePartners = [
+    ...anchorPartners,
+    ...partners.filter((p) => !p.category).filter((_, i) => i % 2 === 0),
+  ];
   const latestPosts = posts.slice(0, 3);
   // The home page reserves one voice for itself; /recognition renders the rest.
   // Both pages used to lead with testimonials[0], so the same quote greeted a
@@ -100,6 +109,8 @@ export default async function HomePage() {
   // photograph is a content edit and the caption can never contradict the
   // store list.
   const featuredStore = stores.find((store) => Boolean(store.image));
+  // Shoppers only care about doors they can walk into today.
+  const openStores = stores.filter((store) => store.status === "Open");
 
   // Three figures above the fold, in the order a retailer weighs them: what
   // you can stock, who already buys, how long we have been at it. The fourth
@@ -272,14 +283,22 @@ export default async function HomePage() {
                   {sections.proof.lead}
                 </p>
               ) : null}
-              {/* The one group figure the hero does not carry, so no number on
-                  this page is stated twice. */}
-              {warehouseFigure ? (
-                <p className="t-body text-on-charcoal-soft">
-                  {phrase.groupWarehouse} of warehousing in Guwahati, across both
-                  godowns.
-                </p>
-              ) : null}
+              {/* The record, in three lines: the award, the godowns and the
+                  fairs. HP8 asks for the footfall claim on this page; stating
+                  it here, once, is why the Apparels page no longer carries a
+                  whole band restating it. */}
+              <ul className="proof-facts flex flex-col gap-2">
+                {warehouseFigure ? (
+                  <li className="t-body text-on-charcoal-soft">
+                    {phrase.groupWarehouse} of warehousing in Guwahati, across both
+                    godowns.
+                  </li>
+                ) : null}
+                <li className="t-body text-on-charcoal-soft">
+                  Highest footfall garnered, {facts.apparels.exhibitions}{" "}
+                  exhibitions running.
+                </li>
+              </ul>
             </div>
           </div>
         </section>
@@ -355,6 +374,41 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+
+      {/* 6b — Visit our stores (paper-shade) -------------------------------- */}
+      {/* HP9: the fourth audience is a shopper who wants to know where to buy.
+          Every other section on this page talks to the trade; this one gives
+          that reader a town and a directions link and gets out of the way. */}
+      {openStores.length ? (
+        <section className="bg-paper-shade">
+          <div className="container-site section-pad m-flow flex flex-col gap-10">
+            <Reveal variant="fade">
+              <SectionHeading
+                heading="Visit our stores"
+                lead="Arihant Retail's own multi-brand floors, open to shoppers across the Northeast."
+              />
+            </Reveal>
+            <StaggerGroup
+              from="scale"
+              stagger={0.1}
+              className="m-rail grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]"
+            >
+              {openStores.map((store, i) => (
+                <StoreCard key={`${store.name}-${store.city}-${i}`} store={store} />
+              ))}
+            </StaggerGroup>
+            <p>
+              <Link
+                href="/arihant-retail"
+                className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
+              >
+                About Arihant Retail
+                <span aria-hidden="true">→</span>
+              </Link>
+            </p>
+          </div>
+        </section>
+      ) : null}
 
       {/* 7 — Trade Notes teaser (paper-shade) ------------------------------ */}
       {latestPosts.length > 0 ? (

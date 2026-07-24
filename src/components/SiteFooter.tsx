@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { SiteSettings } from "@/content/types";
+import { mapsUrl } from "@/lib/seo";
 import { ContactChannels } from "./ContactChannels";
 import { MapPinIcon } from "./icons";
 import { NetworkMap } from "./motion/NetworkMap";
@@ -15,6 +16,7 @@ interface SiteFooterProps {
 export function SiteFooter({ settings }: SiteFooterProps) {
   const year = new Date().getFullYear();
   const nap = `${settings.addressLine}, ${settings.locality}, ${settings.city}, ${settings.state} ${settings.postalCode}`;
+  const directionsUrl = mapsUrl(settings);
   const footerNav = [...businessLinks, partnerLink, ...primaryNav];
 
   return (
@@ -78,21 +80,50 @@ export function SiteFooter({ settings }: SiteFooterProps) {
           ))}
         </nav>
 
+        {/* F3: the full NAP with a directions link beside it, so a visitor can
+            act on the address rather than copy it out. */}
         <address className="footer-nap mt-10 flex items-start gap-2 not-italic">
           <span className="channel-icon mt-0.5">
             <MapPinIcon />
           </span>
-          <p className="t-small text-on-charcoal-soft">
-            {settings.orgName} · {nap}
-          </p>
+          <span className="flex flex-col gap-1">
+            <span className="t-small text-on-charcoal-soft">
+              {settings.orgName} · {nap}
+            </span>
+            <a
+              className="t-small w-fit font-semibold text-on-charcoal underline-offset-4 hover:underline"
+              href={directionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get directions <span aria-hidden="true">↗</span>
+            </a>
+          </span>
         </address>
 
-        <div className="footer-legal mt-8 flex flex-col gap-1 border-t border-line-dark pt-6">
+        <div className="footer-legal mt-8 flex flex-col gap-2 border-t border-line-dark pt-6">
           <p className="t-small text-on-charcoal-soft">
             © {year} {settings.orgName}, {settings.city}
           </p>
+          {/* F5: registration identifiers and the privacy note. The GST and CIN
+              fields are blank until the client supplies them; each line renders
+              only when its value exists, so nothing ships as a placeholder. */}
+          {settings.gstin || settings.cin ? (
+            <p className="t-small text-on-charcoal-soft">
+              {[
+                settings.gstin ? `GSTIN ${settings.gstin}` : null,
+                settings.cin ? `CIN ${settings.cin}` : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          ) : null}
+          <p className="t-small text-on-charcoal-soft">
+            We use the details you send us only to answer your enquiry. We do not
+            sell or share them.
+          </p>
           <p
-            className="t-label text-on-charcoal-soft"
+            className="t-label mt-1 text-on-charcoal-soft"
             style={{ letterSpacing: "0.12em" }}
           >
             Integrity · Discipline · Trust

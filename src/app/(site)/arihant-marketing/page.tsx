@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -7,7 +6,6 @@ import {
   Button,
   DrenchBand,
   FaqAccordion,
-  HeroIntro,
   JsonLd,
   LogoWall,
   ParallaxImage,
@@ -34,31 +32,10 @@ import {
 } from "@/lib/seo";
 import { stockImages } from "@/content/images";
 import { unitScope } from "@/lib/units";
-import { EmphasisHeading } from "../_components/EmphasisHeading";
+import { UnitHero } from "../_components/UnitHero";
 
 const UNIT = "marketing" as const;
 const PATH = "/arihant-marketing";
-
-/* Compact Archivo-condensed stat figure for the hero rail (no count-up —
-   server-rendered, static). The figure is tinted with the maroon unit accent
-   to carry the Arihant Marketing identity; CTAs stay vermillion. */
-const railValueStyle: CSSProperties = {
-  fontFamily: "var(--font-archivo), system-ui, sans-serif",
-  fontWeight: 800,
-  fontStretch: "85%",
-  fontVariantNumeric: "tabular-nums",
-  fontSize: "var(--m-unit-stat, clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem))",
-  lineHeight: 1,
-  letterSpacing: "-0.01em",
-  color: "var(--unit-accent)",
-};
-
-/** Group en-IN; leave plausible bare years ungrouped. */
-function formatStat(value: number, suffix?: string): string {
-  const isYear = !suffix && Number.isInteger(value) && value >= 1900 && value <= 2999;
-  const body = isYear ? String(value) : new Intl.NumberFormat("en-IN").format(value);
-  return suffix ? `${body}${suffix}` : body;
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy(UNIT);
@@ -111,71 +88,8 @@ export default async function ArihantMarketingPage() {
         ])}
       />
 
-      {/* 1 — Hero (paper): headline + maroon-accented logo/stats rail */}
-      <section className="hero-pad bg-paper" style={unitScope(UNIT)}>
-        <HeroIntro className="container-site">
-          <div className="m-flow grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-            <div className="m-flow flex flex-col gap-6">
-              <div className="m-flow-tight flex flex-col gap-5">
-                <EmphasisHeading
-                  as="h1"
-                  className="t-display text-ink"
-                  text={hero.heading}
-                  emphasis={hero.headingEmphasis}
-                  emphasisColor="var(--unit-accent)"
-                  rest={{ "data-hero-title": "", style: { textWrap: "normal" } }}
-                />
-                <div
-                  data-hero-reveal
-                  aria-hidden="true"
-                  style={{
-                    height: 3,
-                    width: "clamp(3rem, 8vw, 4.5rem)",
-                    background: "var(--unit-accent)",
-                  }}
-                />
-              </div>
-              {/* The hero carries no button pair. Two CTAs above the fold made
-                  the reader choose before they had read anything; the asks now
-                  sit where the page has earned them (AM8). */}
-              <p data-hero-reveal className="t-lead measure text-ink-soft">
-                {hero.lead}
-              </p>
-            </div>
-
-            {/* Right rail: unit logo plate + three stacked stats */}
-            {business ? (
-              <aside data-hero-reveal className="unit-hero__aside flex flex-col gap-6">
-                <div className="unit-hero__plate rounded-md border border-line bg-white p-6">
-                  <div className="unit-hero__logo relative aspect-[5/3]">
-                    <Image
-                      src={business.logo}
-                      alt={`${business.name} logo`}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 1024px) 80vw, 360px"
-                    />
-                  </div>
-                </div>
-                <dl className="unit-hero__stats flex flex-col">
-                  {business.stats.map((stat, index) => (
-                    <div
-                      key={stat.label}
-                      className={cn(
-                        "unit-hero__stat flex items-baseline justify-between gap-4 py-4",
-                        index > 0 && "border-t border-line",
-                      )}
-                    >
-                      <dd style={railValueStyle}>{formatStat(stat.value, stat.suffix)}</dd>
-                      <dt className="unit-hero__stat-label t-small max-w-[9rem] text-right text-ink-soft">{stat.label}</dt>
-                    </div>
-                  ))}
-                </dl>
-              </aside>
-            ) : null}
-          </div>
-        </HeroIntro>
-      </section>
+      {/* 1 — Hero (paper): lockup, headline, then the numbers full-measure */}
+      {business ? <UnitHero business={business} hero={hero} /> : null}
 
       {/* 2 — Award band (charcoal over a working warehouse, static for weight) */}
       <section className="section-pad on-dark relative overflow-hidden">

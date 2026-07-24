@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { getPageCopy, getSiteSettings } from "@/lib/content";
-import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, mapsUrl, pageMetadata } from "@/lib/seo";
 import {
   ContactChannels,
   DrenchBand,
@@ -14,9 +14,6 @@ import {
   SectionHeading,
 } from "@/components";
 import { ContactForm } from "./_components/ContactForm";
-
-const DIRECTIONS_URL =
-  "https://maps.google.com/?q=Arihant+Tower,+Jyotikuchi,+Guwahati+781040";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("contact");
@@ -37,6 +34,7 @@ export default async function ContactPage() {
   if (!copy) notFound();
 
   const { hero, sections } = copy;
+  const directionsUrl = mapsUrl(settings);
 
   const breadcrumb = breadcrumbJsonLd([
     { name: "Home", path: "/" },
@@ -108,7 +106,7 @@ export default async function ContactPage() {
                   </p>
                   <a
                     className="channel-link ml-7 text-vermillion-deep"
-                    href={DIRECTIONS_URL}
+                    href={directionsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ fontWeight: 650 }}

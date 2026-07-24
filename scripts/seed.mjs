@@ -179,6 +179,8 @@ async function main() {
     country: ss.country,
     defaultWhatsapp: ss.defaultWhatsapp,
     metaTitleSuffix: ss.metaTitleSuffix,
+    gstin: ss.gstin,
+    cin: ss.cin,
     contacts: ss.contacts.map((c, ci) => ({
       _type: "unitContact",
       _key: `contact-${ci}`,
