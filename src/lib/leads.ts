@@ -42,7 +42,7 @@ const phoneSchema = z
 
 /** Shared zod schema for inquiry submissions. Output is assignable to LeadInput. */
 export const leadInputSchema = z.object({
-  intent: z.enum(["retailer", "brand", "franchise", "other"]),
+  intent: z.enum(["retailer", "brand", "franchise", "careers", "other"]),
   name: z
     .string()
     .trim()

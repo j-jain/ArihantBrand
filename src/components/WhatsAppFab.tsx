@@ -1,58 +1,16 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { trackClass } from "./Analytics";
 import { WhatsAppIcon } from "./icons";
+import { DEFAULT_WA_ROUTES, whatsappFor, type WhatsAppRoute } from "@/lib/whatsapp";
 import { usePastHero, useRivalCtaOnScreen } from "./useCtaYield";
 
 interface WhatsAppFabProps {
   /** Digits with country code. Used when no route rule matches. */
   fallback: string;
   /** Route prefix to WhatsApp number, most specific first. */
-  routes?: { prefix: string; whatsapp: string; prefill: string }[];
-}
-
-/** Where a page's WhatsApp tap should land. Distribution enquiries reach the
- *  Marketing desk; store and franchise enquiries reach Arihant Retail. */
-export const DEFAULT_WA_ROUTES: NonNullable<WhatsAppFabProps["routes"]> = [
-  {
-    prefix: "/arihant-marketing",
-    whatsapp: "919435045528",
-    prefill: "Hello Arihant Marketing, I would like to know about your brands and terms.",
-  },
-  {
-    prefix: "/arihant-apparels",
-    whatsapp: "919435045528",
-    prefill: "Hello Arihant Apparels, I would like to know about your brands and terms.",
-  },
-  {
-    prefix: "/arihant-retail",
-    whatsapp: "919435569704",
-    prefill: "Hello Arihant Retail, I would like to know about your stores.",
-  },
-  {
-    prefix: "/partner",
-    whatsapp: "919435569704",
-    prefill: "Hello Arihant Retail, I am interested in owning a managed store.",
-  },
-];
-
-/** Resolve the WhatsApp target for a path. Exported so the mobile action bar
- *  can route by exactly the same rules. */
-export function whatsappFor(
-  pathname: string,
-  fallback: string,
-  routes: NonNullable<WhatsAppFabProps["routes"]> = DEFAULT_WA_ROUTES,
-): { href: string; whatsapp: string } {
-  const match = routes.find(
-    (route) => pathname === route.prefix || pathname.startsWith(`${route.prefix}/`),
-  );
-  const whatsapp = match?.whatsapp ?? fallback;
-  const prefill =
-    match?.prefill ?? "Hello Arihant, I would like to talk to someone about stocking your brands.";
-  return {
-    whatsapp,
-    href: `https://wa.me/${whatsapp}?text=${encodeURIComponent(prefill)}`,
-  };
+  routes?: WhatsAppRoute[];
 }
 
 /**
@@ -73,7 +31,7 @@ export function WhatsAppFab({ fallback, routes = DEFAULT_WA_ROUTES }: WhatsAppFa
 
   return (
     <a
-      className="wa-fab hidden md:inline-flex"
+      className={`wa-fab hidden md:inline-flex ${trackClass("CTA WhatsApp FAB")}`}
       href={href}
       target="_blank"
       rel="noopener noreferrer"

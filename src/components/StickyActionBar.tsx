@@ -1,9 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { trackClass } from "./Analytics";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
 import { usePastHero, useRivalCtaOnScreen } from "./useCtaYield";
-import { whatsappFor } from "./WhatsAppFab";
+import { whatsappFor } from "@/lib/whatsapp";
 
 interface StickyActionBarProps {
   /** Full tel: target, e.g. "+919435045528". */
@@ -37,7 +38,7 @@ export function StickyActionBar({
       aria-hidden={!visible}
     >
       <a
-        className="action-bar__btn"
+        className={`action-bar__btn ${trackClass("CTA call bar")}`}
         href={`tel:${tel}`}
         aria-label="Call Arihant"
         tabIndex={visible ? undefined : -1}
@@ -46,7 +47,7 @@ export function StickyActionBar({
         Call
       </a>
       <a
-        className="action-bar__btn action-bar__btn--whatsapp"
+        className={`action-bar__btn action-bar__btn--whatsapp ${trackClass("CTA WhatsApp bar")}`}
         href={routed.href}
         target="_blank"
         rel="noopener noreferrer"

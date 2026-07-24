@@ -24,6 +24,9 @@ export const intentLinks: NavItem[] = [
   { label: "Own a managed store", href: "/contact?intent=franchise" },
 ];
 
+/** Footer-only links: real pages that do not earn a slot in the primary bar. */
+export const secondaryNav: NavItem[] = [{ label: "Careers", href: "/careers" }];
+
 /** Top-level nav after "Businesses". */
 export const primaryNav: NavItem[] = [
   { label: "Brands", href: "/brands" },

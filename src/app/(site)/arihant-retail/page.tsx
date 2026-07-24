@@ -19,7 +19,12 @@ import {
   pointsByIds,
 } from "@/lib/content";
 import { photoSlots } from "@/content/images";
-import { breadcrumbJsonLd, businessJsonLd, pageMetadata } from "@/lib/seo";
+import {
+  breadcrumbJsonLd,
+  businessJsonLd,
+  pageMetadata,
+  storeListJsonLd,
+} from "@/lib/seo";
 import { UnitHero } from "../_components/UnitHero";
 
 const UNIT = "retail" as const;
@@ -70,6 +75,8 @@ export default async function ArihantRetailPage() {
           { name: business?.name ?? "Arihant Retail", path: PATH },
         ])}
       />
+      {/* Trading stores only. A door that has not opened is not a place. */}
+      <JsonLd data={storeListJsonLd(settings, stores)} />
 
       {/* 1 — Hero (paper): lockup, headline, then the numbers full-measure */}
       {business ? <UnitHero business={business} hero={hero} /> : null}

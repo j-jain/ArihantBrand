@@ -84,6 +84,16 @@ export const pages: Record<string, PageCopy> = {
           "Claims and settlements move on paper, on schedule, so your capital keeps rotating.",
         ],
       },
+      specialist: {
+        heading: "Why the Northeast needs a specialist",
+        lead: "This is not a smaller version of the east zone. Four things make it a separate distribution problem:",
+        body: [
+          `Seven states, seven tax and transit regimes, and freight that arrives through one corridor. A plan drawn for Kolkata does not survive contact with it.`,
+          "Season shapes differ. Winter is short and sharp, the festival calendar is not the mainland's, and wedding weeks move the whole quarter.",
+          "The counters that matter are independent multi-brand stores, most of them held by families who have bought from the same house for decades. Cold entry does not open them.",
+          "Sizes, price points and colour preferences are their own. An assortment cut for a metro arrives with its best-selling half unsold.",
+        ],
+      },
       sis: {
         heading: "Shop-in-shop counters, without the investment",
         lead: "Brands entering the Northeast do not need to build a field force or fund a fit-out. Our shop-in-shop (SIS) counters need no fixture investment from you, and staff are optional.",
@@ -286,6 +296,43 @@ export const pages: Record<string, PageCopy> = {
       primaryCta: { label: "Talk to us", href: "/contact" },
     },
     sections: {},
+  },
+
+  careers: {
+    metaTitle: "Careers at Arihant Group, Guwahati | Garment Trade Jobs",
+    metaDescription:
+      "Field sales, warehouse and store roles across Northeast India's garment trade. Apply to Arihant Group, Guwahati.",
+    hero: {
+      heading: "Work in the trade, not around it",
+      headingEmphasis: "the trade",
+      lead: `We hire people who want to be in stores and godowns, not in meetings about them. ${facts.group.years} years, three businesses, and a bench that mostly grew up inside the house.`,
+      primaryCta: { label: "Apply", href: "#inquiry" },
+    },
+    sections: {
+      roles: {
+        heading: "What we hire for",
+        lead: "Openings come and go. These are the roles that recur.",
+        body: [
+          "Field sales representatives, covering a set of towns on a fixed visit cycle.",
+          "Warehouse and dispatch staff, in Guwahati.",
+          "Shop-in-shop promoters and supervisors, in modern trade.",
+          "Store staff for Arihant Retail floors across the Northeast.",
+          "Accounts and back-office, in Guwahati.",
+        ],
+      },
+      working: {
+        heading: "What it is actually like",
+        lead: "Two things worth knowing before you apply.",
+        body: [
+          `Most of these roles travel. A field representative is on the road most of the month, because standing in a retailer's store every ${phrase.visitCycle} is the job, not an add-on to it.`,
+          "Nobody here is left to work it out alone. New staff go out with someone who has run the route for years, and stay with them until the counters know them by name.",
+        ],
+      },
+      apply: {
+        heading: "Send us your details",
+        lead: "Tell us the role you are after and where you are based. We will call you if there is a fit.",
+      },
+    },
   },
 
   contact: {

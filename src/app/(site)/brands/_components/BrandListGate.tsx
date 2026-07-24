@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useRef, useState, useTransition, type FormEvent } from "react";
-import { WhatsAppIcon } from "@/components";
+import { WhatsAppIcon, track } from "@/components";
+import { whatsappFor } from "@/lib/whatsapp";
 import { submitLeadAction } from "@/app/actions/lead";
 import type { LeadInput } from "@/content/types";
 
@@ -79,6 +80,7 @@ export function BrandListGate({ whatsapp, fileHref }: BrandListGateProps) {
       try {
         const result = await submitLeadAction(payload);
         if (result.ok) {
+          track("Brand list requested");
           setSent(true);
           window.setTimeout(() => doneRef.current?.focus(), 0);
         } else {
@@ -115,9 +117,7 @@ export function BrandListGate({ whatsapp, fileHref }: BrandListGateProps) {
           ) : null}
           <a
             className="btn btn-secondary"
-            href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(
-              "Hello Arihant, please send me your brand list.",
-            )}`}
+            href={whatsappFor("/brands", whatsapp).href}
             target="_blank"
             rel="noopener noreferrer"
           >

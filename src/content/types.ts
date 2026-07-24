@@ -191,7 +191,7 @@ export interface Funnel {
 /** Inquiry-form payload. The server action in src/lib/leads.ts and the
  *  InquiryForm component must both use exactly this shape. */
 export interface LeadInput {
-  intent: "retailer" | "brand" | "franchise" | "other";
+  intent: "retailer" | "brand" | "franchise" | "careers" | "other";
   name: string;
   phone: string;
   email?: string;

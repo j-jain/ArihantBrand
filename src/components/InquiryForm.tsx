@@ -16,6 +16,7 @@ import type {
   UnitContact,
 } from "@/content/types";
 import { gsap, useGSAP, EASE, DUR } from "@/lib/gsap";
+import { track } from "./Analytics";
 import { cn } from "./cn";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
 
@@ -56,6 +57,11 @@ const INTENTS: { value: Intent; title: string; desc: string }[] = [
     desc: "I want to own a managed Arihant Retail store.",
   },
   {
+    value: "careers",
+    title: "A job",
+    desc: "I want to work at Arihant.",
+  },
+  {
     value: "other",
     title: "Something else",
     desc: "A different question or partnership.",
@@ -67,6 +73,7 @@ const INTENT_HELPER: Record<Intent, string> = {
   retailer: "You stock brands. This routes to the Arihant Marketing desk.",
   brand: "You're a brand. This routes to Arihant Marketing's distribution desk.",
   franchise: "A franchise enquiry. This routes to the Arihant Retail desk.",
+  careers: "A job application. This reaches the person who does the hiring.",
   other: "Tell us what you need and we'll point you to the right desk.",
 };
 
@@ -84,6 +91,7 @@ const FIELD_ORDER: FieldName[] = [
 function companyLabel(intent: Intent | null): string {
   if (intent === "retailer") return "Store name";
   if (intent === "brand") return "Brand name";
+  if (intent === "careers") return "Current or last employer";
   return "Company";
 }
 
@@ -95,6 +103,8 @@ function messagePlaceholder(intent: Intent | null): string {
       return "Tell us about your brand and where it's distributed today.";
     case "franchise":
       return "Your city, the space you have, and your timeline.";
+    case "careers":
+      return "The role you are after, where you are based, and what you have done so far.";
     default:
       return "How can we help?";
   }
@@ -327,6 +337,7 @@ export function InquiryForm({
       try {
         const result = await action(payload);
         if (result.ok) {
+          track("Inquiry submitted", { intent, source: sourcePage });
           setSubmitted(true);
         } else {
           setFormError(

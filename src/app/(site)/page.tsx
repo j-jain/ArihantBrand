@@ -19,10 +19,12 @@ import {
   StoreCard,
   WhatsAppIcon,
   cn,
+  trackClass,
   initialsOf,
 } from "@/components";
 import { photoSlots } from "@/content/images";
 import { facts, phrase } from "@/content/facts";
+import { whatsappFor } from "@/lib/whatsapp";
 import { featuredTestimonialIndex } from "@/content/seed";
 import {
   getBusinesses,
@@ -37,7 +39,7 @@ import {
   getSystems,
   getTestimonials,
 } from "@/lib/content";
-import { organizationJsonLd, pageMetadata } from "@/lib/seo";
+import { localBusinessJsonLd, organizationJsonLd, pageMetadata } from "@/lib/seo";
 import { EmphasisHeading } from "./_components/EmphasisHeading";
 import { UnitShowcase } from "./_components/UnitShowcase";
 
@@ -123,13 +125,14 @@ export default async function HomePage() {
   const warehouseFigure = groupStats.find((stat) => stat.id === "warehouse");
 
   // The low-friction ask: most of this trade opens WhatsApp before a form.
-  const brandListHref = `https://wa.me/${settings.defaultWhatsapp}?text=${encodeURIComponent(
-    "Hello Arihant, please send me your brand list.",
-  )}`;
+  // Routed through the same bilingual map as every other WhatsApp affordance,
+  // so a retailer's message opens in the language they will reply in (X5).
+  const brandListHref = whatsappFor("/brands", settings.defaultWhatsapp).href;
 
   return (
     <>
       <JsonLd data={organizationJsonLd(settings)} />
+      <JsonLd data={localBusinessJsonLd(settings)} />
 
       {/* 1 — Hero (paper): split headline + editorial garment image ---------- */}
       <section className="relative overflow-hidden bg-paper">
@@ -161,7 +164,10 @@ export default async function HomePage() {
                   href={brandListHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hero-wa group inline-flex min-h-11 items-center gap-2 font-sans font-semibold text-ink transition-colors"
+                  className={cn(
+                    "hero-wa group inline-flex min-h-11 items-center gap-2 font-sans font-semibold text-ink transition-colors",
+                    trackClass("CTA brand list WhatsApp"),
+                  )}
                 >
                   <span className="hero-wa__mark" aria-hidden="true">
                     <WhatsAppIcon width={18} height={18} />
@@ -219,7 +225,10 @@ export default async function HomePage() {
                 <li key={funnel.id} className="flex">
                   <Link
                     href={funnel.cta.href}
-                    className="funnel-card press group flex w-full flex-col gap-3"
+                    className={cn(
+                      "funnel-card press group flex w-full flex-col gap-3",
+                      trackClass(`CTA funnel ${funnel.id}`),
+                    )}
                   >
                     <h2 className="t-h3 text-ink">{funnel.title}</h2>
                     <p className="t-body measure text-ink-soft">{funnel.text}</p>

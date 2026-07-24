@@ -6,7 +6,13 @@ import { submitLeadAction } from "@/app/actions/lead";
 import type { LeadInput, SiteSettings } from "@/content/types";
 
 type Intent = LeadInput["intent"];
-const INTENTS: readonly Intent[] = ["retailer", "brand", "franchise", "other"];
+const INTENTS: readonly Intent[] = [
+  "retailer",
+  "brand",
+  "franchise",
+  "careers",
+  "other",
+];
 
 /** Client wrapper so /contact stays statically rendered: the server page never
  *  reads searchParams. `useSearchParams()` runs here inside a <Suspense>

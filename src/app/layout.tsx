@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@/components/Analytics";
 import { besley, archivo } from "./fonts";
 import "./globals.css";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
+        <Analytics />
       </body>
     </html>
   );

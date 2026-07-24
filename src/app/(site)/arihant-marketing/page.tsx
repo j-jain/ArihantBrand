@@ -67,6 +67,7 @@ export default async function ArihantMarketingPage() {
   const award = sections.award;
   const strengthsSection = sections.strengths;
   const how = sections.how;
+  const specialist = sections.specialist;
   const sis = sections.sis;
   const brandsSection = sections.brands;
   const faqSection = sections.faq;
@@ -236,6 +237,51 @@ export default async function ArihantMarketingPage() {
           </div>
         </div>
       </section>
+
+      {/* 3b — Why a specialist (charcoal): written for a national brand manager
+          weighing whether the region needs its own partner at all (X3). */}
+      {specialist ? (
+        <section className="section-pad on-dark">
+          <div className="container-site m-flow flex flex-col gap-10">
+            <SectionHeading
+              heading={specialist.heading}
+              lead={specialist.lead}
+              onDark
+            />
+            <StaggerGroup
+              as="ol"
+              from="up"
+              className="flex flex-col border-t border-line-dark"
+              stagger={0.09}
+              mLedger
+            >
+              {(specialist.body ?? []).map((reason, index) => (
+                <li
+                  key={reason}
+                  className="m-ledger-row grid grid-cols-[auto_1fr] items-baseline gap-x-6 gap-y-1 border-b border-line-dark py-5"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="t-h4 font-display"
+                    style={{
+                      fontVariantNumeric: "tabular-nums",
+                      color: "var(--vermillion)",
+                    }}
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <p className="t-body measure text-on-charcoal-soft">{reason}</p>
+                </li>
+              ))}
+            </StaggerGroup>
+            <div className="m-cta">
+              <Button href="/contact?intent=brand" variant="onDark" size="lg" className="press">
+                Distribute your brand
+              </Button>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* 4 — SIS band (maroon accent-wash ground): a ledger of what the team runs */}
       <section

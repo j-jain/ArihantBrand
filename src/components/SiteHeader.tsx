@@ -10,7 +10,7 @@ import { DUR, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { Button } from "./Button";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
 import { primaryNav } from "./nav";
-import { whatsappFor } from "./WhatsAppFab";
+import { whatsappFor } from "@/lib/whatsapp";
 
 interface SiteHeaderProps {
   /** Digits with country code, e.g. "919435045528". Powers the direct-contact

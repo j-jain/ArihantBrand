@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import type { Business, Faq, Post, SiteSettings, UnitContact } from "@/content/types";
+import type {
+  Business,
+  Faq,
+  Post,
+  SiteSettings,
+  Store,
+  UnitContact,
+} from "@/content/types";
 
 /** The office address as one line, for maps links and JSON-LD. */
 export function fullAddress(s: SiteSettings): string {
@@ -138,5 +145,100 @@ export function articleJsonLd(post: Post) {
     url: `${siteUrl()}/blog/${post.slug}`,
     author: { "@type": "Organization", name: "Arihant Group" },
     publisher: { "@id": `${siteUrl()}/#organization` },
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Local SEO                                                           */
+/*                                                                     */
+/* The site had Organization and per-unit WholesaleStore markup, but    */
+/* nothing that said "this is a business at this address in Guwahati"   */
+/* in the terms local search actually reads (change brief, G9/X4).      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The group as a physical business at Arihant Tower. Distinct from
+ * `organizationJsonLd`, which describes the company; this describes the
+ * premises, the hours and the catchment, which is what a "garment
+ * distributor Guwahati" query resolves against.
+ */
+export function localBusinessJsonLd(s: SiteSettings) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${siteUrl()}/#localbusiness`,
+    name: s.orgName,
+    url: siteUrl(),
+    description: s.tagline,
+    parentOrganization: { "@id": `${siteUrl()}/#organization` },
+    address: postalAddress(s),
+    telephone: `+${s.defaultWhatsapp}`,
+    priceRange: "$$",
+    areaServed: [
+      { "@type": "State", name: "Assam" },
+      { "@type": "State", name: "Meghalaya" },
+      { "@type": "State", name: "Nagaland" },
+      { "@type": "State", name: "Manipur" },
+      { "@type": "State", name: "Mizoram" },
+      { "@type": "State", name: "Tripura" },
+      { "@type": "State", name: "Arunachal Pradesh" },
+    ],
+    knowsAbout: [
+      "readymade garments distribution",
+      "apparel wholesale",
+      "shop-in-shop retail",
+      "multi-brand apparel retail",
+    ],
+    // Trade hours, not shop hours: this is the office and the godowns.
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ],
+        opens: "10:00",
+        closes: "19:00",
+      },
+    ],
+  };
+}
+
+/** One trading store, as a place a shopper can visit. Fit-out stores are not
+ *  emitted: telling a search engine about a door that does not open yet is
+ *  exactly the kind of claim this site does not make. */
+export function storeJsonLd(s: SiteSettings, store: Store) {
+  if (store.status !== "Open") return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "ClothingStore",
+    "@id": `${siteUrl()}/arihant-retail#store-${store.name}-${store.city}`
+      .toLowerCase()
+      .replace(/\s+/g, "-"),
+    name: `${store.name}, ${store.city}`,
+    parentOrganization: { "@id": `${siteUrl()}/#organization` },
+    address: store.mapsQuery
+      ? { "@type": "PostalAddress", streetAddress: store.mapsQuery, addressLocality: store.city, addressCountry: s.country }
+      : { "@type": "PostalAddress", addressLocality: store.city, addressCountry: s.country },
+    ...(store.image ? { image: `${siteUrl()}${store.image}` } : {}),
+  };
+}
+
+/** Every trading store, as one ItemList a crawler can read in a single pass. */
+export function storeListJsonLd(s: SiteSettings, stores: Store[]) {
+  const open = stores.filter((store) => store.status === "Open");
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Arihant Retail stores",
+    itemListElement: open.map((store, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: storeJsonLd(s, store),
+    })),
   };
 }
