@@ -48,3 +48,20 @@ export const sisPoint = defineType({
   orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
   preview: { select: { title: "title" } },
 });
+
+/** One of the four strengths the Marketing page argues to a brand audience.
+ *  The home page argues the same four to a retailer audience via `pillar`;
+ *  they are separate documents on purpose, so neither page reprints the
+ *  other. Mirrors a seed `marketingStrengths[]` entry. */
+export const marketingStrength = defineType({
+  name: "marketingStrength",
+  title: "Marketing Strength (brand audience)",
+  type: "document",
+  fields: [
+    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "text", title: "Text", type: "text", rows: 3 }),
+    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
+  ],
+  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
+  preview: { select: { title: "title" } },
+});

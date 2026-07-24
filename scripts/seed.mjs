@@ -211,6 +211,7 @@ async function main() {
       leaders: b.leaders,
       positioning: b.positioning,
       summary: b.summary,
+      highlights: b.highlights,
       points: b.points.map(businessPoint),
       stats: b.stats.map(stat),
       audienceCtas: b.audienceCtas.map(ctaKeyed),
@@ -258,6 +259,7 @@ async function main() {
       _type: "faq",
       question: f.question,
       answer: f.answer,
+      ...(f.bullets?.length ? { bullets: f.bullets } : {}),
       page: f.page,
       order: i,
     });
@@ -342,6 +344,9 @@ async function main() {
   seed.pillars.forEach((p, i) => {
     docs.push({ _id: `pillar-${i}`, _type: "pillar", title: p.title, text: p.text, order: i });
   });
+  seed.values.forEach((p, i) => {
+    docs.push({ _id: `value-${i}`, _type: "valuePanel", title: p.title, text: p.text, order: i });
+  });
   seed.timeline.forEach((t, i) => {
     docs.push({ _id: `timeline-${i}`, _type: "timelineEntry", year: t.year, title: t.title, text: t.text, order: i });
   });
@@ -364,6 +369,10 @@ async function main() {
   });
   seed.sisScope.forEach((s, i) => {
     docs.push({ _id: `sispoint-${i}`, _type: "sisPoint", title: s.title, text: s.text, order: i });
+  });
+
+  seed.marketingStrengths.forEach((p, i) => {
+    docs.push({ _id: `strength-${i}`, _type: "marketingStrength", title: p.title, text: p.text, order: i });
   });
 
   /* 3) Commit as one transaction (createOrReplace = idempotent upsert). */

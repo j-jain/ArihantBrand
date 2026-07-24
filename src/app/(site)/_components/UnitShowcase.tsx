@@ -25,7 +25,10 @@ function formatStat({ value, suffix }: Stat): string {
  *  name and the Explore button are — so the stats stay independently reachable. */
 export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
   const accent = UNIT_ACCENT[business.unit].token;
-  const points = business.points.slice(0, 3);
+  // `highlights`, not `points`. The home page summarises each business; the
+  // unit page argues it. Rendering the first three `points` here meant Apparels
+  // printed the same two sentences on both pages.
+  const points = business.highlights.slice(0, 3);
   const facts = [business.founded, business.leaders.join(" & ")]
     .filter(Boolean)
     .join(" · ");
@@ -92,7 +95,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
 
       <ul className="unit-showcase__points mt-1 flex flex-col gap-2.5">
         {points.map((point) => (
-          <li key={point.id} className="flex gap-2.5 text-ink-soft">
+          <li key={point} className="flex gap-2.5 text-ink-soft">
             <span
               aria-hidden="true"
               className="mt-1 shrink-0 leading-none"
@@ -100,7 +103,7 @@ export function UnitShowcase({ business, flip = false }: UnitShowcaseProps) {
             >
               ▸
             </span>
-            <span className="t-body">{point.text}</span>
+            <span className="t-body">{point}</span>
           </li>
         ))}
       </ul>

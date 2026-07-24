@@ -19,21 +19,23 @@ export const pages: Record<string, PageCopy> = {
     },
     sections: {
       proof: {
-        heading: "Held to a standard the trade can measure",
-        lead: "Best Distributor of India, CMAI 2015. The same discipline still runs every route out of Guwahati.",
+        heading: "What the record says",
+        lead: `Best Distributor of India, CMAI ${facts.marketing.awardYear}. The same discipline runs every route out of Guwahati today.`,
       },
       why: {
-        heading: "Why the trade trusts Arihant",
-        lead: "Four working habits, kept season after season. They are the whole pitch.",
+        heading: "Why the trade buys from us",
+        lead: "Four things we are held to, season after season.",
       },
       businesses: {
         heading: "Three businesses, one standard",
-        lead: "Distribution built the house. Retail extends it. Start where your business does.",
+        lead: "Two distribution houses and a retail arm. Start with the one that matches your business.",
       },
       systems: {
-        heading: "Old-school handshakes, new-school systems",
-        lead: "Behind the relationships sits a retail backend that runs on data: buying, replenishment and reporting, systematised.",
-        body: ["The systems stay invisible. The shelves stay full."],
+        heading: "The systems behind the visits",
+        lead: "Buying, replenishment and reporting run on data rather than memory.",
+        body: [
+          "None of this is visible from your counter. That is the point of it.",
+        ],
       },
       brands: {
         heading: "The brands we carry",
@@ -44,11 +46,11 @@ export const pages: Record<string, PageCopy> = {
         lead: "Field notes from the road, written for retailers, brands and first-time store owners.",
       },
       voice: {
-        heading: "What the trade says",
+        heading: "What a retail partner says",
       },
       cta: {
         heading: "Bring your business to Arihant",
-        lead: "Retailer, brand or investor. Tell us what you're building, and the right Sancheti calls you back.",
+        lead: "Retailer, brand or investor. Tell us which, and the right person calls you back within one working day.",
       },
     },
   },
@@ -68,9 +70,13 @@ export const pages: Record<string, PageCopy> = {
         heading: "Best Distributor of India, 2015",
         lead: "Awarded by the Clothing Manufacturers Association of India. In this trade, that is the reference that needs no explaining.",
       },
+      strengths: {
+        heading: "What a brand gets from us",
+        lead: "Four things, and none of them need building from scratch.",
+      },
       how: {
         heading: "How we work with retailers",
-        lead: "A fixed rhythm the whole region can set its watch by.",
+        lead: `Four steps, on a ${phrase.visitCycle} cycle.`,
         body: [
           `We map your counter to the right mix from our ${phrase.marketingBrands}-brand portfolio: depth where your customer shops, nothing that will sit.`,
           "A representative stands in your store on a fixed cycle. Reorders, claims and market feedback move face to face.",
@@ -79,8 +85,8 @@ export const pages: Record<string, PageCopy> = {
         ],
       },
       sis: {
-        heading: "A shop-in-shop team that plugs straight in",
-        lead: "Brands entering the Northeast do not need to build a field force. Ours is already standing in the region's modern trade. Plug and play, AI-driven, data-backed.",
+        heading: "Shop-in-shop counters, without the investment",
+        lead: "Brands entering the Northeast do not need to build a field force or fund a fit-out. Our shop-in-shop (SIS) counters need no fixture investment from you, and staff are optional.",
       },
       brands: {
         heading: "The labels we move",
@@ -107,7 +113,7 @@ export const pages: Record<string, PageCopy> = {
     sections: {
       mission: {
         heading: "Built to grow retailers",
-        lead: "Our mission is plain: foster the growth of retailers across the region. When your counter grows, our portfolio grows with it.",
+        lead: "Our job is to grow the counters we sell to. When your store grows, our portfolio grows with it.",
       },
       exhibitions: {
         heading: "The busiest stand at every fair",
@@ -137,20 +143,20 @@ export const pages: Record<string, PageCopy> = {
     metaTitle: "Multi-brand Retail Stores in Guwahati | Arihant Retail",
     metaDescription: `Modern multi-brand apparel stores across Northeast India: ${facts.retail.storesOpen} open, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned by ${facts.retail.planHorizon}. Zero-deadstock, asset-light, fully managed.`,
     hero: {
-      heading: "Retail, run the way a distributor runs it",
-      headingEmphasis: "distributor",
-      lead: "Modern multi-brand stores and exclusive brand outlets, run with distributor discipline. The house that has supplied the region's counters since the 1990s now runs its own.",
+      heading: "We run stores of our own",
+      headingEmphasis: "our own",
+      lead: `Modern multi-brand stores across Northeast India, staffed, stocked and marketed by our team. ${facts.retail.storesOpen} open, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned by ${facts.retail.planHorizon}.`,
       primaryCta: { label: "Own a managed store", href: "/partner" },
       secondaryCta: { label: "Open your brand's EBO", href: "/contact?intent=brand" },
     },
     sections: {
       stores: {
         heading: "On the street today",
-        lead: "Every store staffed, stocked and marketed by our own team.",
+        lead: "Where our stores are, and which are still in fit-out.",
       },
       model: {
         heading: "The zero-deadstock model",
-        lead: "The store carries what sells and returns what does not. Buying, rotation and markdowns stay with the house. This is retail the way a distributor builds it.",
+        lead: "The store carries what sells and returns what does not. Buying, rotation and markdowns stay with us, which is the whole reason a first store survives its first bad season.",
       },
       expansion: {
         heading: "The map fills in",
@@ -228,9 +234,9 @@ export const pages: Record<string, PageCopy> = {
     sections: {
       story: {
         heading: "From one counter to the whole Northeast",
-        lead: "Rhythm first. Scale later.",
+        lead: "Kept commitments first. Scale after.",
         body: [
-          "The Arihant story begins in Guwahati's garment trade in the early 1990s, when the Sancheti family started supplying readymade garments to the city's retailers. Scale came later. What set the house apart first was rhythm: visits that happened on schedule, claims that settled on paper, commitments that held.",
+          "The Sancheti family started supplying readymade garments to Guwahati's retailers in the early 1990s. Scale came later. What set the house apart first was simpler than scale: visits happened on schedule, claims settled on paper, and commitments held.",
           "That rhythm built Arihant Marketing into the pioneer distributor of the Northeast and made the house a founder member of NEGTA alongside the region's leading traders. A second distribution business, Arihant Apparels, followed in 2013 and built several national labels into category leaders here.",
           "In 2023 the family carried the same discipline into retail itself: modern multi-brand stores and exclusive brand outlets, staffed and stocked by the house's own team.",
         ],
@@ -241,7 +247,7 @@ export const pages: Record<string, PageCopy> = {
       },
       leadership: {
         heading: "The people on the door",
-        lead: "Sagar, Anand, Ajay and Shreyansh Sancheti each run an arm of the house. Each one answers his own phone.",
+        lead: "Sagar, Anand, Ajay and Shreyansh Sancheti each run an arm of the house.",
       },
       timeline: { heading: "The years that built the house" },
     },
@@ -252,18 +258,21 @@ export const pages: Record<string, PageCopy> = {
     metaDescription:
       "CMAI's Best Distributor of India 2015, NEGTA founder membership, and what retailers, brands and store owners across the Northeast say about Arihant.",
     hero: {
-      heading: "Recognition, earned the slow way",
-      headingEmphasis: "slow way",
-      lead: `One national award, one founding membership, ${facts.apparels.exhibitions} fairs led on footfall, and the word of the trade itself.`,
+      heading: "Awards, and who gave them",
+      headingEmphasis: "Awards",
+      lead: `One national award, one founding membership, and ${facts.apparels.exhibitions} regional fairs led on footfall. Retailer references are available on a call.`,
       primaryCta: { label: "Work with us", href: "/contact" },
     },
     sections: {
-      awards: { heading: "The trophy case", lead: "A short list. Heavy items." },
+      awards: { heading: "The trophy case", lead: "A short list. Every entry checkable." },
       gallery: {
         heading: "In the cabinet",
         lead: "Certificates and trophies from national brands and trade fairs, photographed as they sit on the shelf.",
       },
-      milestones: { heading: "The years behind it" },
+      milestones: {
+        heading: "When each of these happened",
+        lead: "The same years the About page tells as a story, set out here as dates you can check an award against.",
+      },
       voices: {
         heading: "What the trade says",
         lead: "Retailers, brands and store owners across seven states, in their own words. Names shared privately on request.",

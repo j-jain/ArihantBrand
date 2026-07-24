@@ -706,6 +706,31 @@ svg {
   max-width: 68ch;
 }
 
+/* An answer carrying three or more separate claims gets them as a list, so the
+   reader can find the one they came for without reading the paragraph twice. */
+.faq-bullets {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.faq-bullets li {
+  position: relative;
+  padding-left: 1.15rem;
+}
+
+.faq-bullets li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--vermillion-deep);
+}
+
+.on-dark .faq-bullets li::before {
+  color: var(--vermillion);
+}
+
 /* Smooth open where supported (interpolate-size on html enables 0->auto);
    snaps cleanly in browsers without ::details-content. */
 .faq-item::details-content {

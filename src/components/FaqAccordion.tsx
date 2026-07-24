@@ -14,6 +14,15 @@ export function FaqAccordion({ faqs }: FaqAccordionProps) {
           <summary className="faq-summary">{faq.question}</summary>
           <div className="faq-answer">
             <p className="t-body">{faq.answer}</p>
+            {faq.bullets?.length ? (
+              <ul className="faq-bullets">
+                {faq.bullets.map((item) => (
+                  <li key={item} className="t-body">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </details>
       ))}

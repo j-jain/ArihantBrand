@@ -42,6 +42,10 @@ export interface Business {
   leaders: string[];
   positioning: string;
   summary: string;
+  /** Three short lines for the home page's unit row. Kept separate from
+   *  `points` so the home page summarises a business and the unit page argues
+   *  it, instead of both printing the same sentences. */
+  highlights: string[];
   points: BusinessPoint[];
   stats: Stat[];
   audienceCtas: Cta[];
@@ -82,6 +86,10 @@ export interface Store {
 export interface Faq {
   question: string;
   answer: string;
+  /** Optional list rendered under the answer. An answer making three or more
+   *  separate claims reads as a wall of prose; bullets let the reader find the
+   *  one they came for. Folded into the answer text for FAQPage JSON-LD. */
+  bullets?: string[];
   page: "partner" | "marketing" | "apparels" | "contact";
 }
 

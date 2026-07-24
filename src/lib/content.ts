@@ -38,6 +38,7 @@ import {
   funnels as seedFunnels,
   groupStats as seedGroupStats,
   leaderPortraits as seedLeaderPortraits,
+  marketingStrengths as seedMarketingStrengths,
   partners as seedPartners,
   partnerSteps as seedPartnerSteps,
   pillars as seedPillars,
@@ -50,6 +51,7 @@ import {
   team as seedTeam,
   testimonials as seedTestimonials,
   timeline as seedTimeline,
+  values as seedValues,
 } from "@/content/seed";
 import { pages as seedPages } from "@/content/pages";
 
@@ -132,6 +134,7 @@ interface RawBusiness {
   leaders?: string[] | null;
   positioning?: string | null;
   summary?: string | null;
+  highlights?: string[] | null;
   points?: RawBusinessPoint[] | null;
   stats?: RawStat[] | null;
   audienceCtas?: RawCta[] | null;
@@ -157,6 +160,7 @@ interface RawStore {
 interface RawFaq {
   question: string;
   answer: string;
+  bullets?: string[] | null;
   page: Faq["page"];
 }
 interface RawTestimonial {
@@ -271,6 +275,7 @@ function mapBusiness(b: RawBusiness): Business {
     leaders: b.leaders ?? [],
     positioning: b.positioning ?? "",
     summary: b.summary ?? "",
+    highlights: b.highlights ?? [],
     // Points without an id are unselectable by page code, so drop them rather
     // than let a half-mapped row reach a layout that keys off `id`.
     points: (b.points ?? [])
@@ -397,7 +402,7 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
 
 const BUSINESSES_QUERY = `*[_type == "business"] | order(order asc){
   unit, name, "slug": slug.current, logo, logoPath, founded, leaders, positioning,
-  summary, points[]{ id, text }, stats[]{ id, value, suffix, label },
+  summary, highlights, points[]{ id, text }, stats[]{ id, value, suffix, label },
   audienceCtas[]{ label, href }
 }`;
 
@@ -409,8 +414,8 @@ const STORES_QUERY = `*[_type == "store"] | order(order asc){
   name, city, format, status, image, imagePath, caption, mapsQuery
 }`;
 
-const FAQS_ALL_QUERY = `*[_type == "faq"] | order(order asc){ question, answer, page }`;
-const FAQS_PAGE_QUERY = `*[_type == "faq" && page == $page] | order(order asc){ question, answer, page }`;
+const FAQS_ALL_QUERY = `*[_type == "faq"] | order(order asc){ question, answer, bullets, page }`;
+const FAQS_PAGE_QUERY = `*[_type == "faq" && page == $page] | order(order asc){ question, answer, bullets, page }`;
 
 const TESTIMONIALS_QUERY = `*[_type == "testimonial" && published == true] | order(order asc){
   quote, name, role, published
@@ -436,11 +441,13 @@ const FUNNELS_QUERY = `*[_type == "funnelCard"] | order(order asc){
   id, title, text, cta{ label, href }
 }`;
 const PILLARS_QUERY = `*[_type == "pillar"] | order(order asc){ title, text }`;
+const VALUES_QUERY = `*[_type == "valuePanel"] | order(order asc){ title, text }`;
 const TIMELINE_QUERY = `*[_type == "timelineEntry"] | order(order asc){ year, title, text }`;
 const STEPS_QUERY = `*[_type == "processStep"] | order(order asc){ title, text }`;
 const AWARDS_QUERY = `*[_type == "award"] | order(order asc){ year, title, issuer, detail }`;
 const SYSTEMS_QUERY = `*[_type == "systemFeature"] | order(order asc){ title, text }`;
 const SIS_SCOPE_QUERY = `*[_type == "sisPoint"] | order(order asc){ title, text }`;
+const MARKETING_STRENGTHS_QUERY = `*[_type == "marketingStrength"] | order(order asc){ title, text }`;
 
 /* ------------------------------------------------------------------ */
 /* Selectors                                                            */
@@ -531,7 +538,13 @@ export function getFaqs(page?: Faq["page"]): Promise<Faq[]> {
     page ? FAQS_PAGE_QUERY : FAQS_ALL_QUERY,
     page ? { page } : {},
     isEmptyArray,
-    (rows) => rows.map((f) => ({ question: f.question, answer: f.answer, page: f.page })),
+    (rows) =>
+      rows.map((f) => ({
+        question: f.question,
+        answer: f.answer,
+        ...(f.bullets?.length ? { bullets: f.bullets } : {}),
+        page: f.page,
+      })),
     seed,
   );
 }
@@ -631,6 +644,19 @@ export function getPillars(): Promise<Pillar[]> {
   );
 }
 
+/** The About page's three values. Separate from `getPillars()` so the two
+ *  pages stop printing the same three cards (change brief, G2). */
+export function getValues(): Promise<Pillar[]> {
+  return fromSanity<RawPillar[], Pillar[]>(
+    "getValues",
+    VALUES_QUERY,
+    {},
+    isEmptyArray,
+    (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
+    seedValues,
+  );
+}
+
 export function getTimeline(): Promise<TimelineEntry[]> {
   return fromSanity<RawTimeline[], TimelineEntry[]>(
     "getTimeline",
@@ -691,6 +717,20 @@ export function getSystems(): Promise<Pillar[]> {
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedSystems,
+  );
+}
+
+/** The four strengths the Marketing page argues to a brand audience. Distinct
+ *  from `getPillars()`, which argues the same four to a retailer audience on
+ *  the home page (change brief, HP7 + AM10). */
+export function getMarketingStrengths(): Promise<Pillar[]> {
+  return fromSanity<RawPillar[], Pillar[]>(
+    "getMarketingStrengths",
+    MARKETING_STRENGTHS_QUERY,
+    {},
+    isEmptyArray,
+    (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
+    seedMarketingStrengths,
   );
 }
 

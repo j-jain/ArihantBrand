@@ -104,7 +104,14 @@ export function faqJsonLd(faqs: Faq[]) {
     mainEntity: faqs.map((f) => ({
       "@type": "Question",
       name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
+      acceptedAnswer: {
+        "@type": "Answer",
+        // Bullets are part of the answer a reader sees, so they are part of
+        // the answer a search engine is told about.
+        text: f.bullets?.length
+          ? `${f.answer} ${f.bullets.join(" ")}`
+          : f.answer,
+      },
     })),
   };
 }

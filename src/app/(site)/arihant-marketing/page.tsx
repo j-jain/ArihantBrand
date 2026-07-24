@@ -19,6 +19,7 @@ import {
 import {
   getBusinesses,
   getFaqs,
+  getMarketingStrengths,
   getPageCopy,
   getPartners,
   getSisScope,
@@ -69,7 +70,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ArihantMarketingPage() {
-  const [copy, businesses, partners, faqs, settings, sisScope] =
+  const [copy, businesses, partners, faqs, settings, sisScope, strengths] =
     await Promise.all([
       getPageCopy(UNIT),
       getBusinesses(),
@@ -77,6 +78,7 @@ export default async function ArihantMarketingPage() {
       getFaqs(UNIT),
       getSiteSettings(),
       getSisScope(),
+      getMarketingStrengths(),
     ]);
 
   if (!copy) return null;
@@ -86,6 +88,7 @@ export default async function ArihantMarketingPage() {
   const marketingPartners = partners.filter((p) => p.unit === UNIT);
   const { hero, sections } = copy;
   const award = sections.award;
+  const strengthsSection = sections.strengths;
   const how = sections.how;
   const sis = sections.sis;
   const brandsSection = sections.brands;
@@ -207,6 +210,44 @@ export default async function ArihantMarketingPage() {
           </div>
         </div>
       </section>
+
+      {/* 2b — What a brand gets (paper-shade): the same four strengths the home
+          page argues to a retailer, argued here to a brand manager. Separate
+          copy on purpose, so neither page reprints the other (AM10). */}
+      {strengths.length && strengthsSection ? (
+        <section className="section-pad bg-paper-shade" style={unitScope(UNIT)}>
+          <div className="container-site m-flow flex flex-col gap-10">
+            <Reveal variant="fade">
+              <SectionHeading
+                heading={strengthsSection.heading}
+                lead={strengthsSection.lead}
+              />
+            </Reveal>
+            <StaggerGroup
+              as="ul"
+              from="up"
+              className="flex flex-col border-t border-line"
+              stagger={0.08}
+              mLedger
+            >
+              {strengths.map((row) => (
+                <li
+                  key={row.title}
+                  className="m-ledger-row grid items-baseline gap-x-8 gap-y-1 border-b border-line py-5 md:grid-cols-[minmax(0,16rem)_1fr]"
+                >
+                  <h3
+                    className="font-sans text-ink"
+                    style={{ fontWeight: 650, fontSize: "1.02rem", lineHeight: 1.3 }}
+                  >
+                    {row.title}
+                  </h3>
+                  <p className="t-body measure text-ink-soft">{row.text}</p>
+                </li>
+              ))}
+            </StaggerGroup>
+          </div>
+        </section>
+      ) : null}
 
       {/* 3 — How we work (paper): a warehouse-side intro + a numbered sequence */}
       <section className="section-pad bg-paper" style={unitScope(UNIT)}>

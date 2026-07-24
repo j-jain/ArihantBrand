@@ -10,6 +10,14 @@ export const faq = defineType({
     defineField({ name: "question", title: "Question", type: "string", validation: (r) => r.required() }),
     defineField({ name: "answer", title: "Answer", type: "text", rows: 4, validation: (r) => r.required() }),
     defineField({
+      name: "bullets",
+      title: "Answer bullets (optional)",
+      description:
+        "Use when an answer makes three or more separate claims. Shown as a list under the answer.",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+    defineField({
       name: "page",
       title: "Page",
       type: "string",

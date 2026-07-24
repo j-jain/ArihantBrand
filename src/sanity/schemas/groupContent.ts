@@ -39,6 +39,22 @@ export const funnelCard = defineType({
   preview: { select: { title: "title", subtitle: "id" } },
 });
 
+/** One About-page value. Deliberately separate from `pillar`: the home page
+ *  argues what a retailer buys, the About page states what the family is
+ *  trying to be. Mirrors a seed `values[]` entry. */
+export const valuePanel = defineType({
+  name: "valuePanel",
+  title: "About Value",
+  type: "document",
+  fields: [
+    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "text", title: "Text", type: "text", rows: 3 }),
+    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
+  ],
+  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
+  preview: { select: { title: "title" } },
+});
+
 /** About-page timeline entry. Mirrors a seed `timeline[]` entry. */
 export const timelineEntry = defineType({
   name: "timelineEntry",

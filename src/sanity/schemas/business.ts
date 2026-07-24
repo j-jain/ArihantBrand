@@ -36,6 +36,14 @@ export const business = defineType({
     defineField({ name: "positioning", title: "Positioning", type: "string" }),
     defineField({ name: "summary", title: "Summary", type: "text", rows: 3 }),
     defineField({
+      name: "highlights",
+      title: "Home-page highlights (3 short lines)",
+      description:
+        "What the home page prints for this business. Keep these as summaries; the arguing is done by Points on the unit page.",
+      type: "array",
+      of: [defineArrayMember({ type: "string" })],
+    }),
+    defineField({
       name: "points",
       title: "Points",
       description:

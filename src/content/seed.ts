@@ -103,7 +103,12 @@ export const businesses: Business[] = [
     founded: "Since the 1990s",
     leaders: ["Sagar Sancheti", "Anand Sancheti"],
     positioning: "The founding arm. The routes, the relationships and the brand roster everything else stands on.",
-    summary: `Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than ${facts.marketing.years} years, on a visit rhythm the region's trade sets its watch by.`,
+    summary: `Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than ${facts.marketing.years} years, on a fixed visit cycle.`,
+    highlights: [
+      `${phrase.marketingBrands} national labels, menswear to kidswear.`,
+      `${phrase.marketingRetailers} retailers, each visited every ${phrase.visitCycle}.`,
+      `${phrase.marketingWarehouse} of Guwahati warehousing behind every indent.`,
+    ],
     points: [
       {
         id: "pioneer",
@@ -160,7 +165,12 @@ export const businesses: Business[] = [
     leaders: ["Ajay Sancheti"],
     positioning:
       "The house that turns national labels into Northeast category leaders.",
-    summary: `Founded in ${facts.apparels.established} by Ajay Sancheti, a second-generation garment entrepreneur. Arihant Apparels carries ${phrase.apparelsBrands} labels from a ${phrase.apparelsWarehouse} Guwahati warehouse, runs on systems and data from buying to the shop floor, and has built several of those labels into category leaders in the region.`,
+    summary: `Founded in ${facts.apparels.established} by Ajay Sancheti, a second-generation garment entrepreneur. Arihant Apparels carries ${phrase.apparelsBrands} labels from a ${phrase.apparelsWarehouse} Guwahati warehouse. Buying runs on sell-through data. Several of those labels are now category leaders in the region.`,
+    highlights: [
+      `${phrase.apparelsBrands} labels, led by the Northeast's biggest ladies' ethnic names.`,
+      "Several of them built into category leaders here.",
+      `${phrase.apparelsWarehouse} warehouse, buying run on sell-through data.`,
+    ],
     points: [
       {
         id: "portfolio",
@@ -211,7 +221,12 @@ export const businesses: Business[] = [
     founded: "Founded 2023",
     leaders: ["Shreyansh Sancheti"],
     positioning: "Multi-brand modern retail, run by the house that supplies the region.",
-    summary: `Arihant's retail arm runs modern multi-brand stores and exclusive brand outlets across Northeast India: ${facts.retail.storesOpen} trading today, ${facts.retail.storesFitOut} in fit-out, and ${facts.retail.storesPlanned} planned by the end of ${facts.retail.planHorizon}.`,
+    summary: `Arihant's retail arm runs modern multi-brand stores across Northeast India: ${facts.retail.storesOpen} trading today, ${facts.retail.storesFitOut} in fit-out, and ${facts.retail.storesPlanned} planned by the end of ${facts.retail.planHorizon}.`,
+    highlights: [
+      `${facts.retail.storesOpen} stores trading, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} by ${facts.retail.planHorizon}.`,
+      "We hire, buy, merchandise and market. You own the store.",
+      "Deadstock stays off the owner's books.",
+    ],
     points: [
       {
         id: "multi-brand",
@@ -282,22 +297,66 @@ export const funnels: Funnel[] = [
 /* Why-Arihant pillars (group)                                          */
 /* ------------------------------------------------------------------ */
 
+/* The four things the house is actually judged on, in the client's own order:
+   every category on one order, the team, clean accounts, and the visit cycle.
+   The Marketing page argues the same four for a brand audience, in different
+   words, from `marketingStrengths` below. */
 export const pillars = [
   {
-    title: "A handshake that holds",
-    text: "Price, delivery and terms are kept exactly as committed. Retailers across seven states reorder on a phone call, not a contract.",
+    title: "Every category, one order",
+    text: `Menswear, womenswear, kidswear, denim, ethnic and footwear. ${phrase.groupLabels} labels on one set of terms, one indent and one visit.`,
   },
   {
-    title: "On the road every 20 days",
-    text: "Orders, claims and market feedback move face to face, on a visit rhythm that does not slip.",
+    title: "The best team in the trade",
+    text: "Our field staff have worked these routes for years. They know your counter, your customer and what sold there last season.",
   },
   {
-    title: "A time-bound work ethos",
-    text: "Deliveries, claims and settlements land on the dates we quote. Your season never waits on our paperwork.",
+    title: "Accounts you can audit",
+    text: "Claims, credits and settlements go on paper and settle on the date we quote. Nobody re-negotiates after the fact.",
   },
   {
-    title: "A backend built for modern trade",
-    text: "Shop-in-shop counters, EBOs and multi-brand floors run on the same data-backed systems as our own stores.",
+    title: `In your store every ${phrase.visitCycle}`,
+    text: "Orders, claims and market feedback move face to face, on a cycle that does not slip. Serviceability is what we compete on.",
+  },
+];
+
+/* The About page's values panel used to render the first three home pillars,
+   which meant the two pages printed the same three cards under different
+   headings. The values are their own copy now: what the family is trying to
+   be, rather than what a retailer buys. */
+export const values = [
+  {
+    title: "Integrity",
+    text: "The price quoted is the price billed. A commitment made on a phone call is honoured whether or not it turns out to suit us.",
+  },
+  {
+    title: "Discipline",
+    text: "Routes are run on schedule, claims are documented as they happen, and settlements land on the dates we name. None of it depends on who is asking.",
+  },
+  {
+    title: "Trust",
+    text: "Retailers in seven states reorder without checking the invoice twice. That took decades to build and one bad season to lose, so we do not spend it.",
+  },
+];
+
+/* AM10: the same four strengths, argued for a brand manager rather than a
+   retailer, so the Marketing page does not reprint the home page. */
+export const marketingStrengths = [
+  {
+    title: "One partner, every category",
+    text: `We already move ${phrase.marketingBrands} labels across menswear, womenswear, kidswear and denim. Your range slots into routes that are already running.`,
+  },
+  {
+    title: "A field force you do not have to build",
+    text: "Our representatives have worked the Northeast for years. You get their coverage from season one, without a single hire.",
+  },
+  {
+    title: "Books you can reconcile",
+    text: "Claims, credits and secondary sales are documented as they happen, not netted into a year-end argument.",
+  },
+  {
+    title: `${phrase.visitCycle} between every visit`,
+    text: `Each of ${phrase.marketingRetailers} retailers is seen in person on a fixed cycle, which is how a size break becomes a fill order inside the same season.`,
   },
 ];
 
@@ -375,14 +434,18 @@ export const faqs: Faq[] = [
   {
     page: "partner",
     question: "What makes the model low-risk?",
-    answer:
-      "Three things: unsold inventory never sits on your books, an asset-light no-frills store format, and an operating playbook proven across our existing stores.",
+    answer: "Three things:",
+    bullets: [
+      "Unsold inventory never sits on your books.",
+      "The store format is asset-light and no-frills.",
+      `The operating playbook is already running in ${facts.retail.storesOpen} stores.`,
+    ],
   },
   {
     page: "partner",
     question: "How much do I need to invest?",
     answer:
-      "It depends on the city, the property and the format: multi-brand store or single-brand EBO. We walk through the full cost sheet and P&L structure in your proposal discussion. No figure is quoted before we have seen the specifics.",
+      "It depends on the city, the property and the size of the floor. We walk through the full cost sheet and P&L structure in your proposal discussion. No figure is quoted before we have seen the specifics.",
   },
   {
     page: "partner",
@@ -393,8 +456,7 @@ export const faqs: Faq[] = [
   {
     page: "partner",
     question: "Where can a store be opened?",
-    answer:
-      "Anywhere in Northeast India where the catchment supports modern apparel retail. Our expansion plan targets 10 stores by the end of FY 26-27, and we assess every proposed location against real trade data before committing.",
+    answer: `Anywhere in Northeast India where the catchment supports modern apparel retail. The plan is ${facts.retail.storesPlanned} stores by the end of ${facts.retail.planHorizon}, and every proposed location is assessed against real trade data before we commit.`,
   },
   {
     page: "partner",
@@ -405,26 +467,75 @@ export const faqs: Faq[] = [
   {
     page: "marketing",
     question: "Which territories do you cover?",
-    answer:
-      `All of Northeast India, serviced from our ${phrase.marketingWarehouse} warehouse in Guwahati. More than ${facts.marketing.retailers} retailers across the region are on scheduled ${phrase.visitCycle} visit cycles.`,
+    answer: `All ${facts.group.states} states of Northeast India, serviced from our ${phrase.marketingWarehouse} warehouse in Guwahati. More than ${facts.marketing.retailers} retailers across the region are on a scheduled ${phrase.visitCycle} visit cycle.`,
   },
   {
     page: "marketing",
     question: "How do I start stocking your brands in my store?",
-    answer:
-      `Send an inquiry or call us. We map your counter to the right brand mix from our ${phrase.marketingBrands}-label portfolio, agree terms, and put you on a visit schedule. Most new retailers receive their first indent within weeks.`,
+    answer: "Send an inquiry or call us. Four steps:",
+    bullets: [
+      `We map your counter to the right mix from ${phrase.marketingBrands} labels.`,
+      "We agree terms in writing.",
+      `You go on the ${phrase.visitCycle} visit schedule.`,
+      "Most new retailers receive their first indent within weeks.",
+    ],
   },
   {
     page: "marketing",
     question: "We're a brand looking for a Northeast distributor. Why Arihant?",
-    answer:
-      `${facts.marketing.years} years of relationships with ${phrase.marketingRetailers} retailers, founder membership of NEGTA, and a shop-in-shop team already standing in the region's modern trade. We have built national labels into category leaders here.`,
+    answer: "Four reasons, all of them checkable:",
+    bullets: [
+      `${facts.marketing.years} years of trading relationships with ${phrase.marketingRetailers} retailers.`,
+      "National labels we have built into category leaders in this region.",
+      "Shop-in-shop (SIS) counters already running in the region's modern trade.",
+      `Named Best Distributor of India by CMAI in ${facts.marketing.awardYear}.`,
+    ],
   },
   {
     page: "marketing",
     question: "How do you handle modern trade and shop-in-shops?",
     answer:
-      "A dedicated SIS team handles modern retail end to end: fixtures, planograms, replenishment and sell-through tracking, driven by data rather than guesswork.",
+      "We run the SIS counter end to end, and the brand does not fund the fixtures or the floor staff:",
+    bullets: [
+      "No fixture investment on your side.",
+      "Staff optional: a promoter is not required to open.",
+      "Replenishment driven by sell-through, not by guesswork.",
+      "Planogram audited on every visit, with counter-level reporting back to you.",
+    ],
+  },
+
+  /* The Apparels page has always rendered a "Straight answers" section; until
+     now no faq carried page: "apparels", so the section never appeared. */
+  {
+    page: "apparels",
+    question: "What do you carry that Arihant Marketing does not?",
+    answer: `Arihant Apparels holds a separate ${phrase.apparelsBrands}-label portfolio, weighted differently:`,
+    bullets: [
+      "The Northeast's leading ladies' ethnic labels.",
+      "Westernwear, kidswear and footwear alongside them.",
+      "A separate warehouse, a separate buying team, one group behind both.",
+    ],
+  },
+  {
+    page: "apparels",
+    question: "I already buy from Arihant Marketing. Can I buy from Apparels too?",
+    answer:
+      "Yes, and most growing counters do. The two houses carry different labels and bill separately, so nothing about your existing terms changes.",
+  },
+  {
+    page: "apparels",
+    question: "Do you sell at the regional garment fairs?",
+    answer: `Yes. Our stand has drawn the highest footfall at the region's last ${facts.apparels.exhibitions} exhibitions. If you are visiting a fair, book a slot with us in advance and we will hold the new season's range aside for you.`,
+  },
+  {
+    page: "apparels",
+    question: "We are a brand. What does the first season look like?",
+    answer: "Three stages, over roughly two seasons:",
+    bullets: [
+      "We seed the top multi-brand counters in Guwahati and two or three anchor cities.",
+      "Exhibition orders widen distribution at the next regional fair.",
+      "Where the sell-through justifies it, we add shop-in-shop (SIS) counters.",
+    ],
   },
 ];
 
@@ -434,6 +545,10 @@ export const faqs: Faq[] = [
 /* Each quote reflects documented service claims; swap in named,        */
 /* consented quotes via the Studio as they are collected.               */
 /* ------------------------------------------------------------------ */
+
+/** The one voice the home page prints. /recognition renders every OTHER entry,
+ *  so a reader never meets the same quote twice (change brief, HP12). */
+export const featuredTestimonialIndex = 5;
 
 export const testimonials: Testimonial[] = [
   {
@@ -600,7 +715,7 @@ export const posts: Post[] = [
       { type: "h2", text: "What to demand from your regional partner" },
       {
         type: "p",
-        text: `Scheduled retailer visits (ours run every ${phrase.visitCycle}), transparent secondary-sales feedback, disciplined claims handling, and a plug-and-play shop-in-shop team backed by real data. That combination turns a season's listing into a durable regional franchise. It is what we have built at Arihant over three decades, ${phrase.marketingRetailers} retailers and ${phrase.marketingBrands} brand partnerships.`,
+        text: `Scheduled retailer visits (ours run every ${phrase.visitCycle}), transparent secondary-sales feedback, disciplined claims handling, and shop-in-shop (SIS) counters that need no fixture or staffing investment from you. That combination turns a season's listing into a durable regional franchise. It is what we have built at Arihant over three decades, ${phrase.marketingRetailers} retailers and ${phrase.marketingBrands} brand partnerships.`,
       },
     ],
   },
@@ -716,7 +831,7 @@ export const posts: Post[] = [
       { type: "h2", text: "The data spine" },
       {
         type: "p",
-        text: "Modern trade runs on data, and host stores expect their SIS partners to keep up. Our own SIS operation is run by a dedicated team, plug and play, AI-driven and data-backed, because replenishment guesses that were tolerable in general trade become visible failures in a department store's weekly review.",
+        text: "Modern trade runs on data, and host stores expect their SIS partners to keep up. Our own SIS counters run plug and play, on data rather than memory, because replenishment guesses that were tolerable in general trade become visible failures in a department store's weekly review.",
       },
       {
         type: "p",
@@ -740,7 +855,7 @@ export const posts: Post[] = [
       },
       {
         type: "p",
-        text: "A good SIS programme is quiet. Fixtures stay full, size sets stay whole, reviews hold no surprises. That quiet is manufactured by a team doing the standing work every week. If you are weighing a Northeast entry through modern trade, we are happy to walk you through how our SIS team runs it.",
+        text: "A good SIS programme is quiet. Fixtures stay full, size sets stay whole, reviews hold no surprises. That quiet is manufactured by a team doing the standing work every week. If you are weighing a Northeast entry through modern trade, we are happy to walk you through how we run it.",
       },
     ],
   },
@@ -1248,12 +1363,12 @@ export const systems = [
 
 export const sisScope = [
   {
-    title: "Fixtures and launch",
-    text: "Counter build, fixtures and brand-standard displays, installed and photographed before launch week closes.",
+    title: "No fixture investment",
+    text: "The counter is built and branded to your specification without a fixture bill landing on your side of the table.",
   },
   {
-    title: "Staffing that knows the brand",
-    text: "Promoters hired, trained on your brand book and managed by our SIS supervisors, never left to the store.",
+    title: "Staff optional",
+    text: "A promoter is not required to open. Where you want one, ours is hired, trained on your brand book and supervised by us.",
   },
   {
     title: "Replenishment by sell-through",

@@ -21,8 +21,8 @@ import {
   getBusinesses,
   getLeaderPortraits,
   getPageCopy,
-  getPillars,
   getTimeline,
+  getValues,
 } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { UNIT_ACCENT } from "@/lib/units";
@@ -51,10 +51,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [copy, businesses, pillars, timeline, portraits] = await Promise.all([
+  const [copy, businesses, values, timeline, portraits] = await Promise.all([
     getPageCopy("about"),
     getBusinesses(),
-    getPillars(),
+    getValues(),
     getTimeline(),
     getLeaderPortraits(),
   ]);
@@ -125,8 +125,11 @@ export default async function AboutPage() {
                     </span>
                     <span style={foundedStyle}>{business.founded}</span>
                   </span>
+                  {/* Who runs it, not what it sells. The home page already
+                      carries each unit's positioning line; repeating it here
+                      told the reader nothing new (G2). */}
                   <span className="t-small text-ink-soft">
-                    {business.positioning}
+                    {business.leaders.join(" and ")}
                   </span>
                 </Link>
               ))}
@@ -188,7 +191,7 @@ export default async function AboutPage() {
       <ValuePanels
         heading={sections.values.heading}
         lead={sections.values.lead}
-        items={pillars.slice(0, 3)}
+        items={values.slice(0, 3)}
         images={[
           stockImages.aboutCraft2,
           stockImages.apparelsRacks1,

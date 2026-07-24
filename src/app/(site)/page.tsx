@@ -22,6 +22,7 @@ import {
 } from "@/components";
 import { stockImages } from "@/content/images";
 import { phrase } from "@/content/facts";
+import { featuredTestimonialIndex } from "@/content/seed";
 import {
   getBusinesses,
   getFunnels,
@@ -89,7 +90,11 @@ export default async function HomePage() {
   // Every second partner keeps the marquee dense without listing all 77.
   const marqueePartners = partners.filter((_, i) => i % 2 === 0);
   const latestPosts = posts.slice(0, 3);
-  const featured = testimonials[0];
+  // The home page reserves one voice for itself; /recognition renders the rest.
+  // Both pages used to lead with testimonials[0], so the same quote greeted a
+  // reader twice (HP12). `featuredTestimonialIndex` is the one place that
+  // choice is made — /recognition drops the same index.
+  const featured = testimonials[featuredTestimonialIndex] ?? testimonials[0];
   // The voice strip stands a real store photo beside the quote. It comes from
   // the store data rather than a path typed into this file, so swapping the
   // photograph is a content edit and the caption can never contradict the
