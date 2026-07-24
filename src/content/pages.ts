@@ -12,7 +12,8 @@ export const pages: Record<string, PageCopy> = {
     hero: {
       heading: "The garment house of Northeast India",
       headingEmphasis: "garment house",
-      lead: `We keep the Northeast's stores {{stocked|selling|supplied}}: ${phrase.groupLabels} national labels moving into ${phrase.groupRetailers} retail counters across seven states, from Guwahati since the 1990s.`,
+      lead:
+        "We stock the Northeast's clothing stores with national brands, out of Guwahati since the 1990s.",
       primaryCta: { label: "Partner with us", href: "/contact" },
       secondaryCta: { label: "The three businesses", href: "#businesses" },
     },
@@ -192,7 +193,7 @@ export const pages: Record<string, PageCopy> = {
       faq: { heading: "The questions serious investors ask" },
       inquiry: {
         heading: "Request the franchise details",
-        lead: "Tell us your city and your space. We reply within two working days.",
+        lead: "Tell us your city and your space. We will call you within one working day.",
       },
     },
   },
@@ -289,7 +290,7 @@ export const pages: Record<string, PageCopy> = {
   contact: {
     metaTitle: "Contact Arihant Group, Guwahati | Trade Inquiries",
     metaDescription:
-      "Reach Arihant Marketing, Arihant Apparels or Arihant Retail at Arihant Tower, Jyotikuchi, Guwahati. Call, WhatsApp or write; we reply in two working days.",
+      "Reach Arihant Marketing, Arihant Apparels or Arihant Retail at Arihant Tower, Jyotikuchi, Guwahati. Call, WhatsApp or write; we call back within one working day.",
     hero: {
       heading: "Tell us what you're building",
       lead: "The form below routes your inquiry to the right business. Every number on this page reaches a Sancheti directly.",

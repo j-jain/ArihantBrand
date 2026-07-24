@@ -11,6 +11,39 @@
   cursor: not-allowed;
 }
 
+/* Brand-list gate: two fields and a button on one line where there is room,
+   stacked where there is not. Deliberately not the full inquiry form — the
+   whole point is that it costs the reader almost nothing. */
+.brand-gate {
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: #fff;
+}
+
+.brand-gate .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.brand-gate__fields {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .brand-gate__fields {
+    grid-template-columns: 1fr 1fr auto;
+    align-items: start;
+    gap: 1.25rem;
+  }
+
+  /* Line the button up with the inputs, not with their labels. */
+  .brand-gate__submit {
+    padding-top: 1.65rem;
+  }
+}
+
 .step-indicator {
   color: var(--ink-soft);
 }

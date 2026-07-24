@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
+import { usePastHero, useRivalCtaOnScreen } from "./useCtaYield";
+import { whatsappFor } from "./WhatsAppFab";
 
 interface StickyActionBarProps {
   /** Full tel: target, e.g. "+919435045528". */
@@ -11,61 +13,22 @@ interface StickyActionBarProps {
   inquiryHref?: string;
 }
 
-/** Sections that already put the same ask in front of the reader. While one of
- *  these is on screen the bar stands down, so a phone visitor never sees the
- *  page's own CTA and a floating duplicate of it at the same time. */
-const RIVAL_CTA = ".drench-band, #inquiry, .action-bar-yield";
-
 /** Mobile-only bar with Call / WhatsApp / Inquire. Slides up once the reader
  *  is past the hero (~90vh), and back down whenever a CTA band or the inquiry
  *  form is in view. It duplicates actions available elsewhere, so it is a pure
- *  enhancement — no content depends on it. */
+ *  enhancement — no content depends on it. The WhatsApp cell routes by page,
+ *  by exactly the same rules as the desktop FAB. */
 export function StickyActionBar({
   tel,
   whatsapp,
   inquiryHref = "/contact#inquiry",
 }: StickyActionBarProps) {
-  const [pastHero, setPastHero] = useState(false);
-  const [ctaOnScreen, setCtaOnScreen] = useState(false);
+  const pathname = usePathname();
+  const pastHero = usePastHero();
+  const rivalOnScreen = useRivalCtaOnScreen();
 
-  useEffect(() => {
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      setPastHero(window.scrollY > window.innerHeight * 0.9);
-    };
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    update();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Yield to the page's own calls to action. Counting intersections rather than
-  // tracking a single element keeps this correct on pages with several.
-  useEffect(() => {
-    const targets = document.querySelectorAll(RIVAL_CTA);
-    if (targets.length === 0) return;
-
-    const visible = new Set<Element>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) visible.add(entry.target);
-          else visible.delete(entry.target);
-        }
-        setCtaOnScreen(visible.size > 0);
-      },
-      { threshold: 0 },
-    );
-    targets.forEach((target) => io.observe(target));
-    return () => io.disconnect();
-  }, []);
-
-  const visible = pastHero && !ctaOnScreen;
+  const visible = pastHero && !rivalOnScreen;
+  const routed = whatsappFor(pathname, whatsapp);
 
   return (
     <div
@@ -83,8 +46,8 @@ export function StickyActionBar({
         Call
       </a>
       <a
-        className="action-bar__btn"
-        href={`https://wa.me/${whatsapp}`}
+        className="action-bar__btn action-bar__btn--whatsapp"
+        href={routed.href}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Message Arihant on WhatsApp"

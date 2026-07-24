@@ -9,7 +9,7 @@ import { faq } from "./faq";
 import { testimonial } from "./testimonial";
 import { post } from "./post";
 import { page } from "./page";
-import { pillar, timelineEntry, processStep, groupStat } from "./groupContent";
+import { funnelCard, pillar, timelineEntry, processStep, groupStat } from "./groupContent";
 import { award, systemFeature, sisPoint } from "./award";
 import { lead } from "./lead";
 
@@ -30,6 +30,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   testimonial,
   post,
   page,
+  funnelCard,
   pillar,
   timelineEntry,
   processStep,

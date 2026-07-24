@@ -20,6 +20,8 @@ export { ContactChannels } from "./ContactChannels";
 export { SiteHeader } from "./SiteHeader";
 export { SiteFooter } from "./SiteFooter";
 export { StickyActionBar } from "./StickyActionBar";
+export { WhatsAppFab, whatsappFor, DEFAULT_WA_ROUTES } from "./WhatsAppFab";
+export { RIVAL_CTA, usePastHero, useRivalCtaOnScreen } from "./useCtaYield";
 export { InquiryForm } from "./InquiryForm";
 export { JsonLd } from "./JsonLd";
 export { cn, initialsOf } from "./cn";

@@ -128,7 +128,7 @@ export default async function ContactPage() {
         <div className="container-site m-flow-tight flex flex-col gap-2">
           <p data-drench-reveal className="t-h3">{settings.tagline}.</p>
           <p data-drench-reveal className="t-body" style={{ color: "var(--_text-soft)" }}>
-            We respond within two working days.
+            We will call you within one working day.
           </p>
         </div>
       </DrenchBand>

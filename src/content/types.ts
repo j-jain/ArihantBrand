@@ -163,6 +163,16 @@ export interface ProcessStep {
   text: string;
 }
 
+/** One of the site's audience funnels, rendered as its own card and its own
+ *  CTA on the home page. `id` matches the inquiry-form intent it routes to
+ *  where one exists, so the card and the form agree. */
+export interface Funnel {
+  id: string;
+  title: string;
+  text: string;
+  cta: Cta;
+}
+
 /** Inquiry-form payload. The server action in src/lib/leads.ts and the
  *  InquiryForm component must both use exactly this shape. */
 export interface LeadInput {

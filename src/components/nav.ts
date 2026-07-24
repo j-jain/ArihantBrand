@@ -15,6 +15,15 @@ export const businessLinks: NavItem[] = [
  *  duplicate desktop link beside the adjacent CTA. */
 export const partnerLink: NavItem = { label: "Partner With Us", href: "/partner" };
 
+/** The three ways into the inquiry form, one per funnel. Each deep-links to
+ *  /contact with the intent pre-selected, which skips step 1 of the form. The
+ *  values match InquiryForm's intent whitelist exactly. */
+export const intentLinks: NavItem[] = [
+  { label: "Stock our brands", href: "/contact?intent=retailer" },
+  { label: "Distribute your brand", href: "/contact?intent=brand" },
+  { label: "Own a managed store", href: "/contact?intent=franchise" },
+];
+
 /** Top-level nav after "Businesses". */
 export const primaryNav: NavItem[] = [
   { label: "Brands", href: "/brands" },

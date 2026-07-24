@@ -9,6 +9,9 @@ import { cn } from "./cn";
 interface StatBandProps {
   stats: Stat[];
   onDark?: boolean;
+  /** Hero variant: one row at every width, smaller figures, no left padding on
+   *  the first cell so the numbers line up under the headline. */
+  compact?: boolean;
 }
 
 /** Format a stat's numeric body en-IN. Four-digit bare numbers in a plausible
@@ -59,7 +62,7 @@ function CountUp({
 /** Horizontal stat band with hairline separators. Counts up once on first
  *  in-view; static when reduced motion is set. Final value is always in the
  *  DOM so the band reserves its space (no CLS). */
-export function StatBand({ stats, onDark = false }: StatBandProps) {
+export function StatBand({ stats, onDark = false, compact = false }: StatBandProps) {
   const [ref, inView] = useInViewOnce<HTMLDivElement>("-60px");
   const reduce = usePrefersReducedMotion();
   const run = inView && !reduce;
@@ -67,7 +70,7 @@ export function StatBand({ stats, onDark = false }: StatBandProps) {
   return (
     <div
       ref={ref}
-      className="stat-band"
+      className={cn("stat-band", compact && "stat-band--compact")}
       style={{ "--stat-count": stats.length } as CSSProperties}
     >
       {stats.map((stat) => (

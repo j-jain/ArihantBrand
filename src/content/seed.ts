@@ -2,6 +2,7 @@ import type {
   Award,
   Business,
   Faq,
+  Funnel,
   LeaderPortrait,
   Post,
   RecognitionPhoto,
@@ -37,13 +38,15 @@ export const siteSettings: SiteSettings = {
   contacts: [
     {
       unit: "marketing",
+      // Sagar's and Anand's numbers were removed from public display at the
+      // client's request (change brief, F1/F4). Sagar's line survives as this
+      // unit's WhatsApp target and as siteSettings.defaultWhatsapp, so
+      // distribution enquiries still reach him; it is simply not printed.
+      // AWAITING SIGN-OFF: this leaves Marketing showing only Shreyansh, who
+      // is Arihant Retail's contact.
       businessName: "Arihant Marketing",
       floor: "2nd Floor",
-      phones: [
-        { name: "Sagar (Jain) Sancheti", phone: "9435045528" },
-        { name: "Anand (Jain) Sancheti", phone: "9435045527" },
-        { name: "Shreyansh Sancheti", phone: "9435569704" },
-      ],
+      phones: [{ name: "Shreyansh Sancheti", phone: "9435569704" }],
       email: "accounts@arihantmarketing.net",
       whatsapp: "919435045528",
     },
@@ -71,19 +74,19 @@ export const siteSettings: SiteSettings = {
 /* ------------------------------------------------------------------ */
 
 export const groupStats: Stat[] = [
-  { id: "years", value: facts.group.years, suffix: "+", label: "Years in the garment trade" },
+  { id: "years", value: facts.group.years, suffix: "+", label: "Years in the trade" },
   {
     id: "retailers",
     value: facts.group.retailers,
     suffix: "+",
-    label: "Retailers served across the Northeast",
+    label: "Retailers served",
   },
-  { id: "labels", value: facts.group.labels, label: "National labels distributed" },
+  { id: "labels", value: facts.group.labels, label: "National labels" },
   {
     id: "warehouse",
     value: facts.group.warehouseSqFt,
     suffix: " sq ft",
-    label: "Warehousing in Guwahati",
+    label: "Warehousing, Guwahati",
   },
 ];
 
@@ -248,6 +251,30 @@ export const businesses: Business[] = [
       { label: "Own a managed store", href: "/partner" },
       { label: "Open your brand's EBO", href: "/contact?intent=brand" },
     ],
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* The two funnels.                                                     */
+/*                                                                      */
+/* One CTA used to serve two completely different visitors: a retailer   */
+/* who wants stock, and an investor who wants a store. They want         */
+/* different things, they are worth different amounts, and they should   */
+/* never share a button. These are the home page's split.                */
+/* ------------------------------------------------------------------ */
+
+export const funnels: Funnel[] = [
+  {
+    id: "retailer",
+    title: "Stock our brands",
+    text: `You run a store. We put national labels on your racks and stand in your shop every ${phrase.visitCycle} to keep them moving.`,
+    cta: { label: "Stock our brands", href: "/contact?intent=retailer" },
+  },
+  {
+    id: "franchise",
+    title: "Own a managed store",
+    text: "You have the capital and the property. We hire the staff, buy the stock, run the marketing and carry the deadstock. You own the asset.",
+    cta: { label: "Own a managed store", href: "/partner" },
   },
 ];
 
@@ -1041,7 +1068,7 @@ export const posts: Post[] = [
       },
       {
         type: "p",
-        text: "The model exists because good properties and good operators are rarely the same people. If you hold the property, we hold the rest. Request the details and we will respond within two working days.",
+        text: "The model exists because good properties and good operators are rarely the same people. If you hold the property, we hold the rest. Request the details and we will call you within one working day.",
       },
     ],
   },

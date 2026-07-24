@@ -7,7 +7,6 @@ import {
   CardsStack,
   CurtainReveal,
   DrenchBand,
-  FlipLead,
   HeroIntro,
   InfrastructureSection,
   JsonLd,
@@ -17,12 +16,15 @@ import {
   SectionHeading,
   StaggerGroup,
   StatBand,
+  WhatsAppIcon,
   cn,
   initialsOf,
 } from "@/components";
 import { stockImages } from "@/content/images";
+import { phrase } from "@/content/facts";
 import {
   getBusinesses,
+  getFunnels,
   getGroupStats,
   getPageCopy,
   getPartners,
@@ -66,6 +68,7 @@ export default async function HomePage() {
     testimonials,
     settings,
     stores,
+    funnels,
   ] = await Promise.all([
     getPageCopy("home"),
     getGroupStats(),
@@ -77,6 +80,7 @@ export default async function HomePage() {
     getTestimonials(),
     getSiteSettings(),
     getStores(),
+    getFunnels(),
   ]);
 
   if (!copy) notFound();
@@ -91,6 +95,21 @@ export default async function HomePage() {
   // photograph is a content edit and the caption can never contradict the
   // store list.
   const featuredStore = stores.find((store) => Boolean(store.image));
+
+  // Three figures above the fold, in the order a retailer weighs them: what
+  // you can stock, who already buys, how long we have been at it. The fourth
+  // group figure (warehousing) carries the proof band below instead, so no
+  // number is stated twice on this page.
+  const heroFigureIds = ["labels", "retailers", "years"];
+  const heroFigures = heroFigureIds
+    .map((id) => groupStats.find((stat) => stat.id === id))
+    .filter((stat): stat is NonNullable<typeof stat> => Boolean(stat));
+  const warehouseFigure = groupStats.find((stat) => stat.id === "warehouse");
+
+  // The low-friction ask: most of this trade opens WhatsApp before a form.
+  const brandListHref = `https://wa.me/${settings.defaultWhatsapp}?text=${encodeURIComponent(
+    "Hello Arihant, please send me your brand list.",
+  )}`;
 
   return (
     <>
@@ -108,14 +127,12 @@ export default async function HomePage() {
                 emphasis={hero.headingEmphasis}
                 rest={{ "data-hero-title": "", style: { textWrap: "normal" } }}
               />
-              {/* FlipLead can't carry data-* through its props, so the reveal
-                  hook lives on this wrapper — HeroIntro selects it either way. */}
-              <div data-hero-reveal className="measure">
-                <FlipLead
-                  text={hero.lead}
-                  className="t-lead text-ink-soft"
-                />
-              </div>
+              {/* Plain lead. The rotating word that used to sit here read as
+                  decoration on a trade site and repeated a word already in the
+                  sentence, so it is gone. */}
+              <p data-hero-reveal className="t-lead measure text-ink-soft">
+                {hero.lead}
+              </p>
               <div
                 data-hero-reveal
                 className="m-cta mt-1 flex flex-wrap items-center gap-x-6 gap-y-3"
@@ -123,23 +140,28 @@ export default async function HomePage() {
                 <Button variant="primary" size="lg" href={hero.primaryCta.href}>
                   {hero.primaryCta.label}
                 </Button>
-                {hero.secondaryCta ? (
-                  <Link
-                    href={hero.secondaryCta.href}
-                    className="group inline-flex min-h-11 items-center gap-1.5 font-sans font-semibold text-ink-soft transition-colors hover:text-ink"
-                  >
-                    <span className="underline-offset-4 group-hover:underline">
-                      {hero.secondaryCta.label}
-                    </span>
-                    <span
-                      aria-hidden="true"
-                      className="text-vermillion-deep transition-transform group-hover:translate-x-0.5"
-                    >
-                      ▸
-                    </span>
-                  </Link>
-                ) : null}
+                {/* The cheap ask, beside the committing one. */}
+                <a
+                  href={brandListHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hero-wa group inline-flex min-h-11 items-center gap-2 font-sans font-semibold text-ink transition-colors"
+                >
+                  <span className="hero-wa__mark" aria-hidden="true">
+                    <WhatsAppIcon width={18} height={18} />
+                  </span>
+                  <span className="underline-offset-4 group-hover:underline">
+                    Brand list on WhatsApp
+                  </span>
+                </a>
               </div>
+
+              {/* HP1: the numbers win the first screen, not a scroll. */}
+              {heroFigures.length ? (
+                <div data-hero-reveal className="hero-figures w-full">
+                  <StatBand stats={heroFigures} compact />
+                </div>
+              ) : null}
             </div>
 
             <div data-hero-reveal className="lg:col-span-5">
@@ -159,54 +181,48 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Trade-ticket quick nav to the three businesses. */}
-          <div
-            data-hero-reveal
-            className="ticket-nav mt-14 overflow-hidden rounded-[2px] border border-line bg-line"
-          >
-            <div className="ticket-nav__grid m-rail grid gap-px bg-line sm:grid-cols-3">
-              {businesses.map((business) => (
-                <Link
-                  key={business.slug}
-                  href={`/${business.slug}`}
-                  className="ticket press group flex flex-col gap-3 bg-white px-5 py-5 transition-colors hover:bg-paper-shade"
-                >
-                  <span className="relative block h-10 w-full">
-                    <Image
-                      src={business.logo}
-                      alt=""
-                      fill
-                      sizes="(max-width: 639px) 80vw, 22vw"
-                      className="object-contain object-left"
-                    />
-                  </span>
-                  <span className="flex items-center justify-between gap-3">
-                    <span
-                      className="font-display text-ink"
-                      style={{
-                        fontWeight: 700,
-                        fontSize: "var(--m-ticket-name, 1.1rem)",
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {business.name}
-                    </span>
-                    <span
-                      aria-hidden="true"
-                      className="shrink-0 text-vermillion-deep transition-transform group-hover:translate-x-0.5"
-                    >
-                      →
-                    </span>
-                  </span>
-                  <span className="t-small text-ink-soft">
-                    {business.positioning}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
         </HeroIntro>
       </section>
+
+      {/* 1b — The two funnels, one card and one CTA each ------------------- */}
+      {/* A retailer wanting stock and an investor wanting a store were being
+          sent down the same button. They are different people, worth different
+          amounts, and each now gets their own card directly below the fold.
+          The three-business ticket nav that used to sit here is redundant with
+          section 4 and with the header's Businesses panel. */}
+      {funnels.length ? (
+        <section className="funnels bg-paper-shade">
+          <div className="container-site">
+            <StaggerGroup
+              as="ul"
+              from="up"
+              stagger={0.1}
+              className="funnel-grid m-rail grid gap-px bg-line sm:grid-cols-2"
+            >
+              {funnels.map((funnel) => (
+                <li key={funnel.id} className="flex">
+                  <Link
+                    href={funnel.cta.href}
+                    className="funnel-card press group flex w-full flex-col gap-3"
+                  >
+                    <h2 className="t-h3 text-ink">{funnel.title}</h2>
+                    <p className="t-body measure text-ink-soft">{funnel.text}</p>
+                    <span className="funnel-card__cta t-h4 mt-auto inline-flex items-center gap-2 pt-3 text-vermillion-deep">
+                      {funnel.cta.label}
+                      <span
+                        aria-hidden="true"
+                        className="transition-transform group-hover:translate-x-1"
+                      >
+                        →
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </StaggerGroup>
+          </div>
+        </section>
+      ) : null}
 
       {/* 2 — Proof band (charcoal over a working warehouse), curtain-revealed */}
       <CurtainReveal>
@@ -251,8 +267,15 @@ export default async function HomePage() {
                   {sections.proof.lead}
                 </p>
               ) : null}
+              {/* The one group figure the hero does not carry, so no number on
+                  this page is stated twice. */}
+              {warehouseFigure ? (
+                <p className="t-body text-on-charcoal-soft">
+                  {phrase.groupWarehouse} of warehousing in Guwahati, across both
+                  godowns.
+                </p>
+              ) : null}
             </div>
-            <StatBand stats={groupStats} onDark />
           </div>
         </section>
       </CurtainReveal>

@@ -9,8 +9,9 @@ import {
   Reveal,
   SectionHeading,
 } from "@/components";
-import { getPageCopy, getPartners } from "@/lib/content";
+import { getPageCopy, getPartners, getSiteSettings } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { BrandListGate } from "./_components/BrandListGate";
 
 const PATH = "/brands";
 
@@ -44,7 +45,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BrandsPage() {
-  const [copy, partners] = await Promise.all([getPageCopy("brands"), getPartners()]);
+  const [copy, partners, settings] = await Promise.all([
+    getPageCopy("brands"),
+    getPartners(),
+    getSiteSettings(),
+  ]);
 
   if (!copy) return null;
 
@@ -101,6 +106,13 @@ export default async function BrandsPage() {
             <SectionHeading heading={sections.wall?.heading ?? "The portfolio"} />
           </Reveal>
           <LogoWall partners={partners} filterable />
+        </div>
+      </section>
+
+      {/* 2b — The take-away list, gated on a name and a number (paper) ----- */}
+      <section className="section-pad bg-paper">
+        <div className="container-site">
+          <BrandListGate whatsapp={settings.defaultWhatsapp} />
         </div>
       </section>
 

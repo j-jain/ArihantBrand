@@ -59,10 +59,6 @@ function formatStat(value: number, suffix?: string): string {
   return suffix ? `${body}${suffix}` : body;
 }
 
-function formatPhone(phone: string): string {
-  return phone.replace(/(\d{5})(\d{5})/, "$1 $2");
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy(UNIT);
   return pageMetadata({
@@ -99,7 +95,6 @@ export default async function ArihantMarketingPage() {
   // Content is selected by stable id, never by matching the copy — a rewrite
   // must never be able to blank a section.
   const twentyDayPromise = pointById(business, "visit-cycle");
-  const firstPhone = contact?.phones[0];
 
   return (
     <div>
@@ -137,19 +132,12 @@ export default async function ArihantMarketingPage() {
                   }}
                 />
               </div>
+              {/* The hero carries no button pair. Two CTAs above the fold made
+                  the reader choose before they had read anything; the asks now
+                  sit where the page has earned them (AM8). */}
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              <div data-hero-reveal className="m-cta mt-1 flex flex-wrap gap-3">
-                <Button href={hero.primaryCta.href} variant="primary" size="lg">
-                  {hero.primaryCta.label}
-                </Button>
-                {hero.secondaryCta ? (
-                  <Button href={hero.secondaryCta.href} variant="secondary" size="lg">
-                    {hero.secondaryCta.label}
-                  </Button>
-                ) : null}
-              </div>
             </div>
 
             {/* Right rail: unit logo plate + three stacked stats */}
@@ -283,6 +271,14 @@ export default async function ArihantMarketingPage() {
               </li>
             ))}
           </StaggerGroup>
+
+          {/* The retailer ask, placed after the reader has seen how the cycle
+              actually works rather than before (AM8). */}
+          <div className="m-cta">
+            <Button href={hero.primaryCta.href} variant="primary" size="lg" className="press">
+              {hero.primaryCta.label}
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -373,21 +369,24 @@ export default async function ArihantMarketingPage() {
               {ctaSection.lead}
             </p>
           ) : null}
-          <div data-drench-reveal className="m-cta mt-1 flex flex-col gap-4">
-            <div>
-              <Button href="/contact?intent=retailer" variant="onDark" size="lg" className="press">
-                Become a retail partner
-              </Button>
-            </div>
-            {firstPhone ? (
-              <a
-                href={`tel:+91${firstPhone.phone}`}
-                className="m-tap t-small w-fit underline-offset-4 hover:underline"
-                style={{ color: "var(--_text-soft)" }}
-              >
-                Or call {firstPhone.name} &middot; {formatPhone(firstPhone.phone)}
-              </a>
-            ) : null}
+          {/* Both funnels, each with its own destination. The loose phone
+              number that used to sit here routed brand enquiries to a
+              distribution desk by hand; the form tags the intent instead
+              (AM12). */}
+          <div
+            data-drench-reveal
+            className="m-cta mt-1 flex flex-wrap items-center gap-x-6 gap-y-4"
+          >
+            <Button href="/contact?intent=retailer" variant="onDark" size="lg" className="press">
+              Become a retail partner
+            </Button>
+            <a
+              href="/contact?intent=brand"
+              className="m-tap t-small underline-offset-4 hover:underline"
+              style={{ color: "var(--_text-soft)" }}
+            >
+              Distribute your brand &rarr;
+            </a>
           </div>
         </div>
       </DrenchBand>

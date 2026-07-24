@@ -6,6 +6,11 @@
  *  - appended as one JSON line to `.leads/leads.ndjson` (gitignored) so dev and
  *    demo work with no external services.
  *
+ * After a lead is stored it is handed to the configured `LeadNotifier`, which
+ * is a no-op until real credentials arrive. Storage and notification are
+ * deliberately separate: an alerting outage must never lose a lead, and must
+ * never tell the visitor their enquiry failed.
+ *
  * It never throws to the caller: validation problems and storage failures both
  * come back as `{ ok: false, error }`.
  *
@@ -63,7 +68,57 @@ export const leadInputSchema = z.object({
   sourcePage: z.string().trim().min(1).default("/"),
 });
 
-async function appendLeadToFile(record: Record<string, unknown>): Promise<void> {
+/* ------------------------------------------------------------------ */
+/* Notification                                                         */
+/*                                                                      */
+/* A stored lead nobody is told about is a lost lead. The provider is    */
+/* pluggable because the credentials are not here yet: wire Resend (for  */
+/* email) or Interakt / WhatsApp Business API by calling                 */
+/* `setLeadNotifier()` once at server start. Until then it is a no-op    */
+/* and every call site already works.                                    */
+/* ------------------------------------------------------------------ */
+
+/** A lead as stored: the validated input plus its storage metadata. */
+export interface StoredLead extends LeadInput {
+  createdAt: string;
+  status: "new";
+}
+
+export interface LeadNotifier {
+  /** Shown in logs so it is obvious which provider ran. */
+  readonly name: string;
+  notify(lead: StoredLead): Promise<void>;
+}
+
+const noopNotifier: LeadNotifier = {
+  name: "none",
+  async notify() {
+    /* No provider configured yet. The lead is still stored. */
+  },
+};
+
+let notifier: LeadNotifier = noopNotifier;
+
+/** Install a notification provider. Call once, server-side, at start-up. */
+export function setLeadNotifier(next: LeadNotifier): void {
+  notifier = next;
+}
+
+/** Current provider, for tests and for a health endpoint. */
+export function currentLeadNotifier(): LeadNotifier {
+  return notifier;
+}
+
+/** Notify, but never let a provider failure change what the visitor sees. */
+async function notify(lead: StoredLead): Promise<void> {
+  try {
+    await notifier.notify(lead);
+  } catch (err) {
+    console.error(`[leads] notifier "${notifier.name}" failed:`, err);
+  }
+}
+
+async function appendLeadToFile(record: StoredLead): Promise<void> {
   const dir = path.join(process.cwd(), ".leads");
   await fs.mkdir(dir, { recursive: true });
   await fs.appendFile(
@@ -83,7 +138,7 @@ export async function submitLead(data: LeadInput): Promise<LeadResult> {
     };
   }
 
-  const record = {
+  const record: StoredLead = {
     ...parsed.data,
     createdAt: new Date().toISOString(),
     status: "new" as const,
@@ -95,6 +150,7 @@ export async function submitLead(data: LeadInput): Promise<LeadResult> {
     } else {
       await appendLeadToFile(record);
     }
+    await notify(record);
     return { ok: true };
   } catch (err) {
     console.error("[leads] storage failure:", err);

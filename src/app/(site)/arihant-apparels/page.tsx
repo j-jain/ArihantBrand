@@ -137,19 +137,11 @@ export default async function ArihantApparelsPage() {
                   }}
                 />
               </div>
+              {/* No button pair above the fold: the asks sit further down,
+                  once the page has given the reader a reason (AA4). */}
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              <div data-hero-reveal className="m-cta mt-1 flex flex-wrap gap-3">
-                <Button href={hero.primaryCta.href} variant="primary" size="lg">
-                  {hero.primaryCta.label}
-                </Button>
-                {hero.secondaryCta ? (
-                  <Button href={hero.secondaryCta.href} variant="secondary" size="lg">
-                    {hero.secondaryCta.label}
-                  </Button>
-                ) : null}
-              </div>
             </div>
 
             {business ? (
@@ -225,6 +217,13 @@ export default async function ArihantApparelsPage() {
               {business ? (
                 <p className="t-lead measure text-ink-soft">{business.summary}</p>
               ) : null}
+              {/* The retailer ask, inline where the mission has just been made
+                  (AA4). */}
+              <div className="m-cta mt-1">
+                <Button href={hero.primaryCta.href} variant="primary" size="lg" className="press">
+                  {hero.primaryCta.label}
+                </Button>
+              </div>
             </div>
           </Reveal>
         </div>

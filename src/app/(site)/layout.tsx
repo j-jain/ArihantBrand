@@ -4,6 +4,7 @@ import {
   SiteHeader,
   SmoothScroll,
   StickyActionBar,
+  WhatsAppFab,
 } from "@/components";
 import { getSiteSettings } from "@/lib/content";
 
@@ -21,10 +22,14 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
         {children}
       </main>
       <SiteFooter settings={settings} />
+      {/* Two halves of one job: the bar carries phones, the FAB carries
+          laptops. Both route WhatsApp by page and both stand down over the
+          page's own CTA bands. */}
       <StickyActionBar
         tel={`+${settings.defaultWhatsapp}`}
         whatsapp={settings.defaultWhatsapp}
       />
+      <WhatsAppFab fallback={settings.defaultWhatsapp} />
     </>
   );
 }

@@ -211,6 +211,15 @@ export default async function ArihantRetailPage() {
                   ))}
                 </StaggerGroup>
               ) : null}
+
+              {/* The franchise ask, in the page rather than only in the closing
+                  band, because this is where the model has just been explained
+                  (AR8). */}
+              <div className="m-cta">
+                <Button href="/partner" variant="onDark" size="lg" className="press">
+                  Own a managed store
+                </Button>
+              </div>
             </div>
 
             {/* Image duo: a portrait interior with a wider shopfront pulled up

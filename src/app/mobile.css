@@ -251,6 +251,41 @@
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
+  /* --- Hero figure row ---------------------------------------------- */
+  /* Three numbers have to cost one band of the fold, not two, or the CTAs
+     they are meant to support get pushed off the first screen. */
+
+  .stat-band--compact .stat-item {
+    padding: 0.6rem 0.55rem;
+  }
+
+  .stat-band--compact .stat-item:first-child {
+    padding-left: 0;
+  }
+
+  /* --- Header direct-contact pair ----------------------------------- */
+  /* Call and WhatsApp sit in the bar itself, not two taps deep inside the
+     sheet. Both are 44px targets; the pair is pushed right so the wordmark
+     keeps the left edge and the hamburger keeps the far right. */
+
+  .header-actions {
+    gap: 0.15rem;
+    margin-right: 0.15rem;
+  }
+
+  .header-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--ink);
+  }
+
+  .header-action--whatsapp {
+    color: var(--whatsapp-deep);
+  }
+
   /* --- Mobile menu sheet ------------------------------------------- */
 
   .menu-sheet__panel {
@@ -310,6 +345,11 @@
     font-weight: 650;
     font-size: 0.95rem;
     color: var(--ink);
+  }
+
+  .menu-sheet__action--whatsapp {
+    color: var(--whatsapp-deep);
+    border-color: color-mix(in oklch, var(--whatsapp-deep), transparent 72%);
   }
 
   /* --- Sticky action bar ------------------------------------------- */

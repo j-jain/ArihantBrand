@@ -15,6 +15,7 @@ import type {
   Business,
   Cta,
   Faq,
+  Funnel,
   Hero,
   LeaderPortrait,
   PageCopy,
@@ -34,6 +35,7 @@ import {
   awards as seedAwards,
   businesses as seedBusinesses,
   faqs as seedFaqs,
+  funnels as seedFunnels,
   groupStats as seedGroupStats,
   leaderPortraits as seedLeaderPortraits,
   partners as seedPartners,
@@ -219,6 +221,12 @@ interface RawPage {
   metaDescription?: string | null;
   hero?: RawHero | null;
   sections?: RawPageSection[] | null;
+}
+interface RawFunnel {
+  id?: string | null;
+  title: string;
+  text?: string | null;
+  cta?: RawCta | null;
 }
 interface RawPillar {
   title: string;
@@ -424,6 +432,9 @@ const PAGE_QUERY = `*[_type == "page" && pageId == $pageId][0]{
 }`;
 
 const GROUP_STATS_QUERY = `*[_type == "groupStat"] | order(order asc){ id, value, suffix, label }`;
+const FUNNELS_QUERY = `*[_type == "funnelCard"] | order(order asc){
+  id, title, text, cta{ label, href }
+}`;
 const PILLARS_QUERY = `*[_type == "pillar"] | order(order asc){ title, text }`;
 const TIMELINE_QUERY = `*[_type == "timelineEntry"] | order(order asc){ year, title, text }`;
 const STEPS_QUERY = `*[_type == "processStep"] | order(order asc){ title, text }`;
@@ -587,6 +598,25 @@ export function getGroupStats(): Promise<Stat[]> {
     isEmptyArray,
     (rows) => rows.map(mapStat),
     seedGroupStats,
+  );
+}
+
+export function getFunnels(): Promise<Funnel[]> {
+  return fromSanity<RawFunnel[], Funnel[]>(
+    "getFunnels",
+    FUNNELS_QUERY,
+    {},
+    isEmptyArray,
+    (rows) =>
+      rows
+        .filter((f) => Boolean(f.id) && Boolean(f.cta))
+        .map((f) => ({
+          id: f.id as string,
+          title: f.title,
+          text: f.text ?? "",
+          cta: mapCta(f.cta as RawCta),
+        })),
+    seedFunnels,
   );
 }
 

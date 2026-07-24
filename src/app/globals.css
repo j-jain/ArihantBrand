@@ -1,9 +1,22 @@
 @import "tailwindcss";
 @import "./motion.css";
 @import "./form.css";
-/* Last, so the mobile layer can retune anything above it. Every rule in
-   that file is inside `@media (max-width: 767px)` — see its header. */
-@import "./mobile.css";
+
+/* The mobile layer is imported at the FOOT of this file, not here.
+ *
+ * An @import is inlined where it is written. Imported at the top, every rule
+ * in mobile.css landed BEFORE this file's own rules, and since a media query
+ * adds no specificity, `:root`, `.section-pad`, `.t-display` and every other
+ * selector that exists in both files resolved to the desktop value at 360px.
+ * The phone layer was, in effect, switched off: the mobile type scale, the
+ * mobile section rhythm and the mobile action bar never applied. Only rules
+ * with no twin in this file (the `--m-*` retarget variables, `.m-rail`,
+ * `.m-bleed`) were surviving, which is why it looked half-alive.
+ *
+ * Desktop stays frozen regardless of the move: every rule in that file is
+ * inside `@media (max-width: 767px)`, so nothing it contains can reach a
+ * 768px viewport. scratchpad/check_mobile_containment.py proves that.
+ */
 
 /* ------------------------------------------------------------------ */
 /* Design tokens — OKLCH, from DESIGN.md (identity-preserving)          */
@@ -27,6 +40,12 @@
   --line: oklch(0.885 0.006 35); /* hairlines on paper */
   --line-dark: oklch(0.38 0.012 30); /* hairlines on charcoal */
   --focus: var(--vermillion-deep);
+  /* WhatsApp is a platform identity colour, not a second brand red. It is
+     allowed on WhatsApp affordances only (the desktop FAB, the mobile action
+     bar's WhatsApp cell) and never on a page CTA. The deep tone is WhatsApp's
+     own #128C7E, chosen over #25D366 so a white glyph clears 4:1 on it. */
+  --whatsapp: oklch(0.79 0.185 152); /* #25D366 — the mark's own green */
+  --whatsapp-deep: oklch(0.558 0.096 178); /* #128C7E — white glyph sits on this */
   /* unit accents (decorative identity only — CTAs stay vermillion sitewide) */
   --unit-marketing: oklch(0.4 0.15 28); /* maroon from their logo */
   --unit-apparels: oklch(0.28 0.012 30); /* ink — crown-black identity */
@@ -462,6 +481,31 @@ svg {
   border-left: 0;
 }
 
+/* Hero variant: the figures sit under the headline as one quiet row at every
+   width, so three numbers cost one line of fold rather than two. */
+.stat-band--compact {
+  grid-template-columns: repeat(var(--stat-count, 3), 1fr);
+}
+
+.stat-band--compact .stat-item {
+  padding: clamp(0.8rem, 1.4vw, 1.05rem) clamp(0.7rem, 1.6vw, 1.15rem);
+  border-left: 1px solid var(--_line);
+}
+
+.stat-band--compact .stat-item:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.stat-band--compact .t-stat {
+  font-size: var(--m-hero-figure, clamp(1.5rem, 0.95rem + 1.9vw, 2.35rem));
+  line-height: 1.05;
+}
+
+.stat-band--compact .stat-suffix {
+  font-size: 0.45em;
+}
+
 @media (min-width: 768px) {
   .stat-item {
     border-left: 1px solid var(--_line);
@@ -472,6 +516,56 @@ svg {
   .stat-item:first-child {
     border-left: 0;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Home funnel split                                                   */
+/* ------------------------------------------------------------------ */
+
+/* Sits directly under the hero, so it carries its own tighter rhythm rather
+   than a full section's worth of air. */
+.funnels {
+  padding-block: clamp(2rem, 4vw, 3.25rem);
+}
+
+.funnel-grid {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.funnel-card {
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  background: #fff;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.funnel-card:hover {
+  background: var(--paper);
+}
+
+.funnel-card:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+/* The WhatsApp ask beside the hero's primary button. Quiet by default so it
+   never competes with the vermillion CTA; the mark alone carries the meaning. */
+.hero-wa__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--whatsapp-deep);
+  color: #fff;
+}
+
+.hero-wa:hover {
+  color: var(--whatsapp-deep);
 }
 
 /* ------------------------------------------------------------------ */
@@ -928,6 +1022,61 @@ svg {
   border-left-color: transparent;
 }
 
+/* The WhatsApp cell carries the platform's own green so the row reads as a
+   real WhatsApp affordance rather than a generic "message us". */
+.action-bar__btn--whatsapp {
+  color: var(--whatsapp-deep);
+}
+
+/* ------------------------------------------------------------------ */
+/* WhatsApp FAB (desktop only — phones keep the action bar)            */
+/* ------------------------------------------------------------------ */
+
+.wa-fab {
+  position: fixed;
+  right: clamp(1.25rem, 2.5vw, 2rem);
+  bottom: clamp(1.25rem, 2.5vw, 2rem);
+  z-index: var(--z-actionbar);
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: var(--whatsapp-deep);
+  color: #fff;
+  box-shadow:
+    0 1px 2px oklch(0.215 0.01 30 / 0.18),
+    0 10px 24px oklch(0.215 0.01 30 / 0.22);
+  /* Parked off-stage until the reader is past the hero; opacity alone would
+     leave a 56px hit target sitting over the hero's own CTA. */
+  transform: translateY(140%);
+  opacity: 0;
+  transition:
+    transform var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.wa-fab[data-visible] {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.wa-fab:hover {
+  background: color-mix(in oklch, var(--whatsapp-deep), black 12%);
+}
+
+.wa-fab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-fab {
+    transition: none;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Inquiry form                                                        */
 /* ------------------------------------------------------------------ */
@@ -1178,3 +1327,8 @@ textarea.field-input {
   border-color: color-mix(in oklch, var(--ink), transparent 72%);
   box-shadow: 0 12px 26px -16px oklch(0.215 0.01 30 / 0.4);
 }
+
+/* Imported LAST so the phone layer can retune anything above it. Every rule
+   inside it is bounded by `@media (max-width: 767px)`, so desktop is
+   untouched. See the note at the head of this file. */
+@import "./mobile.css";

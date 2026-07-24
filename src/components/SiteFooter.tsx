@@ -3,7 +3,7 @@ import type { SiteSettings } from "@/content/types";
 import { ContactChannels } from "./ContactChannels";
 import { MapPinIcon } from "./icons";
 import { NetworkMap } from "./motion/NetworkMap";
-import { businessLinks, partnerLink, primaryNav } from "./nav";
+import { businessLinks, intentLinks, partnerLink, primaryNav } from "./nav";
 
 interface SiteFooterProps {
   settings: SiteSettings;
@@ -36,8 +36,35 @@ export function SiteFooter({ settings }: SiteFooterProps) {
           </div>
         </div>
 
+        {/* The three funnels, each deep-linked so the form opens with the
+            intent already chosen. Previously the footer's only ask was a
+            single generic "Partner With Us" serving all three. */}
         <nav
-          className="footer-nav mt-14 flex flex-wrap gap-x-6 gap-y-2"
+          className="footer-intents mt-14 flex flex-wrap gap-x-8 gap-y-3"
+          aria-label="Start an inquiry"
+        >
+          {intentLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="footer-intent group inline-flex min-h-11 items-center gap-1.5 font-sans text-on-charcoal"
+              style={{ fontWeight: 650 }}
+            >
+              <span className="underline-offset-4 group-hover:underline">
+                {item.label}
+              </span>
+              <span
+                aria-hidden="true"
+                className="text-vermillion transition-transform group-hover:translate-x-0.5"
+              >
+                →
+              </span>
+            </Link>
+          ))}
+        </nav>
+
+        <nav
+          className="footer-nav mt-10 flex flex-wrap gap-x-6 gap-y-2"
           aria-label="Footer"
         >
           {footerNav.map((item) => (

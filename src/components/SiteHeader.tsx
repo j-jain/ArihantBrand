@@ -10,6 +10,7 @@ import { DUR, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { Button } from "./Button";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
 import { primaryNav } from "./nav";
+import { whatsappFor } from "./WhatsAppFab";
 
 interface SiteHeaderProps {
   /** Digits with country code, e.g. "919435045528". Powers the direct-contact
@@ -421,6 +422,31 @@ export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
             </Button>
           </div>
 
+          {/* Phone-only direct contact. It used to live only inside the opened
+              sheet, which put two taps between a retailer and a phone call on
+              the device most of them arrive on. `md:hidden` keeps the
+              768-1023px tablet header exactly as it was. */}
+          {whatsapp ? (
+            <div className="header-actions ml-auto flex items-center md:hidden">
+              <a
+                className="header-action press"
+                href={`tel:+${whatsapp}`}
+                aria-label="Call Arihant"
+              >
+                <PhoneIcon />
+              </a>
+              <a
+                className="header-action header-action--whatsapp press"
+                href={whatsappFor(pathname, whatsapp).href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Message Arihant on WhatsApp"
+              >
+                <WhatsAppIcon />
+              </a>
+            </div>
+          ) : null}
+
           {/* Mobile hamburger */}
           <button
             ref={menuButtonRef}
@@ -622,8 +648,8 @@ export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
                     Call
                   </a>
                   <a
-                    className="menu-sheet__action press"
-                    href={`https://wa.me/${whatsapp}`}
+                    className="menu-sheet__action menu-sheet__action--whatsapp press"
+                    href={whatsappFor(pathname, whatsapp).href}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

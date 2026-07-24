@@ -14,6 +14,31 @@ export const pillar = defineType({
   preview: { select: { title: "title" } },
 });
 
+/** One home-page audience funnel. Mirrors `Funnel` in src/content/types.ts.
+ *  Each funnel is its own card and its own CTA: a retailer and a franchise
+ *  investor must never share a button. */
+export const funnelCard = defineType({
+  name: "funnelCard",
+  title: "Home funnel",
+  type: "document",
+  fields: [
+    defineField({
+      name: "id",
+      title: "Selector id (do not rename)",
+      description:
+        "Matches the inquiry-form intent this funnel routes to, e.g. retailer, franchise.",
+      type: "string",
+      validation: (r) => r.required(),
+    }),
+    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "text", title: "Text", type: "text", rows: 3 }),
+    defineField({ name: "cta", title: "Call to action", type: "cta" }),
+    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
+  ],
+  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
+  preview: { select: { title: "title", subtitle: "id" } },
+});
+
 /** About-page timeline entry. Mirrors a seed `timeline[]` entry. */
 export const timelineEntry = defineType({
   name: "timelineEntry",

@@ -363,7 +363,10 @@ export function InquiryForm({
           Received.
         </h3>
         <p className="t-lead measure text-ink-soft">
-          Thank you. We respond within two working days.
+          Thank you. We will call you within one working day.
+        </p>
+        <p className="t-body measure text-ink-soft">
+          If it is urgent, WhatsApp us and we will pick it up faster.
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-3">
           {whatsapp ? (
