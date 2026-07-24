@@ -29,6 +29,7 @@ import {
   getPillars,
   getPosts,
   getSiteSettings,
+  getStores,
   getSystems,
   getTestimonials,
 } from "@/lib/content";
@@ -64,6 +65,7 @@ export default async function HomePage() {
     systems,
     testimonials,
     settings,
+    stores,
   ] = await Promise.all([
     getPageCopy("home"),
     getGroupStats(),
@@ -74,6 +76,7 @@ export default async function HomePage() {
     getSystems(),
     getTestimonials(),
     getSiteSettings(),
+    getStores(),
   ]);
 
   if (!copy) notFound();
@@ -83,6 +86,11 @@ export default async function HomePage() {
   const marqueePartners = partners.filter((_, i) => i % 2 === 0);
   const latestPosts = posts.slice(0, 3);
   const featured = testimonials[0];
+  // The voice strip stands a real store photo beside the quote. It comes from
+  // the store data rather than a path typed into this file, so swapping the
+  // photograph is a content edit and the caption can never contradict the
+  // store list.
+  const featuredStore = stores.find((store) => Boolean(store.image));
 
   return (
     <>
@@ -440,22 +448,27 @@ export default async function HomePage() {
                 </Reveal>
               </div>
 
-              <Reveal as="div" variant="clip" className="lg:col-span-5">
-                <figure className="flex flex-col gap-3">
-                  <ParallaxImage
-                    src="/images/photos/store-urban-closet.jpg"
-                    alt="Urban Closet in Guwahati, an Arihant Retail multi-brand store"
-                    ratio="4 / 5"
-                    sizes="(max-width: 1023px) 100vw, 32vw"
-                    className="m-ar-4-3 border border-line"
-                    tilt
-                    mBleed
-                  />
-                  <figcaption className="t-small text-ink-soft">
-                    Urban Closet, Guwahati · Arihant Retail
-                  </figcaption>
-                </figure>
-              </Reveal>
+              {featuredStore?.image ? (
+                <Reveal as="div" variant="clip" className="lg:col-span-5">
+                  <figure className="flex flex-col gap-3">
+                    <ParallaxImage
+                      src={featuredStore.image}
+                      alt={
+                        featuredStore.caption ??
+                        `${featuredStore.name}, an Arihant Retail store in ${featuredStore.city}`
+                      }
+                      ratio="4 / 5"
+                      sizes="(max-width: 1023px) 100vw, 32vw"
+                      className="m-ar-4-3 border border-line"
+                      tilt
+                      mBleed
+                    />
+                    <figcaption className="t-small text-ink-soft">
+                      {featuredStore.name}, {featuredStore.city} · Arihant Retail
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ) : null}
             </div>
             <p>
               <Link

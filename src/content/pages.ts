@@ -1,15 +1,18 @@
+import { atLeast, facts, phrase } from "./facts";
 import type { PageCopy } from "./types";
 
-/** Per-route copy. Sanity `page` documents mirror this; seed is the fallback. */
+/** Per-route copy. Sanity `page` documents mirror this; seed is the fallback.
+ *
+ *  Every figure below interpolates from `facts.ts`. Do not type a number in
+ *  by hand: that is how group-level and unit-level claims drifted apart. */
 export const pages: Record<string, PageCopy> = {
   home: {
     metaTitle: "Garment Distributor in Northeast India | Arihant Group",
-    metaDescription:
-      "The garment house of Northeast India: 77 national labels, 250+ retail counters, seven states, and managed stores of our own. Guwahati since the 1990s.",
+    metaDescription: `The garment house of Northeast India: ${phrase.groupLabels} national labels, ${phrase.groupRetailers} retail counters, seven states, and managed stores of our own. Guwahati since the 1990s.`,
     hero: {
       heading: "The garment house of Northeast India",
       headingEmphasis: "garment house",
-      lead: "We keep the Northeast's stores {{stocked|selling|supplied}}: 77 national labels moving into 250+ retail counters across seven states, from Guwahati since the 1990s.",
+      lead: `We keep the Northeast's stores {{stocked|selling|supplied}}: ${phrase.groupLabels} national labels moving into ${phrase.groupRetailers} retail counters across seven states, from Guwahati since the 1990s.`,
       primaryCta: { label: "Partner with us", href: "/contact" },
       secondaryCta: { label: "The three businesses", href: "#businesses" },
     },
@@ -33,7 +36,7 @@ export const pages: Record<string, PageCopy> = {
       },
       brands: {
         heading: "The brands we carry",
-        lead: "77 national labels across menswear, womenswear, kidswear, denim, ethnic and footwear, on counters in all seven states.",
+        lead: `${phrase.groupLabels} national labels across menswear, womenswear, kidswear, denim, ethnic and footwear, on counters in all seven states.`,
       },
       notes: {
         heading: "Trade Notes",
@@ -51,12 +54,11 @@ export const pages: Record<string, PageCopy> = {
 
   marketing: {
     metaTitle: "Garment Distributor in Guwahati | Arihant Marketing",
-    metaDescription:
-      "Northeast India's pioneer readymade garments distributor: 30+ years, 250+ retailers, 45+ brand partners, 15,000 sq ft Guwahati warehouse, 20-day visit cycles.",
+    metaDescription: `Northeast India's pioneer readymade garments distributor: ${atLeast(facts.marketing.years)} years, ${phrase.marketingRetailers} retailers, ${phrase.marketingBrands} brand partners, ${phrase.marketingWarehouse} Guwahati warehouse, ${phrase.visitCycle} visit cycles.`,
     hero: {
       heading: "The pioneer distributor of readymade garments in Northeast India",
       headingEmphasis: "pioneer",
-      lead: "For more than 30 years we have moved national brands into the region's counters, and we still stand in every retailer's store at least once every 20 days.",
+      lead: `For more than ${facts.marketing.years} years we have moved national brands into the region's counters, and we still stand in every retailer's store at least once every ${phrase.visitCycle}.`,
       primaryCta: { label: "Become a retail partner", href: "/contact?intent=retailer" },
       secondaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
     },
@@ -69,9 +71,9 @@ export const pages: Record<string, PageCopy> = {
         heading: "How we work with retailers",
         lead: "A fixed rhythm the whole region can set its watch by.",
         body: [
-          "We map your counter to the right mix from our 45+ brand portfolio: depth where your customer shops, nothing that will sit.",
+          `We map your counter to the right mix from our ${phrase.marketingBrands}-brand portfolio: depth where your customer shops, nothing that will sit.`,
           "A representative stands in your store on a fixed cycle. Reorders, claims and market feedback move face to face.",
-          "Indents are picked and dispatched from 15,000 sq ft of organised Guwahati warehousing, on fixed timelines.",
+          `Indents are picked and dispatched from ${phrase.marketingWarehouse} of organised Guwahati warehousing, on fixed timelines.`,
           "Claims and settlements move on paper, on schedule, so your capital keeps rotating.",
         ],
       },
@@ -85,20 +87,19 @@ export const pages: Record<string, PageCopy> = {
       },
       faq: { heading: "Straight answers" },
       cta: {
-        heading: "Put thirty years of distribution behind your counter.",
-        lead: "45+ national brands, a 15,000 sq ft Guwahati warehouse, and every retailer seen face to face, cycle after cycle.",
+        heading: `Put ${facts.marketing.years} years of distribution behind your counter.`,
+        lead: `${phrase.marketingBrands} national brands, a ${phrase.marketingWarehouse} Guwahati warehouse, and every retailer seen face to face, cycle after cycle.`,
       },
     },
   },
 
   apparels: {
     metaTitle: "Apparel Distributor in Northeast India | Arihant Apparels",
-    metaDescription:
-      "Founded 2013. Among the 5 largest readymade garments distributors in Northeast India, building brands into category leaders. Stock our labels today.",
+    metaDescription: `Founded ${facts.apparels.established}. A Guwahati apparel distributor carrying ${phrase.apparelsBrands} labels across Northeast India and building several of them into category leaders. Stock our labels today.`,
     hero: {
       heading: "The apparel distributor that builds category leaders",
       headingEmphasis: "category leaders",
-      lead: "Founded in 2013 by Ajay Sancheti and built brand by brand into the distributor the trade queues for at every regional fair.",
+      lead: `Founded in ${facts.apparels.established} by Ajay Sancheti. We have built several brands into category leaders across the Northeast, and we carry ${phrase.apparelsBrands} labels today.`,
       primaryCta: { label: "Stock our brands", href: "/contact?intent=retailer" },
       secondaryCta: { label: "Partner as a brand", href: "/contact?intent=brand" },
     },
@@ -109,7 +110,7 @@ export const pages: Record<string, PageCopy> = {
       },
       exhibitions: {
         heading: "The busiest stand at every fair",
-        lead: "Highest footfall at the last 4 regional garment exhibitions. The trade walks to where the season's winners are.",
+        lead: `Highest footfall at the last ${facts.apparels.exhibitions} regional garment exhibitions. The trade walks to where the season's winners are.`,
       },
       film: {
         heading: "Inside Arihant Apparels",
@@ -125,16 +126,15 @@ export const pages: Record<string, PageCopy> = {
       },
       faq: { heading: "Straight answers" },
       cta: {
-        heading: "Grow with one of the Northeast’s five largest distributors.",
-        lead: "Founded in 2013, running a 9,000 sq ft Guwahati warehouse, and holding the busiest stand at the region's last four garment fairs.",
+        heading: "Grow with the house that builds category leaders.",
+        lead: `Founded in ${facts.apparels.established}, running a ${phrase.apparelsWarehouse} Guwahati warehouse, and holding the busiest stand at the region's last ${facts.apparels.exhibitions} garment fairs.`,
       },
     },
   },
 
   retail: {
     metaTitle: "Multi-brand Retail Stores in Guwahati | Arihant Retail",
-    metaDescription:
-      "Modern multi-brand apparel stores and EBOs across Northeast India: 4 open, 2 in fit-out, 10 planned by FY 26-27. Zero-deadstock, asset-light, fully managed.",
+    metaDescription: `Modern multi-brand apparel stores across Northeast India: ${facts.retail.storesOpen} open, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned by ${facts.retail.planHorizon}. Zero-deadstock, asset-light, fully managed.`,
     hero: {
       heading: "Retail, run the way a distributor runs it",
       headingEmphasis: "distributor",
@@ -186,7 +186,7 @@ export const pages: Record<string, PageCopy> = {
       },
       proof: {
         heading: "Tried, tested, already trading",
-        lead: "4 stores already trade on this model, backed by a proven ROIC record and by the house that supplies the region's retailers.",
+        lead: `${facts.retail.storesOpen} stores already trade on this model, backed by a proven ROIC record and by the house that supplies the region's retailers.`,
       },
       how: { heading: "How it works", lead: "Four steps from inquiry to a trading store. FOCO, done properly." },
       faq: { heading: "The questions serious investors ask" },
@@ -198,12 +198,11 @@ export const pages: Record<string, PageCopy> = {
   },
 
   brands: {
-    metaTitle: "77 Apparel Brands Distributed in Northeast India | Arihant",
-    metaDescription:
-      "Browse the 77 national apparel labels Arihant distributes across Northeast India: menswear, womenswear, kidswear, denim, ethnic, footwear. Put them on your racks.",
+    metaTitle: `${phrase.groupLabels} Apparel Brands Distributed in Northeast India | Arihant`,
+    metaDescription: `Browse the ${phrase.groupLabels} national apparel labels Arihant distributes across Northeast India: menswear, womenswear, kidswear, denim, ethnic, footwear. Put them on your racks.`,
     hero: {
       heading: "The apparel brands we put on the Northeast's racks",
-      lead: "Menswear, womenswear, kidswear, denim, ethnic and footwear. 77 national labels distributed to counters in all seven states by Arihant Marketing and Arihant Apparels.",
+      lead: `Menswear, womenswear, kidswear, denim, ethnic and footwear. ${phrase.groupLabels} national labels distributed to counters in all seven states by Arihant Marketing and Arihant Apparels.`,
       primaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
       secondaryCta: { label: "Stock these labels", href: "/contact?intent=retailer" },
     },
@@ -211,17 +210,17 @@ export const pages: Record<string, PageCopy> = {
       wall: { heading: "The portfolio" },
       cta: {
         heading: "Your brand belongs on this wall",
-        lead: "We have built national labels into Northeast category leaders for 30 years. Talk to us about yours.",
+        lead: `We have built national labels into Northeast category leaders for ${facts.marketing.years} years. Talk to us about yours.`,
       },
     },
   },
 
   about: {
-    metaTitle: "About Arihant Group | 35 Years in the Northeast Trade",
+    metaTitle: `About Arihant Group | ${facts.group.years} Years in the Northeast Trade`,
     metaDescription:
       "From a 1990s Guwahati counter to three businesses run by the Sancheti family: distribution, wholesale and modern retail, still answered by the names on the door.",
     hero: {
-      heading: "35 years, three businesses, one name on the door",
+      heading: `${facts.group.years} years, three businesses, one name on the door`,
       lead: "Arihant is the Sancheti family's garment house in Guwahati, still run by the people who answer its phones.",
       primaryCta: { label: "Work with us", href: "/contact" },
     },
@@ -231,7 +230,7 @@ export const pages: Record<string, PageCopy> = {
         lead: "Rhythm first. Scale later.",
         body: [
           "The Arihant story begins in Guwahati's garment trade in the early 1990s, when the Sancheti family started supplying readymade garments to the city's retailers. Scale came later. What set the house apart first was rhythm: visits that happened on schedule, claims that settled on paper, commitments that held.",
-          "That rhythm built Arihant Marketing into the pioneer distributor of the Northeast and made the house a founder member of NEGTA alongside the region's leading traders. A second distribution business, Arihant Apparels, grew into one of the region's five largest within a decade.",
+          "That rhythm built Arihant Marketing into the pioneer distributor of the Northeast and made the house a founder member of NEGTA alongside the region's leading traders. A second distribution business, Arihant Apparels, followed in 2013 and built several national labels into category leaders here.",
           "In 2023 the family carried the same discipline into retail itself: modern multi-brand stores and exclusive brand outlets, staffed and stocked by the house's own team.",
         ],
       },
@@ -254,7 +253,7 @@ export const pages: Record<string, PageCopy> = {
     hero: {
       heading: "Recognition, earned the slow way",
       headingEmphasis: "slow way",
-      lead: "One national award, one founding membership, four fairs led on footfall, and the word of the trade itself.",
+      lead: `One national award, one founding membership, ${facts.apparels.exhibitions} fairs led on footfall, and the word of the trade itself.`,
       primaryCta: { label: "Work with us", href: "/contact" },
     },
     sections: {

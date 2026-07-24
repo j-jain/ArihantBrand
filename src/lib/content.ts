@@ -150,6 +150,7 @@ interface RawStore {
   image?: SanityImage;
   imagePath?: string | null;
   caption?: string | null;
+  mapsQuery?: string | null;
 }
 interface RawFaq {
   question: string;
@@ -291,6 +292,7 @@ function mapStore(s: RawStore): Store {
     status: s.status,
     ...(image ? { image } : {}),
     ...(s.caption ? { caption: s.caption } : {}),
+    ...(s.mapsQuery ? { mapsQuery: s.mapsQuery } : {}),
   };
 }
 
@@ -396,7 +398,7 @@ const PARTNERS_QUERY = `*[_type == "partner"] | order(order asc){
 }`;
 
 const STORES_QUERY = `*[_type == "store"] | order(order asc){
-  name, city, format, status, image, imagePath, caption
+  name, city, format, status, image, imagePath, caption, mapsQuery
 }`;
 
 const FAQS_ALL_QUERY = `*[_type == "faq"] | order(order asc){ question, answer, page }`;

@@ -213,12 +213,13 @@ export default async function ArihantRetailPage() {
               ) : null}
             </div>
 
-            {/* Image duo: a portrait interior with a wider carton aisle pulled up
-                over its bottom-left on desktop; a clean stack on mobile. */}
+            {/* Image duo: a portrait interior with a wider shopfront pulled up
+                over its bottom-left on desktop; a clean stack on mobile. Both
+                are Arihant Retail's own floors, so they outrank stock here. */}
             <div className="m-duo flex flex-col">
               <ParallaxImage
-                src={stockImages.retailInterior1.src}
-                alt={stockImages.retailInterior1.alt}
+                src="/images/photos/store-interior.jpg"
+                alt="Inside an Arihant Retail floor: merchandised, staffed and stocked by our own team"
                 ratio="4 / 5"
                 sizes="(max-width: 1023px) 100vw, 35vw"
                 className="m-ar-4-3 border border-line-dark"
@@ -226,8 +227,8 @@ export default async function ArihantRetailPage() {
                 mBleed
               />
               <ParallaxImage
-                src={stockImages.retailCartons1.src}
-                alt={stockImages.retailCartons1.alt}
+                src="/images/photos/store-ebo-indian-terrain.jpg"
+                alt="A national brand partner's outlet run by Arihant Retail"
                 ratio="3 / 2"
                 sizes="(max-width: 1023px) 100vw, 25vw"
                 className="m-ar-16-9 mt-4 border border-line-dark lg:relative lg:z-10 lg:-mt-[18%] lg:mr-auto lg:w-[72%]"

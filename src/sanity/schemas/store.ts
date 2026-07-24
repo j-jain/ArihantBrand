@@ -35,6 +35,13 @@ export const store = defineType({
     defineField({ name: "image", title: "Photo (uploaded — preferred)", type: "image", options: { hotspot: true } }),
     defineField({ name: "imagePath", title: "Photo path (fallback, e.g. /images/photos/x.jpg)", type: "string" }),
     defineField({ name: "caption", title: "Caption / alt text", type: "text", rows: 2 }),
+    defineField({
+      name: "mapsQuery",
+      title: "Address for directions",
+      description:
+        "Full address. Fill this only when the location is confirmed; leaving it blank hides the Get directions link.",
+      type: "string",
+    }),
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
   ],
   orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],

@@ -74,6 +74,9 @@ export interface Store {
   status: "Open" | "Fit-out";
   image?: string;
   caption?: string;
+  /** Address string for a maps "Get directions" link. Present only where the
+   *  location is confirmed; absent stores render no directions link. */
+  mapsQuery?: string;
 }
 
 export interface Faq {

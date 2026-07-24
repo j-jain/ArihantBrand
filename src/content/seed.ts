@@ -3,7 +3,6 @@ import type {
   Business,
   Faq,
   LeaderPortrait,
-  Partner,
   Post,
   RecognitionPhoto,
   SiteSettings,
@@ -13,6 +12,12 @@ import type {
   Testimonial,
   ProcessStep,
 } from "./types";
+import { atLeast, facts, phrase } from "./facts";
+
+/** The 77 partner logos live in their own module because facts.ts derives the
+ *  published label counts from them; re-exported here so every existing
+ *  `@/content/seed` import keeps working. */
+export { partners, partnersOf } from "./partners";
 
 /* ------------------------------------------------------------------ */
 /* Site settings                                                        */
@@ -66,10 +71,20 @@ export const siteSettings: SiteSettings = {
 /* ------------------------------------------------------------------ */
 
 export const groupStats: Stat[] = [
-  { value: 35, suffix: "+", label: "Years in the garment trade" },
-  { value: 250, suffix: "+", label: "Retailers served across NE India" },
-  { value: 77, label: "National labels distributed" },
-  { value: 24000, suffix: " sq ft", label: "Warehousing in Guwahati" },
+  { id: "years", value: facts.group.years, suffix: "+", label: "Years in the garment trade" },
+  {
+    id: "retailers",
+    value: facts.group.retailers,
+    suffix: "+",
+    label: "Retailers served across the Northeast",
+  },
+  { id: "labels", value: facts.group.labels, label: "National labels distributed" },
+  {
+    id: "warehouse",
+    value: facts.group.warehouseSqFt,
+    suffix: " sq ft",
+    label: "Warehousing in Guwahati",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -85,31 +100,48 @@ export const businesses: Business[] = [
     founded: "Since the 1990s",
     leaders: ["Sagar Sancheti", "Anand Sancheti"],
     positioning: "The founding arm. The routes, the relationships and the brand roster everything else stands on.",
-    summary:
-      "Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than 30 years, on a visit rhythm the region's trade sets its watch by.",
+    summary: `Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than ${facts.marketing.years} years, on a visit rhythm the region's trade sets its watch by.`,
     points: [
       {
         id: "pioneer",
-        text: "Pioneers of readymade garments distribution across Northeast India, with 30+ years in the trade.",
+        text: `Pioneers of readymade garments distribution across Northeast India, with ${atLeast(facts.marketing.years)} years in the trade.`,
       },
       {
         id: "warehouse",
-        text: "15,000 sq ft of organised, state-of-the-art warehousing in Guwahati.",
+        text: `${phrase.marketingWarehouse} of organised, state-of-the-art warehousing in Guwahati.`,
       },
-      { id: "reach", text: "Serves 250+ retailers and 45+ national brand partners." },
+      {
+        id: "reach",
+        text: `Serves ${phrase.marketingRetailers} retailers and ${phrase.marketingBrands} national brand partners.`,
+      },
       {
         id: "negta",
         text: "Founder member of NEGTA, the North Eastern Garment Traders Association.",
       },
       {
         id: "visit-cycle",
-        text: "Every retailer visited at least once every 20 days, season after season.",
+        text: `Every retailer visited at least once every ${phrase.visitCycle}, season after season.`,
       },
     ],
     stats: [
-      { id: "years", value: 30, suffix: "+", label: "Years distributing" },
-      { id: "retailers", value: 250, suffix: "+", label: "Retailers served" },
-      { id: "warehouse", value: 15000, suffix: " sq ft", label: "Warehouse" },
+      {
+        id: "years",
+        value: facts.marketing.years,
+        suffix: "+",
+        label: "Years distributing",
+      },
+      {
+        id: "retailers",
+        value: facts.marketing.retailers,
+        suffix: "+",
+        label: "Retailers on our visit cycle",
+      },
+      {
+        id: "warehouse",
+        value: facts.marketing.warehouseSqFt,
+        suffix: " sq ft",
+        label: "Guwahati warehouse",
+      },
     ],
     audienceCtas: [
       { label: "Become a retail partner", href: "/contact?intent=retailer" },
@@ -123,9 +155,9 @@ export const businesses: Business[] = [
     logo: "/images/logos/arihant-apparels.png",
     founded: "Founded 2013",
     leaders: ["Ajay Sancheti"],
-    positioning: "Among the five largest readymade garments distributors in Northeast India.",
-    summary:
-      "Founded in 2013 by Ajay Sancheti, a second-generation garment entrepreneur, Arihant Apparels has grown into one of the Northeast's five largest apparel distributors. Built on systems and data, it turns national brands into category leaders and carries the Arihant Marketing legacy forward: close to its retailers, trusted by its brand partners.",
+    positioning:
+      "The house that turns national labels into Northeast category leaders.",
+    summary: `Founded in ${facts.apparels.established} by Ajay Sancheti, a second-generation garment entrepreneur. Arihant Apparels carries ${phrase.apparelsBrands} labels from a ${phrase.apparelsWarehouse} Guwahati warehouse, runs on systems and data from buying to the shop floor, and has built several of those labels into category leaders in the region.`,
     points: [
       {
         id: "portfolio",
@@ -140,16 +172,28 @@ export const businesses: Business[] = [
         text: "Has established several brand partners as category leaders in the Northeast.",
       },
       { id: "systems", text: "Run on systems and data, from buying to the shop floor." },
-      { id: "warehouse", text: "9,000 sq ft warehouse in Guwahati." },
+      {
+        id: "warehouse",
+        text: `${phrase.apparelsWarehouse} warehouse in Guwahati.`,
+      },
       {
         id: "exhibitions",
-        text: "Highest footfall at the last 4 regional garment exhibitions.",
+        text: `Highest footfall at the last ${facts.apparels.exhibitions} regional garment exhibitions.`,
       },
     ],
     stats: [
-      { id: "established", value: 2013, label: "Established" },
-      { id: "warehouse", value: 9000, suffix: " sq ft", label: "Warehouse" },
-      { id: "exhibitions", value: 4, label: "Exhibitions led on footfall" },
+      { id: "established", value: facts.apparels.established, label: "Established" },
+      {
+        id: "warehouse",
+        value: facts.apparels.warehouseSqFt,
+        suffix: " sq ft",
+        label: "Guwahati warehouse",
+      },
+      {
+        id: "exhibitions",
+        value: facts.apparels.exhibitions,
+        label: "Exhibitions led on footfall",
+      },
     ],
     audienceCtas: [
       { label: "Stock our brands", href: "/contact?intent=retailer" },
@@ -164,15 +208,20 @@ export const businesses: Business[] = [
     founded: "Founded 2023",
     leaders: ["Shreyansh Sancheti"],
     positioning: "Multi-brand modern retail, run by the house that supplies the region.",
-    summary:
-      "Arihant's retail arm runs modern multi-brand stores and exclusive brand outlets across Northeast India: 4 trading today, 2 in fit-out, and 10 planned by the end of FY 26-27.",
+    summary: `Arihant's retail arm runs modern multi-brand stores and exclusive brand outlets across Northeast India: ${facts.retail.storesOpen} trading today, ${facts.retail.storesFitOut} in fit-out, and ${facts.retail.storesPlanned} planned by the end of ${facts.retail.planHorizon}.`,
     points: [
       {
         id: "multi-brand",
         text: "Multi-brand modern retail stores, merchandised the way a distributor merchandises: nothing sits.",
       },
-      { id: "open-today", text: "4 stores open today, 2 more in fit-out." },
-      { id: "roadmap", text: "10 stores planned by the end of FY 26-27." },
+      {
+        id: "open-today",
+        text: `${facts.retail.storesOpen} stores open today, ${facts.retail.storesFitOut} more in fit-out.`,
+      },
+      {
+        id: "roadmap",
+        text: `${facts.retail.storesPlanned} stores planned by the end of ${facts.retail.planHorizon}.`,
+      },
       {
         id: "ebo",
         text: "Setting up EBOs (exclusive brand outlets) for national brand partners.",
@@ -183,13 +232,17 @@ export const businesses: Business[] = [
       },
       {
         id: "legacy",
-        text: "Backed by the buying power and settlement discipline of a 35-year distribution house.",
+        text: `Backed by the buying power and settlement discipline of a ${facts.group.years}-year distribution house.`,
       },
     ],
     stats: [
-      { id: "open", value: 4, label: "Stores open" },
-      { id: "fitout", value: 2, label: "Stores in fit-out" },
-      { id: "planned", value: 10, label: "Stores planned by FY 26-27" },
+      { id: "open", value: facts.retail.storesOpen, label: "Stores open" },
+      { id: "fitout", value: facts.retail.storesFitOut, label: "Stores in fit-out" },
+      {
+        id: "planned",
+        value: facts.retail.storesPlanned,
+        label: `Stores planned by ${facts.retail.planHorizon}`,
+      },
     ],
     audienceCtas: [
       { label: "Own a managed store", href: "/partner" },
@@ -222,110 +275,17 @@ export const pillars = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Partner logos (77, from the brand profile)                           */
-/* Categories are added ONLY where publicly verifiable for well-known   */
-/* national labels; regional labels stay untagged.                      */
-/* ------------------------------------------------------------------ */
-
-const m = (name: string, slug: string, category?: string): Partner => ({
-  name,
-  slug,
-  unit: "marketing",
-  image: `/images/partners/${slug}.png`,
-  ...(category ? { category } : {}),
-});
-const a = (name: string, slug: string, category?: string): Partner => ({
-  name,
-  slug,
-  unit: "apparels",
-  image: `/images/partners/${slug}.png`,
-  ...(category ? { category } : {}),
-});
-
-export const partners: Partner[] = [
-  // Arihant Marketing portfolio
-  m("A-Cube", "a-cube"),
-  m("Amidhara", "amidhara"),
-  m("Azzurro", "azzurro"),
-  m("Beevee", "beevee"),
-  m("Blazo", "blazo"),
-  m("Bonny", "bonny"),
-  m("Charter", "charter"),
-  m("Chocolate Baby", "chocolate-baby"),
-  m("Clubwear", "clubwear"),
-  m("Country Wide Shirts", "country-wide-shirts"),
-  m("Cross World", "cross-world"),
-  m("Dare Jeans", "dare-jeans"),
-  m("Deal Jeans", "deal-jeans", "Women's westernwear"),
-  m("dida", "dida"),
-  m("Ethni'ks Neu-Ron", "ethniks-neu-ron"),
-  m("Exceed", "exceed"),
-  m("Focus Jeans", "focus-jeans"),
-  m("Four Buttons", "four-buttons"),
-  m("Gemini", "gemini"),
-  m("Grab It", "grab-it"),
-  m("Hatcher's", "hatchers"),
-  m("Hoffmen", "hoffmen"),
-  m("Indian Terrain", "indian-terrain", "Men's casualwear"),
-  m("Juliet", "juliet"),
-  m("Kathy", "kathy"),
-  m("Kooki Ethnics", "kooki-ethnics"),
-  m("Little Collars", "little-collars"),
-  m("Little Kangaroos", "little-kangaroos", "Kidswear"),
-  m("Mayur", "mayur"),
-  m("Mohit Industries", "mohit-industries"),
-  m("Nostrum", "nostrum"),
-  m("O'Baby", "obaby"),
-  m("Octave", "octave", "Winterwear"),
-  m("Peppermint", "peppermint", "Kidswear"),
-  m("Perri Palley", "perri-palley"),
-  m("Pretty Woman", "pretty-woman"),
-  m("Raksha", "raksha"),
-  m("RE:PINK", "re-pink"),
-  m("RexStraut Jeans", "rexstraut-jeans"),
-  m("Spykar", "spykar", "Denim"),
-  m("Sulphur Style Lab", "sulphur-style-lab"),
-  m("Tadpole", "tadpole"),
-  m("Tassel", "tassel"),
-  m("Tiny Girl", "tiny-girl", "Kidswear"),
-  m("Twills", "twills", "Men's casualwear"),
-  m("Vriti", "vriti"),
-  m("Yaaron", "yaaron"),
-  m("7L", "7l"),
-  // Arihant Apparels portfolio
-  a("Alvaro Castagnino", "alvaro-castagnino"),
-  a("Bad Boys", "bad-boys"),
-  a("Believe-In Shirts", "believe-in-shirts"),
-  a("BIBA", "biba", "Women's ethnic wear"),
-  a("Caroline Clothing", "caroline-clothing"),
-  a("Catwalk", "catwalk", "Footwear"),
-  a("Cool Colors", "cool-colors"),
-  a("Dagerrfly", "dagerrfly"),
-  a("Dhwaja", "dhwaja"),
-  a("Integriti", "integriti", "Men's casualwear"),
-  a("Juniper", "juniper", "Women's ethnic wear"),
-  a("Kashmiera", "kashmiera"),
-  a("Kidzello", "kidzello"),
-  a("La' Scoot", "la-scoot"),
-  a("Libas", "libas", "Women's ethnic wear"),
-  a("Mikki House", "mikki-house"),
-  a("Minerals Jeans", "minerals-jeans"),
-  a("MJ Mashup", "mj-mashup"),
-  a("Mollys", "mollys"),
-  a("NIVIA", "nivia", "Footwear"),
-  a("Rangriti", "rangriti", "Women's ethnic wear"),
-  a("Raw Star", "raw-star"),
-  a("Red Flame", "red-flame"),
-  a("Skechers", "skechers", "Footwear"),
-  a("Stori", "stori"),
-  a("Sweet Dreams", "sweet-dreams", "Innerwear & loungewear"),
-  a("Wildcraft", "wildcraft", "Outdoor & gear"),
-  a("Yvon & Satin", "yvon-satin"),
-  a("Zola", "zola"),
-];
-
-/* ------------------------------------------------------------------ */
 /* Stores                                                               */
+/*                                                                      */
+/* The list now matches the published counts in facts.retail: 4 open +   */
+/* 2 in fit-out. Every name here is one the client supplied; the sixth   */
+/* door is unnamed because only five were given against a claim of six.  */
+/*                                                                      */
+/* AWAITING SIGN-OFF: which of the named stores are trading and which    */
+/* are in fit-out. The split below is provisional (change brief, AR3).   */
+/* Photographs are attached only where the shot is verifiably that       */
+/* store; the other two real store photos carry the retail page's        */
+/* section imagery instead of a caption we cannot stand behind.          */
 /* ------------------------------------------------------------------ */
 
 export const stores: Store[] = [
@@ -335,26 +295,20 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     image: "/images/photos/store-urban-closet.jpg",
-    caption: "Urban Closet, Guwahati: Arihant Retail's multi-brand store, lit for the evening trade.",
+    caption:
+      "Urban Closet, Guwahati: Arihant Retail's multi-brand store, lit for the evening trade.",
+    mapsQuery: "Urban Closet, Jyotikuchi, Guwahati, Assam 781040",
   },
+  { name: "K.A.K", city: "Kohima", format: "Multi-brand", status: "Open" },
+  { name: "Tanzee", city: "Itanagar", format: "Multi-brand", status: "Open" },
+  { name: "Urban Closet", city: "Goalpara", format: "Multi-brand", status: "Open" },
+  { name: "Urban Closet", city: "Tura", format: "Multi-brand", status: "Fit-out" },
   {
-    name: "Indian Terrain × Spykar EBO",
-    city: "Northeast India",
-    format: "EBO",
-    status: "Open",
-    image: "/images/photos/store-ebo-indian-terrain.jpg",
-    caption: "An exclusive brand outlet run by Arihant Retail for its national brand partners.",
-  },
-  {
-    name: "Multi-brand store",
+    name: "Next door",
     city: "Northeast India",
     format: "Multi-brand",
-    status: "Open",
-    image: "/images/photos/store-interior.jpg",
-    caption: "Inside an Arihant Retail floor: merchandised, staffed and stocked by our team.",
+    status: "Fit-out",
   },
-  { name: "New store", city: "Northeast India", format: "Multi-brand", status: "Fit-out" },
-  { name: "New store", city: "Northeast India", format: "Multi-brand", status: "Fit-out" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -425,19 +379,19 @@ export const faqs: Faq[] = [
     page: "marketing",
     question: "Which territories do you cover?",
     answer:
-      "All of Northeast India, serviced from our 15,000 sq ft warehouse in Guwahati. More than 250 retailers across the region are on scheduled 20-day visit cycles.",
+      `All of Northeast India, serviced from our ${phrase.marketingWarehouse} warehouse in Guwahati. More than ${facts.marketing.retailers} retailers across the region are on scheduled ${phrase.visitCycle} visit cycles.`,
   },
   {
     page: "marketing",
     question: "How do I start stocking your brands in my store?",
     answer:
-      "Send an inquiry or call us. We map your counter to the right brand mix from our 45+ partner portfolio, agree terms, and put you on a visit schedule. Most new retailers receive their first indent within weeks.",
+      `Send an inquiry or call us. We map your counter to the right brand mix from our ${phrase.marketingBrands}-label portfolio, agree terms, and put you on a visit schedule. Most new retailers receive their first indent within weeks.`,
   },
   {
     page: "marketing",
     question: "We're a brand looking for a Northeast distributor. Why Arihant?",
     answer:
-      "Thirty years of relationships with 250+ retailers, founder membership of NEGTA, and a shop-in-shop team already standing in the region's modern trade. We have built national labels into category leaders here.",
+      `${facts.marketing.years} years of relationships with ${phrase.marketingRetailers} retailers, founder membership of NEGTA, and a shop-in-shop team already standing in the region's modern trade. We have built national labels into category leaders here.`,
   },
   {
     page: "marketing",
@@ -619,7 +573,7 @@ export const posts: Post[] = [
       { type: "h2", text: "What to demand from your regional partner" },
       {
         type: "p",
-        text: "Scheduled retailer visits (ours run every 20 days), transparent secondary-sales feedback, disciplined claims handling, and a plug-and-play shop-in-shop team backed by real data. That combination turns a season's listing into a durable regional franchise. It is what we have built at Arihant over three decades, 250+ retailers and 45+ brand partnerships.",
+        text: `Scheduled retailer visits (ours run every ${phrase.visitCycle}), transparent secondary-sales feedback, disciplined claims handling, and a plug-and-play shop-in-shop team backed by real data. That combination turns a season's listing into a durable regional franchise. It is what we have built at Arihant over three decades, ${phrase.marketingRetailers} retailers and ${phrase.marketingBrands} brand partnerships.`,
       },
     ],
   },
@@ -671,7 +625,7 @@ export const posts: Post[] = [
       },
       {
         type: "p",
-        text: "An operator with real answers will welcome the interrogation. At Arihant Retail we run this model across Northeast India on the back of a 35-year distribution legacy, and every economic detail goes on paper during the proposal stage, before a rupee moves.",
+        text: `An operator with real answers will welcome the interrogation. At Arihant Retail we run this model across Northeast India on the back of a ${facts.group.years}-year distribution legacy, and every economic detail goes on paper during the proposal stage, before a rupee moves.`,
       },
     ],
   },
@@ -902,7 +856,7 @@ export const posts: Post[] = [
       { type: "h2", text: "Feedback has to travel both ways" },
       {
         type: "p",
-        text: "The visit also carries information upstream. Sizes that run short, price points buyers balk at, a competitor's scheme moving stock: your distributor can only push that to brands if someone collected it recently. Market feedback gathered across 250+ retailers is how a region gets assortments cut for it, instead of leftovers from mainland plans. It is also how exhibition assortments get sharper every year: order patterns from the fairs meet visit notes from the floor.",
+        text: `The visit also carries information upstream. Sizes that run short, price points buyers balk at, a competitor's scheme moving stock: your distributor can only push that to brands if someone collected it recently. Market feedback gathered across ${phrase.marketingRetailers} retailers is how a region gets assortments cut for it, instead of leftovers from mainland plans. It is also how exhibition assortments get sharper every year: order patterns from the fairs meet visit notes from the floor.`,
       },
       { type: "h2", text: "What to do with this as a retailer" },
       {
@@ -948,7 +902,7 @@ export const posts: Post[] = [
       {
         type: "ul",
         items: [
-          "How many retailers are on an active, scheduled visit cycle, and what is the cycle? (Ours: 250+ retailers, each visited at least every 20 days.)",
+          `How many retailers are on an active, scheduled visit cycle, and what is the cycle? (Ours: ${phrase.marketingRetailers} retailers, each visited at least every ${phrase.visitCycle}.)`,
           "Which towns beyond the state capital are serviced directly, and how often?",
           "How many brands does the house carry, and where would yours rank for attention?",
         ],
@@ -961,7 +915,7 @@ export const posts: Post[] = [
       {
         type: "ul",
         items: [
-          "How many square feet, and how is a brand's stock binned and secured? (Ours: 15,000 sq ft with Arihant Marketing and 9,000 sq ft with Arihant Apparels, both in Guwahati.)",
+          `How many square feet, and how is a brand's stock binned and secured? (Ours: ${phrase.marketingWarehouse} with Arihant Marketing and ${phrase.apparelsWarehouse} with Arihant Apparels, both in Guwahati.)`,
           "What is the order-to-dispatch timeline on a standard indent?",
         ],
       },
@@ -1049,7 +1003,7 @@ export const posts: Post[] = [
       { type: "h3", text: "Merchandising and stock" },
       {
         type: "p",
-        text: "We decide the assortment, set the planogram, rotate stock through the season and run the end-of-season process. The buying relationships behind this come from the group's distribution businesses: 45+ national brand partners and 35 years in the trade.",
+        text: `We decide the assortment, set the planogram, rotate stock through the season and run the end-of-season process. The buying relationships behind this come from the group's distribution businesses: ${phrase.groupLabels} national labels and ${facts.group.years} years in the trade.`,
       },
       { type: "h3", text: "Deadstock" },
       {
@@ -1073,7 +1027,7 @@ export const posts: Post[] = [
       },
       {
         type: "p",
-        text: "What we say publicly is what we can stand behind: the model is tried and tested, 4 stores already trade on it, 2 more are in fit-out, and it is backed by a strong, proven ROIC record and 35 years of goodwill in this trade.",
+        text: `What we say publicly is what we can stand behind: the model is tried and tested, ${facts.retail.storesOpen} stores already trade on it, ${facts.retail.storesFitOut} more are in fit-out, and it is backed by a strong, proven ROIC record and ${facts.group.years} years of goodwill in this trade.`,
       },
       { type: "h2", text: "How to test the model" },
       {
@@ -1111,7 +1065,7 @@ export const timeline = [
   {
     year: "2013",
     title: "Arihant Apparels founded",
-    text: "Ajay Sancheti opens the group's second distribution house, which grows into one of the region's five largest.",
+    text: "Ajay Sancheti opens the group's second distribution house, which goes on to build several national labels into category leaders here.",
   },
   {
     year: "2015",
@@ -1137,7 +1091,7 @@ export const timeline = [
 
 export const awards: Award[] = [
   {
-    year: "2015",
+    year: String(facts.marketing.awardYear),
     title: "Best Distributor of India",
     issuer: "Clothing Manufacturers Association of India (CMAI)",
     detail: "Awarded by the industry body of India's clothing manufacturers. The trade recognising its own.",
@@ -1149,10 +1103,10 @@ export const awards: Award[] = [
     detail: "The house helped found the association that organises the Northeast's garment trade.",
   },
   {
-    year: "4 fairs",
-    title: "Highest footfall, four exhibitions running",
+    year: `${facts.apparels.exhibitions} fairs`,
+    title: `Highest footfall, ${facts.apparels.exhibitions} exhibitions running`,
     issuer: "Regional garment exhibitions",
-    detail: "At the region's trade fairs, Arihant Apparels' stand drew the highest footfall four exhibitions in a row.",
+    detail: `At the region's trade fairs, Arihant Apparels' stand drew the highest footfall ${facts.apparels.exhibitions} exhibitions in a row.`,
   },
 ];
 
