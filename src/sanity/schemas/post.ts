@@ -37,6 +37,14 @@ export const post = defineType({
     defineField({ name: "image", title: "Thumbnail / header image (uploaded — preferred)", type: "image", options: { hotspot: true } }),
     defineField({ name: "imagePath", title: "Image path (fallback, e.g. /images/stock/blog/x.jpg)", type: "string" }),
     defineField({
+      name: "imageAlt",
+      title: "Header image alt text",
+      description:
+        "Describe what is visible. Required whenever you upload your own image, or the header photo reaches screen readers with no description.",
+      type: "text",
+      rows: 2,
+    }),
+    defineField({
       name: "body",
       title: "Body",
       type: "array",

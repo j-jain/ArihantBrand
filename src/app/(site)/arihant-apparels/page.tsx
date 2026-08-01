@@ -19,6 +19,7 @@ import {
   getFaqs,
   getPageCopy,
   getPartners,
+  getPhotoSlots,
   getSiteSettings,
   getTeam,
   pointById,
@@ -30,7 +31,6 @@ import {
   faqJsonLd,
   pageMetadata,
 } from "@/lib/seo";
-import { photoSlots } from "@/content/images";
 import { unitScope } from "@/lib/units";
 import { UnitHero } from "../_components/UnitHero";
 
@@ -47,13 +47,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ArihantApparelsPage() {
-  const [copy, businesses, partners, faqs, settings, team] = await Promise.all([
+  const [copy, businesses, partners, faqs, settings, team, photos] = await Promise.all([
     getPageCopy(UNIT),
     getBusinesses(),
     getPartners(),
     getFaqs(UNIT),
     getSiteSettings(),
     getTeam(UNIT),
+    getPhotoSlots(),
   ]);
 
   if (!copy) return null;
@@ -103,9 +104,9 @@ export default async function ArihantApparelsPage() {
         <div className="container-site">
           <Reveal variant="fade" className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-start">
             <ParallaxImage
-              src={photoSlots.apparelsWarehouse.src}
-              alt={photoSlots.apparelsWarehouse.alt}
-              ratio={photoSlots.apparelsWarehouse.ratio}
+              src={photos.apparelsWarehouse.src}
+              alt={photos.apparelsWarehouse.alt}
+              ratio={photos.apparelsWarehouse.ratio}
               sizes="(max-width: 1023px) 100vw, 40vw"
               className="m-ar-4-3 border border-line lg:col-span-5"
               tilt
@@ -192,9 +193,9 @@ export default async function ArihantApparelsPage() {
             </Reveal>
             <div className="m-flow grid gap-y-10 gap-x-16 lg:grid-cols-12 lg:items-start">
               <ParallaxImage
-                src={photoSlots.apparelsTeam.src}
-                alt={photoSlots.apparelsTeam.alt}
-                ratio={photoSlots.apparelsTeam.ratio}
+                src={photos.apparelsTeam.src}
+                alt={photos.apparelsTeam.alt}
+                ratio={photos.apparelsTeam.ratio}
                 sizes="(max-width: 1023px) 100vw, 46vw"
                 className="border border-line lg:col-span-6"
                 tilt

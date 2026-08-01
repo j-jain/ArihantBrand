@@ -16,6 +16,14 @@ export const testimonial = defineType({
       type: "boolean",
       initialValue: false,
     }),
+    defineField({
+      name: "featured",
+      title: "Featured on the home page",
+      description:
+        "Tick exactly one. The home page prints this voice and the Recognition page prints every other one, so no reader meets the same quote twice.",
+      type: "boolean",
+      initialValue: false,
+    }),
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
   ],
   orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],

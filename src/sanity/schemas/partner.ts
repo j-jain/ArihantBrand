@@ -34,6 +34,14 @@ export const partner = defineType({
       title: "Category (optional — only for well-known verifiable labels)",
       type: "string",
     }),
+    defineField({
+      name: "rank",
+      title: "Wall rank (1 = shown first; blank = alphabetical)",
+      description:
+        "Presentation only. The labels a retailer is most likely to recognise lead the wall. It claims nothing about volume or importance. Leave blank and the brand simply follows in alphabetical order.",
+      type: "number",
+      validation: (r) => r.min(1).integer(),
+    }),
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
   ],
   orderings: [

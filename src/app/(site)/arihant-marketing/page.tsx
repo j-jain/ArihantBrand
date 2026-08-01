@@ -21,6 +21,7 @@ import {
   getMarketingStrengths,
   getPageCopy,
   getPartners,
+  getPhotoSlots,
   getSiteSettings,
   pointById,
 } from "@/lib/content";
@@ -31,7 +32,6 @@ import {
   pageMetadata,
 } from "@/lib/seo";
 import { facts } from "@/content/facts";
-import { photoSlots } from "@/content/images";
 import { unitScope } from "@/lib/units";
 import { UnitHero } from "../_components/UnitHero";
 
@@ -57,6 +57,7 @@ export default async function ArihantMarketingPage() {
     strengths,
     steps,
     reasons,
+    photos,
   ] = await Promise.all([
     getPageCopy(UNIT),
     getBusinesses(),
@@ -66,6 +67,7 @@ export default async function ArihantMarketingPage() {
     getMarketingStrengths(),
     getMarketingSteps(),
     getMarketingReasons(),
+    getPhotoSlots(),
   ]);
 
   if (!copy) return null;
@@ -112,9 +114,9 @@ export default async function ArihantMarketingPage() {
           <CurtainReveal className="container-site w-full">
             <div className="m-flow grid items-center gap-x-10 gap-y-8 lg:grid-cols-12">
               <ParallaxImage
-                src={photoSlots.marketingAward.src}
-                alt={photoSlots.marketingAward.alt}
-                ratio={photoSlots.marketingAward.ratio}
+                src={photos.marketingAward.src}
+                alt={photos.marketingAward.alt}
+                ratio={photos.marketingAward.ratio}
                 sizes="(max-width: 1023px) 100vw, 30vw"
                 className="am-award__object lg:col-span-4"
                 parallax={false}
@@ -233,9 +235,9 @@ export default async function ArihantMarketingPage() {
                 width, which scrolls the page sideways on a phone. */}
             <div className="am-promise__photo">
               <ParallaxImage
-                src={photoSlots.marketingWarehouse.src}
-                alt={photoSlots.marketingWarehouse.alt}
-                ratio={photoSlots.marketingWarehouse.ratio}
+                src={photos.marketingWarehouse.src}
+                alt={photos.marketingWarehouse.alt}
+                ratio={photos.marketingWarehouse.ratio}
                 sizes="(max-width: 1023px) 100vw, 46vw"
                 className="m-ar-4-3 border border-line"
                 tilt
@@ -316,9 +318,9 @@ export default async function ArihantMarketingPage() {
                 />
               </div>
               <ParallaxImage
-                src={photoSlots.marketingCorridor.src}
-                alt={photoSlots.marketingCorridor.alt}
-                ratio={photoSlots.marketingCorridor.ratio}
+                src={photos.marketingCorridor.src}
+                alt={photos.marketingCorridor.alt}
+                ratio={photos.marketingCorridor.ratio}
                 sizes="(max-width: 1023px) 100vw, 30vw"
                 className="m-ar-16-9 border border-line-dark lg:col-span-4 lg:col-start-9"
                 tilt

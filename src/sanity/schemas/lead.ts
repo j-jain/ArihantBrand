@@ -19,6 +19,7 @@ export const lead = defineType({
           { title: "Retailer", value: "retailer" },
           { title: "Brand", value: "brand" },
           { title: "Franchise", value: "franchise" },
+          { title: "Careers (retired, historical leads only)", value: "careers" },
           { title: "Other", value: "other" },
         ],
       },

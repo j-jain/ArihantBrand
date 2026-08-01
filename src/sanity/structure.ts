@@ -49,6 +49,20 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.listItem()
+        .title("Site Photographs")
+        .schemaType("photoSlot")
+        .child(
+          S.documentTypeList("photoSlot")
+            .title("Site Photographs")
+            .defaultOrdering([{ field: "slot", direction: "asc" }]),
+        ),
+      S.documentTypeListItem("recognitionPhoto").title("Recognition Photos"),
+      S.documentTypeListItem("teamMember").title("Team Members"),
+      S.documentTypeListItem("leaderPortrait").title("Leadership Portraits"),
+
+      S.divider(),
+
+      S.listItem()
         .title("Leads")
         .schemaType("lead")
         .child(

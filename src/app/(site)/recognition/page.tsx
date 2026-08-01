@@ -20,7 +20,6 @@ import {
   getTimeline,
 } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
-import { featuredTestimonialIndex } from "@/content/seed";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("recognition");
@@ -54,9 +53,8 @@ export default async function RecognitionPage() {
   const { hero, sections } = copy;
   // The home page has already printed one of these voices; show the rest here
   // so a reader never meets the same quote twice (HP12).
-  const columnVoices = testimonials.filter(
-    (_, i) => i !== featuredTestimonialIndex,
-  );
+  const featured = testimonials.find((t) => t.featured) ?? testimonials[0];
+  const columnVoices = testimonials.filter((t) => t !== featured);
   // Render only the awards the data actually carries (honesty rail): the CMAI
   // award leads the list; the rest follow at a smaller size.
   const [headlineAward, ...otherAwards] = awards;

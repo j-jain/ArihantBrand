@@ -21,6 +21,7 @@ export const page = defineType({
           { title: "Partner (franchise)", value: "partner" },
           { title: "Brands", value: "brands" },
           { title: "About", value: "about" },
+          { title: "Recognition", value: "recognition" },
           { title: "Blog", value: "blog" },
           { title: "Contact", value: "contact" },
         ],

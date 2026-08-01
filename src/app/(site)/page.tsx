@@ -19,15 +19,14 @@ import {
   trackClass,
   initialsOf,
 } from "@/components";
-import { photoSlots } from "@/content/images";
 import { facts, phrase } from "@/content/facts";
-import { featuredTestimonialIndex } from "@/content/seed";
 import {
   getBusinesses,
   getFunnels,
   getGroupStats,
   getPageCopy,
   getPartners,
+  getPhotoSlots,
   getPillars,
   getPosts,
   getSiteSettings,
@@ -67,6 +66,7 @@ export default async function HomePage() {
     settings,
     stores,
     funnels,
+    photos,
   ] = await Promise.all([
     getPageCopy("home"),
     getGroupStats(),
@@ -78,6 +78,7 @@ export default async function HomePage() {
     getSiteSettings(),
     getStores(),
     getFunnels(),
+    getPhotoSlots(),
   ]);
 
   if (!copy) notFound();
@@ -96,9 +97,9 @@ export default async function HomePage() {
   const latestPosts = posts.slice(0, 3);
   // The home page reserves one voice for itself; /recognition renders the rest.
   // Both pages used to lead with testimonials[0], so the same quote greeted a
-  // reader twice (HP12). `featuredTestimonialIndex` is the one place that
-  // choice is made — /recognition drops the same index.
-  const featured = testimonials[featuredTestimonialIndex] ?? testimonials[0];
+  // reader twice (HP12). The `featured` flag is the one place that choice is
+  // made, in the Studio or the seed, and /recognition drops the same entry.
+  const featured = testimonials.find((t) => t.featured) ?? testimonials[0];
   // The voice strip stands a real store photo beside the quote. It comes from
   // the store data rather than a path typed into this file, so swapping the
   // photograph is a content edit and the caption can never contradict the
@@ -184,9 +185,9 @@ export default async function HomePage() {
                   landscape on a phone, where a 4:5 frame at full width eats an
                   entire screen before the reader has reached anything. */}
               <ParallaxImage
-                src={photoSlots.homeHero.src}
-                alt={photoSlots.homeHero.alt}
-                ratio={photoSlots.homeHero.ratio}
+                src={photos.homeHero.src}
+                alt={photos.homeHero.alt}
+                ratio={photos.homeHero.ratio}
                 priority
                 sizes="(max-width: 1023px) 100vw, 42vw"
                 tilt
@@ -247,7 +248,7 @@ export default async function HomePage() {
         <section className="on-dark relative overflow-hidden">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0">
             <Image
-              src={photoSlots.homeProofGround.src}
+              src={photos.homeProofGround.src}
               alt=""
               fill
               sizes="100vw"

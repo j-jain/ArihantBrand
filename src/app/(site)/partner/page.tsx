@@ -7,6 +7,7 @@ import {
   getFaqs,
   getPageCopy,
   getPartnerSteps,
+  getPhotoSlots,
   getSiteSettings,
   getStores,
 } from "@/lib/content";
@@ -25,7 +26,6 @@ import {
   StaggerGroup,
   cn,
 } from "@/components";
-import { photoSlots } from "@/content/images";
 import { submitLeadAction } from "@/app/actions/lead";
 import { PromiseList } from "./_components/PromiseList";
 import { ProofStrip } from "./_components/ProofStrip";
@@ -41,13 +41,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PartnerPage() {
-  const [copy, faqs, steps, businesses, settings, stores] = await Promise.all([
+  const [copy, faqs, steps, businesses, settings, stores, photos] = await Promise.all([
     getPageCopy("partner"),
     getFaqs("partner"),
     getPartnerSteps(),
     getBusinesses(),
     getSiteSettings(),
     getStores(),
+    getPhotoSlots(),
   ]);
 
   if (!copy) notFound();
@@ -149,9 +150,9 @@ export default async function PartnerPage() {
           </Reveal>
           <div className="m-flow grid gap-x-12 gap-y-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <ParallaxImage
-              src={photoSlots.partnerStorefront.src}
-              alt={photoSlots.partnerStorefront.alt}
-              ratio={photoSlots.partnerStorefront.ratio}
+              src={photos.partnerStorefront.src}
+              alt={photos.partnerStorefront.alt}
+              ratio={photos.partnerStorefront.ratio}
               sizes="(max-width: 1023px) 100vw, 34vw"
               className="m-ar-4-3 border border-line"
               mBleed

@@ -16,11 +16,11 @@ import {
   ValuePanels,
   cn,
 } from "@/components";
-import { photoSlots, stockImages } from "@/content/images";
 import {
   getBusinesses,
   getLeaderPortraits,
   getPageCopy,
+  getPhotoSlots,
   getTimeline,
   getValues,
 } from "@/lib/content";
@@ -51,12 +51,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [copy, businesses, values, timeline, portraits] = await Promise.all([
+  const [copy, businesses, values, timeline, portraits, photos] = await Promise.all([
     getPageCopy("about"),
     getBusinesses(),
     getValues(),
     getTimeline(),
     getLeaderPortraits(),
+    getPhotoSlots(),
   ]);
 
   if (!copy) notFound();
@@ -173,9 +174,9 @@ export default async function AboutPage() {
                   </p>
                 </div>
                 <ParallaxImage
-                  src={photoSlots.aboutCraft.src}
-                  alt={photoSlots.aboutCraft.alt}
-                  ratio={photoSlots.aboutCraft.ratio}
+                  src={photos.aboutCraft.src}
+                  alt={photos.aboutCraft.alt}
+                  ratio={photos.aboutCraft.ratio}
                   sizes="(max-width: 1023px) 100vw, 40vw"
                   tilt
                   mBleed
@@ -192,11 +193,7 @@ export default async function AboutPage() {
         heading={sections.values.heading}
         lead={sections.values.lead}
         items={values.slice(0, 3)}
-        images={[
-          stockImages.aboutCraft2,
-          stockImages.apparelsRacks1,
-          stockImages.systemsWarehouse1,
-        ]}
+        images={[photos.aboutValue1, photos.aboutValue2, photos.aboutValue3]}
       />
 
       {/* 4 — Leadership (paper) -------------------------------------------- */}

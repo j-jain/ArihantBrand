@@ -146,6 +146,14 @@ async function main() {
   // Import the seed content (TypeScript, stripped natively by Node 24).
   const seed = await import("../src/content/seed.ts");
   const { pages } = await import("../src/content/pages.ts");
+  const { stockImages, photoSlots } = await import("../src/content/images.ts");
+
+  /* Post header images get an explicit alt in Sanity. The site used to resolve
+   * it by matching the src against this manifest, which fails the moment an
+   * editor uploads their own file (a cdn.sanity.io URL matches nothing), so the
+   * alt is written into the document instead of inferred at render time. */
+  const altForImage = (src) =>
+    src ? (Object.values(stockImages).find((img) => img.src === src)?.alt ?? "") : "";
 
   const client = createClient({ projectId, dataset, apiVersion: API_VERSION, token, useCdn: false });
 
@@ -157,6 +165,7 @@ async function main() {
   for (const p of seed.partners) if (p.image) imageJobs.set(p.image, publicPath(p.image));
   for (const s of seed.stores) if (s.image) imageJobs.set(s.image, publicPath(s.image));
   for (const p of seed.posts) if (p.image) imageJobs.set(p.image, publicPath(p.image));
+  for (const r of seed.recognitionPhotos) if (r.src) imageJobs.set(r.src, publicPath(r.src));
 
   const jobList = [...imageJobs.entries()];
   const assetByWebPath = new Map();
@@ -251,6 +260,7 @@ async function main() {
       ...(image ? { image } : {}),
       imagePath: p.image,
       ...(p.category ? { category: p.category } : {}),
+      ...(typeof p.rank === "number" ? { rank: p.rank } : {}),
       order: i,
     });
   });
@@ -268,6 +278,7 @@ async function main() {
       ...(image ? { image } : {}),
       ...(s.image ? { imagePath: s.image } : {}),
       ...(s.caption ? { caption: s.caption } : {}),
+      ...(s.mapsQuery ? { mapsQuery: s.mapsQuery } : {}),
       order: i,
     });
   });
@@ -294,6 +305,7 @@ async function main() {
       name: t.name,
       role: t.role,
       published: t.published,
+      featured: i === seed.featuredTestimonialIndex,
       order: i,
     });
   });
@@ -313,6 +325,9 @@ async function main() {
       metaDescription: p.metaDescription,
       ...(image ? { image } : {}),
       ...(p.image ? { imagePath: p.image } : {}),
+      ...(p.imageAlt || altForImage(p.image)
+        ? { imageAlt: p.imageAlt || altForImage(p.image) }
+        : {}),
       body: p.body.map((block, bi) => {
         const _key = `block-${bi}`;
         if (block.type === "p") return { _type: "pBlock", _key, text: block.text };
@@ -396,6 +411,71 @@ async function main() {
       order: i,
     });
   });
+
+  // People. Portraits seed empty today (seed.leaderPortraits is {}), which is
+  // correct: the client creates them in the Studio as photographs arrive, and a
+  // leader with no portrait keeps the monogram placeholder.
+  seed.team.forEach((m, i) => {
+    docs.push({
+      _id: `team-${m.unit}-${i}`,
+      _type: "teamMember",
+      name: m.name,
+      title: m.title,
+      unit: m.unit,
+      ...(m.group ? { group: m.group } : {}),
+      order: i,
+    });
+  });
+
+  seed.recognitionPhotos.forEach((r, i) => {
+    const image = imageRef(assetByWebPath.get(r.src));
+    docs.push({
+      _id: `recognitionphoto-${i}`,
+      _type: "recognitionPhoto",
+      ...(image ? { image } : {}),
+      srcPath: r.src,
+      alt: r.alt,
+      caption: r.caption,
+      order: i,
+    });
+  });
+
+  Object.entries(seed.leaderPortraits).forEach(([leaderName, p], i) => {
+    docs.push({
+      _id: `leaderportrait-${i}`,
+      _type: "leaderPortrait",
+      leaderName,
+      srcPath: p.src,
+      alt: p.alt,
+    });
+  });
+
+  /* Photographic positions. Seeded WITHOUT an image on purpose: the document
+   * exists so the client sees the full list of positions in the Studio with the
+   * current alt text as a starting point, and uploading a file is the only
+   * action needed. The code manifest stays the fallback, so an untouched slot
+   * keeps shipping the photograph it ships with today. Positions nothing
+   * renders (retailShopfront, officeMap) are deliberately not listed. */
+  const EDITABLE_SLOTS = [
+    "homeHero", "homeProofGround",
+    "marketingWarehouse", "marketingAward", "marketingCorridor",
+    "apparelsWarehouse", "apparelsTeam",
+    "retailInterior", "partnerStorefront",
+    "aboutCraft", "aboutValue1", "aboutValue2", "aboutValue3",
+  ];
+  for (const key of EDITABLE_SLOTS) {
+    const slot = photoSlots[key];
+    if (!slot) {
+      console.warn(`  ! unknown photo slot "${key}" — skipped`);
+      continue;
+    }
+    docs.push({
+      _id: `photoslot-${key}`,
+      _type: "photoSlot",
+      slot: key,
+      alt: slot.alt,
+    });
+  }
 
   seed.marketingStrengths.forEach((p, i) => {
     docs.push({ _id: `strength-${i}`, _type: "marketingStrength", title: p.title, text: p.text, order: i });

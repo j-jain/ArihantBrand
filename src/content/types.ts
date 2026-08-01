@@ -105,6 +105,10 @@ export interface Testimonial {
   name: string;
   role: string;
   published: boolean;
+  /** The one voice the home page prints. Exactly one entry should carry it;
+   *  /recognition renders every other. Seeded from `featuredTestimonialIndex`
+   *  so an editor can move the choice without touching code. */
+  featured?: boolean;
 }
 
 export interface Award {
@@ -147,6 +151,10 @@ export interface Post {
   metaDescription: string;
   /** Thumbnail / header image path (optional — Phase 3 fills it). */
   image?: string;
+  /** Alt text for the header image. Set explicitly because a Studio upload
+   *  resolves to a cdn.sanity.io URL, which the code image manifest cannot
+   *  match, and an unmatched lookup would silently leave the alt empty. */
+  imageAlt?: string;
   body: PostBlock[];
 }
 

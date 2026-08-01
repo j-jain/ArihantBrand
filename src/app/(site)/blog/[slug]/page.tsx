@@ -97,7 +97,7 @@ export default async function ArticlePage({
                 <div data-hero-reveal className="mt-8">
                   <ParallaxImage
                     src={post.image}
-                    alt={altForImage(post.image)}
+                    alt={post.imageAlt || altForImage(post.image)}
                     ratio="3 / 2"
                     priority
                     sizes="(max-width: 767px) 100vw, 46rem"

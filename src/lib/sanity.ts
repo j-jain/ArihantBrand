@@ -34,7 +34,14 @@ export function sanityWriteConfigured(): boolean {
 
 let readClient: SanityClient | null = null;
 
-/** Read client (CDN-backed). Throws only if called while unconfigured. */
+/** Read client. Throws only if called while unconfigured.
+ *
+ *  `useCdn: false` on purpose. Every query in src/lib/content.ts is cached by
+ *  Next behind a document-type tag, so this runs once per publish rather than
+ *  once per visitor and the CDN buys nothing. It would cost correctness:
+ *  apicdn.sanity.io can be up to a minute stale, so a revalidation triggered by
+ *  a publish could refetch the OLD document. The editor would publish, refresh,
+ *  and still see the old text. */
 export function getClient(): SanityClient {
   if (!projectId) {
     throw new Error(
@@ -46,7 +53,7 @@ export function getClient(): SanityClient {
       projectId,
       dataset,
       apiVersion,
-      useCdn: true,
+      useCdn: false,
     });
   }
   return readClient;

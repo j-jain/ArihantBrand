@@ -368,6 +368,30 @@ export const photoSlots = {
     real: false,
     wanted: "The family on the Arihant Tower floor, or the original counter if a photograph exists.",
   },
+  /* The three expanding panels in the About values section. They read the
+   * stock register directly until these slots existed; routing them through
+   * slots is what makes them replaceable from the Studio. */
+  aboutValue1: {
+    src: stockImages.aboutCraft2.src,
+    alt: stockImages.aboutCraft2.alt,
+    ratio: "3 / 4",
+    real: false,
+    wanted: "Whichever of the three values panels the client most wants to show as their own work.",
+  },
+  aboutValue2: {
+    src: stockImages.apparelsRacks1.src,
+    alt: stockImages.apparelsRacks1.alt,
+    ratio: "3 / 4",
+    real: false,
+    wanted: "A working Arihant rack or floor, shot portrait for the values panel.",
+  },
+  aboutValue3: {
+    src: stockImages.systemsWarehouse1.src,
+    alt: stockImages.systemsWarehouse1.alt,
+    ratio: "3 / 4",
+    real: false,
+    wanted: "The dispatch desk or godown aisle, shot portrait for the values panel.",
+  },
 
   /* ---- Contact --------------------------------------------------- X4 */
   officeMap: {

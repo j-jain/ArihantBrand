@@ -32,9 +32,16 @@ import type {
 } from "@/content/types";
 
 import {
+  photoSlots as seedPhotoSlots,
+  type PhotoSlot,
+  type PhotoSlotKey,
+} from "@/content/images";
+
+import {
   awards as seedAwards,
   businesses as seedBusinesses,
   faqs as seedFaqs,
+  featuredTestimonialIndex as seedFeaturedTestimonialIndex,
   funnels as seedFunnels,
   groupStats as seedGroupStats,
   leaderPortraits as seedLeaderPortraits,
@@ -59,6 +66,10 @@ import { pages as seedPages } from "@/content/pages";
 import { getClient, sanityConfigured, urlFor, type SanityImageSource } from "@/lib/sanity";
 
 /* Shapes that have no exported type in @/content/types but appear in the seed. */
+/** Every photographic position on the site, resolved. Same shape as the code
+ *  manifest in src/content/images.ts, so call sites do not change. */
+export type PhotoSlotMap = Record<PhotoSlotKey, PhotoSlot>;
+
 export type Pillar = { title: string; text: string };
 export type TimelineEntry = { year: string; title: string; text: string };
 
@@ -84,19 +95,32 @@ function warnFallback(getter: string, err: unknown): void {
   console.warn(`[content] ${getter} fell back to seed data: ${msg}`);
 }
 
+/** Time-based safety net. Tag revalidation is the real mechanism; this only
+ *  covers a webhook that never arrived (network blip, wrong secret). */
+const FALLBACK_REVALIDATE = 3600;
+
 /** Run a Sanity query and map it, or fall back to seed. Treats null/empty
- *  results and thrown errors identically: use `seed`. */
+ *  results and thrown errors identically: use `seed`.
+ *
+ *  `tags` are the Sanity document types this query reads. The webhook route at
+ *  /api/revalidate expires them when a document of that type is published, so
+ *  the next request rebuilds the pages that read it. The "sanity" catch-all is
+ *  always included, so a document type nobody remembered to map in the route
+ *  handler still cannot go stale forever. */
 async function fromSanity<Raw, Out>(
   getter: string,
   query: string,
   params: Record<string, unknown>,
+  tags: string[],
   isEmpty: (raw: Raw) => boolean,
   map: (raw: Raw) => Out,
   seed: Out,
 ): Promise<Out> {
   if (!sanityConfigured) return seed;
   try {
-    const raw = await getClient().fetch<Raw>(query, params);
+    const raw = await getClient().fetch<Raw>(query, params, {
+      next: { tags: ["sanity", ...tags], revalidate: FALLBACK_REVALIDATE },
+    });
     if (raw == null || isEmpty(raw)) return seed;
     return map(raw);
   } catch (err) {
@@ -147,6 +171,7 @@ interface RawPartner {
   image?: SanityImage;
   imagePath?: string | null;
   category?: string | null;
+  rank?: number | null;
 }
 interface RawStore {
   name: string;
@@ -164,11 +189,36 @@ interface RawFaq {
   bullets?: string[] | null;
   page: Faq["page"];
 }
+interface RawTeamMember {
+  name: string;
+  title: string;
+  unit: TeamMember["unit"];
+  group?: string | null;
+}
+interface RawRecognitionPhoto {
+  image?: SanityImage;
+  srcPath?: string | null;
+  alt?: string | null;
+  caption?: string | null;
+}
+interface RawLeaderPortrait {
+  leaderName?: string | null;
+  image?: SanityImage;
+  srcPath?: string | null;
+  alt?: string | null;
+}
+interface RawPhotoSlot {
+  slot?: string | null;
+  image?: SanityImage;
+  alt?: string | null;
+  ratio?: string | null;
+}
 interface RawTestimonial {
   quote: string;
   name: string;
   role?: string | null;
   published?: boolean | null;
+  featured?: boolean | null;
 }
 interface RawPostBlock {
   _type: string;
@@ -185,6 +235,7 @@ interface RawPost {
   metaDescription?: string | null;
   image?: SanityImage;
   imagePath?: string | null;
+  imageAlt?: string | null;
   body?: RawPostBlock[] | null;
 }
 interface RawContact {
@@ -296,6 +347,9 @@ function mapPartner(p: RawPartner): Partner {
     unit: p.unit,
     image: resolveImage(p.image, p.imagePath),
     ...(p.category ? { category: p.category } : {}),
+    // Presentation rank drives byPopularity() in getPartners(). Without it
+    // every comparison ties and the wall silently falls back to alphabetical.
+    ...(typeof p.rank === "number" ? { rank: p.rank } : {}),
   };
 }
 
@@ -338,6 +392,7 @@ function mapPost(p: RawPost): Post {
     readMinutes: p.readMinutes ?? 0,
     metaDescription: p.metaDescription ?? "",
     ...(image ? { image } : {}),
+    ...(p.imageAlt ? { imageAlt: p.imageAlt } : {}),
     body: (p.body ?? []).map(mapPostBlock).filter((b): b is PostBlock => b !== null),
   };
 }
@@ -412,7 +467,7 @@ const BUSINESSES_QUERY = `*[_type == "business"] | order(order asc){
 }`;
 
 const PARTNERS_QUERY = `*[_type == "partner"] | order(order asc){
-  name, "slug": slug.current, unit, image, imagePath, category
+  name, "slug": slug.current, unit, image, imagePath, category, rank
 }`;
 
 const STORES_QUERY = `*[_type == "store"] | order(order asc){
@@ -422,13 +477,20 @@ const STORES_QUERY = `*[_type == "store"] | order(order asc){
 const FAQS_ALL_QUERY = `*[_type == "faq"] | order(order asc){ question, answer, bullets, page }`;
 const FAQS_PAGE_QUERY = `*[_type == "faq" && page == $page] | order(order asc){ question, answer, bullets, page }`;
 
+const TEAM_QUERY = `*[_type == "teamMember"] | order(order asc){ name, title, unit, group }`;
+const RECOGNITION_PHOTOS_QUERY = `*[_type == "recognitionPhoto"] | order(order asc){
+  image, srcPath, alt, caption
+}`;
+const LEADER_PORTRAITS_QUERY = `*[_type == "leaderPortrait"]{ leaderName, image, srcPath, alt }`;
+const PHOTO_SLOTS_QUERY = `*[_type == "photoSlot" && defined(slot)]{ slot, image, alt, ratio }`;
+
 const TESTIMONIALS_QUERY = `*[_type == "testimonial" && published == true] | order(order asc){
-  quote, name, role, published
+  quote, name, role, published, featured
 }`;
 
 const POST_PROJECTION = `{
   title, "slug": slug.current, excerpt, date, audience, readMinutes, metaDescription,
-  image, imagePath,
+  image, imagePath, imageAlt,
   body[]{ _type, text, items }
 }`;
 const POSTS_QUERY = `*[_type == "post"] | order(date desc)${POST_PROJECTION}`;
@@ -497,6 +559,7 @@ export function getSiteSettings(): Promise<SiteSettings> {
     "getSiteSettings",
     SITE_SETTINGS_QUERY,
     {},
+    ["siteSettings"],
     (raw) => raw == null || !raw.orgName,
     (raw) => mapSiteSettings(raw as RawSiteSettings),
     seedSiteSettings,
@@ -508,6 +571,7 @@ export function getBusinesses(): Promise<Business[]> {
     "getBusinesses",
     BUSINESSES_QUERY,
     {},
+    ["business"],
     isEmptyArray,
     (rows) => rows.map(mapBusiness),
     seedBusinesses,
@@ -519,6 +583,7 @@ export async function getPartners(): Promise<Partner[]> {
     "getPartners",
     PARTNERS_QUERY,
     {},
+    ["partner"],
     isEmptyArray,
     (rows) => rows.map(mapPartner),
     seedPartners,
@@ -533,6 +598,7 @@ export function getStores(): Promise<Store[]> {
     "getStores",
     STORES_QUERY,
     {},
+    ["store"],
     isEmptyArray,
     (rows) => rows.map(mapStore),
     seedStores,
@@ -545,6 +611,7 @@ export function getFaqs(page?: Faq["page"]): Promise<Faq[]> {
     "getFaqs",
     page ? FAQS_PAGE_QUERY : FAQS_ALL_QUERY,
     page ? { page } : {},
+    ["faq"],
     isEmptyArray,
     (rows) =>
       rows.map((f) => ({
@@ -558,11 +625,17 @@ export function getFaqs(page?: Faq["page"]): Promise<Faq[]> {
 }
 
 export function getTestimonials(): Promise<Testimonial[]> {
-  const seed = seedTestimonials.filter((t) => t.published);
+  // The seed marks its featured voice by index; Sanity marks it with a
+  // boolean an editor can move. Both arrive at the same shape, so the pages
+  // only ever ask "which one is featured".
+  const seed = seedTestimonials
+    .filter((t) => t.published)
+    .map((t, i) => ({ ...t, featured: i === seedFeaturedTestimonialIndex }));
   return fromSanity<RawTestimonial[], Testimonial[]>(
     "getTestimonials",
     TESTIMONIALS_QUERY,
     {},
+    ["testimonial"],
     isEmptyArray,
     (rows) =>
       rows.map((t) => ({
@@ -570,6 +643,7 @@ export function getTestimonials(): Promise<Testimonial[]> {
         name: t.name,
         role: t.role ?? "",
         published: true,
+        featured: t.featured === true,
       })),
     seed,
   );
@@ -581,6 +655,7 @@ export function getPosts(): Promise<Post[]> {
     "getPosts",
     POSTS_QUERY,
     {},
+    ["post"],
     isEmptyArray,
     (rows) => rows.map(mapPost),
     seed,
@@ -593,6 +668,7 @@ export function getPost(slug: string): Promise<Post | undefined> {
     "getPost",
     POST_QUERY,
     { slug },
+    ["post"],
     (raw) => raw == null,
     (raw) => mapPost(raw as RawPost),
     seed,
@@ -605,6 +681,7 @@ export function getPageCopy(pageId: string): Promise<PageCopy | undefined> {
     "getPageCopy",
     PAGE_QUERY,
     { pageId },
+    ["page"],
     (raw) => raw == null || !raw.hero,
     (raw) => mapPage(raw as RawPage),
     seed,
@@ -616,6 +693,7 @@ export function getGroupStats(): Promise<Stat[]> {
     "getGroupStats",
     GROUP_STATS_QUERY,
     {},
+    ["groupStat"],
     isEmptyArray,
     (rows) => rows.map(mapStat),
     seedGroupStats,
@@ -627,6 +705,7 @@ export function getFunnels(): Promise<Funnel[]> {
     "getFunnels",
     FUNNELS_QUERY,
     {},
+    ["funnelCard"],
     isEmptyArray,
     (rows) =>
       rows
@@ -646,6 +725,7 @@ export function getPillars(): Promise<Pillar[]> {
     "getPillars",
     PILLARS_QUERY,
     {},
+    ["pillar"],
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedPillars,
@@ -659,6 +739,7 @@ export function getValues(): Promise<Pillar[]> {
     "getValues",
     VALUES_QUERY,
     {},
+    ["valuePanel"],
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedValues,
@@ -670,6 +751,7 @@ export function getTimeline(): Promise<TimelineEntry[]> {
     "getTimeline",
     TIMELINE_QUERY,
     {},
+    ["timelineEntry"],
     isEmptyArray,
     (rows) => rows.map((t) => ({ year: t.year, title: t.title, text: t.text })),
     seedTimeline,
@@ -681,6 +763,7 @@ export function getPartnerSteps(): Promise<ProcessStep[]> {
     "getPartnerSteps",
     STEPS_QUERY,
     {},
+    ["processStep"],
     isEmptyArray,
     (rows) => rows.map((s) => ({ title: s.title, text: s.text })),
     seedPartnerSteps,
@@ -692,6 +775,7 @@ export function getAwards(): Promise<Award[]> {
     "getAwards",
     AWARDS_QUERY,
     {},
+    ["award"],
     isEmptyArray,
     (rows) =>
       rows.map((a) => ({ year: a.year, title: a.title, issuer: a.issuer, detail: a.detail ?? "" })),
@@ -699,22 +783,104 @@ export function getAwards(): Promise<Award[]> {
   );
 }
 
-/** Team roster (seed-only; real, client-supplied people). Optionally scoped to
- *  a unit. No Sanity mirror yet, so this returns the seed directly. */
-export function getTeam(unit?: TeamMember["unit"]): Promise<TeamMember[]> {
-  const rows = unit ? seedTeam.filter((m) => m.unit === unit) : seedTeam;
-  return Promise.resolve(rows);
+/** Team roster (real, client-supplied people). Optionally scoped to a unit.
+ *  Filtering happens after the fetch so the tag stays type-level. */
+export async function getTeam(unit?: TeamMember["unit"]): Promise<TeamMember[]> {
+  const rows = await fromSanity<RawTeamMember[], TeamMember[]>(
+    "getTeam",
+    TEAM_QUERY,
+    {},
+    ["teamMember"],
+    isEmptyArray,
+    (list) =>
+      list.map((m) => ({
+        name: m.name,
+        title: m.title,
+        unit: m.unit,
+        ...(m.group ? { group: m.group } : {}),
+      })),
+    seedTeam,
+  );
+  return unit ? rows.filter((m) => m.unit === unit) : rows;
 }
 
-/** Real recognition photographs (seed-only). */
+/** Real recognition photographs. A row with neither an upload nor a path is
+ *  dropped rather than rendered as a broken frame. */
 export function getRecognitionPhotos(): Promise<RecognitionPhoto[]> {
-  return Promise.resolve(seedRecognitionPhotos);
+  return fromSanity<RawRecognitionPhoto[], RecognitionPhoto[]>(
+    "getRecognitionPhotos",
+    RECOGNITION_PHOTOS_QUERY,
+    {},
+    ["recognitionPhoto"],
+    isEmptyArray,
+    (rows) =>
+      rows
+        .map((r) => ({
+          src: resolveImage(r.image, r.srcPath),
+          alt: r.alt ?? "",
+          caption: r.caption ?? "",
+        }))
+        .filter((r) => r.src !== ""),
+    seedRecognitionPhotos,
+  );
 }
 
-/** Portraits of named leaders, keyed by name (seed-only). Names with no entry
- *  fall back to a monogram placeholder at the call site. */
+/** Portraits of named leaders, keyed by that leader's exact name. Names with
+ *  no entry fall back to a monogram placeholder at the call site, so the
+ *  leadership section is complete before any photograph exists. */
 export function getLeaderPortraits(): Promise<Record<string, LeaderPortrait>> {
-  return Promise.resolve(seedLeaderPortraits);
+  return fromSanity<RawLeaderPortrait[], Record<string, LeaderPortrait>>(
+    "getLeaderPortraits",
+    LEADER_PORTRAITS_QUERY,
+    {},
+    ["leaderPortrait"],
+    isEmptyArray,
+    (rows) => {
+      const out: Record<string, LeaderPortrait> = { ...seedLeaderPortraits };
+      for (const row of rows) {
+        if (!row.leaderName) continue;
+        const src = resolveImage(row.image, row.srcPath);
+        // No photograph means no override: an empty document must never be
+        // able to replace a portrait with a broken frame.
+        if (!src) continue;
+        out[row.leaderName] = { src, alt: row.alt ?? "" };
+      }
+      return out;
+    },
+    seedLeaderPortraits,
+  );
+}
+
+/** Every photographic position on the site, Sanity first, code manifest
+ *  second. A slot only moves when an image was actually uploaded, so an empty
+ *  document can never blank a hero. */
+export function getPhotoSlots(): Promise<PhotoSlotMap> {
+  return fromSanity<RawPhotoSlot[], PhotoSlotMap>(
+    "getPhotoSlots",
+    PHOTO_SLOTS_QUERY,
+    {},
+    ["photoSlot"],
+    isEmptyArray,
+    (rows) => {
+      const out: PhotoSlotMap = { ...seedPhotoSlots };
+      for (const row of rows) {
+        const key = row.slot as PhotoSlotKey;
+        const base = out[key];
+        if (!base) continue; // unknown slot id: ignore rather than guess
+        const src = resolveImage(row.image, null);
+        if (!src) continue; // nothing uploaded: keep the code slot
+        out[key] = {
+          src,
+          alt: row.alt ?? base.alt,
+          ratio: row.ratio || base.ratio,
+          // An uploaded photograph is by definition no longer "wanted".
+          real: true,
+        };
+      }
+      return out;
+    },
+    seedPhotoSlots,
+  );
 }
 
 /** The four strengths the Marketing page argues to a brand audience. Distinct
@@ -725,6 +891,7 @@ export function getMarketingStrengths(): Promise<Pillar[]> {
     "getMarketingStrengths",
     MARKETING_STRENGTHS_QUERY,
     {},
+    ["marketingStrength"],
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedMarketingStrengths,
@@ -738,6 +905,7 @@ export function getMarketingSteps(): Promise<Pillar[]> {
     "getMarketingSteps",
     MARKETING_STEPS_QUERY,
     {},
+    ["marketingStep"],
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedMarketingSteps,
@@ -751,6 +919,7 @@ export function getMarketingReasons(): Promise<Pillar[]> {
     "getMarketingReasons",
     MARKETING_REASONS_QUERY,
     {},
+    ["marketingReason"],
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedMarketingReasons,

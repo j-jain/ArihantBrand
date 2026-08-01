@@ -17,6 +17,8 @@ import {
   marketingStrength,
 } from "./award";
 import { lead } from "./lead";
+import { leaderPortrait, recognitionPhoto, teamMember } from "./people";
+import { photoSlot } from "./photoSlot";
 
 /** All schema types registered with the Studio. Object types (cta, stat,
  *  businessPoint) must be registered too because documents reference them by
@@ -45,5 +47,9 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   marketingStrength,
   marketingStep,
   marketingReason,
+  photoSlot,
+  recognitionPhoto,
+  teamMember,
+  leaderPortrait,
   lead,
 ];

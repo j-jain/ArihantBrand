@@ -14,11 +14,11 @@ import {
 import {
   getBusinesses,
   getPageCopy,
+  getPhotoSlots,
   getSiteSettings,
   getStores,
   pointsByIds,
 } from "@/lib/content";
-import { photoSlots } from "@/content/images";
 import {
   breadcrumbJsonLd,
   businessJsonLd,
@@ -40,11 +40,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ArihantRetailPage() {
-  const [copy, businesses, stores, settings] = await Promise.all([
+  const [copy, businesses, stores, settings, photos] = await Promise.all([
     getPageCopy(UNIT),
     getBusinesses(),
     getStores(),
     getSiteSettings(),
+    getPhotoSlots(),
   ]);
 
   if (!copy) return null;
@@ -139,9 +140,9 @@ export default async function ArihantRetailPage() {
                 Arihant Retail's own floor, so it outranks stock here. */}
             <div className="m-duo flex flex-col">
               <ParallaxImage
-                src={photoSlots.retailInterior.src}
-                alt={photoSlots.retailInterior.alt}
-                ratio={photoSlots.retailInterior.ratio}
+                src={photos.retailInterior.src}
+                alt={photos.retailInterior.alt}
+                ratio={photos.retailInterior.ratio}
                 sizes="(max-width: 1023px) 100vw, 35vw"
                 className="m-ar-4-3 border border-line-dark"
                 tilt
