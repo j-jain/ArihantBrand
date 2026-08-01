@@ -1,17 +1,24 @@
 /**
  * Lead capture (server-only util).
  *
- * `submitLead` validates with zod, then stores the lead:
- *  - to Sanity as a `lead` document when a write token is configured, else
- *  - appended as one JSON line to `.leads/leads.ndjson` (gitignored) so dev and
- *    demo work with no external services.
+ * `submitLead` validates with zod, then EMAILS the lead. It is deliberately not
+ * written to Sanity: free-plan datasets are public and the project id ships in
+ * the browser bundle, so a `lead` document holding a prospect's name, phone and
+ * email would be readable by anyone. Marketing copy can live in a public
+ * dataset; personal data cannot.
  *
- * After a lead is stored it is handed to the configured `LeadNotifier`, which
- * is a no-op until real credentials arrive. Storage and notification are
- * deliberately separate: an alerting outage must never lose a lead, and must
- * never tell the visitor their enquiry failed.
+ * That inverts an assumption this file used to make. Storage and notification
+ * were separate so an alerting outage could never lose a lead. There is no
+ * separate storage now, so a failed send MUST reach the visitor as "could not
+ * submit, please call" rather than be logged and swallowed. Anything else
+ * silently drops business.
  *
- * It never throws to the caller: validation problems and storage failures both
+ * With no email provider configured the lead is appended to
+ * `.leads/leads.ndjson` (gitignored) so local development works offline. On a
+ * host with a disposable filesystem that file is worthless, so there we refuse
+ * the submission instead of pretending it landed.
+ *
+ * It never throws to the caller: validation problems and delivery failures both
  * come back as `{ ok: false, error }`.
  *
  * Note: this is a plain util. The `"use server"` directive lives in the
@@ -24,7 +31,7 @@ import path from "node:path";
 import { z } from "zod";
 
 import type { LeadInput, LeadResult } from "@/content/types";
-import { getWriteClient, sanityWriteConfigured } from "@/lib/sanity";
+import { emailNotifierConfigured, resendLeadNotifier } from "@/lib/notify-email";
 
 const GENERIC_STORAGE_ERROR =
   "Could not submit. Please call or WhatsApp us instead.";
@@ -69,13 +76,13 @@ export const leadInputSchema = z.object({
 });
 
 /* ------------------------------------------------------------------ */
-/* Notification                                                         */
+/* Delivery                                                             */
 /*                                                                      */
-/* A stored lead nobody is told about is a lost lead. The provider is    */
-/* pluggable because the credentials are not here yet: wire Resend (for  */
-/* email) or Interakt / WhatsApp Business API by calling                 */
-/* `setLeadNotifier()` once at server start. Until then it is a no-op    */
-/* and every call site already works.                                    */
+/* The provider stays pluggable so a WhatsApp Business or Interakt       */
+/* provider can replace email later without touching the call sites.     */
+/* `setLeadNotifier()` overrides the default; the default resolves from  */
+/* the environment on each call, because module-level side effects are   */
+/* not a reliable place to configure anything in a serverless runtime.   */
 /* ------------------------------------------------------------------ */
 
 /** A lead as stored: the validated input plus its storage metadata. */
@@ -90,32 +97,23 @@ export interface LeadNotifier {
   notify(lead: StoredLead): Promise<void>;
 }
 
-const noopNotifier: LeadNotifier = {
-  name: "none",
-  async notify() {
-    /* No provider configured yet. The lead is still stored. */
-  },
-};
+let override: LeadNotifier | null = null;
 
-let notifier: LeadNotifier = noopNotifier;
-
-/** Install a notification provider. Call once, server-side, at start-up. */
+/** Install a provider explicitly. Used by tests; production resolves from env. */
 export function setLeadNotifier(next: LeadNotifier): void {
-  notifier = next;
+  override = next;
 }
 
-/** Current provider, for tests and for a health endpoint. */
-export function currentLeadNotifier(): LeadNotifier {
-  return notifier;
+/** The provider that would handle a lead right now, or null if none is set up. */
+export function currentLeadNotifier(): LeadNotifier | null {
+  if (override) return override;
+  return emailNotifierConfigured() ? resendLeadNotifier : null;
 }
 
-/** Notify, but never let a provider failure change what the visitor sees. */
-async function notify(lead: StoredLead): Promise<void> {
-  try {
-    await notifier.notify(lead);
-  } catch (err) {
-    console.error(`[leads] notifier "${notifier.name}" failed:`, err);
-  }
+/** True on a host whose filesystem does not survive the request, where the
+ *  `.leads` file fallback would quietly discard the enquiry. */
+function filesystemIsDisposable(): boolean {
+  return Boolean(process.env.VERCEL);
 }
 
 async function appendLeadToFile(record: StoredLead): Promise<void> {
@@ -144,16 +142,32 @@ export async function submitLead(data: LeadInput): Promise<LeadResult> {
     status: "new" as const,
   };
 
-  try {
-    if (sanityWriteConfigured()) {
-      await getWriteClient().create({ _type: "lead", ...record });
-    } else {
-      await appendLeadToFile(record);
+  const provider = currentLeadNotifier();
+
+  if (!provider) {
+    // Nothing can carry this enquiry anywhere. On a disposable filesystem the
+    // file fallback is a lie, so say so rather than return ok and lose it.
+    if (filesystemIsDisposable()) {
+      console.error(
+        "[leads] no email provider configured (RESEND_API_KEY / LEAD_NOTIFY_TO / LEAD_NOTIFY_FROM). Enquiry refused rather than dropped.",
+      );
+      return { ok: false, error: GENERIC_STORAGE_ERROR };
     }
-    await notify(record);
+    try {
+      await appendLeadToFile(record);
+      console.warn("[leads] no email provider configured; wrote to .leads/leads.ndjson");
+      return { ok: true };
+    } catch (err) {
+      console.error("[leads] file fallback failed:", err);
+      return { ok: false, error: GENERIC_STORAGE_ERROR };
+    }
+  }
+
+  try {
+    await provider.notify(record);
     return { ok: true };
   } catch (err) {
-    console.error("[leads] storage failure:", err);
+    console.error(`[leads] provider "${provider.name}" failed:`, err);
     return { ok: false, error: GENERIC_STORAGE_ERROR };
   }
 }

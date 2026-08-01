@@ -16,7 +16,6 @@ import {
   marketingStep,
   marketingStrength,
 } from "./award";
-import { lead } from "./lead";
 import { leaderPortrait, recognitionPhoto, teamMember } from "./people";
 import { photoSlot } from "./photoSlot";
 
@@ -51,5 +50,4 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   recognitionPhoto,
   teamMember,
   leaderPortrait,
-  lead,
 ];

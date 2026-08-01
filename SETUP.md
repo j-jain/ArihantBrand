@@ -111,9 +111,23 @@ updates by itself, but any sentence that names a count has to be edited by hand.
 
 ## 5. Where do form leads go?
 
-- With Sanity configured: saved as **Lead** documents, visible in the Studio under Leads → New.
-- **`SANITY_API_TOKEN` must be set on the live site, not just locally.** Without it the site falls back to writing a file on the server, and on Vercel that filesystem is wiped between requests, so real enquiries are lost with no warning. Send a test enquiry through the live site after deploying and confirm it appears in Leads.
-- **Nobody is emailed when an enquiry arrives.** Someone has to check `/studio` → Leads. Wiring an email or WhatsApp notification is a small piece of work in `src/lib/leads.ts` (the seam is already there, `setLeadNotifier`); it is the recommended next step.
+**They are emailed to you. They are deliberately NOT stored in the CMS.**
+
+Sanity's free plan only offers *public* datasets, and the project id is part of the website's own code, so anything in the CMS can be read by anyone who looks. That is fine for page copy, which is published on the site anyway. It is not acceptable for a customer's name, phone number and email, so enquiries never go near the CMS. There is no "Leads" section in the Studio, and that is on purpose.
+
+To turn the form on, set three environment variables in Vercel:
+
+| Name | Value |
+|---|---|
+| `RESEND_API_KEY` | from [resend.com](https://resend.com) → API Keys (free tier covers 3,000 emails a month) |
+| `LEAD_NOTIFY_FROM` | a sender address on a domain you have verified in Resend, e.g. `Arihant Website <website@arihantgroup.in>` |
+| `LEAD_NOTIFY_TO` | who gets the enquiries. Comma separate for several people |
+
+Each enquiry arrives as a plain email with the name, phone, email, city, company, message, the page it came from and the time in IST. **Hitting reply answers the customer directly.**
+
+If those three are not set, the live form refuses submissions and tells the visitor to call or WhatsApp instead. That is deliberate: quietly accepting an enquiry that goes nowhere is worse than telling someone to phone.
+
+`SANITY_API_TOKEN` is only needed for the one-time `npm run seed`. It is not used when the site is running, so it does not need to be in Vercel at all.
 
 ### "I published but the site hasn't changed"
 

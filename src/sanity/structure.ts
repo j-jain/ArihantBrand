@@ -3,7 +3,13 @@ import type { StructureResolver } from "sanity/structure";
 const SINGLETON_ID = "siteSettings";
 
 /** Custom desk: the singleton pinned at the top, then the editable
- *  collections, group content, and finally Leads split into New / All views. */
+ *  collections, group content, and finally photography and people.
+ *
+ *  There is no Leads section. Enquiries are emailed, never written to Sanity,
+ *  because a free-plan dataset is public and would expose a prospect's name,
+ *  phone and email to anyone with the project id. An always-empty Leads list
+ *  would read as "no enquiries" rather than "look in your inbox", so it is
+ *  gone rather than left as furniture. See src/lib/notify-email.ts. */
 export const structure: StructureResolver = (S) =>
   S.list()
     .title("Arihant Group")
@@ -59,38 +65,6 @@ export const structure: StructureResolver = (S) =>
       S.documentTypeListItem("recognitionPhoto").title("Recognition Photos"),
       S.documentTypeListItem("teamMember").title("Team Members"),
       S.documentTypeListItem("leaderPortrait").title("Leadership Portraits"),
-
-      S.divider(),
-
-      S.listItem()
-        .title("Leads")
-        .schemaType("lead")
-        .child(
-          S.list()
-            .title("Leads")
-            .items([
-              S.listItem()
-                .title("New")
-                .id("leads-new")
-                .child(
-                  S.documentList()
-                    .title("New Leads")
-                    .schemaType("lead")
-                    .filter('_type == "lead" && status == "new"')
-                    .defaultOrdering([{ field: "createdAt", direction: "desc" }]),
-                ),
-              S.listItem()
-                .title("All")
-                .id("leads-all")
-                .child(
-                  S.documentList()
-                    .title("All Leads")
-                    .schemaType("lead")
-                    .filter('_type == "lead"')
-                    .defaultOrdering([{ field: "createdAt", direction: "desc" }]),
-                ),
-            ]),
-        ),
     ]);
 
 /** Document types managed through custom singleton/list views above, so they
