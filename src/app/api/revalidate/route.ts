@@ -54,8 +54,19 @@ export async function POST(req: NextRequest) {
     return Response.json({ revalidated: false, message }, { status: 400 });
   }
 
-  if (isValidSignature === false) {
-    return Response.json({ revalidated: false, message: "Invalid signature." }, { status: 401 });
+  // Only an explicit `true` is acceptable. `parseBody` returns `null` when the
+  // signature header is absent altogether, and `false` when it is present but
+  // wrong; both must be refused. Checking `!== false` would let an unsigned
+  // request through, which would hand anyone who found this URL a free
+  // cache-busting endpoint.
+  if (isValidSignature !== true) {
+    return Response.json(
+      {
+        revalidated: false,
+        message: isValidSignature === false ? "Invalid signature." : "Missing signature.",
+      },
+      { status: 401 },
+    );
   }
 
   const type = body?._type;
