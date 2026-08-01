@@ -27,7 +27,43 @@ const a = (name: string, slug: string, category?: string): Partner => ({
   ...(category ? { category } : {}),
 });
 
-export const partners: Partner[] = [
+/* The order a retailer actually scans a wall in. Alphabetical put A-Cube,
+   Amidhara and Azzurro first, so the labels a buyer already stocks were buried
+   six rows down. This is one recognition scale across both portfolios (a wall
+   filtered to one unit still sorts correctly from it), and it is presentation
+   only: it claims nothing about volume, margin or importance to us. Slugs
+   rather than names, so a display-name edit cannot silently drop a brand.
+   Anything not listed keeps the alphabetical order below. */
+const popularityOrder: string[] = [
+  "skechers",
+  "biba",
+  "wildcraft",
+  "indian-terrain",
+  "spykar",
+  "libas",
+  "rangriti",
+  "integriti",
+  "octave",
+  "sweet-dreams",
+  "little-kangaroos",
+  "nivia",
+  "twills",
+  "catwalk",
+  "deal-jeans",
+  "juniper",
+  "peppermint",
+  "tiny-girl",
+  "alvaro-castagnino",
+  "hoffmen",
+  "minerals-jeans",
+  "tadpole",
+];
+
+const rankBySlug = new Map(
+  popularityOrder.map((slug, index) => [slug, index + 1] as const),
+);
+
+const roster: Partner[] = [
   // Arihant Marketing portfolio
   m("A-Cube", "a-cube"),
   m("Amidhara", "amidhara"),
@@ -109,7 +145,25 @@ export const partners: Partner[] = [
   a("Zola", "zola"),
 ];
 
+export const partners: Partner[] = roster.map((partner) => {
+  const rank = rankBySlug.get(partner.slug);
+  return rank === undefined ? partner : { ...partner, rank };
+});
+
 /** The labels a given distribution arm carries. */
 export function partnersOf(unit: Partner["unit"]): Partner[] {
   return partners.filter((p) => p.unit === unit);
+}
+
+/* Unranked labels sort against each other as equals rather than against
+   Infinity, whose difference is NaN and leaves the comparator undefined. */
+const RANK_FLOOR = Number.MAX_SAFE_INTEGER;
+
+/** Wall order: recognised national labels first, everything else after in the
+ *  alphabetical order it already holds (Array#sort is stable). Every brand wall
+ *  on the site runs through this so the four of them never disagree. */
+export function byPopularity(list: Partner[]): Partner[] {
+  return [...list].sort(
+    (a, b) => (a.rank ?? RANK_FLOOR) - (b.rank ?? RANK_FLOOR),
+  );
 }

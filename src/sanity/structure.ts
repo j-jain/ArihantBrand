@@ -33,12 +33,18 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.documentTypeListItem("groupStat").title("Group Stats"),
+      S.documentTypeListItem("funnelCard").title("Home Funnel Cards"),
       S.documentTypeListItem("pillar").title("Why-Arihant Pillars"),
+      S.documentTypeListItem("valuePanel").title("Value Panels"),
       S.documentTypeListItem("timelineEntry").title("Timeline"),
       S.documentTypeListItem("processStep").title("Partner Process Steps"),
       S.documentTypeListItem("award").title("Awards & Recognition"),
-      S.documentTypeListItem("systemFeature").title("System Features"),
-      S.documentTypeListItem("sisPoint").title("Shop-in-Shop Scope"),
+
+      S.divider(),
+
+      S.documentTypeListItem("marketingStrength").title("Marketing Strengths"),
+      S.documentTypeListItem("marketingStep").title("Marketing Steps"),
+      S.documentTypeListItem("marketingReason").title("Marketing Reasons"),
 
       S.divider(),
 

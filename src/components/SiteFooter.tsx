@@ -4,13 +4,7 @@ import { mapsUrl } from "@/lib/seo";
 import { ContactChannels } from "./ContactChannels";
 import { MapPinIcon } from "./icons";
 import { NetworkMap } from "./motion/NetworkMap";
-import {
-  businessLinks,
-  intentLinks,
-  partnerLink,
-  primaryNav,
-  secondaryNav,
-} from "./nav";
+import { businessLinks, intentLinks, partnerLink, primaryNav } from "./nav";
 
 interface SiteFooterProps {
   settings: SiteSettings;
@@ -23,7 +17,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
   const year = new Date().getFullYear();
   const nap = `${settings.addressLine}, ${settings.locality}, ${settings.city}, ${settings.state} ${settings.postalCode}`;
   const directionsUrl = mapsUrl(settings);
-  const footerNav = [...businessLinks, partnerLink, ...primaryNav, ...secondaryNav];
+  const footerNav = [...businessLinks, partnerLink, ...primaryNav];
 
   return (
     <footer className="on-dark relative overflow-hidden">

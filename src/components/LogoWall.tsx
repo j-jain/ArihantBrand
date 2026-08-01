@@ -10,6 +10,10 @@ import { cn } from "./cn";
 interface LogoWallProps {
   partners: Partner[];
   filterable?: boolean;
+  /** Show only the first N labels. Used where the wall has to be taken in
+   *  without scrolling and a "see the full portfolio" link carries the rest;
+   *  omitted everywhere the wall is the point of the page. */
+  limit?: number;
 }
 
 type FilterKey = "all" | "marketing" | "apparels";
@@ -32,19 +36,26 @@ const GRID_STYLE: CSSProperties = {
  *  to the selected partner. When filterable, unit pills scope the wall and a
  *  live count reports the visible set. Tiles below the fold batch-reveal on
  *  scroll (reduced-motion + on-screen tiles stay static; nothing is stranded). */
-export function LogoWall({ partners, filterable = false }: LogoWallProps) {
+export function LogoWall({
+  partners,
+  filterable = false,
+  limit,
+}: LogoWallProps) {
   const [active, setActive] = useState<FilterKey>("all");
   const [selected, setSelected] = useState<Partner | null>(null);
   const [open, setOpen] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const visible = useMemo(
-    () =>
+  const visible = useMemo(() => {
+    const scoped =
       active === "all"
         ? partners
-        : partners.filter((partner) => partner.unit === active),
-    [partners, active],
-  );
+        : partners.filter((partner) => partner.unit === active);
+    // The cap applies after the filter so a filtered wall shows N of that unit,
+    // not the survivors of a pre-cut list. The filterable wall passes no limit,
+    // so its live count still reports the whole portfolio.
+    return limit === undefined ? scoped : scoped.slice(0, limit);
+  }, [partners, active, limit]);
 
   const handleSelect = (partner: Partner) => {
     setSelected(partner);

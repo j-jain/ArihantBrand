@@ -107,7 +107,10 @@
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
-  .section-pad {
+  .section-pad,
+  /* The Marketing page runs on its own tighter desktop step so each band fits
+     one screen; on a phone it wants exactly the rhythm every other band gets. */
+  .am-band {
     padding-block: clamp(2.5rem, 8vw, 3.25rem);
   }
 
@@ -499,38 +502,6 @@
     font-size: 0.85rem;
   }
 
-  /* Systems ledger (home infrastructure band). */
-  .infra__row {
-    padding-block: 0.85rem 1rem;
-    column-gap: 0.8rem;
-  }
-
-  .infra__node {
-    margin-top: 0.45rem;
-  }
-
-  .infra__text {
-    margin-top: 0.35rem;
-  }
-
-  .infra-band__inner {
-    padding-block: clamp(2.5rem, 8vw, 3.25rem);
-  }
-
-  .infra-band__grid {
-    gap: 1.5rem;
-  }
-
-  .infra-band__body {
-    gap: 1.25rem;
-  }
-
-  /* The godown photo runs edge to edge in a landscape frame instead of a
-     screen-tall 4:5 portrait. */
-  .infra-band__photo {
-    aspect-ratio: 16 / 10;
-  }
-
   /* Timeline: the spine sits closer in, and entries pack tighter. */
   .tl {
     --tl-pad: 1.35rem;
@@ -633,7 +604,7 @@
     border-radius: 2px;
   }
 
-  /* Businesses: name and proof first, identity plate second — and the same
+  /* Businesses: name and proof first, identity plate second, and the same
      way round for all three, since alternating sides means nothing once the
      columns have stacked. */
   .unit-showcase {
@@ -687,15 +658,10 @@
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
-  /* Dark bands: same reason as the home proof band — full-width copy needs a
-     top-down scrim, not a left-to-right one. */
-  :root {
-    --m-band-scrim: linear-gradient(
-      180deg,
-      var(--charcoal) 45%,
-      color-mix(in oklch, var(--charcoal), transparent 14%)
-    );
-  }
+  /* --m-band-scrim used to live here, retargeting the award band's left-to-right
+     gradient to a top-down one once the copy ran full width. The award band no
+     longer stands on a dimmed photograph, so it has no scrim to retarget and
+     nothing else consumed the token. */
 
   /* Hero identity block: a full-width 5:3 white box is a 200px empty plate on
      a phone. It becomes a short logo strip over a tight stat ledger. */
@@ -735,6 +701,68 @@
   .m-pull {
     margin-top: 1.5rem;
     gap: 0.85rem;
+  }
+
+  /* Marketing: the award fold. Desktop sizes the fold to be looked at; a phone
+     has no room to spend on a half-empty screen, so it collapses to ordinary
+     section rhythm. */
+  .am-award {
+    display: block;
+    min-height: 0;
+    padding-block: clamp(2.5rem, 8vw, 3.25rem);
+  }
+
+  /* The trophy stands beside the claim on desktop; stacked, a 2/3 portrait at
+     full width would eat two thirds of the screen before the heading. 4/5 is
+     the shortest frame that still holds the whole object: square cuts the
+     engraved plaque off the base, which is the part that says what was won. */
+  .am-award__object {
+    --m-frame-ratio: 4 / 5;
+  }
+
+  /* Marketing: the promise fold. The desktop grid is gated at 1024px, so all
+     that is left here is the padding, which would otherwise run to 10rem. */
+  .am-promise {
+    padding-block: clamp(2.75rem, 9vw, 3.5rem);
+  }
+
+  /* The desktop cap is a laptop-height budget; a phone frame is already short,
+     so it stands down rather than squeezing the photo twice. */
+  .am-promise__photo .parallax-frame {
+    max-block-size: none;
+  }
+
+  .am-promise__photo {
+    margin-top: 1.5rem;
+  }
+
+  .am-how__steps {
+    padding-bottom: clamp(2.5rem, 8vw, 3.25rem);
+  }
+
+  /* Marketing: the four steps. Read across in four columns on desktop; stacked
+     on a phone they become the hairline ledger the rest of the page uses, with
+     the numeral on the title's line rather than above it. */
+  .m-am-steps {
+    row-gap: 0;
+  }
+
+  .m-am-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1rem;
+    row-gap: 0.25rem;
+    align-items: baseline;
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .m-am-step > h3 {
+    grid-column: 2;
+  }
+
+  .m-am-step > p {
+    grid-column: 2;
   }
 
   /* Retail: the desktop image duo overlaps; stacked full-bleed it just needs

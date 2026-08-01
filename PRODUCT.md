@@ -58,7 +58,7 @@ Each flagship fact has one canonical home plus at most one varied echo — say i
 
 ## Site map
 
-- `/` — home: headline + three group figures + both CTAs above the fold, then the two funnel cards (retailer / franchise, one card and one CTA each), proof band, why-Arihant pillars, businesses, infrastructure/systems, brands, "Visit our stores", Trade Notes teaser, a featured voice, CTA.
+- `/` — home: headline + three group figures + both CTAs above the fold, then the two funnel cards (retailer / franchise, one card and one CTA each), proof band, why-Arihant pillars, businesses, brands, "Visit our stores", Trade Notes teaser, a featured voice, CTA.
 - `/arihant-marketing`, `/arihant-apparels`, `/arihant-retail` — the three business units.
 - `/partner` — the managed-franchise money page (audience 3).
 - `/brands` — the full portfolio wall (77 labels).
@@ -66,7 +66,7 @@ Each flagship fact has one canonical home plus at most one varied echo — say i
 - `/careers` — one page and one form, on a `careers` inquiry intent (change brief, X6).
 - `/about`, `/blog` (+ `/blog/[slug]`, "Trade Notes"), `/contact`.
 
-The home infrastructure/systems section markets the approved **"AI-driven, data-backed retail backend"** claim qualitatively — data-backed buying, AI-assisted planning, automated stock discipline, teams trained on the tools — with no invented metrics.
+The approved **"AI-driven, data-backed retail backend"** claim is no longer marketed anywhere on the site. The home section that carried it qualitatively (data-backed buying, AI-assisted planning, automated stock discipline, teams trained on the tools) was removed. The claim stays on the approved list above, so it can be brought back, but any new placement must stay qualitative and carry no invented metrics.
 
 ## CMS
 

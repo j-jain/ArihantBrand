@@ -18,7 +18,7 @@ import { atLeast, facts, phrase } from "./facts";
 /** The 77 partner logos live in their own module because facts.ts derives the
  *  published label counts from them; re-exported here so every existing
  *  `@/content/seed` import keeps working. */
-export { partners, partnersOf } from "./partners";
+export { byPopularity, partners, partnersOf } from "./partners";
 
 /* ------------------------------------------------------------------ */
 /* Site settings                                                        */
@@ -357,6 +357,50 @@ export const marketingStrengths = [
   {
     title: `${phrase.visitCycle} between every visit`,
     text: `Each of ${phrase.marketingRetailers} retailers is seen in person on a fixed cycle, which is how a size break becomes a fill order inside the same season.`,
+  },
+];
+
+/* The four steps of the retailer cycle. A true sequence, which is why this is
+   the one place on the page that carries numbers. Titles let the row read
+   across four columns instead of down four ruled rows. */
+export const marketingSteps = [
+  {
+    title: "Map the counter",
+    text: `We map your counter to the right mix from our ${phrase.marketingBrands}-brand portfolio: depth where your customer shops, nothing that will sit.`,
+  },
+  {
+    title: "Stand in the store",
+    text: "A representative stands in your store on a fixed cycle. Reorders, claims and market feedback move face to face.",
+  },
+  {
+    title: "Pick and dispatch",
+    text: `Indents are picked and dispatched from ${phrase.marketingWarehouse} of organised Guwahati warehousing, on fixed timelines.`,
+  },
+  {
+    title: "Settle the books",
+    text: "Claims and settlements move on paper, on schedule, so your capital keeps rotating.",
+  },
+];
+
+/* Why the region needs its own distributor, for a national brand manager.
+   Four parallel arguments, not a sequence, so they carry named lead-ins
+   rather than index numerals (DESIGN.md: numbers only inside real sequences). */
+export const marketingReasons = [
+  {
+    title: "Seven states, one corridor",
+    text: "Seven states, seven tax and transit regimes, and freight that arrives through one corridor. A plan drawn for Kolkata does not survive contact with it.",
+  },
+  {
+    title: "A calendar the mainland does not share",
+    text: "Season shapes differ. Winter is short and sharp, the festival calendar is not the mainland's, and wedding weeks move the whole quarter.",
+  },
+  {
+    title: "Doors that open on relationships",
+    text: "The counters that matter are independent multi-brand stores, most of them held by families who have bought from the same house for decades. Cold entry does not open them.",
+  },
+  {
+    title: "Sizes and price points of its own",
+    text: "Sizes, price points and colour preferences are their own. An assortment cut for a metro arrives with its best-selling half unsold.",
   },
 ];
 
@@ -1360,56 +1404,5 @@ export const recognitionPhotos: RecognitionPhoto[] = [
     src: "/images/photos/awards/award-cmai-nigf-2024.jpg",
     alt: "CMAI North India Garment Fair 2024 Certificate of Appreciation for Arihant Marketing",
     caption: "CMAI North India Garment Fair, 2024",
-  },
-];
-
-/* ------------------------------------------------------------------ */
-/* Systems (homepage infrastructure section) — qualitative only, per    */
-/* the honesty rails ("AI-driven, data-backed retail backend")          */
-/* ------------------------------------------------------------------ */
-
-export const systems = [
-  {
-    title: "Data-backed buying",
-    text: "Orders are sized against sell-through, not sentiment. What reaches a counter is what that counter can sell.",
-  },
-  {
-    title: "AI-assisted planning",
-    text: "Assortment and replenishment decisions are checked by models before they are signed by people.",
-  },
-  {
-    title: "Automated stock discipline",
-    text: "Indents, dispatches and claims run through systemised checks on fixed timelines, so nothing waits on a reminder.",
-  },
-  {
-    title: "Teams trained on the tools",
-    text: "Warehouse to shop floor, our people work the same dashboards the family reviews every week.",
-  },
-];
-
-/* ------------------------------------------------------------------ */
-/* Shop-in-shop scope (marketing page SIS section)                      */
-/* ------------------------------------------------------------------ */
-
-export const sisScope = [
-  {
-    title: "No fixture investment",
-    text: "The counter is built and branded to your specification without a fixture bill landing on your side of the table.",
-  },
-  {
-    title: "Staff optional",
-    text: "A promoter is not required to open. Where you want one, ours is hired, trained on your brand book and supervised by us.",
-  },
-  {
-    title: "Replenishment by sell-through",
-    text: "Stock moves on data: sizes and styles refilled from the Guwahati warehouse before the rack shows a gap.",
-  },
-  {
-    title: "Merchandising kept to planogram",
-    text: "Displays audited against the planogram on every visit, so the counter looks the way your brand intended.",
-  },
-  {
-    title: "Reporting you can act on",
-    text: "A regular, counter-level view of sell-through and stock cover. AI-checked, human-signed.",
   },
 ];

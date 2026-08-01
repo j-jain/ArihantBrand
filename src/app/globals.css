@@ -253,6 +253,30 @@ svg {
   padding-bottom: clamp(3.5rem, 7vw, 6rem);
 }
 
+/* Home hero only. It is the one hero that hangs a figure band off the bottom of
+   its copy column, and on a 720px-tall laptop screen the captions under those
+   numbers were falling ~97px below the fold: the reader saw three figures with
+   no idea what they counted. Everything above the band runs tighter here so the
+   band clears whole. The other five heroes carry no band and keep the standard
+   .hero-pad rhythm.
+
+   Guarded at >=768px on purpose. mobile.css is imported at the foot of this
+   file and sets its own hero padding and figure sizing; an unguarded rule here
+   would outrank it on specificity and reach into the mobile layer. */
+@media (min-width: 768px) {
+  .hero--home {
+    padding-top: clamp(0.5rem, 1vw, 1rem);
+  }
+
+  .hero--home .hero-copy {
+    gap: 1.25rem;
+  }
+
+  .hero--home .stat-band--compact .stat-item {
+    padding-block: clamp(0.55rem, 0.9vw, 0.7rem);
+  }
+}
+
 /* Charcoal full-bleed scope: swaps text/line indirection vars so plain
    descendants read correctly on dark. */
 .on-dark {
@@ -550,23 +574,6 @@ svg {
 .funnel-card:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: -2px;
-}
-
-/* The WhatsApp ask beside the hero's primary button. Quiet by default so it
-   never competes with the vermillion CTA; the mark alone carries the meaning. */
-.hero-wa__mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  background: var(--whatsapp-deep);
-  color: #fff;
-}
-
-.hero-wa:hover {
-  color: var(--whatsapp-deep);
 }
 
 /* ------------------------------------------------------------------ */
@@ -867,6 +874,152 @@ svg {
 }
 
 /* ------------------------------------------------------------------ */
+/* Arihant Marketing page                                              */
+/*                                                                     */
+/* Only the three things Tailwind cannot express cleanly: a full-bleed  */
+/* grid, the oversized award numeral, and the 2x2 hairline spec plate.  */
+/* Everything else on that page is composed from utilities in the JSX.  */
+/* ------------------------------------------------------------------ */
+
+/* This page is read section by section, so every band is sized to be taken in
+   without scrolling inside it. Tighter than the sitewide .section-pad, and
+   scoped to this page so no other route moves. */
+.am-band {
+  padding-block: clamp(3rem, 4.5vw, 4.25rem);
+}
+
+/* The award fold is a fold, not a strip: it holds one claim beside the object
+   that backs it, so it is sized to be looked at rather than scrolled past. The
+   cap keeps it inside one screen on a laptop. */
+.am-award {
+  display: flex;
+  align-items: center;
+  min-height: clamp(27rem, 56vh, 34rem);
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* The trophy is 899x1599, so a 2/3 frame trims about 16% of its height. Bias
+   the crop high and that comes off the empty tabletop under the plaque rather
+   than off the wings. */
+.am-award__object .parallax-img {
+  object-position: center 35%;
+}
+
+/* The year is a date line, not the claim. It used to be a 9.5rem painted
+   numeral, which told a reader the date mattered more than what was won. */
+.am-award__date {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.14em;
+}
+
+/* The 20-day promise: one idea, the widest air on the page, and a photograph
+   that runs off the right edge of the viewport instead of stopping at the
+   container. Named grid lines rather than a 100vw negative margin — a 100vw
+   bleed overflows by the scrollbar width on Windows and scrolls the body
+   sideways. */
+.am-promise {
+  padding-block: clamp(3rem, 5vw, 4.5rem);
+}
+
+/* A 4/5 frame at 46vw stands about 825px tall on a laptop, which put this one
+   idea over a screen on its own. The cap costs the frame nothing a reader
+   notices and buys back the whole overflow. */
+.am-promise__photo .parallax-frame {
+  max-block-size: min(58svh, 30rem);
+}
+
+/* Stacked, the two halves are ordinary container-width blocks. The photo's
+   gutter lives on this wrapper rather than on the frame, so the frame's own
+   mBleed margin has a padding to cancel instead of a full-width box to widen. */
+.am-promise__photo {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  margin-top: 2.5rem;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@media (min-width: 1024px) {
+  .am-promise {
+    --am-g: clamp(1.25rem, 4vw, 2.5rem);
+    --am-content: min(72rem - var(--am-g) * 2, 100% - var(--am-g) * 2);
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(var(--am-g), 1fr)
+      [content-start] minmax(0, calc(var(--am-content) * 0.56))
+      [mid] minmax(0, calc(var(--am-content) * 0.44))
+      [content-end] minmax(var(--am-g), 1fr)
+      [full-end];
+    align-items: center;
+    column-gap: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  /* The grid owns the alignment now, so the container class on each half
+     stands down rather than centring inside its own track. */
+  .am-promise__copy,
+  .am-promise__photo {
+    max-width: none;
+    margin-inline: 0;
+    margin-top: 0;
+    padding-inline: 0;
+  }
+
+  .am-promise__copy {
+    grid-column: content-start / mid;
+  }
+
+  .am-promise__photo {
+    grid-column: mid / full-end;
+  }
+}
+
+/* The steps used to close the promise's own section, so this paid only a foot.
+   They stand as a band of their own now and pay both sides. */
+.am-how__steps {
+  padding-block: clamp(3rem, 5vw, 4.5rem);
+}
+
+/* Four strengths as a spec plate rather than a fifth ruled list. Hairlines are
+   drawn per cell so they reflow with the arrangement: every cell rules off at
+   the top, the closing pair rules off at the bottom, and the right-hand cells
+   carry the vertical rule that turns the pairs into a table. This construction
+   is unique to the Marketing page. */
+.am-plate {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.am-plate__cell {
+  padding-block: 1.15rem 1.35rem;
+  border-top: 1px solid var(--line);
+}
+
+.am-plate__cell:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 768px) {
+  .am-plate {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .am-plate__cell:nth-child(odd) {
+    padding-right: clamp(1.25rem, 2.5vw, 2.25rem);
+  }
+
+  .am-plate__cell:nth-child(even) {
+    padding-left: clamp(1.25rem, 2.5vw, 2.25rem);
+    border-left: 1px solid var(--line);
+  }
+
+  /* Two cells share the closing rule now, not one. */
+  .am-plate__cell:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Award list (/recognition)                                           */
 /* ------------------------------------------------------------------ */

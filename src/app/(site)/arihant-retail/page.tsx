@@ -133,9 +133,10 @@ export default async function ArihantRetailPage() {
               </div>
             </div>
 
-            {/* Image duo: a portrait interior with a wider shopfront pulled up
-                over its bottom-left on desktop; a clean stack on mobile. Both
-                are Arihant Retail's own floors, so they outrank stock here. */}
+            {/* One interior, not a pair. The shopfront that used to sit under
+                this one repeated the same room from outside, so the band read
+                as two photos of one store rather than one piece of evidence.
+                Arihant Retail's own floor, so it outranks stock here. */}
             <div className="m-duo flex flex-col">
               <ParallaxImage
                 src={photoSlots.retailInterior.src}
@@ -143,15 +144,6 @@ export default async function ArihantRetailPage() {
                 ratio={photoSlots.retailInterior.ratio}
                 sizes="(max-width: 1023px) 100vw, 35vw"
                 className="m-ar-4-3 border border-line-dark"
-                tilt
-                mBleed
-              />
-              <ParallaxImage
-                src={photoSlots.retailShopfront.src}
-                alt={photoSlots.retailShopfront.alt}
-                ratio={photoSlots.retailShopfront.ratio}
-                sizes="(max-width: 1023px) 100vw, 25vw"
-                className="m-ar-16-9 mt-4 border border-line-dark lg:relative lg:z-10 lg:-mt-[18%] lg:mr-auto lg:w-[72%]"
                 tilt
                 mBleed
               />

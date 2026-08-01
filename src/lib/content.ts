@@ -38,16 +38,17 @@ import {
   funnels as seedFunnels,
   groupStats as seedGroupStats,
   leaderPortraits as seedLeaderPortraits,
+  marketingReasons as seedMarketingReasons,
+  marketingSteps as seedMarketingSteps,
   marketingStrengths as seedMarketingStrengths,
+  byPopularity,
   partners as seedPartners,
   partnerSteps as seedPartnerSteps,
   pillars as seedPillars,
   posts as seedPosts,
   recognitionPhotos as seedRecognitionPhotos,
-  sisScope as seedSisScope,
   siteSettings as seedSiteSettings,
   stores as seedStores,
-  systems as seedSystems,
   team as seedTeam,
   testimonials as seedTestimonials,
   timeline as seedTimeline,
@@ -449,9 +450,9 @@ const VALUES_QUERY = `*[_type == "valuePanel"] | order(order asc){ title, text }
 const TIMELINE_QUERY = `*[_type == "timelineEntry"] | order(order asc){ year, title, text }`;
 const STEPS_QUERY = `*[_type == "processStep"] | order(order asc){ title, text }`;
 const AWARDS_QUERY = `*[_type == "award"] | order(order asc){ year, title, issuer, detail }`;
-const SYSTEMS_QUERY = `*[_type == "systemFeature"] | order(order asc){ title, text }`;
-const SIS_SCOPE_QUERY = `*[_type == "sisPoint"] | order(order asc){ title, text }`;
 const MARKETING_STRENGTHS_QUERY = `*[_type == "marketingStrength"] | order(order asc){ title, text }`;
+const MARKETING_STEPS_QUERY = `*[_type == "marketingStep"] | order(order asc){ title, text }`;
+const MARKETING_REASONS_QUERY = `*[_type == "marketingReason"] | order(order asc){ title, text }`;
 
 /* ------------------------------------------------------------------ */
 /* Selectors                                                            */
@@ -513,8 +514,8 @@ export function getBusinesses(): Promise<Business[]> {
   );
 }
 
-export function getPartners(): Promise<Partner[]> {
-  return fromSanity<RawPartner[], Partner[]>(
+export async function getPartners(): Promise<Partner[]> {
+  const list = await fromSanity<RawPartner[], Partner[]>(
     "getPartners",
     PARTNERS_QUERY,
     {},
@@ -522,6 +523,9 @@ export function getPartners(): Promise<Partner[]> {
     (rows) => rows.map(mapPartner),
     seedPartners,
   );
+  // Wall order is decided once, where the data leaves this layer, rather than
+  // at the four call sites that render it — they had already drifted apart.
+  return byPopularity(list);
 }
 
 export function getStores(): Promise<Store[]> {
@@ -713,17 +717,6 @@ export function getLeaderPortraits(): Promise<Record<string, LeaderPortrait>> {
   return Promise.resolve(seedLeaderPortraits);
 }
 
-export function getSystems(): Promise<Pillar[]> {
-  return fromSanity<RawPillar[], Pillar[]>(
-    "getSystems",
-    SYSTEMS_QUERY,
-    {},
-    isEmptyArray,
-    (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
-    seedSystems,
-  );
-}
-
 /** The four strengths the Marketing page argues to a brand audience. Distinct
  *  from `getPillars()`, which argues the same four to a retailer audience on
  *  the home page (change brief, HP7 + AM10). */
@@ -738,13 +731,28 @@ export function getMarketingStrengths(): Promise<Pillar[]> {
   );
 }
 
-export function getSisScope(): Promise<Pillar[]> {
+/** The four steps of the retailer visit cycle (marketing page). A real
+ *  sequence, so document order drives the 01-04 numerals on the page. */
+export function getMarketingSteps(): Promise<Pillar[]> {
   return fromSanity<RawPillar[], Pillar[]>(
-    "getSisScope",
-    SIS_SCOPE_QUERY,
+    "getMarketingSteps",
+    MARKETING_STEPS_QUERY,
     {},
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
-    seedSisScope,
+    seedMarketingSteps,
+  );
+}
+
+/** Why the region needs its own distributor (marketing page). Four parallel
+ *  arguments, not a sequence, so the page renders them without numerals. */
+export function getMarketingReasons(): Promise<Pillar[]> {
+  return fromSanity<RawPillar[], Pillar[]>(
+    "getMarketingReasons",
+    MARKETING_REASONS_QUERY,
+    {},
+    isEmptyArray,
+    (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
+    seedMarketingReasons,
   );
 }

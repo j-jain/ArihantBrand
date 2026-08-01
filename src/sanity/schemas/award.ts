@@ -19,36 +19,6 @@ export const award = defineType({
   preview: { select: { title: "title", subtitle: "year" } },
 });
 
-/** Retail-backend "system" feature (home InfrastructureSection). Mirrors a
- *  seed `systems[]` entry; backs SYSTEMS_QUERY in src/lib/content.ts. */
-export const systemFeature = defineType({
-  name: "systemFeature",
-  title: "System Feature",
-  type: "document",
-  fields: [
-    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
-    defineField({ name: "text", title: "Text", type: "text", rows: 3 }),
-    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
-  ],
-  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
-  preview: { select: { title: "title" } },
-});
-
-/** Shop-in-shop scope point (marketing page SIS section). Mirrors a seed
- *  `sisScope[]` entry; backs SIS_SCOPE_QUERY in src/lib/content.ts. */
-export const sisPoint = defineType({
-  name: "sisPoint",
-  title: "Shop-in-Shop Scope Point",
-  type: "document",
-  fields: [
-    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
-    defineField({ name: "text", title: "Text", type: "text", rows: 3 }),
-    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
-  ],
-  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
-  preview: { select: { title: "title" } },
-});
-
 /** One of the four strengths the Marketing page argues to a brand audience.
  *  The home page argues the same four to a retailer audience via `pillar`;
  *  they are separate documents on purpose, so neither page reprints the
@@ -56,6 +26,39 @@ export const sisPoint = defineType({
 export const marketingStrength = defineType({
   name: "marketingStrength",
   title: "Marketing Strength (brand audience)",
+  type: "document",
+  fields: [
+    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "text", title: "Text", type: "text", rows: 3 }),
+    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
+  ],
+  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
+  preview: { select: { title: "title" } },
+});
+
+/** One step of the retailer visit cycle (marketing page "How we work").
+ *  A real sequence, so `order` is load-bearing: it drives the 01-04 numerals
+ *  the page renders. Mirrors a seed `marketingSteps[]` entry. */
+export const marketingStep = defineType({
+  name: "marketingStep",
+  title: "Marketing Step (retailer cycle)",
+  type: "document",
+  fields: [
+    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "text", title: "Text", type: "text", rows: 3 }),
+    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
+  ],
+  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
+  preview: { select: { title: "title" } },
+});
+
+/** One reason the Northeast needs its own distributor (marketing page "Why a
+ *  specialist"), written for a national brand manager. Four parallel
+ *  arguments rather than a sequence, so the page renders them with named
+ *  lead-ins and no numerals. Mirrors a seed `marketingReasons[]` entry. */
+export const marketingReason = defineType({
+  name: "marketingReason",
+  title: "Marketing Reason (why a specialist)",
   type: "document",
   fields: [
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),

@@ -14,6 +14,19 @@ if (typeof window !== "undefined") {
   // Mobile browsers fire resize when the URL bar shows/hides; ignoring it stops
   // needless ScrollTrigger refreshes (a common source of scroll jank).
   ScrollTrigger.config({ ignoreMobileResize: true });
+
+  // Every scroll trigger measures its start and end once, when its component
+  // mounts, and nothing recomputed them afterwards. The page is still moving at
+  // that point: Besley and Archivo swap in and re-set every heading, SplitText
+  // splits each h2 into words and reverts it when the reveal lands, and the
+  // images above settle. Each of those shifts everything below it, so triggers
+  // further down the page fire against stale offsets. The pillar card stack
+  // showed it worst, tucking its cards before the reader had reached them.
+  // Re-measure once the page has actually settled.
+  const refresh = () => ScrollTrigger.refresh();
+  document.fonts?.ready.then(refresh);
+  if (document.readyState === "complete") refresh();
+  else window.addEventListener("load", refresh, { once: true });
 }
 
 export { gsap, ScrollTrigger, SplitText, useGSAP };

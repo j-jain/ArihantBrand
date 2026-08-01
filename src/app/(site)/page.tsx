@@ -8,7 +8,6 @@ import {
   CurtainReveal,
   DrenchBand,
   HeroIntro,
-  InfrastructureSection,
   JsonLd,
   LogoMarquee,
   ParallaxImage,
@@ -16,15 +15,12 @@ import {
   SectionHeading,
   StaggerGroup,
   StatBand,
-  StoreCard,
-  WhatsAppIcon,
   cn,
   trackClass,
   initialsOf,
 } from "@/components";
 import { photoSlots } from "@/content/images";
 import { facts, phrase } from "@/content/facts";
-import { whatsappFor } from "@/lib/whatsapp";
 import { featuredTestimonialIndex } from "@/content/seed";
 import {
   getBusinesses,
@@ -36,7 +32,6 @@ import {
   getPosts,
   getSiteSettings,
   getStores,
-  getSystems,
   getTestimonials,
 } from "@/lib/content";
 import { localBusinessJsonLd, organizationJsonLd, pageMetadata } from "@/lib/seo";
@@ -68,7 +63,6 @@ export default async function HomePage() {
     businesses,
     partners,
     posts,
-    systems,
     testimonials,
     settings,
     stores,
@@ -80,7 +74,6 @@ export default async function HomePage() {
     getBusinesses(),
     getPartners(),
     getPosts(),
-    getSystems(),
     getTestimonials(),
     getSiteSettings(),
     getStores(),
@@ -90,15 +83,15 @@ export default async function HomePage() {
   if (!copy) notFound();
 
   const { hero, sections } = copy;
-  // HP10: the marquee used to open on whoever came first alphabetically
-  // (A-Cube, Amidhara, Azzurro), so a retailer scanning it for a name they
-  // already sell saw none. The labels carrying a verified national category
-  // lead now; the rest follow at every second partner, which keeps the track
-  // dense without listing the whole wall.
-  const anchorPartners = partners.filter((p) => p.category);
+  // Partners arrive from the content layer already in wall order, recognised
+  // national labels first (byPopularity, src/content/partners.ts), so the
+  // marquee only has to thin the tail: every second unranked label keeps the
+  // track dense without printing all 77.
   const marqueePartners = [
-    ...anchorPartners,
-    ...partners.filter((p) => !p.category).filter((_, i) => i % 2 === 0),
+    ...partners.filter((p) => p.rank !== undefined),
+    ...partners
+      .filter((p) => p.rank === undefined)
+      .filter((_, i) => i % 2 === 0),
   ];
   const latestPosts = posts.slice(0, 3);
   // The home page reserves one voice for itself; /recognition renders the rest.
@@ -111,8 +104,13 @@ export default async function HomePage() {
   // photograph is a content edit and the caption can never contradict the
   // store list.
   const featuredStore = stores.find((store) => Boolean(store.image));
-  // Shoppers only care about doors they can walk into today.
-  const openStores = stores.filter((store) => store.status === "Open");
+
+  // The proof quote is authored as a lead plus its follow-on lines so the break
+  // lives in the copy, not in markup. Rendered as one block below.
+  const proofLines = [
+    sections.proof.lead,
+    ...(sections.proof.body ?? []),
+  ].filter((line): line is string => Boolean(line));
 
   // Three figures above the fold, in the order a retailer weighs them: what
   // you can stock, who already buys, how long we have been at it. The fourth
@@ -124,11 +122,6 @@ export default async function HomePage() {
     .filter((stat): stat is NonNullable<typeof stat> => Boolean(stat));
   const warehouseFigure = groupStats.find((stat) => stat.id === "warehouse");
 
-  // The low-friction ask: most of this trade opens WhatsApp before a form.
-  // Routed through the same bilingual map as every other WhatsApp affordance,
-  // so a retailer's message opens in the language they will reply in (X5).
-  const brandListHref = whatsappFor("/brands", settings.defaultWhatsapp).href;
-
   return (
     <>
       <JsonLd data={organizationJsonLd(settings)} />
@@ -136,9 +129,9 @@ export default async function HomePage() {
 
       {/* 1 — Hero (paper): split headline + editorial garment image ---------- */}
       <section className="relative overflow-hidden bg-paper">
-        <HeroIntro className="container-site hero-pad relative">
+        <HeroIntro className="container-site hero-pad hero--home relative">
           <div className="grid items-center gap-x-10 gap-y-12 lg:grid-cols-12">
-            <div className="flex flex-col items-start gap-6 lg:col-span-7">
+            <div className="hero-copy flex flex-col items-start gap-6 lg:col-span-7">
               <EmphasisHeading
                 as="h1"
                 className="t-display text-ink"
@@ -152,31 +145,31 @@ export default async function HomePage() {
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              <div
-                data-hero-reveal
-                className="m-cta mt-1 flex flex-wrap items-center gap-x-6 gap-y-3"
-              >
-                <Button variant="primary" size="lg" href={hero.primaryCta.href}>
-                  {hero.primaryCta.label}
-                </Button>
-                {/* The cheap ask, beside the committing one. */}
-                <a
-                  href={brandListHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "hero-wa group inline-flex min-h-11 items-center gap-2 font-sans font-semibold text-ink transition-colors",
-                    trackClass("CTA brand list WhatsApp"),
-                  )}
-                >
-                  <span className="hero-wa__mark" aria-hidden="true">
-                    <WhatsAppIcon width={18} height={18} />
-                  </span>
-                  <span className="underline-offset-4 group-hover:underline">
-                    Brand list on WhatsApp
-                  </span>
-                </a>
-              </div>
+              {/* The hero's "Partner with us" button is gone. It said the same
+                  words as the header button two inches above it, and pointed
+                  somewhere else (/contact against the header's /partner), so
+                  the first screen asked twice and answered inconsistently. The
+                  header carries that ask; the same CTA closes the page. What
+                  stays here is the one thing the header cannot do in a line:
+                  send a reader to whichever of the three businesses is theirs. */}
+              {hero.secondaryCta ? (
+                <div data-hero-reveal className="mt-1">
+                  <Link
+                    href={hero.secondaryCta.href}
+                    className="group inline-flex min-h-11 items-center gap-1.5 font-sans font-semibold text-ink transition-colors hover:text-vermillion-deep"
+                  >
+                    <span className="underline decoration-line decoration-2 underline-offset-4 transition-colors group-hover:decoration-vermillion-deep">
+                      {hero.secondaryCta.label}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="text-vermillion-deep transition-transform group-hover:translate-x-0.5"
+                    >
+                      ▸
+                    </span>
+                  </Link>
+                </div>
+              ) : null}
 
               {/* HP1: the numbers win the first screen, not a scroll. */}
               {heroFigures.length ? (
@@ -280,17 +273,27 @@ export default async function HomePage() {
                 className="block h-[3px] w-14 rounded-full"
                 style={{ background: "var(--vermillion)" }}
               />
-              {sections.proof.lead ? (
-                <p
-                  className="font-display measure italic text-on-charcoal"
-                  style={{
-                    fontSize: "var(--text-h3)",
-                    fontWeight: 700,
-                    lineHeight: 1.28,
-                  }}
-                >
-                  {sections.proof.lead}
-                </p>
+              {/* The quote sets as two lines, not one paragraph: the award is
+                  the claim, the line beneath it is what that claim still buys
+                  today. Both carry the same display italic and sit on a hair
+                  gap, so they read as one statement broken for emphasis rather
+                  than as a lead with a caption under it. */}
+              {proofLines.length ? (
+                <div className="flex flex-col gap-1">
+                  {proofLines.map((line) => (
+                    <p
+                      key={line}
+                      className="font-display measure italic text-on-charcoal"
+                      style={{
+                        fontSize: "var(--text-h3)",
+                        fontWeight: 700,
+                        lineHeight: 1.28,
+                      }}
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </div>
               ) : null}
               {/* The record, in three lines: the award, the godowns and the
                   fairs. HP8 asks for the footfall claim on this page; stating
@@ -353,15 +356,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 5 — Infrastructure / systems (charcoal) --------------------------- */}
-      <InfrastructureSection
-        heading={sections.systems.heading}
-        lead={sections.systems.lead}
-        closing={sections.systems.body?.[0]}
-        systems={systems}
-      />
-
-      {/* 6 — Brand marquee (paper) ----------------------------------------- */}
+      {/* 5 — Brand marquee (paper) ----------------------------------------- */}
       <section className="bg-paper">
         <div className="container-site section-pad m-flow flex flex-col gap-10">
           <Reveal variant="fade">
@@ -384,42 +379,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6b — Visit our stores (paper-shade) -------------------------------- */}
-      {/* HP9: the fourth audience is a shopper who wants to know where to buy.
-          Every other section on this page talks to the trade; this one gives
-          that reader a town and a directions link and gets out of the way. */}
-      {openStores.length ? (
-        <section className="bg-paper-shade">
-          <div className="container-site section-pad m-flow flex flex-col gap-10">
-            <Reveal variant="fade">
-              <SectionHeading
-                heading="Visit our stores"
-                lead="Arihant Retail's own multi-brand floors, open to shoppers across the Northeast."
-              />
-            </Reveal>
-            <StaggerGroup
-              from="scale"
-              stagger={0.1}
-              className="m-rail grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]"
-            >
-              {openStores.map((store, i) => (
-                <StoreCard key={`${store.name}-${store.city}-${i}`} store={store} />
-              ))}
-            </StaggerGroup>
-            <p>
-              <Link
-                href="/arihant-retail"
-                className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
-              >
-                About Arihant Retail
-                <span aria-hidden="true">→</span>
-              </Link>
-            </p>
-          </div>
-        </section>
-      ) : null}
-
-      {/* 7 — Trade Notes teaser (paper-shade) ------------------------------ */}
+      {/* 6 — Trade Notes teaser (paper-shade) ------------------------------ */}
       {latestPosts.length > 0 ? (
         <section className="bg-paper-shade">
           <div className="container-site section-pad m-flow flex flex-col gap-10">
@@ -490,7 +450,7 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      {/* 8 — Voice strip (paper): featured quote (7) beside a real store photo (5) */}
+      {/* 7 — Voice strip (paper): featured quote (7) beside a real store photo (5) */}
       {featured ? (
         <section className="bg-paper">
           <div className="container-site section-pad m-flow flex flex-col gap-8">
@@ -574,7 +534,7 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      {/* 9 — CTA band (single vermillion drench) --------------------------- */}
+      {/* 8 — CTA band (single vermillion drench) --------------------------- */}
       <DrenchBand id="cta" className="section-pad">
         <div className="container-site m-flow flex flex-col items-start gap-6">
           <h2 data-drench-reveal className="t-h2 max-w-[20ch]">

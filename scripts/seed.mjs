@@ -26,8 +26,26 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { existsSync } from "node:fs";
+import { registerHooks } from "node:module";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@sanity/client";
+
+/* src/content/*.ts imports its siblings extensionless ("./facts"), which is
+ * right for the bundler but unresolvable to Node's ESM loader — type stripping
+ * does not bring TypeScript's extension inference with it. This hook appends
+ * ".ts" for relative specifiers that resolve to a real file, so the seed modules
+ * import unmodified. Nothing under src/ needs to change for the sake of this
+ * script. */
+registerHooks({
+  resolve(specifier, context, next) {
+    if (specifier.startsWith(".") && !/\.[cm]?[jt]s$/.test(specifier)) {
+      const candidate = new URL(`${specifier}.ts`, context.parentURL);
+      if (existsSync(fileURLToPath(candidate))) return next(`${specifier}.ts`, context);
+    }
+    return next(specifier, context);
+  },
+});
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const API_VERSION = "2025-06-01";
@@ -343,6 +361,18 @@ async function main() {
       order: i,
     });
   });
+  /** Funnel ids double as the inquiry-form intent, so they key the document. */
+  seed.funnels.forEach((f, i) => {
+    docs.push({
+      _id: `funnel-${f.id}`,
+      _type: "funnelCard",
+      id: f.id,
+      title: f.title,
+      text: f.text,
+      cta: cta(f.cta),
+      order: i,
+    });
+  });
   seed.pillars.forEach((p, i) => {
     docs.push({ _id: `pillar-${i}`, _type: "pillar", title: p.title, text: p.text, order: i });
   });
@@ -366,15 +396,17 @@ async function main() {
       order: i,
     });
   });
-  seed.systems.forEach((s, i) => {
-    docs.push({ _id: `systemfeature-${i}`, _type: "systemFeature", title: s.title, text: s.text, order: i });
-  });
-  seed.sisScope.forEach((s, i) => {
-    docs.push({ _id: `sispoint-${i}`, _type: "sisPoint", title: s.title, text: s.text, order: i });
-  });
 
   seed.marketingStrengths.forEach((p, i) => {
     docs.push({ _id: `strength-${i}`, _type: "marketingStrength", title: p.title, text: p.text, order: i });
+  });
+
+  seed.marketingSteps.forEach((p, i) => {
+    docs.push({ _id: `mktstep-${i}`, _type: "marketingStep", title: p.title, text: p.text, order: i });
+  });
+
+  seed.marketingReasons.forEach((p, i) => {
+    docs.push({ _id: `mktreason-${i}`, _type: "marketingReason", title: p.title, text: p.text, order: i });
   });
 
   /* 3) Commit as one transaction (createOrReplace = idempotent upsert). */

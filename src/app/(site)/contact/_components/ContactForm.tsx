@@ -6,13 +6,10 @@ import { submitLeadAction } from "@/app/actions/lead";
 import type { LeadInput, SiteSettings } from "@/content/types";
 
 type Intent = LeadInput["intent"];
-const INTENTS: readonly Intent[] = [
-  "retailer",
-  "brand",
-  "franchise",
-  "careers",
-  "other",
-];
+/** Matches InquiryForm's chooser exactly. `careers` is a valid stored intent on
+ *  old leads but is no longer offered, so a stale ?intent=careers link falls
+ *  through to the chooser rather than opening a step 2 with no chip. */
+const INTENTS: readonly Intent[] = ["retailer", "brand", "franchise", "other"];
 
 /** Client wrapper so /contact stays statically rendered: the server page never
  *  reads searchParams. `useSearchParams()` runs here inside a <Suspense>

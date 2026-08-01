@@ -20,7 +20,7 @@ npm run dev        # http://localhost:3000
 
 1. Create a free account at [sanity.io](https://www.sanity.io) (Google login works).
 2. Create a new project (name it "Arihant Group"; dataset `production`, private is fine for the dataset visibility since the site reads via API).
-3. Copy `.env.example` to `.env.local` and fill:
+3. Open `.env.local` in the project root (already created, gitignored; if missing, copy `.env.example`) and fill:
    - `NEXT_PUBLIC_SANITY_PROJECT_ID` — from sanity.io → project settings
    - `NEXT_PUBLIC_SANITY_DATASET` — `production`
    - `SANITY_API_TOKEN` — project settings → API → Tokens → create one with **Editor** permissions (used for seeding and for saving form leads)
@@ -29,7 +29,7 @@ npm run dev        # http://localhost:3000
    ```bash
    npm run seed
    ```
-   This upserts everything — site settings, businesses, partners, stores, the 10 composite testimonials, FAQs, blog posts, page copy, and the Awards, System Features and Shop-in-Shop Scope entries. Re-running is safe — it updates rather than duplicates.
+   This upserts everything — site settings, businesses, partners, stores, the 10 composite testimonials, FAQs, blog posts, page copy, and the Awards entries. Re-running is safe — it updates rather than duplicates.
 6. Add the same three env vars in Vercel → project → Settings → Environment Variables, and redeploy.
 
 ## 4. Editing content (for the Arihant team)
@@ -44,8 +44,9 @@ Open **`/studio`** on the deployed site (e.g. `arihantgroup.in/studio`) and log 
 - **FAQs** — per-page questions (partner page, marketing page).
 - **Trade Notes** — blog posts (title, excerpt, typed body blocks).
 - **Awards & Recognition** — the `/recognition` trophy-case entries (CMAI 2015 Best Distributor of India, NEGTA founder membership, exhibition footfall): year/marker, title, issuer, detail.
-- **System Features** — the home infrastructure/systems cards (the qualitative "AI-driven, data-backed retail backend" claim — keep it qualitative, no invented metrics).
-- **Shop-in-Shop Scope** — the SIS scope points listed on the marketing page.
+- **Home Funnel Cards** — the two audience cards on the home page (stock our brands / own a managed store). The **Selector id** must stay `retailer` or `franchise`, because it is what routes the card to the matching inquiry-form intent. Change the title, text and CTA freely; do not rename the id.
+- **Group Stats**, **Why-Arihant Pillars**, **Value Panels**, **Timeline**, **Partner Process Steps** — the numbered/listed blocks on the home, about and partner pages.
+- **Marketing Strengths / Steps / Reasons** — the three list blocks on the Arihant Marketing page.
 - **Pages** — headings, hero copy and meta titles/descriptions per page.
 - **Leads** — every inquiry-form submission appears here (New/All views). Update the status as you follow up.
 

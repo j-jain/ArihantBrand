@@ -38,6 +38,5 @@ export { CurtainReveal } from "./motion/CurtainReveal";
 export { CardsStack } from "./CardsStack";
 export { CardFan } from "./motion/CardFan";
 export { TestimonialColumns } from "./TestimonialColumns";
-export { InfrastructureSection } from "./InfrastructureSection";
 export { ValuePanels } from "./ValuePanels";
 export { VideoFeature } from "./VideoFeature";

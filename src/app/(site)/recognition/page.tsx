@@ -7,9 +7,9 @@ import {
   DrenchBand,
   HeroIntro,
   JsonLd,
+  Reveal,
   SectionHeading,
   TestimonialColumns,
-  Timeline,
 } from "@/components";
 import {
   getAwards,
@@ -161,17 +161,32 @@ export default async function RecognitionPage() {
         </section>
       ) : null}
 
-      {/* 3 — Timeline (paper-shade) ----------------------------------------- */}
-      {/* R7: this was a 6-cell grid of year + title, which gave a reader six
-          labels and no account of anything. It is the same Timeline the About
-          page uses, so each year carries its story here too. */}
+      {/* 3 — Milestones (paper-shade) --------------------------------------- */}
+      {/* A strip, not a story: six years read across in one glance, which is
+          what a trophy page wants between the awards above and the voices
+          below. The scroll-driven Timeline stays on /about, where the years
+          are the argument rather than a footnote to it. */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad m-flow flex flex-col gap-10">
-          <SectionHeading
-            heading={sections.milestones.heading}
-            lead={sections.milestones.lead}
-          />
-          <Timeline entries={timeline} />
+        <div className="container-site section-pad m-flow flex flex-col gap-8">
+          <SectionHeading heading={sections.milestones.heading} />
+          <Reveal variant="fade">
+            <ol className="milestones grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
+              {timeline.map((entry) => (
+                <li
+                  key={entry.year}
+                  className="milestone flex flex-col gap-1 bg-paper px-4 py-5"
+                >
+                  <span
+                    className="font-display text-ink"
+                    style={{ fontWeight: 700, fontSize: "1.15rem", lineHeight: 1.2 }}
+                  >
+                    {entry.year}
+                  </span>
+                  <span className="t-small text-ink-soft">{entry.title}</span>
+                </li>
+              ))}
+            </ol>
+          </Reveal>
         </div>
       </section>
 

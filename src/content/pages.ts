@@ -20,7 +20,11 @@ export const pages: Record<string, PageCopy> = {
     sections: {
       proof: {
         heading: "What the record says",
-        lead: `Best Distributor of India, CMAI ${facts.marketing.awardYear}. The same discipline runs every route out of Guwahati today.`,
+        // Two lines, deliberately. The award is the claim; the sentence under
+        // it is what the claim still buys you today. Run together they read as
+        // one long boast, so the second sentence starts its own line.
+        lead: `Best Distributor of India, CMAI ${facts.marketing.awardYear}.`,
+        body: ["The same discipline runs every route out of Guwahati today."],
       },
       why: {
         heading: "Why the trade buys from us",
@@ -29,13 +33,6 @@ export const pages: Record<string, PageCopy> = {
       businesses: {
         heading: "Three businesses, one standard",
         lead: "Two distribution houses and a retail arm. Start with the one that matches your business.",
-      },
-      systems: {
-        heading: "The systems behind the visits",
-        lead: "Buying, replenishment and reporting run on data rather than memory.",
-        body: [
-          "None of this is visible from your counter. That is the point of it.",
-        ],
       },
       brands: {
         heading: "The brands we carry",
@@ -67,8 +64,10 @@ export const pages: Record<string, PageCopy> = {
     },
     sections: {
       award: {
-        heading: "Best Distributor of India, 2015",
-        lead: "Awarded by the Clothing Manufacturers Association of India. In this trade, that is the reference that needs no explaining.",
+        // The year is set beside this as a numeral at signage scale, so the
+        // heading no longer carries it twice.
+        heading: "Best Distributor of India",
+        lead: `Awarded by the Clothing Manufacturers Association of India in ${facts.marketing.awardYear}. In this trade, that is the reference that needs no explaining.`,
       },
       strengths: {
         heading: "What a brand gets from us",
@@ -76,27 +75,11 @@ export const pages: Record<string, PageCopy> = {
       },
       how: {
         heading: "How we work with retailers",
-        lead: `Four steps, on a ${phrase.visitCycle} cycle.`,
-        body: [
-          `We map your counter to the right mix from our ${phrase.marketingBrands}-brand portfolio: depth where your customer shops, nothing that will sit.`,
-          "A representative stands in your store on a fixed cycle. Reorders, claims and market feedback move face to face.",
-          `Indents are picked and dispatched from ${phrase.marketingWarehouse} of organised Guwahati warehousing, on fixed timelines.`,
-          "Claims and settlements move on paper, on schedule, so your capital keeps rotating.",
-        ],
+        lead: `Four steps, repeating every ${phrase.visitCycle}.`,
       },
       specialist: {
         heading: "Why the Northeast needs a specialist",
-        lead: "This is not a smaller version of the east zone. Four things make it a separate distribution problem:",
-        body: [
-          `Seven states, seven tax and transit regimes, and freight that arrives through one corridor. A plan drawn for Kolkata does not survive contact with it.`,
-          "Season shapes differ. Winter is short and sharp, the festival calendar is not the mainland's, and wedding weeks move the whole quarter.",
-          "The counters that matter are independent multi-brand stores, most of them held by families who have bought from the same house for decades. Cold entry does not open them.",
-          "Sizes, price points and colour preferences are their own. An assortment cut for a metro arrives with its best-selling half unsold.",
-        ],
-      },
-      sis: {
-        heading: "Shop-in-shop counters, without the investment",
-        lead: "Brands entering the Northeast do not need to build a field force or fund a fit-out. Our shop-in-shop (SIS) counters need no fixture investment from you, and staff are optional.",
+        lead: "This is not a smaller version of the east zone. Four things make it a separate distribution problem.",
       },
       brands: {
         heading: "The labels we move",
@@ -298,42 +281,6 @@ export const pages: Record<string, PageCopy> = {
     sections: {},
   },
 
-  careers: {
-    metaTitle: "Careers at Arihant Group, Guwahati | Garment Trade Jobs",
-    metaDescription:
-      "Field sales, warehouse and store roles across Northeast India's garment trade. Apply to Arihant Group, Guwahati.",
-    hero: {
-      heading: "Work in the trade, not around it",
-      headingEmphasis: "the trade",
-      lead: `We hire people who want to be in stores and godowns, not in meetings about them. ${facts.group.years} years, three businesses, and a bench that mostly grew up inside the house.`,
-      primaryCta: { label: "Apply", href: "#inquiry" },
-    },
-    sections: {
-      roles: {
-        heading: "What we hire for",
-        lead: "Openings come and go. These are the roles that recur.",
-        body: [
-          "Field sales representatives, covering a set of towns on a fixed visit cycle.",
-          "Warehouse and dispatch staff, in Guwahati.",
-          "Shop-in-shop promoters and supervisors, in modern trade.",
-          "Store staff for Arihant Retail floors across the Northeast.",
-          "Accounts and back-office, in Guwahati.",
-        ],
-      },
-      working: {
-        heading: "What it is actually like",
-        lead: "Two things worth knowing before you apply.",
-        body: [
-          `Most of these roles travel. A field representative is on the road most of the month, because standing in a retailer's store every ${phrase.visitCycle} is the job, not an add-on to it.`,
-          "Nobody here is left to work it out alone. New staff go out with someone who has run the route for years, and stay with them until the counters know them by name.",
-        ],
-      },
-      apply: {
-        heading: "Send us your details",
-        lead: "Tell us the role you are after and where you are based. We will call you if there is a fit.",
-      },
-    },
-  },
 
   contact: {
     metaTitle: "Contact Arihant Group, Guwahati | Trade Inquiries",

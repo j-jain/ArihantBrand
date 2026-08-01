@@ -59,6 +59,10 @@ export interface Partner {
   /** Verified product category for well-known national labels (optional —
    *  design never depends on it; obscure regional labels stay untagged). */
   category?: string;
+  /** Display rank on brand walls: the labels a retailer is most likely to
+   *  recognise lead, lowest first. Presentation only — it makes no claim about
+   *  sales, and unranked labels simply follow in their existing order. */
+  rank?: number;
 }
 
 /** A named, real team member with a designation. Seeded per unit; the roster

@@ -10,7 +10,12 @@ import { testimonial } from "./testimonial";
 import { post } from "./post";
 import { page } from "./page";
 import { funnelCard, pillar, valuePanel, timelineEntry, processStep, groupStat } from "./groupContent";
-import { award, marketingStrength, systemFeature, sisPoint } from "./award";
+import {
+  award,
+  marketingReason,
+  marketingStep,
+  marketingStrength,
+} from "./award";
 import { lead } from "./lead";
 
 /** All schema types registered with the Studio. Object types (cta, stat,
@@ -37,8 +42,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   processStep,
   groupStat,
   award,
-  systemFeature,
-  sisPoint,
   marketingStrength,
+  marketingStep,
+  marketingReason,
   lead,
 ];

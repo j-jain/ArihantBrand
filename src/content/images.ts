@@ -278,8 +278,11 @@ export type StockImageKey = keyof typeof stockImages;
 export const photoSlots = {
   /* ---- Home ---------------------------------------------------- HP3 */
   homeHero: {
-    src: stockImages.homeTexture.src,
-    alt: stockImages.homeTexture.alt,
+    // A clothing floor rather than a fabric swatch: the first photograph on the
+    // site should show the business the group is actually in. Native portrait,
+    // so the 4/5 frame takes it without a hard crop.
+    src: stockImages.retailInterior2.src,
+    alt: stockImages.retailInterior2.alt,
     ratio: "4 / 5",
     real: false,
     wanted:
@@ -292,13 +295,6 @@ export const photoSlots = {
     real: false,
     wanted: "Wide shot of the racking in either godown, used at low opacity behind the award band.",
   },
-  homeSystems: {
-    src: stockImages.systemsWarehouse1.src,
-    alt: stockImages.systemsWarehouse1.alt,
-    ratio: "4 / 5",
-    real: false,
-    wanted: "The dispatch desk with the dashboards on screen.",
-  },
 
   /* ---- Arihant Marketing --------------------------------------- AM4 */
   marketingWarehouse: {
@@ -309,14 +305,26 @@ export const photoSlots = {
     wanted:
       "Portrait of the 15,000 sq ft Marketing godown: binned stock, a picker mid-indent.",
   },
-  marketingBandGround: {
-    src: stockImages.marketingWarehouse2.src,
-    alt: "",
+  /* The award band stands on the trophy itself. It is a real object we hold,
+     photographed as it sits, which is worth more to a brand manager than a
+     stock godown dimmed to 30% behind a headline. */
+  marketingAward: {
+    // The file is 899x1599, so a 2/3 frame trims about 16% of the height. The
+    // object-position in .am-award__object spends that on the empty tabletop
+    // below the plaque rather than on the trophy.
+    src: "/images/photos/awards/award-distributor-of-the-year.jpg",
+    alt: "The Golden Star Seller Distributor of the Year trophy awarded to Arihant Marketing",
+    ratio: "2 / 3",
+    real: true,
+  },
+  marketingCorridor: {
+    src: stockImages.blog2.src,
+    alt: stockImages.blog2.alt,
     ratio: "16 / 9",
     real: false,
-    wanted: "Wide godown shot for the award band ground.",
+    wanted:
+      "A loaded Arihant vehicle on the Guwahati corridor, shot from the roadside.",
   },
-
   /* ---- Arihant Apparels ---------------------------------------- AA6 */
   apparelsWarehouse: {
     src: "/images/photos/apparels-warehouse-2.jpg",
