@@ -24,8 +24,8 @@ export function SiteFooter({ settings }: SiteFooterProps) {
       <div className="container-site section-pad relative">
         {/* Top row: reach line + contact channels (left), map (right). On
             mobile the columns stack, so the map falls after the channels. */}
-        <div className="footer-top grid items-start lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7">
+        <div className="footer-top grid items-start md:grid-cols-12 md:gap-16">
+          <div className="md:col-span-7">
             <h2 className="t-h3 text-on-charcoal">
               From Guwahati to counters across the Northeast.
             </h2>
@@ -33,7 +33,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
               <ContactChannels contacts={settings.contacts} compact />
             </div>
           </div>
-          <div className="footer-map mt-12 lg:col-span-5 lg:mt-0">
+          <div className="footer-map mt-12 md:col-span-5 md:mt-0">
             <NetworkMap />
           </div>
         </div>

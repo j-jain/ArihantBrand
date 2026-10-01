@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { Fragment, type CSSProperties } from "react";
 import type { UnitContact } from "@/content/types";
 import { cn } from "./cn";
 import { MailIcon, PhoneIcon, WhatsAppIcon } from "./icons";
@@ -27,7 +27,7 @@ export function ContactChannels({
     <div
       className={cn(
         "channels grid gap-x-8 gap-y-10",
-        compact ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-3",
+        compact ? "sm:grid-cols-3" : "sm:grid-cols-2 md:grid-cols-3",
       )}
     >
       {contacts.map((contact) => (
@@ -82,7 +82,17 @@ export function ContactChannels({
                 <span className="channel-icon">
                   <MailIcon />
                 </span>
-                <span className="break-all">{contact.email}</span>
+                {/* Break only before the "@" and the dots after it, never
+                    mid-word: "accounts@arihantmar / keting.net" read as two
+                    addresses. */}
+                <span>
+                  {contact.email.split(/(?=[@.])/).map((part, i) => (
+                    <Fragment key={i}>
+                      {i > 0 ? <wbr /> : null}
+                      {part}
+                    </Fragment>
+                  ))}
+                </span>
               </a>
             </li>
           </ul>

@@ -13,17 +13,20 @@
 import type {
   Award,
   Business,
+  CalculatorField,
   Cta,
   Faq,
   Funnel,
   Hero,
   LeaderPortrait,
+  ModelPillarId,
   PageCopy,
   Partner,
   Post,
   PostBlock,
   ProcessStep,
   RecognitionPhoto,
+  RetailModel,
   SiteSettings,
   Stat,
   Store,
@@ -54,6 +57,7 @@ import {
   pillars as seedPillars,
   posts as seedPosts,
   recognitionPhotos as seedRecognitionPhotos,
+  retailModel as seedRetailModel,
   siteSettings as seedSiteSettings,
   stores as seedStores,
   team as seedTeam,
@@ -173,11 +177,46 @@ interface RawPartner {
   category?: string | null;
   rank?: number | null;
 }
+const MODEL_PILLAR_IDS: readonly ModelPillarId[] = [
+  "zero-deadstock",
+  "multi-brand",
+  "no-frills",
+  "company-run",
+];
+
+function isModelPillarId(value: unknown): value is ModelPillarId {
+  return MODEL_PILLAR_IDS.includes(value as ModelPillarId);
+}
+
+interface RawRetailModel {
+  roicNote?: string | null;
+  pillars?: ({ id?: string | null; title: string; text: string } | null)[] | null;
+  calculator?: {
+    triggerLabel?: string | null;
+    heading?: string | null;
+    lead?: string | null;
+    fields?: Partial<
+      Record<
+        keyof RetailModel["calculator"]["fields"],
+        { label?: string | null; help?: string | null } | null
+      >
+    > | null;
+    results?: Partial<
+      Record<keyof RetailModel["calculator"]["results"], string | null>
+    > | null;
+    disclosure?: string | null;
+    resultNote?: string | null;
+    leftOverNote?: string | null;
+    cta?: Cta | null;
+  } | null;
+}
+
 interface RawStore {
   name: string;
   city?: string | null;
   format: Store["format"];
   status: Store["status"];
+  ownership?: Store["ownership"] | null;
   image?: SanityImage;
   imagePath?: string | null;
   caption?: string | null;
@@ -236,6 +275,7 @@ interface RawPost {
   image?: SanityImage;
   imagePath?: string | null;
   imageAlt?: string | null;
+  author?: { name?: string | null; role?: string | null; sourceUrl?: string | null } | null;
   body?: RawPostBlock[] | null;
 }
 interface RawContact {
@@ -265,6 +305,7 @@ interface RawHero {
   heading?: string | null;
   headingEmphasis?: string | null;
   lead?: string | null;
+  points?: string[] | null;
   primaryCta?: RawCta | null;
   secondaryCta?: RawCta | null;
 }
@@ -360,6 +401,7 @@ function mapStore(s: RawStore): Store {
     city: s.city ?? "",
     format: s.format,
     status: s.status,
+    ...(s.ownership ? { ownership: s.ownership } : {}),
     ...(image ? { image } : {}),
     ...(s.caption ? { caption: s.caption } : {}),
     ...(s.mapsQuery ? { mapsQuery: s.mapsQuery } : {}),
@@ -393,6 +435,15 @@ function mapPost(p: RawPost): Post {
     metaDescription: p.metaDescription ?? "",
     ...(image ? { image } : {}),
     ...(p.imageAlt ? { imageAlt: p.imageAlt } : {}),
+    ...(p.author?.name
+      ? {
+          author: {
+            name: p.author.name,
+            role: p.author.role ?? "",
+            ...(p.author.sourceUrl ? { sourceUrl: p.author.sourceUrl } : {}),
+          },
+        }
+      : {}),
     body: (p.body ?? []).map(mapPostBlock).filter((b): b is PostBlock => b !== null),
   };
 }
@@ -427,6 +478,7 @@ function mapHero(h: RawHero): Hero {
     heading: h.heading ?? "",
     ...(h.headingEmphasis ? { headingEmphasis: h.headingEmphasis } : {}),
     lead: h.lead ?? "",
+    ...(h.points?.length ? { points: h.points } : {}),
     primaryCta: h.primaryCta ? mapCta(h.primaryCta) : { label: "", href: "#" },
     ...(h.secondaryCta ? { secondaryCta: mapCta(h.secondaryCta) } : {}),
   };
@@ -470,8 +522,22 @@ const PARTNERS_QUERY = `*[_type == "partner"] | order(order asc){
   name, "slug": slug.current, unit, image, imagePath, category, rank
 }`;
 
+const RETAIL_MODEL_QUERY = `*[_type == "retailModel"][0]{
+  roicNote,
+  pillars[]{ id, title, text },
+  calculator{
+    triggerLabel, heading, lead,
+    fields{
+      area{ label, help }, rent{ label, help }, sales{ label, help },
+      margin{ label, help }, otherCosts{ label, help }
+    },
+    results{ grossMargin, statedCosts, leftOver, salesPerSqFt, rentShare, empty },
+    disclosure, resultNote, leftOverNote, cta{ label, href }
+  }
+}`;
+
 const STORES_QUERY = `*[_type == "store"] | order(order asc){
-  name, city, format, status, image, imagePath, caption, mapsQuery
+  name, city, format, status, ownership, image, imagePath, caption, mapsQuery
 }`;
 
 const FAQS_ALL_QUERY = `*[_type == "faq"] | order(order asc){ question, answer, bullets, page }`;
@@ -490,7 +556,7 @@ const TESTIMONIALS_QUERY = `*[_type == "testimonial" && published == true] | ord
 
 const POST_PROJECTION = `{
   title, "slug": slug.current, excerpt, date, audience, readMinutes, metaDescription,
-  image, imagePath, imageAlt,
+  image, imagePath, imageAlt, author{ name, role, sourceUrl },
   body[]{ _type, text, items }
 }`;
 const POSTS_QUERY = `*[_type == "post"] | order(date desc)${POST_PROJECTION}`;
@@ -498,7 +564,7 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]${POST_PROJECT
 
 const PAGE_QUERY = `*[_type == "page" && pageId == $pageId][0]{
   metaTitle, metaDescription,
-  hero{ heading, headingEmphasis, lead,
+  hero{ heading, headingEmphasis, lead, points,
     primaryCta{ label, href }, secondaryCta{ label, href } },
   sections[]{ key, heading, lead, body }
 }`;
@@ -683,7 +749,14 @@ export function getPageCopy(pageId: string): Promise<PageCopy | undefined> {
     { pageId },
     ["page"],
     (raw) => raw == null || !raw.hero,
-    (raw) => mapPage(raw as RawPage),
+    (raw) => {
+      // Seed sections sit UNDER the Sanity ones, key by key. Page code reads
+      // `sections.x.heading` directly, so a section key the Studio document
+      // does not carry yet (a new band shipped before a re-seed) falls back to
+      // its seed copy instead of throwing on undefined.
+      const page = mapPage(raw as RawPage);
+      return seed ? { ...page, sections: { ...seed.sections, ...page.sections } } : page;
+    },
     seed,
   );
 }
@@ -743,6 +816,77 @@ export function getValues(): Promise<Pillar[]> {
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedValues,
+  );
+}
+
+/** The Arihant Retail managed-store model: four pillars, the qualitative ROIC
+ *  line and every string the returns worksheet prints.
+ *
+ *  The emptiness test is stricter than the usual "did the array come back":
+ *  a half-filled Studio document must not be able to publish a worksheet
+ *  without its disclosure, because that sentence is the honesty rail. If the
+ *  document is missing recognised pillars, the disclosure, or the CTA target,
+ *  the whole object falls back to seed rather than rendering a partial one. */
+export function getRetailModel(): Promise<RetailModel> {
+  return fromSanity<RawRetailModel, RetailModel>(
+    "getRetailModel",
+    RETAIL_MODEL_QUERY,
+    {},
+    ["retailModel"],
+    (raw) =>
+      !raw ||
+      !raw.pillars?.some((p) => isModelPillarId(p?.id)) ||
+      !raw.calculator?.disclosure?.trim() ||
+      !raw.calculator?.cta?.href,
+    (raw) => {
+      const seedCalc = seedRetailModel.calculator;
+      const c = raw.calculator;
+      const field = (
+        key: keyof RetailModel["calculator"]["fields"],
+      ): CalculatorField => ({
+        label: c?.fields?.[key]?.label ?? seedCalc.fields[key].label,
+        help: c?.fields?.[key]?.help ?? seedCalc.fields[key].help,
+      });
+      const result = (
+        key: keyof RetailModel["calculator"]["results"],
+      ): string => c?.results?.[key] ?? seedCalc.results[key];
+
+      return {
+        roicNote: raw.roicNote ?? seedRetailModel.roicNote,
+        // Editor order is respected. An unrecognised id is dropped rather than
+        // rendered without the figure that belongs beside it.
+        pillars: (raw.pillars ?? [])
+          .filter((p): p is { id: ModelPillarId; title: string; text: string } =>
+            isModelPillarId(p?.id),
+          )
+          .map((p) => ({ id: p.id, title: p.title, text: p.text })),
+        calculator: {
+          triggerLabel: c?.triggerLabel ?? seedCalc.triggerLabel,
+          heading: c?.heading ?? seedCalc.heading,
+          lead: c?.lead ?? seedCalc.lead,
+          fields: {
+            area: field("area"),
+            rent: field("rent"),
+            sales: field("sales"),
+            margin: field("margin"),
+            otherCosts: field("otherCosts"),
+          },
+          results: {
+            grossMargin: result("grossMargin"),
+            statedCosts: result("statedCosts"),
+            leftOver: result("leftOver"),
+            salesPerSqFt: result("salesPerSqFt"),
+            rentShare: result("rentShare"),
+            empty: result("empty"),
+          },
+          disclosure: c?.disclosure ?? seedCalc.disclosure,
+          resultNote: c?.resultNote ?? seedCalc.resultNote,
+          leftOverNote: c?.leftOverNote ?? seedCalc.leftOverNote,
+          cta: c?.cta ?? seedCalc.cta,
+        },
+      };
+    },
+    seedRetailModel,
   );
 }
 

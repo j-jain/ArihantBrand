@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { cn } from "./cn";
@@ -10,6 +10,15 @@ interface ModalProps {
   onClose: () => void;
   /** id of the element that titles the dialog (for aria-labelledby). */
   labelledBy?: string;
+  /** id of the element that describes the dialog (for aria-describedby).
+   *  Used where the panel carries a disclosure a reader must hear on open. */
+  describedBy?: string;
+  /** Element to focus when the dialog opens, instead of the browser default.
+   *  Modal owns this rather than the caller because Modal owns the entrance
+   *  tween, and the two have to agree: a caller focusing on its own could not
+   *  know that the panel spends its first frame hidden. Applied synchronously
+   *  with `showModal()`, so it does not depend on the animation running. */
+  initialFocusRef?: RefObject<HTMLElement | null>;
   children: ReactNode;
   className?: string;
 }
@@ -23,6 +32,8 @@ export function Modal({
   open,
   onClose,
   labelledBy,
+  describedBy,
+  initialFocusRef,
   children,
   className,
 }: ModalProps) {
@@ -51,17 +62,27 @@ export function Modal({
       if (reduce) {
         gsap.set([dialog, panel], { clearProps: "opacity,visibility,transform" });
       } else {
+        // Opacity, not autoAlpha, on the way in. autoAlpha's `visibility:
+        // hidden` at progress 0 makes the panel unfocusable for the first
+        // frame, which silently drops the focus call below and lets the
+        // browser fall back to focusing `.modal__panel` (Chrome treats it as
+        // focusable because it scrolls). Nothing needs visibility here:
+        // `.modal:not([open])` is already `display: none`.
         gsap.fromTo(
           dialog,
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.2, ease: "power2.out" },
+          { opacity: 0 },
+          { opacity: 1, duration: 0.2, ease: "power2.out" },
         );
         gsap.fromTo(
           panel,
-          { autoAlpha: 0, y: 26, scale: 0.985 },
-          { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, ease: "power3.out" },
+          { opacity: 0, y: 26, scale: 0.985 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: "power3.out" },
         );
       }
+      // Synchronously, and deliberately not from a tween callback: a tab that
+      // is not receiving animation frames still has to put focus in the right
+      // place. Tying this to onComplete made focus depend on the ticker.
+      initialFocusRef?.current?.focus();
     } else if (!open && dialog.open) {
       const finish = () => {
         dialog.close();
@@ -73,21 +94,21 @@ export function Modal({
         finish();
       } else {
         gsap.to(panel, {
-          autoAlpha: 0,
+          opacity: 0,
           y: 16,
           scale: 0.99,
           duration: 0.2,
           ease: "power2.in",
         });
         gsap.to(dialog, {
-          autoAlpha: 0,
+          opacity: 0,
           duration: 0.24,
           ease: "power2.in",
           onComplete: finish,
         });
       }
     }
-  }, [open, reduce]);
+  }, [open, reduce, initialFocusRef]);
 
   // Escape (native 'cancel') and backdrop clicks route through onClose so the
   // exit animation runs instead of the browser closing the dialog instantly.
@@ -123,6 +144,7 @@ export function Modal({
       ref={dialogRef}
       className={cn("modal", className)}
       aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
     >
       <div ref={panelRef} className="modal__panel">
         <button

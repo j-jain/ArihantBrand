@@ -89,7 +89,27 @@ export default async function ArticlePage({
                   {post.title}
                 </h1>
                 <p data-hero-reveal className="t-small text-ink-soft">
+                  {post.author ? (
+                    <>
+                      By{" "}
+                      <span className="font-semibold text-ink">{post.author.name}</span>
+                      {post.author.role ? `, ${post.author.role}` : null} ·{" "}
+                    </>
+                  ) : null}
                   {dateFmt.format(new Date(post.date))} · {post.readMinutes} min read
+                  {post.author?.sourceUrl ? (
+                    <>
+                      {" · "}
+                      <a
+                        href={post.author.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline underline-offset-4 hover:text-vermillion-deep"
+                      >
+                        Originally posted on LinkedIn
+                      </a>
+                    </>
+                  ) : null}
                 </p>
               </header>
 

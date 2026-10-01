@@ -126,7 +126,16 @@ async function main() {
   const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
   const token = process.env.SANITY_API_TOKEN;
 
-  if (!projectId || !token) {
+  /* `--dry-run [--out=file.json]` builds every document exactly as a real run
+   * would, writes them to a JSON file and stops: no asset uploads, no network,
+   * no credentials needed. Image fields are omitted (they need uploaded asset
+   * ids), so compare everything except `image`/`logo` against Sanity. Used to
+   * diff the seed against the live dataset before overwriting it. */
+  const dryRun = process.argv.includes("--dry-run");
+  const outArg = process.argv.find((a) => a.startsWith("--out="));
+  const outFile = outArg ? path.resolve(outArg.slice("--out=".length)) : path.join(ROOT, "seed-dry-run.json");
+
+  if (!dryRun && (!projectId || !token)) {
     console.log(`
   Sanity is not configured, so there is nothing to seed.
 
@@ -155,9 +164,15 @@ async function main() {
   const altForImage = (src) =>
     src ? (Object.values(stockImages).find((img) => img.src === src)?.alt ?? "") : "";
 
-  const client = createClient({ projectId, dataset, apiVersion: API_VERSION, token, useCdn: false });
+  const client = dryRun
+    ? null
+    : createClient({ projectId, dataset, apiVersion: API_VERSION, token, useCdn: false });
 
-  console.log(`\n  Seeding project "${projectId}" / dataset "${dataset}"…\n`);
+  console.log(
+    dryRun
+      ? `\n  Dry run: building documents only, nothing is sent to Sanity.\n`
+      : `\n  Seeding project "${projectId}" / dataset "${dataset}"…\n`,
+  );
 
   /* 1) Collect the images to upload (unique by file path). */
   const imageJobs = new Map(); // webPath -> absPath
@@ -172,7 +187,7 @@ async function main() {
   let uploaded = 0;
   let missingImages = 0;
 
-  await mapLimit(jobList, 4, async ([webPath, absPath]) => {
+  await mapLimit(dryRun ? [] : jobList, 4, async ([webPath, absPath]) => {
     try {
       const buffer = await fs.readFile(absPath);
       const asset = await client.assets.upload("image", buffer, {
@@ -190,6 +205,22 @@ async function main() {
 
   /* 2) Build documents with stable ids. */
   const docs = [];
+
+  // Retail model (singleton). Pillars need _key values; nothing in this
+  // document may carry a business figure (see src/content/seed.ts).
+  docs.push({
+    _id: "retailModel",
+    _type: "retailModel",
+    roicNote: seed.retailModel.roicNote,
+    pillars: seed.retailModel.pillars.map((p) => ({
+      _type: "object",
+      _key: p.id,
+      id: p.id,
+      title: p.title,
+      text: p.text,
+    })),
+    calculator: seed.retailModel.calculator,
+  });
 
   // Site settings (singleton)
   const ss = seed.siteSettings;
@@ -275,6 +306,7 @@ async function main() {
       city: s.city,
       format: s.format,
       status: s.status,
+      ...(s.ownership ? { ownership: s.ownership } : {}),
       ...(image ? { image } : {}),
       ...(s.image ? { imagePath: s.image } : {}),
       ...(s.caption ? { caption: s.caption } : {}),
@@ -328,6 +360,15 @@ async function main() {
       ...(p.imageAlt || altForImage(p.image)
         ? { imageAlt: p.imageAlt || altForImage(p.image) }
         : {}),
+      ...(p.author
+        ? {
+            author: {
+              name: p.author.name,
+              role: p.author.role,
+              ...(p.author.sourceUrl ? { sourceUrl: p.author.sourceUrl } : {}),
+            },
+          }
+        : {}),
       body: p.body.map((block, bi) => {
         const _key = `block-${bi}`;
         if (block.type === "p") return { _type: "pBlock", _key, text: block.text };
@@ -350,6 +391,7 @@ async function main() {
         heading: copy.hero.heading,
         ...(copy.hero.headingEmphasis ? { headingEmphasis: copy.hero.headingEmphasis } : {}),
         lead: copy.hero.lead,
+        ...(copy.hero.points?.length ? { points: copy.hero.points } : {}),
         primaryCta: cta(copy.hero.primaryCta),
         ...(copy.hero.secondaryCta ? { secondaryCta: cta(copy.hero.secondaryCta) } : {}),
       },
@@ -488,6 +530,12 @@ async function main() {
   seed.marketingReasons.forEach((p, i) => {
     docs.push({ _id: `mktreason-${i}`, _type: "marketingReason", title: p.title, text: p.text, order: i });
   });
+
+  if (dryRun) {
+    await fs.writeFile(outFile, JSON.stringify(docs, null, 2), "utf8");
+    console.log(`  Wrote ${docs.length} documents to ${outFile}\n`);
+    return;
+  }
 
   /* 3) Commit as one transaction (createOrReplace = idempotent upsert). */
   const tx = client.transaction();

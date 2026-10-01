@@ -126,6 +126,45 @@ html {
   scroll-padding-top: calc(5.5rem + 3px);
 }
 
+/* ------------------------------------------------------------------ */
+/* Proportional scale, 768px and up (change round 2)                   */
+/*                                                                      */
+/* From a tablet to a wide monitor the site is ONE composition. Nothing  */
+/* re-flows into a different arrangement as the window changes; it grows */
+/* and shrinks as a whole, like zooming. The mechanism is the root font  */
+/* size: it runs 13px at 768, 16px at 1440 (the reference the tokens     */
+/* were drawn at) and caps at 18px from about 1920. Everything sized in  */
+/* rem (type, spacing, the 72rem container, cards, the header) follows.  */
+/* It is written in rem so a reader's own browser font size still        */
+/* scales the whole thing.                                               */
+/*                                                                      */
+/* Rules that keep it honest:                                            */
+/*  - no `lg:`/`xl:` layout switches; a composition change happens at    */
+/*    768px or not at all (phones have their own layer, mobile.css);     */
+/*  - type and section rhythm are plain rem here, not vw clamps, so they */
+/*    scale once (through the root) instead of twice;                    */
+/*  - interaction gates (pointer tilt, Lenis, the value-panel expander)  */
+/*    may still key off 1024px, because they change behaviour, not the   */
+/*    arrangement.                                                       */
+/* ------------------------------------------------------------------ */
+
+@media (min-width: 768px) {
+  html {
+    font-size: clamp(0.8125rem, 0.598rem + 0.4464vw, 1.125rem);
+  }
+
+  :root {
+    --text-display: 4.75rem;
+    --text-h2: 3.4rem;
+    --text-h3: 2.05rem;
+    --text-lead: 1.3rem;
+    --text-stat: 4.4rem;
+    --gutter: 2.5rem;
+    --section-pad: 8.1rem;
+    --logo-cols: repeat(7, minmax(0, 1fr));
+  }
+}
+
 /* Lenis smooth-scroll reset (only active when the provider adds .lenis). */
 html.lenis,
 html.lenis body {
@@ -146,6 +185,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Entrance animations start some rows a few pixels to the right of where they
+   land; near the edge of a narrow window that briefly made the whole page
+   scroll sideways. `clip` (not `hidden`) trims it without creating a scroll
+   container, so position: sticky keeps working. Set on main, not body: a
+   body value is handed to the viewport, which turns it back into `hidden`. */
+main {
+  overflow-x: clip;
 }
 
 h1,
@@ -221,7 +269,7 @@ svg {
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  padding-inline: var(--gutter, clamp(1.25rem, 4vw, 2.5rem));
 }
 
 /* Header bar + Businesses panel: a touch wider than content so the desktop nav
@@ -230,18 +278,18 @@ svg {
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  padding-inline: var(--gutter, clamp(1.25rem, 4vw, 2.5rem));
 }
 
 .container-wide {
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  padding-inline: var(--gutter, clamp(1.25rem, 4vw, 2.5rem));
 }
 
 .section-pad {
-  padding-block: clamp(4.5rem, 9vw, 8.5rem);
+  padding-block: var(--section-pad, clamp(4.5rem, 9vw, 8.5rem));
 }
 
 /* Hero variant: the sticky header already supplies air above the headline, so
@@ -275,6 +323,82 @@ svg {
   .hero--home .stat-band--compact .stat-item {
     padding-block: clamp(0.55rem, 0.9vw, 0.7rem);
   }
+}
+
+/* Home hero, fitted to the first screen (change round 2). From 768px up the
+   hero is one viewport tall under the sticky header (bar + 3px rule + 1px
+   border), with a floor so a very short window scrolls rather than crushes.
+   The photo keeps its 4:5 frame where the screen allows and caps its height
+   where it does not, so the crop widens instead of the figures dropping below
+   the fold. Phones get their own arrangement in mobile.css. */
+@media (min-width: 768px) {
+  .hero--fit {
+    --hero-pad-y: 2rem;
+    --hero-h: max(32rem, calc(100svh - var(--header-h, 4rem) - 4px));
+    display: grid;
+    align-items: center;
+    min-height: var(--hero-h);
+    padding-block: var(--hero-pad-y);
+  }
+
+  .hero--fit .hero-frame {
+    max-height: calc(var(--hero-h) - var(--hero-pad-y) * 2);
+  }
+
+  /* On a short, wide screen (1280 by 720, 1366 by 768) the headline is what pushes
+     the figures off the first screen, so its size is also bounded by the
+     viewport's height. On taller screens the width-scaled token wins. */
+  .hero--fit .t-display {
+    font-size: min(var(--text-display), 8.2svh);
+  }
+
+/* Sentence-length display headline (see EmphasisHeading): one step down, at
+   every width. Doubled class so it outranks the phone layer's .t-display. */
+.t-display.t-display--long {
+  font-size: calc(var(--text-display) * 0.74);
+  line-height: 1.1;
+}
+}
+
+/* The two figure lines under the home lead. Each reads as one sentence; only
+   the figure changes face, set in the condensed stat cut so it carries the
+   weight a stat tile used to, without the box. Inline, not flex, so the spaces
+   either side of the figure survive. */
+.hero-points {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.hero-points__row {
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.hero-points__fig {
+  display: inline-block;
+  margin-inline: 0.05em;
+  font-weight: 800;
+  font-stretch: 85%;
+  font-size: 1.85em;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  vertical-align: -0.08em;
+}
+
+.hero-points__text {
+  color: var(--ink-soft);
 }
 
 /* Charcoal full-bleed scope: swaps text/line indirection vars so plain
@@ -936,10 +1060,10 @@ svg {
   max-width: 72rem;
   margin-inline: auto;
   margin-top: 2.5rem;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  padding-inline: var(--gutter, clamp(1.25rem, 4vw, 2.5rem));
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .am-promise {
     --am-g: clamp(1.25rem, 4vw, 2.5rem);
     --am-content: min(72rem - var(--am-g) * 2, 100% - var(--am-g) * 2);
@@ -1068,6 +1192,25 @@ svg {
 
 .award-row__year {
   letter-spacing: 0.1em;
+}
+
+/* Home awards band: the same ruled case, tighter, because it shares its row
+   with the testimonial wall instead of owning a whole band. */
+.award-list--compact .award-row {
+  gap: 0.25rem;
+  padding-block: 1.15rem;
+}
+
+.award-list--compact .award-row--lead {
+  padding-block: 1.5rem;
+}
+
+.award-list--compact .award-row::before {
+  top: 1.15rem;
+}
+
+.award-list--compact .award-row--lead::before {
+  top: 1.5rem;
 }
 
 /* Store card                                                          */

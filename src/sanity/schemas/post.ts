@@ -45,6 +45,18 @@ export const post = defineType({
       rows: 2,
     }),
     defineField({
+      name: "author",
+      title: "Author (optional)",
+      description:
+        "Set for notes written by a named person, such as posts first published on LinkedIn. Leave empty for house notes, which are credited to Arihant Group.",
+      type: "object",
+      fields: [
+        defineField({ name: "name", title: "Name", type: "string" }),
+        defineField({ name: "role", title: "Role", type: "string" }),
+        defineField({ name: "sourceUrl", title: "Originally published at (URL)", type: "url" }),
+      ],
+    }),
+    defineField({
       name: "body",
       title: "Body",
       type: "array",

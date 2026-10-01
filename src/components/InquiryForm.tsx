@@ -420,7 +420,7 @@ export function InquiryForm({
               aria-labelledby={`${baseId}-intent-legend`}
               className={cn(
                 "grid gap-3",
-                compact ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-4",
+                compact ? "sm:grid-cols-2" : "sm:grid-cols-2 md:grid-cols-4",
               )}
             >
               {INTENTS.map((option, i) => (

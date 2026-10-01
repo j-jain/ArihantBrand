@@ -8,27 +8,27 @@ import type { PageCopy } from "./types";
 export const pages: Record<string, PageCopy> = {
   home: {
     metaTitle: "Garment Distributor in Northeast India | Arihant Group",
-    metaDescription: `The garment house of Northeast India: ${phrase.groupLabels} national labels, ${phrase.groupRetailers} retail counters, seven states, and managed stores of our own. Guwahati since the 1990s.`,
+    metaDescription: `The leading garment house of Northeast India: ${phrase.groupBrandPartners} brand partners, ${phrase.groupRetailers} retailers, ${phrase.sisCounters} shop-in-shop counters, seven states. Guwahati since the 1990s.`,
     hero: {
-      heading: "The garment house of Northeast India",
-      headingEmphasis: "garment house",
-      lead:
-        "We stock the Northeast's clothing stores with national brands, out of Guwahati since the 1990s.",
+      heading: "The leading garment house of Northeast India",
+      headingEmphasis: "leading",
+      // The lead is the client's own line, typed in the Studio. The two figures
+      // the trade actually weighs sit under it as `points`, worded exactly as
+      // the client wrote them (change round 2); the hero sets each leading
+      // figure large without touching the words.
+      lead: "Let's understand the house of North East India",
+      points: [
+        `${phrase.groupRetailers} retailers served`,
+        `Catering to ${phrase.groupBrandPartners} brand partners`,
+      ],
       primaryCta: { label: "Partner with us", href: "/contact" },
       secondaryCta: { label: "The three businesses", href: "#businesses" },
     },
     sections: {
-      proof: {
-        heading: "What the record says",
-        // Two lines, deliberately. The award is the claim; the sentence under
-        // it is what the claim still buys you today. Run together they read as
-        // one long boast, so the second sentence starts its own line.
-        lead: `Best Distributor of India, CMAI ${facts.marketing.awardYear}.`,
-        body: ["The same discipline runs every route out of Guwahati today."],
-      },
+      // Heading and lead as the client typed them in the Studio.
       why: {
-        heading: "Why the trade buys from us",
-        lead: "Four things we are held to, season after season.",
+        heading: "Why us?",
+        lead: "Four reasons to convince you enough",
       },
       businesses: {
         heading: "Three businesses, one standard",
@@ -42,8 +42,11 @@ export const pages: Record<string, PageCopy> = {
         heading: "Trade Notes",
         lead: "Field notes from the road, written for retailers, brands and first-time store owners.",
       },
+      // The charcoal band directly under the funnels (change round 2): the
+      // awards as a ruled list beside the trade's voices. No lead, because the
+      // award list itself carries the CMAI and footfall facts.
       voice: {
-        heading: "What a retail partner says",
+        heading: "Awards and testimonials",
       },
       cta: {
         heading: "Bring your business to Arihant",
@@ -54,11 +57,11 @@ export const pages: Record<string, PageCopy> = {
 
   marketing: {
     metaTitle: "Garment Distributor in Guwahati | Arihant Marketing",
-    metaDescription: `Northeast India's pioneer readymade garments distributor: ${atLeast(facts.marketing.years)} years, ${phrase.marketingRetailers} retailers, ${phrase.marketingBrands} brand partners, ${phrase.marketingWarehouse} Guwahati warehouse, ${phrase.visitCycle} visit cycles.`,
+    metaDescription: `Northeast India's pioneer readymade garments distributor: ${atLeast(facts.marketing.years)} years, ${phrase.marketingRetailers} retailers, ${phrase.sisCounters} shop-in-shop counters, a ${phrase.marketingWarehouse} Guwahati warehouse.`,
     hero: {
       heading: "The pioneer distributor of readymade garments in Northeast India",
       headingEmphasis: "pioneer",
-      lead: `For more than ${facts.marketing.years} years we have moved national brands into the region's counters, and we still stand in every retailer's store at least once every ${phrase.visitCycle}.`,
+      lead: `For more than ${facts.marketing.years} years we have moved national brands into the region's counters, across ${phrase.marketingRetailers} retailers and ${phrase.sisCounters} shop-in-shop counters.`,
       primaryCta: { label: "Become a retail partner", href: "/contact?intent=retailer" },
       secondaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
     },
@@ -75,7 +78,13 @@ export const pages: Record<string, PageCopy> = {
       },
       how: {
         heading: "How we work with retailers",
-        lead: `Four steps, repeating every ${phrase.visitCycle}.`,
+        lead: "Four steps, repeating every season.",
+      },
+      // The film sits on this page, not on Apparels: it is Arihant Marketing's
+      // event footage. The asset paths keep their original filenames.
+      film: {
+        heading: "Inside Arihant Marketing",
+        lead: "A look at the team, the warehouse and the fairs where the season's winners get picked.",
       },
       specialist: {
         heading: "Why the Northeast needs a specialist",
@@ -97,20 +106,21 @@ export const pages: Record<string, PageCopy> = {
     metaTitle: "Apparel Distributor in Northeast India | Arihant Apparels",
     metaDescription: `Founded ${facts.apparels.established}. A Guwahati apparel distributor carrying ${phrase.apparelsBrands} labels across Northeast India and building several of them into category leaders. Stock our labels today.`,
     hero: {
-      heading: "The apparel distributor that builds category leaders",
-      headingEmphasis: "category leaders",
+      // The client's tagline, set as the hero heading in the Studio (round 2).
+      // "retailer" is pluralised; otherwise it is their wording.
+      heading: "The most modern & systematic distribution house, the best relations with retailers & brands alike.",
+      headingEmphasis: "systematic",
       lead: `Founded in ${facts.apparels.established} by Ajay Sancheti. We have built several brands into category leaders across the Northeast, and we carry ${phrase.apparelsBrands} labels today.`,
-      primaryCta: { label: "Stock our brands", href: "/contact?intent=retailer" },
+      primaryCta: {
+        label: "Shop fast moving brands for your store",
+        href: "/contact?intent=retailer",
+      },
       secondaryCta: { label: "Partner as a brand", href: "/contact?intent=brand" },
     },
     sections: {
       mission: {
         heading: "Built to grow retailers",
         lead: "Our job is to grow the counters we sell to. When your store grows, our portfolio grows with it.",
-      },
-      film: {
-        heading: "Inside Arihant Apparels",
-        lead: "A look at the team, the warehouse and the fairs where the season's winners get picked.",
       },
       team: {
         heading: "The people who run it",
@@ -130,18 +140,19 @@ export const pages: Record<string, PageCopy> = {
 
   retail: {
     metaTitle: "Multi-brand Retail Stores in Guwahati | Arihant Retail",
-    metaDescription: `Modern multi-brand apparel stores across Northeast India: ${facts.retail.storesOpen} open, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned by ${facts.retail.planHorizon}. Zero-deadstock, asset-light, fully managed.`,
+    metaDescription: `The most modern and professionally run multi-brand apparel stores in Northeast India. ${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, all company-run. Zero deadstock, asset-light.`,
     hero: {
-      heading: "We run stores of our own",
-      headingEmphasis: "our own",
-      lead: `Modern multi-brand stores across Northeast India, staffed, stocked and marketed by our team. ${facts.retail.storesOpen} open, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned by ${facts.retail.planHorizon}.`,
-      primaryCta: { label: "Own a managed store", href: "/partner" },
+      heading:
+        "The most modern and professionally run retail stores in Northeast India",
+      headingEmphasis: "most modern",
+      lead: `Multi-brand stores staffed, stocked and marketed by our team. ${facts.retail.storesCompanyOwned} company-owned and company-run, ${facts.retail.storesFranchisee} franchisee-owned and company-run.`,
+      primaryCta: { label: "Own a retail store", href: "/partner" },
       secondaryCta: { label: "Put your brand in our stores", href: "/contact?intent=brand" },
     },
     sections: {
       stores: {
         heading: "On the street today",
-        lead: "Where our stores are, and which are still in fit-out.",
+        lead: "Where our stores are, and who owns each one.",
       },
       model: {
         heading: "The zero-deadstock model",
@@ -149,13 +160,13 @@ export const pages: Record<string, PageCopy> = {
       },
       cta: {
         heading: "One of the next stores could be yours",
-        lead: "The next stores will be owned by partners and run by us. See how the model works.",
+        lead: "Franchisee-owned, company-run. See how the model works.",
       },
     },
   },
 
   partner: {
-    metaTitle: "Retail Franchise, Northeast India | Own a Managed Store",
+    metaTitle: "Retail Franchise, Northeast India | Own a Retail Store",
     metaDescription:
       "Own an apparel store in Northeast India that Arihant Retail staffs, stocks and markets for you. Zero deadstock, asset-light. Request franchise details.",
     hero: {
@@ -165,16 +176,12 @@ export const pages: Record<string, PageCopy> = {
       secondaryCta: { label: "See how it works", href: "#how-it-works" },
     },
     sections: {
+      // The five `body` lines this section used to carry are superseded by the
+      // ModelBoard's four pillars, which say the same things with a figure
+      // beside each one.
       promise: {
         heading: "What “fully managed” actually means",
         lead: "Every operating risk that sinks first-time store owners is carried by our team instead.",
-        body: [
-          "Ours: hiring, training and managing the floor team.",
-          "Ours: target-setting, merchandising and stock rotation.",
-          "Ours: marketing, calibrated influencer and social campaigns, and the central CRM.",
-          "Deadstock: engineered out of your books entirely.",
-          "Yours: the store, the asset, and a clear performance review rhythm.",
-        ],
       },
       proof: {
         heading: "Tried, tested, already trading",

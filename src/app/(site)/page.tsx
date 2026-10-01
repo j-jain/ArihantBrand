@@ -14,23 +14,20 @@ import {
   Reveal,
   SectionHeading,
   StaggerGroup,
-  StatBand,
+  TestimonialColumns,
   cn,
   trackClass,
-  initialsOf,
 } from "@/components";
-import { facts, phrase } from "@/content/facts";
 import {
+  getAwards,
   getBusinesses,
   getFunnels,
-  getGroupStats,
   getPageCopy,
   getPartners,
   getPhotoSlots,
   getPillars,
   getPosts,
   getSiteSettings,
-  getStores,
   getTestimonials,
 } from "@/lib/content";
 import { localBusinessJsonLd, organizationJsonLd, pageMetadata } from "@/lib/seo";
@@ -54,29 +51,44 @@ function formatTel(digits: string): string {
   return `+91 ${grouped}`;
 }
 
+/** One hero figure line: the leading figure ("300+", "80+") set large in the
+ *  stat face, the words around it left exactly as written. A line with no
+ *  figure renders as plain text. */
+function HeroPoint({ text }: { text: string }) {
+  const match = text.match(/\d[\d,]*\+?/);
+  if (!match || match.index === undefined) return <>{text}</>;
+  const before = text.slice(0, match.index);
+  const after = text.slice(match.index + match[0].length);
+  return (
+    <>
+      {before ? <span className="hero-points__text">{before}</span> : null}
+      <span className="hero-points__fig">{match[0]}</span>
+      {after ? <span className="hero-points__text">{after}</span> : null}
+    </>
+  );
+}
+
 export default async function HomePage() {
   const [
     copy,
-    groupStats,
     pillars,
     businesses,
     partners,
     posts,
     testimonials,
     settings,
-    stores,
+    awards,
     funnels,
     photos,
   ] = await Promise.all([
     getPageCopy("home"),
-    getGroupStats(),
     getPillars(),
     getBusinesses(),
     getPartners(),
     getPosts(),
     getTestimonials(),
     getSiteSettings(),
-    getStores(),
+    getAwards(),
     getFunnels(),
     getPhotoSlots(),
   ]);
@@ -95,44 +107,21 @@ export default async function HomePage() {
       .filter((_, i) => i % 2 === 0),
   ];
   const latestPosts = posts.slice(0, 3);
-  // The home page reserves one voice for itself; /recognition renders the rest.
-  // Both pages used to lead with testimonials[0], so the same quote greeted a
-  // reader twice (HP12). The `featured` flag is the one place that choice is
-  // made, in the Studio or the seed, and /recognition drops the same entry.
-  const featured = testimonials.find((t) => t.featured) ?? testimonials[0];
-  // The voice strip stands a real store photo beside the quote. It comes from
-  // the store data rather than a path typed into this file, so swapping the
-  // photograph is a content edit and the caption can never contradict the
-  // store list.
-  const featuredStore = stores.find((store) => Boolean(store.image));
-
-  // The proof quote is authored as a lead plus its follow-on lines so the break
-  // lives in the copy, not in markup. Rendered as one block below.
-  const proofLines = [
-    sections.proof.lead,
-    ...(sections.proof.body ?? []),
-  ].filter((line): line is string => Boolean(line));
-
-  // Three figures above the fold, in the order a retailer weighs them: what
-  // you can stock, who already buys, how long we have been at it. The fourth
-  // group figure (warehousing) carries the proof band below instead, so no
-  // number is stated twice on this page.
-  const heroFigureIds = ["labels", "retailers", "years"];
-  const heroFigures = heroFigureIds
-    .map((id) => groupStats.find((stat) => stat.id === id))
-    .filter((stat): stat is NonNullable<typeof stat> => Boolean(stat));
-  const warehouseFigure = groupStats.find((stat) => stat.id === "warehouse");
-
   return (
     <>
       <JsonLd data={organizationJsonLd(settings)} />
       <JsonLd data={localBusinessJsonLd(settings)} />
 
-      {/* 1 — Hero (paper): split headline + editorial garment image ---------- */}
+      {/* 1 — Hero (paper): headline, lead, the two figures and the photo, all
+          on the first screen at every size (change round 2). From 768px up the
+          section is exactly one viewport tall under the header and the photo's
+          4:5 frame caps itself to that height, so a short laptop screen crops
+          the picture wider instead of pushing the figures below the fold. On a
+          phone the photo takes whatever height the copy leaves (mobile.css). */}
       <section className="relative overflow-hidden bg-paper">
-        <HeroIntro className="container-site hero-pad hero--home relative">
-          <div className="grid items-center gap-x-10 gap-y-12 lg:grid-cols-12">
-            <div className="hero-copy flex flex-col items-start gap-6 lg:col-span-7">
+        <HeroIntro className="container-site hero--fit relative">
+          <div className="hero-fit__grid grid items-center gap-x-10 gap-y-8 md:grid-cols-12">
+            <div className="hero-copy flex flex-col items-start gap-6 md:col-span-6">
               <EmphasisHeading
                 as="h1"
                 className="t-display text-ink"
@@ -140,21 +129,27 @@ export default async function HomePage() {
                 emphasis={hero.headingEmphasis}
                 rest={{ "data-hero-title": "", style: { textWrap: "normal" } }}
               />
-              {/* Plain lead. The rotating word that used to sit here read as
-                  decoration on a trade site and repeated a word already in the
-                  sentence, so it is gone. */}
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              {/* The hero's "Partner with us" button is gone. It said the same
-                  words as the header button two inches above it, and pointed
-                  somewhere else (/contact against the header's /partner), so
-                  the first screen asked twice and answered inconsistently. The
-                  header carries that ask; the same CTA closes the page. What
-                  stays here is the one thing the header cannot do in a line:
-                  send a reader to whichever of the three businesses is theirs. */}
+              {/* The two figures, worded exactly as the client wrote them. The
+                  leading figure in each line is set large; the words around it
+                  are untouched, so "Catering to 80+ brand partners" still reads
+                  as one sentence. */}
+              {hero.points?.length ? (
+                <ul data-hero-reveal className="hero-points">
+                  {hero.points.map((point) => (
+                    <li key={point} className="hero-points__row">
+                      <HeroPoint text={point} />
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {/* The one thing the header cannot do in a line: send a reader to
+                  whichever of the three businesses is theirs. The "Partner with
+                  us" ask lives in the header and closes the page. */}
               {hero.secondaryCta ? (
-                <div data-hero-reveal className="mt-1">
+                <div data-hero-reveal>
                   <Link
                     href={hero.secondaryCta.href}
                     className="group inline-flex min-h-11 items-center gap-1.5 font-sans font-semibold text-ink transition-colors hover:text-vermillion-deep"
@@ -171,32 +166,23 @@ export default async function HomePage() {
                   </Link>
                 </div>
               ) : null}
-
-              {/* HP1: the numbers win the first screen, not a scroll. */}
-              {heroFigures.length ? (
-                <div data-hero-reveal className="hero-figures w-full">
-                  <StatBand stats={heroFigures} compact />
-                </div>
-              ) : null}
             </div>
 
-            <div data-hero-reveal className="lg:col-span-5">
-              {/* Portrait beside the headline on desktop; edge to edge and
-                  landscape on a phone, where a 4:5 frame at full width eats an
-                  entire screen before the reader has reached anything. */}
+            <div data-hero-reveal className="hero-fit__media md:col-span-6">
+              {/* Stand-in photograph until the client's own lands: swap it in
+                  `photoSlots.homeHero` (src/content/images.ts) or the Studio. */}
               <ParallaxImage
                 src={photos.homeHero.src}
                 alt={photos.homeHero.alt}
                 ratio={photos.homeHero.ratio}
                 priority
-                sizes="(max-width: 1023px) 100vw, 42vw"
+                sizes="(max-width: 767px) 100vw, 48vw"
                 tilt
                 mBleed
-                className="m-ar-4-3"
+                className="hero-frame"
               />
             </div>
           </div>
-
         </HeroIntro>
       </section>
 
@@ -243,79 +229,89 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      {/* 2 — Proof band (charcoal over a working warehouse), curtain-revealed */}
-      <CurtainReveal>
-        <section className="on-dark relative overflow-hidden">
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <Image
-              src={photos.homeProofGround.src}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover opacity-[0.16]"
-            />
-            {/* Horizontal scrim on desktop, where the copy occupies the left
-                two thirds. On a phone the copy is full width, so the mobile
-                layer swaps this for a vertical one (see .proof-scrim). */}
-            <div
-              className="proof-scrim absolute inset-0"
-              style={{
-                background:
-                  "var(--m-proof-scrim, linear-gradient(90deg, var(--charcoal) 30%, transparent))",
-              }}
-            />
-          </div>
-
-          <div className="container-site section-pad relative m-flow flex flex-col gap-10">
-            <div className="m-flow-tight flex max-w-3xl flex-col gap-5">
-              <SectionHeading heading={sections.proof.heading} onDark />
-              <span
-                aria-hidden="true"
-                className="block h-[3px] w-14 rounded-full"
-                style={{ background: "var(--vermillion)" }}
+      {/* 2 — Awards and testimonials (charcoal over a working warehouse) ----
+          Change round 2 replaced the single retail-partner quote that sat here
+          with the whole record: the awards as a ruled list beside the trade's
+          voices, scrolling in two slow columns. It keeps the slot directly
+          under the funnels, the warehouse ground and the curtain reveal. The
+          full trophy case and the rest of the voices live on /recognition. */}
+      {awards.length || testimonials.length ? (
+        <CurtainReveal>
+          <section className="awards-band on-dark relative overflow-hidden">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+              <Image
+                src={photos.homeProofGround.src}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover opacity-[0.16]"
               />
-              {/* The quote sets as two lines, not one paragraph: the award is
-                  the claim, the line beneath it is what that claim still buys
-                  today. Both carry the same display italic and sit on a hair
-                  gap, so they read as one statement broken for emphasis rather
-                  than as a lead with a caption under it. */}
-              {proofLines.length ? (
-                <div className="flex flex-col gap-1">
-                  {proofLines.map((line) => (
-                    <p
-                      key={line}
-                      className="font-display measure italic text-on-charcoal"
-                      style={{
-                        fontSize: "var(--text-h3)",
-                        fontWeight: 700,
-                        lineHeight: 1.28,
-                      }}
-                    >
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              ) : null}
-              {/* The record, in three lines: the award, the godowns and the
-                  fairs. HP8 asks for the footfall claim on this page; stating
-                  it here, once, is why the Apparels page no longer carries a
-                  whole band restating it. */}
-              <ul className="proof-facts flex flex-col gap-2">
-                {warehouseFigure ? (
-                  <li className="t-body text-on-charcoal-soft">
-                    {phrase.groupWarehouse} of warehousing in Guwahati, across both
-                    godowns.
-                  </li>
-                ) : null}
-                <li className="t-body text-on-charcoal-soft">
-                  Highest footfall garnered, {facts.apparels.exhibitions}{" "}
-                  exhibitions running.
-                </li>
-              </ul>
+              {/* Horizontal scrim on desktop, where the copy holds the left
+                  columns. On a phone the copy is full width, so the mobile
+                  layer swaps this for a vertical one (see .proof-scrim). */}
+              <div
+                className="proof-scrim absolute inset-0"
+                style={{
+                  background:
+                    "var(--m-proof-scrim, linear-gradient(90deg, var(--charcoal) 35%, transparent))",
+                }}
+              />
             </div>
-          </div>
-        </section>
-      </CurtainReveal>
+
+            <div className="container-site section-pad relative">
+              <div className="m-flow grid gap-y-10 md:grid-cols-12 md:items-start md:gap-x-14">
+                <div className="m-flow flex flex-col gap-8 md:col-span-5">
+                  <SectionHeading
+                    heading={sections.voice.heading}
+                    lead={sections.voice.lead}
+                    onDark
+                  />
+                  {awards.length ? (
+                    <ol className="award-list award-list--compact">
+                      {awards.map((award, i) => (
+                        <li
+                          key={award.title}
+                          className={cn("award-row", i === 0 && "award-row--lead")}
+                        >
+                          <h3
+                            className={cn(
+                              "text-on-charcoal",
+                              i === 0 ? "t-h3 max-w-[20ch]" : "t-h4 max-w-[26ch]",
+                            )}
+                          >
+                            {award.title}
+                          </h3>
+                          <p className="award-row__issuer t-small text-on-charcoal-soft">
+                            {award.issuer}
+                          </p>
+                          <p className="award-row__year t-label text-on-charcoal-soft">
+                            {award.year}
+                          </p>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
+                  <p>
+                    <Link
+                      href="/recognition"
+                      className="m-tap inline-flex items-center gap-1.5 font-sans font-semibold text-on-charcoal underline-offset-4 hover:underline"
+                    >
+                      Awards &amp; testimonials
+                      <span aria-hidden="true" style={{ color: "var(--vermillion)" }}>
+                        →
+                      </span>
+                    </Link>
+                  </p>
+                </div>
+
+                <div className="md:col-span-7">
+                  <TestimonialColumns testimonials={testimonials} columns={2} tone="dark" />
+                </div>
+              </div>
+            </div>
+          </section>
+        </CurtainReveal>
+      ) : null}
 
       {/* 3 — Why Arihant (paper): sticky heading beside the pillar card stack */}
       <section className="bg-paper">
@@ -410,7 +406,7 @@ export default async function HomePage() {
                           src={post.image}
                           alt=""
                           fill
-                          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 30vw"
+                          sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, 30vw"
                           className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] will-change-transform group-hover:scale-[1.045]"
                         />
                       ) : null}
@@ -451,91 +447,7 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      {/* 7 — Voice strip (paper): featured quote (7) beside a real store photo (5) */}
-      {featured ? (
-        <section className="bg-paper">
-          <div className="container-site section-pad m-flow flex flex-col gap-8">
-            <div className="m-flow grid gap-y-10 lg:grid-cols-12 lg:items-start lg:gap-16">
-              <div className="m-flow flex flex-col gap-8 lg:col-span-7">
-                <Reveal variant="fade">
-                  <h2 className="t-h4 text-ink-soft">{sections.voice.heading}</h2>
-                </Reveal>
-                <Reveal variant="clip">
-                  <figure className="flex flex-col gap-8">
-                    <blockquote
-                      className="font-display measure italic text-ink"
-                      style={{ fontSize: "var(--text-h3)", lineHeight: 1.35 }}
-                    >
-                      <span aria-hidden="true" className="text-vermillion-deep">
-                        “
-                      </span>
-                      {featured.quote}
-                      <span aria-hidden="true" className="text-vermillion-deep">
-                        ”
-                      </span>
-                    </blockquote>
-                    <figcaption className="flex items-center gap-4">
-                      <span
-                        aria-hidden="true"
-                        className="flex h-12 w-12 flex-none items-center justify-center rounded-full border border-line bg-paper-shade font-sans text-ink"
-                        style={{ fontWeight: 650, fontSize: "0.9rem" }}
-                      >
-                        {initialsOf(featured.name)}
-                      </span>
-                      <span className="flex flex-col">
-                        <span
-                          className="t-small text-ink"
-                          style={{ fontWeight: 650 }}
-                        >
-                          {featured.name}
-                        </span>
-                        {featured.role ? (
-                          <span className="t-small text-ink-soft">
-                            {featured.role}
-                          </span>
-                        ) : null}
-                      </span>
-                    </figcaption>
-                  </figure>
-                </Reveal>
-              </div>
-
-              {featuredStore?.image ? (
-                <Reveal as="div" variant="clip" className="lg:col-span-5">
-                  <figure className="flex flex-col gap-3">
-                    <ParallaxImage
-                      src={featuredStore.image}
-                      alt={
-                        featuredStore.caption ??
-                        `${featuredStore.name}, an Arihant Retail store in ${featuredStore.city}`
-                      }
-                      ratio="4 / 5"
-                      sizes="(max-width: 1023px) 100vw, 32vw"
-                      className="m-ar-4-3 border border-line"
-                      tilt
-                      mBleed
-                    />
-                    <figcaption className="t-small text-ink-soft">
-                      {featuredStore.name}, {featuredStore.city} · Arihant Retail
-                    </figcaption>
-                  </figure>
-                </Reveal>
-              ) : null}
-            </div>
-            <p>
-              <Link
-                href="/recognition"
-                className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
-              >
-                Awards &amp; testimonials
-                <span aria-hidden="true">→</span>
-              </Link>
-            </p>
-          </div>
-        </section>
-      ) : null}
-
-      {/* 8 — CTA band (single vermillion drench) --------------------------- */}
+      {/* 7 — CTA band (single vermillion drench) --------------------------- */}
       <DrenchBand id="cta" className="section-pad">
         <div className="container-site m-flow flex flex-col items-start gap-6">
           <h2 data-drench-reveal className="t-h2 max-w-[20ch]">

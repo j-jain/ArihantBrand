@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { useEffect, useRef } from "react";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 
 interface StackItem {
   title: string;
@@ -12,17 +12,74 @@ interface CardsStackProps {
   items: StackItem[];
 }
 
-/** A stack of sticky cards: on desktop every card pins on the SAME line as the
- *  heading rail beside it (`--stack-top`) and the previous cards tuck back (a
- *  slight scale) as the next scrolls over them, scrubbed to scroll. Depth reads
- *  from the tuck alone — the tucked card scales about its own top edge, so it
- *  peeks out at the sides rather than above. Cards stay fully opaque
- *  throughout so the top one always occludes the ones still pinned behind it.
- *  Mobile and reduced motion render a plain, gapped column with no sticky and
- *  no transforms, so nothing depends on an animation that isn't running. The
- *  tuck transforms are applied only from JS. */
+/** A deck of sticky cards laid one on top of the next (change round 2).
+ *
+ *  Each card pins lower than the card before it by exactly the height of that
+ *  card's heading strip (its top padding plus its heading, measured, since the
+ *  headings run one to three lines), so when the deck has gathered the whole
+ *  heading of every earlier card still shows above the next one: cards placed
+ *  on a table, not cards hidden behind each other. CSS carries a uniform-step
+ *  fallback (`--stack-step`) for the first paint and for no-JS.
+ *
+ *  As each new card lands, every card beneath it settles back a little further
+ *  (a small scale about its own top edge, and a slight shift of its ground
+ *  toward paper-shade), so depth reads from the whole stack rather than only
+ *  the card directly behind.
+ *
+ *  Depth is computed from where each card actually sits, not from guessed
+ *  scroll offsets: a card's "landed" progress is how far it has travelled from
+ *  the lower part of the viewport to its own sticky line, read from its live
+ *  position and its computed `top`. That keeps the effect correct at every
+ *  root size, header height and breakpoint without a single hard-coded pixel.
+ *
+ *  Cards stay opaque throughout, so the card on top always hides the body text
+ *  of the cards beneath it. Reduced motion gets a plain gapped column (CSS) and
+ *  no listeners; every transform here is applied only from JS. */
 export function CardsStack({ items }: CardsStackProps) {
   const ref = useRef<HTMLDivElement>(null);
+
+  // Measure the heading strips and write the cascade as CSS variables. Runs at
+  // every width (the phone deck cascades too) and under reduced motion, where
+  // the static column simply ignores the variables.
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const cards = Array.from(root.querySelectorAll<HTMLElement>(".stack__card"));
+    if (cards.length < 2) return;
+
+    let frame = 0;
+    const layout = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        // A card's strip runs from its top edge to halfway between its
+        // heading and its body text: the whole heading shows, none of the
+        // body does, at whatever size the root and the breakpoint set.
+        const strips = cards.map((card) => {
+          const title = card.querySelector<HTMLElement>(".stack__title");
+          const text = card.querySelector<HTMLElement>(".stack__text");
+          if (!title) return 0;
+          const titleBottom = title.offsetTop + title.offsetHeight;
+          const gap = text ? text.offsetTop - titleBottom : 0;
+          return titleBottom + gap * 0.55;
+        });
+        let offset = 0;
+        cards.forEach((card, i) => {
+          card.style.setProperty("--stack-offset", `${offset}px`);
+          offset += strips[i];
+        });
+        ScrollTrigger.refresh();
+      });
+    };
+
+    layout();
+    const observer = new ResizeObserver(layout);
+    observer.observe(root);
+    document.fonts?.ready.then(layout);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -35,42 +92,48 @@ export function CardsStack({ items }: CardsStackProps) {
 
       const mm = gsap.matchMedia(ref);
 
-      const buildTuck = (stackTop: number) => {
-        cards.forEach((card, i) => {
-          if (i === cards.length - 1) return;
-          const nextCard = cards[i + 1];
-          // Scale only, never opacity: the cards are sticky and stay stacked,
-          // so a translucent card would show the text of the card pinned
-          // behind it straight through.
-          gsap.to(card, {
-            scale: 0.965,
-            transformOrigin: "50% 0%",
-            ease: "none",
-            scrollTrigger: {
-              trigger: nextCard,
-              start: "top 85%",
-              end: `top top+=${stackTop}`,
-              scrub: true,
-            },
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const SCALE_STEP = 0.025; // per card resting on top
+        const MAX_DEPTH = 3;
+
+        const update = () => {
+          const vh = window.innerHeight;
+          // How far each card has landed: 0 while it is still low in the
+          // viewport, 1 once it sits on its sticky line.
+          const landed = cards.map((card) => {
+            const top = card.getBoundingClientRect().top;
+            const stickyTop = parseFloat(getComputedStyle(card).top) || 0;
+            const start = vh * 0.85;
+            if (start <= stickyTop) return top <= stickyTop ? 1 : 0;
+            return gsap.utils.clamp(0, 1, (start - top) / (start - stickyTop));
           });
+
+          cards.forEach((card, i) => {
+            let depth = 0;
+            for (let j = i + 1; j < cards.length; j++) depth += landed[j];
+            depth = Math.min(depth, MAX_DEPTH);
+            gsap.set(card, {
+              scale: 1 - depth * SCALE_STEP,
+              transformOrigin: "50% 0%",
+              "--stack-depth": Math.min(depth, 1),
+            });
+          });
+        };
+
+        const trigger = ScrollTrigger.create({
+          trigger: root,
+          start: "top bottom",
+          end: "bottom top",
+          onUpdate: update,
+          onRefresh: update,
         });
-      };
+        update();
 
-      mm.add(
-        "(prefers-reduced-motion: no-preference) and (min-width: 768px)",
-        () => buildTuck(96),
-      );
-
-      // Mobile gets the same interaction, pinned under the 4rem header rather
-      // than the desktop 96px rail line. A card stack that tucks under your
-      // thumb is one of the few scroll behaviours that genuinely reads better
-      // on a phone than on a desktop, so it is worth keeping here — the sticky
-      // layout itself is CSS (see .stack__card in motion.css), and this only
-      // adds the depth cue on top of it.
-      mm.add(
-        "(prefers-reduced-motion: no-preference) and (max-width: 767px)",
-        () => buildTuck(76),
-      );
+        return () => {
+          trigger.kill();
+          gsap.set(cards, { clearProps: "transform,transformOrigin,--stack-depth" });
+        };
+      });
 
       return () => mm.revert();
     },
@@ -83,10 +146,12 @@ export function CardsStack({ items }: CardsStackProps) {
         <article
           key={item.title}
           className="stack__card"
-          style={{ zIndex: i + 1 }}
+          style={{ zIndex: i + 1, ["--i" as string]: i }}
         >
-          <span className="stack__mark" aria-hidden="true" />
-          <h3 className="t-h3 stack__title">{item.title}</h3>
+          <h3 className="stack__title">
+            <span className="stack__mark" aria-hidden="true" />
+            {item.title}
+          </h3>
           <p className="t-body stack__text">{item.text}</p>
         </article>
       ))}

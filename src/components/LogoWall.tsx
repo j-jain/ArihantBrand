@@ -29,7 +29,11 @@ const FILTERS: { key: FilterKey; label: string }[] = [
    unreachable from CSS. Undefined above 767px, so this computes to the
    original `minmax(150px, 1fr)`. */
 const GRID_STYLE: CSSProperties = {
-  gridTemplateColumns: "repeat(auto-fill, minmax(var(--m-logo-min, 150px), 1fr))",
+  // From 768px up the wall is a fixed seven across (`--logo-cols`, globals.css),
+  // so it scales with the page instead of re-flowing to more or fewer tiles as
+  // the window changes. Phones keep the auto-fill track.
+  gridTemplateColumns:
+    "var(--logo-cols, repeat(auto-fill, minmax(var(--m-logo-min, 150px), 1fr)))",
 };
 
 /** Responsive logo grid. Every tile is a button opening ONE shared modal keyed

@@ -1,6 +1,7 @@
 import type { StructureResolver } from "sanity/structure";
 
 const SINGLETON_ID = "siteSettings";
+const RETAIL_MODEL_ID = "retailModel";
 
 /** Custom desk: the singleton pinned at the top, then the editable
  *  collections, group content, and finally photography and people.
@@ -31,6 +32,12 @@ export const structure: StructureResolver = (S) =>
             .defaultOrdering([{ field: "name", direction: "asc" }]),
         ),
       S.documentTypeListItem("store").title("Stores"),
+      S.listItem()
+        .title("Retail Model")
+        .id(RETAIL_MODEL_ID)
+        .child(
+          S.document().schemaType("retailModel").documentId(RETAIL_MODEL_ID),
+        ),
       S.documentTypeListItem("testimonial").title("Testimonials"),
       S.documentTypeListItem("faq").title("FAQs"),
       S.documentTypeListItem("post").title("Trade Notes"),
@@ -69,4 +76,4 @@ export const structure: StructureResolver = (S) =>
 
 /** Document types managed through custom singleton/list views above, so they
  *  should not also appear in the Studio's default "new document" menus. */
-export const singletonTypes = new Set<string>([SINGLETON_ID]);
+export const singletonTypes = new Set<string>([SINGLETON_ID, RETAIL_MODEL_ID]);

@@ -27,10 +27,17 @@ export function EmphasisHeading({
   rest,
 }: EmphasisHeadingProps) {
   const index = emphasis ? text.indexOf(emphasis) : -1;
+  // A display headline written as a full sentence (the Apparels tagline runs
+  // about a hundred characters) steps down a size, so it sets in three or four
+  // lines instead of five or six. The words are untouched; only the scale moves.
+  const cls =
+    className?.includes("t-display") && text.length > 80
+      ? `${className} t-display--long`
+      : className;
 
   if (!emphasis || index === -1) {
     return (
-      <Tag className={className} {...rest}>
+      <Tag className={cls} {...rest}>
         {text}
       </Tag>
     );
@@ -40,7 +47,7 @@ export function EmphasisHeading({
   const after = text.slice(index + emphasis.length);
 
   return (
-    <Tag className={className} {...rest}>
+    <Tag className={cls} {...rest}>
       {before}
       <em style={{ fontStyle: "italic", color: emphasisColor }}>{emphasis}</em>
       {after}

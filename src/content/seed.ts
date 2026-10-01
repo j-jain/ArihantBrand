@@ -6,6 +6,7 @@ import type {
   LeaderPortrait,
   Post,
   RecognitionPhoto,
+  RetailModel,
   SiteSettings,
   Stat,
   Store,
@@ -13,7 +14,7 @@ import type {
   Testimonial,
   ProcessStep,
 } from "./types";
-import { atLeast, facts, phrase } from "./facts";
+import { atLeast, facts, inWords, InWords, phrase } from "./facts";
 
 /** The 77 partner logos live in their own module because facts.ts derives the
  *  published label counts from them; re-exported here so every existing
@@ -86,12 +87,6 @@ export const groupStats: Stat[] = [
     label: "Retailers served",
   },
   { id: "labels", value: facts.group.labels, label: "National labels" },
-  {
-    id: "warehouse",
-    value: facts.group.warehouseSqFt,
-    suffix: " sq ft",
-    label: "Warehousing, Guwahati",
-  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -108,11 +103,10 @@ export const businesses: Business[] = [
     leaders: ["Sagar Sancheti", "Anand Sancheti"],
     positioning: "The founding arm. The routes, the relationships and the brand roster everything else stands on.",
     summary: `Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than ${facts.marketing.years} years, on a fixed visit cycle.`,
-    highlights: [
-      `${phrase.marketingBrands} national labels, menswear to kidswear.`,
-      `${phrase.marketingRetailers} retailers, each visited every ${phrase.visitCycle}.`,
-      `${phrase.marketingWarehouse} of Guwahati warehousing behind every indent.`,
-    ],
+    // No highlights (change round 2): on the home row they restated the
+    // figures printed on the logo plate beside them, so the plate keeps the
+    // numbers and the copy column keeps the positioning line.
+    highlights: [],
     points: [
       {
         id: "pioneer",
@@ -131,8 +125,11 @@ export const businesses: Business[] = [
         text: "Founder member of NEGTA, the North Eastern Garment Traders Association.",
       },
       {
+        // The id is the marketing page's pull-quote selector and must not be
+        // renamed. The text is the SIS claim now: the visit cycle was being
+        // restated at signage scale on a page that already argues it twice.
         id: "visit-cycle",
-        text: `Every retailer visited at least once every ${phrase.visitCycle}, season after season.`,
+        text: `${phrase.sisCounters} shop-in-shop counters handled across the region's modern trade.`,
       },
     ],
     stats: [
@@ -146,7 +143,7 @@ export const businesses: Business[] = [
         id: "retailers",
         value: facts.marketing.retailers,
         suffix: "+",
-        label: "Retailers on our visit cycle",
+        label: "Retailers",
       },
       {
         id: "warehouse",
@@ -167,14 +164,13 @@ export const businesses: Business[] = [
     logo: "/images/logos/arihant-apparels.png",
     founded: "Founded 2013",
     leaders: ["Ajay Sancheti"],
+    // The client's tagline (change round 2), the same line the Apparels hero
+    // carries.
     positioning:
-      "The house that turns national labels into Northeast category leaders.",
+      "The most modern & systematic distribution house, the best relations with retailers & brands alike.",
     summary: `Founded in ${facts.apparels.established} by Ajay Sancheti, a second-generation garment entrepreneur. Arihant Apparels carries ${phrase.apparelsBrands} labels from a ${phrase.apparelsWarehouse} Guwahati warehouse. Buying runs on sell-through data. Several of those labels are now category leaders in the region.`,
-    highlights: [
-      `${phrase.apparelsBrands} labels, led by the Northeast's biggest ladies' ethnic names.`,
-      "Several of them built into category leaders here.",
-      `${phrase.apparelsWarehouse} warehouse, buying run on sell-through data.`,
-    ],
+    // Removed at the client's request (change round 2).
+    highlights: [],
     points: [
       {
         id: "portfolio",
@@ -195,7 +191,7 @@ export const businesses: Business[] = [
       },
       {
         id: "exhibitions",
-        text: `Highest footfall at the last ${facts.apparels.exhibitions} regional garment exhibitions.`,
+        text: "Highest footfall in exhibitions.",
       },
     ],
     stats: [
@@ -213,7 +209,7 @@ export const businesses: Business[] = [
       },
     ],
     audienceCtas: [
-      { label: "Stock our brands", href: "/contact?intent=retailer" },
+      { label: "Shop fast moving brands", href: "/contact?intent=retailer" },
       { label: "Partner as a brand", href: "/contact?intent=brand" },
     ],
   },
@@ -225,9 +221,9 @@ export const businesses: Business[] = [
     founded: "Founded 2023",
     leaders: ["Shreyansh Sancheti"],
     positioning: "Multi-brand modern retail, run by the house that supplies the region.",
-    summary: `Arihant's retail arm runs modern multi-brand stores across Northeast India: ${facts.retail.storesOpen} trading today, ${facts.retail.storesFitOut} in fit-out, and ${facts.retail.storesPlanned} planned by the end of ${facts.retail.planHorizon}.`,
+    summary: `Arihant's retail arm runs the most modern and professionally run multi-brand stores in Northeast India: ${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, every one of them run by our team.`,
     highlights: [
-      `${facts.retail.storesOpen} stores trading, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} by ${facts.retail.planHorizon}.`,
+      `${InWords(facts.retail.storesCompanyOwned)} company-owned, company-run stores and ${inWords(facts.retail.storesFranchisee)} franchisee-owned, company-run stores`,
       "We hire, buy, merchandise and market. You own the store.",
       "Deadstock stays off the owner's books.",
     ],
@@ -238,11 +234,11 @@ export const businesses: Business[] = [
       },
       {
         id: "open-today",
-        text: `${facts.retail.storesOpen} stores open today, ${facts.retail.storesFitOut} more in fit-out.`,
+        text: `${facts.retail.storesOpen} stores trading across Northeast India today.`,
       },
       {
-        id: "roadmap",
-        text: `${facts.retail.storesPlanned} stores planned by the end of ${facts.retail.planHorizon}.`,
+        id: "ownership",
+        text: `${facts.retail.storesCompanyOwned} owned by the company and ${facts.retail.storesFranchisee} owned by franchisees. All four are run by our team.`,
       },
       {
         id: "zero-deadstock",
@@ -254,16 +250,20 @@ export const businesses: Business[] = [
       },
     ],
     stats: [
-      { id: "open", value: facts.retail.storesOpen, label: "Stores open" },
-      { id: "fitout", value: facts.retail.storesFitOut, label: "Stores in fit-out" },
+      { id: "open", value: facts.retail.storesOpen, label: "Stores trading" },
       {
-        id: "planned",
-        value: facts.retail.storesPlanned,
-        label: `Stores planned by ${facts.retail.planHorizon}`,
+        id: "company-owned",
+        value: facts.retail.storesCompanyOwned,
+        label: "Company-owned",
+      },
+      {
+        id: "franchisee",
+        value: facts.retail.storesFranchisee,
+        label: "Franchisee-owned",
       },
     ],
     audienceCtas: [
-      { label: "Own a managed store", href: "/partner" },
+      { label: "Own a retail store", href: "/partner" },
       { label: "Put your brand in our stores", href: "/contact?intent=brand" },
     ],
   },
@@ -281,38 +281,121 @@ export const businesses: Business[] = [
 export const funnels: Funnel[] = [
   {
     id: "retailer",
-    title: "Stock our brands",
-    text: `You run a store. We put national labels on your racks and stand in your shop every ${phrase.visitCycle} to keep them moving.`,
-    cta: { label: "Stock our brands", href: "/contact?intent=retailer" },
+    title: "Shop fast moving brands for your store",
+    text: "You run a store. We put the national labels that actually move onto your racks, and keep them moving.",
+    cta: { label: "Partner with us", href: "/contact?intent=retailer" },
   },
   {
     id: "franchise",
-    title: "Own a managed store",
+    title: "Own a retail store",
     text: "You have the capital and the property. We hire the staff, buy the stock, run the marketing and carry the deadstock. You own the asset.",
-    cta: { label: "Own a managed store", href: "/partner" },
+    cta: { label: "Tap the North East with us", href: "/partner" },
   },
 ];
+
+/* ------------------------------------------------------------------ */
+/* The Arihant Retail managed-store model (ModelBoard + worksheet)      */
+/*                                                                      */
+/* NOTE FOR ANY FUTURE EDIT: nothing in this object may state an Arihant */
+/* business figure, and `facts.ts` deliberately holds nothing for it.    */
+/* Franchise economics stay qualitative (PRODUCT.md honesty rails): no   */
+/* investment amount, no return percentage, no payback period. The       */
+/* worksheet below computes only from numbers the visitor types in, and  */
+/* says so on the panel. If you find yourself wanting a number here,     */
+/* that is the rail, not an oversight.                                   */
+/* ------------------------------------------------------------------ */
+
+export const retailModel: RetailModel = {
+  pillars: [
+    {
+      id: "zero-deadstock",
+      title: "Unsold stock leaves your books",
+      text: "What does not sell goes back into our distribution network and moves through another counter. A bad season is ours to absorb, not yours to discount.",
+    },
+    {
+      id: "multi-brand",
+      title: "Multi-brand, not one label",
+      text: "Menswear, womenswear, kidswear, denim, ethnic and footwear on one floor, ranged from the same portfolio we already sell to the region's retailers.",
+    },
+    {
+      id: "no-frills",
+      title: "A no-frills store format",
+      text: "The fit-out is built to trade, not to impress. Capital goes into stock and into the floor rather than into fixtures nobody buys from.",
+    },
+    {
+      id: "company-run",
+      title: "We run it, you own it",
+      text: "Hiring, targets, merchandising, marketing and the CRM sit with our team. The store, the lease and the asset sit with you.",
+    },
+  ],
+  roicNote:
+    "We argue this model on return on invested capital, not on turnover. The ROIC record of the stores already trading is something we take you through in person, with the cost sheet in front of you. We publish no percentage here, because a number that does not know your city, your rent and your floor is a guess.",
+  calculator: {
+    triggerLabel: "Work it out on your own numbers",
+    heading: "Your numbers, your arithmetic",
+    lead: "Put in your space, your rent and the sales you think the floor will do. We will do the arithmetic and nothing else.",
+    fields: {
+      area: {
+        label: "Carpet area (sq ft)",
+        help: "The floor you would actually trade on.",
+      },
+      rent: {
+        label: "Monthly rent (rupees)",
+        help: "Enter 0 if you own the property.",
+      },
+      sales: {
+        label: "Monthly sales you expect (rupees)",
+        help: "Your expectation, not ours. Nothing here is our estimate.",
+      },
+      margin: {
+        label: "Gross margin you expect to work on (%)",
+        help: "The margin you would negotiate. We publish no margin figure.",
+      },
+      otherCosts: {
+        label: "Other monthly running costs (rupees)",
+        help: "Power, upkeep, anything you would pay yourself.",
+      },
+    },
+    results: {
+      grossMargin: "Gross margin on your sales figure",
+      statedCosts: "The costs you listed",
+      leftOver: "What your own numbers leave",
+      salesPerSqFt: "Sales per sq ft per month",
+      rentShare: "Rent as a share of sales",
+      empty: "Fill the fields above",
+    },
+    disclosure:
+      "Every number here is yours. This tool does arithmetic on the figures you type in and nothing more. Arihant publishes no investment amount and no return percentage on this website, so nothing below is a projection, an offer, or a promise of performance. Your real costs and your real sales will differ. Nothing you type is sent to us or stored anywhere.",
+    resultNote: "Calculated from what you entered on this page. Not an Arihant estimate.",
+    leftOverNote:
+      "This is your gross margin less the costs you listed. It is not a profit figure. Tax, interest, depreciation and working capital are not in it.",
+    cta: { label: "Take these numbers to us", href: "/partner#inquiry" },
+  },
+};
 
 /* ------------------------------------------------------------------ */
 /* Why-Arihant pillars (group)                                          */
 /* ------------------------------------------------------------------ */
 
-/* The four things the house is actually judged on, in the client's own order:
-   every category on one order, the team, clean accounts, and the visit cycle.
-   The Marketing page argues the same four for a brand audience, in different
-   words, from `marketingStrengths` below. */
+/* The four "Why us?" cards, headed in the client's own words (change round
+   2): the range, the team, the brands, and the visit cycle. The client asked
+   for the 20-day cycle back on the home page, so this card is the one place
+   the home scroll states the number (see PRODUCT.md, repetition discipline).
+   Each body is the paragraph the card already carried in the Studio; the
+   third is new, since that card is. The Marketing page argues the same ground
+   for a brand audience, in different words, from `marketingStrengths` below. */
 export const pillars = [
   {
-    title: "Every category, one order",
+    title: "All categories, all genders, one group, one point of truth",
     text: `Menswear, womenswear, kidswear, denim, ethnic and footwear. ${phrase.groupLabels} labels on one set of terms, one indent and one visit.`,
   },
   {
-    title: "The best team in the trade",
+    title: "The best and most experienced team with full authority and one single point of clearance",
     text: "Our field staff have worked these routes for years. They know your counter, your customer and what sold there last season.",
   },
   {
-    title: "Accounts you can audit",
-    text: "Claims, credits and settlements go on paper and settle on the date we quote. Nobody re-negotiates after the fact.",
+    title: "Best brands in the respective categories",
+    text: "We do not carry a label to fill a gap in the catalogue. Each one leads, or is being built to lead, in the category it sits in.",
   },
   {
     title: `In your store every ${phrase.visitCycle}`,
@@ -355,8 +438,8 @@ export const marketingStrengths = [
     text: "Claims, credits and secondary sales are documented as they happen, not netted into a year-end argument.",
   },
   {
-    title: `${phrase.visitCycle} between every visit`,
-    text: `Each of ${phrase.marketingRetailers} retailers is seen in person on a fixed cycle, which is how a size break becomes a fill order inside the same season.`,
+    title: "Coverage you would spend years buying",
+    text: `${phrase.marketingRetailers} retailers and ${phrase.sisCounters} shop-in-shop counters, seen in person on a fixed cycle, which is how a size break becomes a fill order inside the same season.`,
   },
 ];
 
@@ -373,8 +456,8 @@ export const marketingSteps = [
     text: "A representative stands in your store on a fixed cycle. Reorders, claims and market feedback move face to face.",
   },
   {
-    title: "Pick and dispatch",
-    text: `Indents are picked and dispatched from ${phrase.marketingWarehouse} of organised Guwahati warehousing, on fixed timelines.`,
+    title: "Supply, settle, resolve",
+    text: "Supply arrives on time, credit notes are issued on time, and any grievance is addressed in one instant rather than held over to the next visit.",
   },
   {
     title: "Settle the books",
@@ -407,15 +490,15 @@ export const marketingReasons = [
 /* ------------------------------------------------------------------ */
 /* Stores                                                               */
 /*                                                                      */
-/* The list now matches the published counts in facts.retail: 4 open +   */
-/* 2 in fit-out. Every name here is one the client supplied; the sixth   */
-/* door is unnamed because only five were given against a claim of six.  */
+/* Four trading stores, matching facts.retail: 2 company-owned and 2          */
+/* franchisee-owned, all four run by Arihant. The fit-out entries that used   */
+/* to close this list are gone with the forward-looking store target, so      */
+/* every row here is a door a customer can walk into today.                   */
 /*                                                                      */
-/* AWAITING SIGN-OFF: which of the named stores are trading and which    */
-/* are in fit-out. The split below is provisional (change brief, AR3).   */
-/* Photographs are attached only where the shot is verifiably that       */
-/* store; the other two real store photos carry the retail page's        */
-/* section imagery instead of a caption we cannot stand behind.          */
+/* PHOTOGRAPHS: the one store shot we hold is the Itanagar store, not the     */
+/* Guwahati one it was previously captioned as. Guwahati and Goalpara carry   */
+/* no photograph until the client supplies one; a store card without an       */
+/* image renders its light plate, which is better than a wrong caption.       */
 /* ------------------------------------------------------------------ */
 
 export const stores: Store[] = [
@@ -424,20 +507,32 @@ export const stores: Store[] = [
     city: "Guwahati",
     format: "Multi-brand",
     status: "Open",
-    image: "/images/photos/store-urban-closet.jpg",
-    caption:
-      "Urban Closet, Guwahati: Arihant Retail's multi-brand store, lit for the evening trade.",
+    ownership: "Company-owned",
     mapsQuery: "Urban Closet, Jyotikuchi, Guwahati, Assam 781040",
   },
-  { name: "K.A.K", city: "Kohima", format: "Multi-brand", status: "Open" },
-  { name: "Tanzee", city: "Itanagar", format: "Multi-brand", status: "Open" },
-  { name: "Urban Closet", city: "Goalpara", format: "Multi-brand", status: "Open" },
-  { name: "Urban Closet", city: "Tura", format: "Multi-brand", status: "Fit-out" },
   {
-    name: "Next door",
-    city: "Northeast India",
+    name: "Urban Closet",
+    city: "Goalpara",
     format: "Multi-brand",
-    status: "Fit-out",
+    status: "Open",
+    ownership: "Company-owned",
+  },
+  {
+    name: "K.A.K",
+    city: "Kohima",
+    format: "Multi-brand",
+    status: "Open",
+    ownership: "Franchisee-owned",
+  },
+  {
+    name: "Tanzee",
+    city: "Itanagar",
+    format: "Multi-brand",
+    status: "Open",
+    ownership: "Franchisee-owned",
+    image: "/images/photos/store-urban-closet.jpg",
+    caption:
+      "The Itanagar store: a franchisee-owned, Arihant-run multi-brand floor, lit for the evening trade.",
   },
 ];
 
@@ -500,7 +595,7 @@ export const faqs: Faq[] = [
   {
     page: "partner",
     question: "Where can a store be opened?",
-    answer: `Anywhere in Northeast India where the catchment supports modern apparel retail. The plan is ${facts.retail.storesPlanned} stores by the end of ${facts.retail.planHorizon}, and every proposed location is assessed against real trade data before we commit.`,
+    answer: "Anywhere in Northeast India where the catchment supports modern apparel retail. Every proposed location is assessed against real trade data before we commit.",
   },
   {
     page: "partner",
@@ -511,7 +606,7 @@ export const faqs: Faq[] = [
   {
     page: "marketing",
     question: "Which territories do you cover?",
-    answer: `All ${facts.group.states} states of Northeast India, serviced from our ${phrase.marketingWarehouse} warehouse in Guwahati. More than ${facts.marketing.retailers} retailers across the region are on a scheduled ${phrase.visitCycle} visit cycle.`,
+    answer: `All ${facts.group.states} states of Northeast India, serviced from our ${phrase.marketingWarehouse} warehouse in Guwahati. More than ${facts.marketing.retailers} retailers and ${facts.marketing.sisCounters} shop-in-shop counters across the region are on a scheduled visit cycle.`,
   },
   {
     page: "marketing",
@@ -520,7 +615,10 @@ export const faqs: Faq[] = [
     bullets: [
       `We map your counter to the right mix from ${phrase.marketingBrands} labels.`,
       "We agree terms in writing.",
-      `You go on the ${phrase.visitCycle} visit schedule.`,
+      // The canonical statement of the visit cycle. It used to be said on the
+      // marketing hero, the section lead, a strength, a pull-quote, a home
+      // pillar and a funnel card as well, which is five times too many.
+      `You go on our scheduled visit cycle, once every ${phrase.visitCycle}.`,
       "Most new retailers receive their first indent within weeks.",
     ],
   },
@@ -1253,7 +1351,7 @@ export const posts: Post[] = [
       },
       {
         type: "p",
-        text: `What we say publicly is what we can stand behind: the model is tried and tested, ${facts.retail.storesOpen} stores already trade on it, ${facts.retail.storesFitOut} more are in fit-out, and it is backed by a strong, proven ROIC record and ${facts.group.years} years of goodwill in this trade.`,
+        text: `What we say publicly is what we can stand behind: the model is tried and tested, ${facts.retail.storesOpen} stores already trade on it under both ownership structures, and it is backed by a strong, proven ROIC record and ${facts.group.years} years of goodwill in this trade.`,
       },
       { type: "h2", text: "How to test the model" },
       {
@@ -1304,9 +1402,11 @@ export const timeline = [
     text: "Shreyansh Sancheti takes the group into modern retail with the first multi-brand stores of its own.",
   },
   {
-    year: "FY 26-27",
-    title: "Ten stores and counting",
-    text: `${facts.retail.storesOpen} stores trading, ${facts.retail.storesFitOut} in fit-out, ${facts.retail.storesPlanned} planned.`,
+    // The timeline caps on the present, not on a projection. The store target
+    // it used to end on came out at the client's request.
+    year: "Today",
+    title: "Four stores, two models",
+    text: `${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, every one of them run by the Arihant Retail team.`,
   },
 ];
 
@@ -1330,7 +1430,7 @@ export const awards: Award[] = [
   },
   {
     year: `${facts.apparels.exhibitions} fairs`,
-    title: `Highest footfall, ${facts.apparels.exhibitions} exhibitions running`,
+    title: "Highest footfall in exhibitions",
     issuer: "Regional garment exhibitions",
     detail: "",
   },

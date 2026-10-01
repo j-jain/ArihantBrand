@@ -143,7 +143,14 @@ export function articleJsonLd(post: Post) {
     datePublished: post.date,
     dateModified: post.date,
     url: `${siteUrl()}/blog/${post.slug}`,
-    author: { "@type": "Organization", name: "Arihant Group" },
+    author: post.author
+      ? {
+          "@type": "Person",
+          name: post.author.name,
+          ...(post.author.role ? { jobTitle: post.author.role } : {}),
+          ...(post.author.sourceUrl ? { url: post.author.sourceUrl } : {}),
+        }
+      : { "@type": "Organization", name: "Arihant Group" },
     publisher: { "@id": `${siteUrl()}/#organization` },
   };
 }

@@ -13,7 +13,7 @@ export function ProofStrip({ stores }: { stores: Store[] }) {
   return (
     <StaggerGroup
       from="up"
-      className="m-rail grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      className="m-rail grid gap-6 sm:grid-cols-2 md:grid-cols-3"
       stagger={0.12}
     >
       {shots.map((store) => (
@@ -26,7 +26,7 @@ export function ProofStrip({ stores }: { stores: Store[] }) {
               src={store.image as string}
               alt={store.caption ?? `${store.name}, an Arihant Retail store in ${store.city}.`}
               fill
-              sizes="(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 100vw"
+              sizes="(min-width: 768px) 22rem, (min-width: 640px) 45vw, 100vw"
               className="object-cover"
             />
           </div>

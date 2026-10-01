@@ -72,13 +72,13 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
       <span className="flex items-baseline gap-1.5">
         <span
           className="font-display text-ink"
-          style={{ fontWeight: 800, fontSize: "1.4rem", letterSpacing: "-0.01em" }}
+          style={{ fontWeight: 800, fontSize: "var(--m-wordmark, 1.4rem)", letterSpacing: "-0.01em" }}
         >
           ARIHANT
         </span>
         <span
           className="font-sans text-ink-soft"
-          style={{ fontWeight: 650, fontSize: "0.7rem", letterSpacing: "0.18em" }}
+          style={{ fontWeight: 650, fontSize: "var(--m-wordmark-sub, 0.7rem)", letterSpacing: "0.18em" }}
         >
           GROUP
         </span>
@@ -510,7 +510,7 @@ export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
           <button
             ref={menuButtonRef}
             type="button"
-            className="flex h-11 w-11 items-center justify-center lg:hidden"
+            className="flex h-11 w-11 shrink-0 items-center justify-center lg:hidden"
             aria-expanded={menuOpen}
             aria-controls={sheetId}
             aria-label={menuOpen ? "Close menu" : "Open menu"}

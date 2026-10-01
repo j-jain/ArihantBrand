@@ -61,3 +61,25 @@ export function MapPinIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+/** Marks the return-on-capital line. A rising step, not a smooth curve: the
+ *  argument is about capital turning over, not about a graph going up. */
+export function TrendIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 17.5 8.5 12l3.5 3.5L20 7" />
+      <path d="M15 7h5v5" />
+    </svg>
+  );
+}
+
+/** Opens the returns worksheet. Named for the tool, not for an outcome. */
+export function CalculatorIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="4" y="2.5" width="16" height="19" rx="2.5" />
+      <path d="M7.5 7h9" />
+      <path d="M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01" />
+    </svg>
+  );
+}

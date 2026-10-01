@@ -24,10 +24,15 @@ function directionsUrl(query: string): string {
  *                             thing a shopper is actually scanning for.
  *  - In fit-out             -> the dark dashed plate, which now means exactly
  *                             one thing: this door is not open yet.
+ *
+ * The badge carries `ownership` where the store declares one, because with
+ * every door now trading a badge reading "Open" on all of them says nothing.
+ * Who owns the asset is the distinction a franchise investor is reading for.
  */
 export function StoreCard({ store }: StoreCardProps) {
   const isFitout = store.status === "Fit-out";
   const hasPhoto = Boolean(store.image) && !isFitout;
+  const badge = store.ownership ?? store.status;
 
   return (
     <figure className="store-card flex flex-col gap-3">
@@ -41,7 +46,7 @@ export function StoreCard({ store }: StoreCardProps) {
             sizes="(max-width: 640px) 100vw, 380px"
           />
           <span className="t-label absolute left-3 top-3 rounded-full border border-line bg-paper px-3 py-1 text-ink">
-            {store.status}
+            {badge}
           </span>
         </div>
       ) : isFitout ? (
@@ -54,7 +59,7 @@ export function StoreCard({ store }: StoreCardProps) {
       ) : (
         <div className="store-card__plate relative flex aspect-[4/3] flex-col justify-between rounded-md border border-line bg-paper-shade p-5">
           <span className="t-label self-start rounded-full border border-line bg-paper px-3 py-1 text-ink">
-            {store.status}
+            {badge}
           </span>
           <p className="store-card__town font-display text-ink">{store.city}</p>
         </div>

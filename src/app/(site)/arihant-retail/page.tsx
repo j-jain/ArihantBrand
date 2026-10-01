@@ -4,20 +4,20 @@ import {
   Button,
   DrenchBand,
   JsonLd,
+  ModelBoard,
   ParallaxImage,
   Reveal,
   SectionHeading,
   StaggerGroup,
   StoreCard,
-  cn,
 } from "@/components";
 import {
   getBusinesses,
   getPageCopy,
   getPhotoSlots,
+  getRetailModel,
   getSiteSettings,
   getStores,
-  pointsByIds,
 } from "@/lib/content";
 import {
   breadcrumbJsonLd,
@@ -40,12 +40,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ArihantRetailPage() {
-  const [copy, businesses, stores, settings, photos] = await Promise.all([
+  const [copy, businesses, stores, settings, photos, retailModel] = await Promise.all([
     getPageCopy(UNIT),
     getBusinesses(),
     getStores(),
     getSiteSettings(),
     getPhotoSlots(),
+    getRetailModel(),
   ]);
 
   if (!copy) return null;
@@ -56,14 +57,6 @@ export default async function ArihantRetailPage() {
   const storesSection = sections.stores;
   const model = sections.model;
   const cta = sections.cta;
-
-  // Content is selected by stable id, never by matching the copy — a rewrite
-  // must never be able to blank a section.
-  const modelPoints = pointsByIds(business, [
-    "zero-deadstock",
-    "multi-brand",
-    "legacy",
-  ]);
 
   return (
     <div>
@@ -91,7 +84,7 @@ export default async function ArihantRetailPage() {
             </Reveal>
             <StaggerGroup
               from="scale"
-              className="m-rail grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]"
+              className="m-rail grid gap-6 md:grid-cols-4"
               stagger={0.12}
             >
               {stores.map((store, i) => (
@@ -102,56 +95,31 @@ export default async function ArihantRetailPage() {
         </div>
       </section>
 
-      {/* 3 — Model band (charcoal): the model as a closed ledger + an image duo */}
-      <section className="section-pad on-dark">
-        <div className="container-site">
-          <div className="m-flow grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-start">
-            <div className="m-flow flex flex-col gap-8">
-              <SectionHeading heading={model.heading} lead={model.lead} onDark />
-              {modelPoints.length ? (
-                <StaggerGroup as="ul" from="left" className="flex flex-col" stagger={0.1} mLedger>
-                  {modelPoints.map((point, index) => (
-                    <li
-                      key={point}
-                      className={cn(
-                        "m-ledger-row t-h4 border-t border-line-dark py-5 text-on-charcoal",
-                        index === modelPoints.length - 1 && "border-b border-line-dark",
-                      )}
-                    >
-                      {point}
-                    </li>
-                  ))}
-                </StaggerGroup>
-              ) : null}
-
-              {/* The franchise ask, in the page rather than only in the closing
-                  band, because this is where the model has just been explained
-                  (AR8). */}
-              <div className="m-cta">
-                <Button href="/partner" variant="onDark" size="lg" className="press">
-                  Own a managed store
-                </Button>
-              </div>
-            </div>
-
-            {/* One interior, not a pair. The shopfront that used to sit under
-                this one repeated the same room from outside, so the band read
-                as two photos of one store rather than one piece of evidence.
-                Arihant Retail's own floor, so it outranks stock here. */}
-            <div className="m-duo flex flex-col">
-              <ParallaxImage
-                src={photos.retailInterior.src}
-                alt={photos.retailInterior.alt}
-                ratio={photos.retailInterior.ratio}
-                sizes="(max-width: 1023px) 100vw, 35vw"
-                className="m-ar-4-3 border border-line-dark"
-                tilt
-                mBleed
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 3 — Model band (charcoal): four pillars, each with a diagram that
+          draws itself, plus the returns worksheet. This used to be three
+          sentences in a hairline list, which could state the zero-deadstock
+          claim but could not show it. The franchise ask stays inside the band,
+          because this is where the model has just been explained (AR8). */}
+      <ModelBoard
+        id="model"
+        tone="dark"
+        heading={model.heading}
+        lead={model.lead}
+        model={retailModel}
+        pageCta={{ label: "Own a retail store", href: "/partner" }}
+        media={
+          /* Arihant Retail's own floor, so it outranks stock here. */
+          <ParallaxImage
+            src={photos.retailInterior.src}
+            alt={photos.retailInterior.alt}
+            ratio={photos.retailInterior.ratio}
+            sizes="(max-width: 767px) 100vw, 35vw"
+            className="m-ar-4-3 border border-line-dark"
+            tilt
+            mBleed
+          />
+        }
+      />
 
       {/* 5 — Partner cross-sell (single vermillion drench) */}
       <DrenchBand className="section-pad">

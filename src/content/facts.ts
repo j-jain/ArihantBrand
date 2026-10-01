@@ -12,9 +12,18 @@
  * `facts.marketing.years` is how long the distribution arm has traded. They
  * differ legitimately, and the labels beside them say which is which.
  *
- * Two figures are DERIVED from `partners.ts` so they can never disagree with
- * the logo walls that render them: the group label count and each arm's
- * brand-partner count.
+ * Three figures are DERIVED from `partners.ts` so they can never disagree with
+ * the logo walls that render them: `group.labels`, `marketing.brandsOnWall`
+ * and `apparels.brandsOnWall`. Those three describe the WALL.
+ *
+ * `group.brandPartners` is deliberately NOT derived, and is the one place this
+ * file states a figure the site cannot show you. The client's brand-partner
+ * count is 80+; the wall currently renders 77 logos, because the remaining
+ * logo files have not been supplied. Until they arrive the stated count and
+ * the rendered wall legitimately differ, which is why they are two named
+ * fields rather than one. When the missing logos land in
+ * `public/images/partners/` and `partners.ts`, delete `brandPartners` and
+ * point `phrase.groupBrandPartners` back at `group.labels`.
  *
  * Every value here is awaiting client sign-off (change brief, open item X8).
  * See CHANGE-BRIEF-STATUS.md for the questions attached to each one.
@@ -36,6 +45,18 @@ export const atLeast = (value: number): string => `${num(value)}+`;
 /** A floor area: 15000 -> "15,000 sq ft". */
 export const sqFt = (value: number): string => `${num(value)} sq ft`;
 
+const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+
+/** A small count spelled out, for figures that read as prose: 2 -> "two".
+ *  Falls back to digits above ten, where words stop reading naturally. */
+export const inWords = (value: number): string => WORDS[value] ?? num(value);
+
+/** As `inWords`, capitalised for the start of a sentence: 2 -> "Two". */
+export const InWords = (value: number): string => {
+  const w = inWords(value);
+  return w.charAt(0).toUpperCase() + w.slice(1);
+};
+
 /* ------------------------------------------------------------------ */
 /* Per-arm figures                                                      */
 /* ------------------------------------------------------------------ */
@@ -43,10 +64,12 @@ export const sqFt = (value: number): string => `${num(value)} sq ft`;
 const marketing = {
   /** Years Arihant Marketing has distributed. Shorter than the group's age. */
   years: 30,
-  /** Retailers on a scheduled visit cycle. */
-  retailers: 250,
-  /** Brand partners. Derived: this is exactly what the logo wall renders. */
-  brands: partnersOf("marketing").length,
+  /** Retailers served across the region. */
+  retailers: 300,
+  /** Shop-in-shop counters run inside modern trade. */
+  sisCounters: 300,
+  /** Labels this arm renders on its wall. Derived, so it cannot drift. */
+  brandsOnWall: partnersOf("marketing").length,
   warehouseSqFt: 15000,
   /** Days between two visits to the same retailer. */
   visitCycleDays: 20,
@@ -61,17 +84,18 @@ const apparels = {
   warehouseSqFt: 9000,
   /** Consecutive regional exhibitions led on footfall. */
   exhibitions: 4,
-  /** Brand partners. Derived from the logo wall, as above. */
-  brands: partnersOf("apparels").length,
+  /** Labels this arm renders on its wall. Derived, as above. */
+  brandsOnWall: partnersOf("apparels").length,
 } as const;
 
 const retail = {
   established: 2023,
+  /** Stores trading. All four are open; there is no fit-out pipeline stated. */
   storesOpen: 4,
-  storesFitOut: 2,
-  storesPlanned: 10,
-  /** The horizon the store plan is stated against. */
-  planHorizon: "FY 26-27",
+  /** Owned by the company and run by the company. */
+  storesCompanyOwned: 2,
+  /** Owned by a franchisee and run by the company. */
+  storesFranchisee: 2,
 } as const;
 
 /* ------------------------------------------------------------------ */
@@ -83,17 +107,21 @@ const group = {
   /** Age of the house, counting from the family's first Guwahati counter. */
   years: 35,
   /** Retailers served across the Northeast. */
-  retailers: 250,
-  /** Labels on the portfolio wall. Derived. */
+  retailers: 300,
+  /** Labels on the portfolio wall. Derived: exactly what the wall renders. */
   labels: partners.length,
+  /**
+   * Brand partners the house works with, as stated by the client. NOT derived.
+   * Exceeds `labels` while logo files are outstanding. See the file header.
+   */
+  brandPartners: 80,
   /** Both godowns together. Derived. */
   warehouseSqFt: marketing.warehouseSqFt + apparels.warehouseSqFt,
   /** States of the Northeast served. */
   states: 7,
   storesOpen: retail.storesOpen,
-  storesFitOut: retail.storesFitOut,
-  storesPlanned: retail.storesPlanned,
-  planHorizon: retail.planHorizon,
+  storesCompanyOwned: retail.storesCompanyOwned,
+  storesFranchisee: retail.storesFranchisee,
 } as const;
 
 export const facts = { group, marketing, apparels, retail } as const;
@@ -105,15 +133,20 @@ export const facts = { group, marketing, apparels, retail } as const;
 export const phrase = {
   /** "20 days" — the visit cycle, as it is spoken. */
   visitCycle: `${facts.marketing.visitCycleDays} days`,
-  /** "24,000 sq ft" — both godowns. */
-  groupWarehouse: sqFt(facts.group.warehouseSqFt),
+  /* The combined "24,000 sq ft" phrase is gone with the home proof band that
+     carried it. `group.warehouseSqFt` stays above as the derived total, so
+     the phrase can come back without recomputing anything. */
   marketingWarehouse: sqFt(facts.marketing.warehouseSqFt),
   apparelsWarehouse: sqFt(facts.apparels.warehouseSqFt),
-  /** "250+" retailers, group scope. */
+  /** "300+" retailers, group scope. */
   groupRetailers: atLeast(facts.group.retailers),
   marketingRetailers: atLeast(facts.marketing.retailers),
-  /** "77" labels; "48" Marketing brands; "29" Apparels brands. */
+  /** "300+" shop-in-shop counters. */
+  sisCounters: atLeast(facts.marketing.sisCounters),
+  /** "80+" brand partners, the stated figure. */
+  groupBrandPartners: atLeast(facts.group.brandPartners),
+  /** "77" labels on the wall; "48" Marketing; "29" Apparels. All derived. */
   groupLabels: num(facts.group.labels),
-  marketingBrands: num(facts.marketing.brands),
-  apparelsBrands: num(facts.apparels.brands),
+  marketingBrands: num(facts.marketing.brandsOnWall),
+  apparelsBrands: num(facts.apparels.brandsOnWall),
 } as const;

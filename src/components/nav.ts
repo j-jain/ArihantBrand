@@ -19,9 +19,9 @@ export const partnerLink: NavItem = { label: "Partner With Us", href: "/partner"
  *  /contact with the intent pre-selected, which skips step 1 of the form. The
  *  values match InquiryForm's intent whitelist exactly. */
 export const intentLinks: NavItem[] = [
-  { label: "Stock our brands", href: "/contact?intent=retailer" },
+  { label: "Shop fast moving brands", href: "/contact?intent=retailer" },
   { label: "Distribute your brand", href: "/contact?intent=brand" },
-  { label: "Own a managed store", href: "/contact?intent=franchise" },
+  { label: "Own a retail store", href: "/contact?intent=franchise" },
 ];
 
 /** Top-level nav after "Businesses". */

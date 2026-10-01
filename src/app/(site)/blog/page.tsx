@@ -76,7 +76,7 @@ export default async function BlogPage() {
             as="ul"
             from="up"
             stagger={0.09}
-            className="post-grid mt-12 grid gap-x-6 gap-y-11 sm:grid-cols-2 lg:grid-cols-3"
+            className="post-grid mt-12 grid gap-x-6 gap-y-11 sm:grid-cols-2 md:grid-cols-3"
           >
             {posts.map((post, i) => (
               <li key={post.slug} className="post-item flex">
@@ -92,7 +92,7 @@ export default async function BlogPage() {
                         alt=""
                         fill
                         priority={i === 0}
-                        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                        sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] will-change-transform group-hover:scale-[1.045]"
                       />
                     ) : null}

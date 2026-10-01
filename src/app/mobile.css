@@ -58,6 +58,8 @@
     --m-ticket-name: 1.05rem;
     --m-hero-compact-pad: 2rem;
     --m-award-year: clamp(3.25rem, 17vw, 4.5rem);
+    --m-wordmark: 1.15rem;
+    --m-wordmark-sub: 0.6rem;
     --m-partner-stat: 1.85rem;
     --m-blogcard-title: 1.2rem;
   }
@@ -273,8 +275,22 @@
      keeps the left edge and the hamburger keeps the far right. */
 
   .header-actions {
-    gap: 0.15rem;
-    margin-right: 0.15rem;
+    gap: 0;
+    margin-right: 0;
+  }
+
+  /* The bar has to hold the wordmark, the contact pair and the menu button
+     on a 360px handset. At its desktop size the wordmark left no room and the
+     menu button was squeezed to zero width, so a phone visitor had no way to
+     open the menu (found in change round 2). The wordmark steps down a size
+     here and the bar's gaps tighten; every target stays 44px. */
+  .site-header__bar {
+    gap: 0.25rem;
+  }
+
+  .wordmark {
+    min-width: 0;
+    flex: 0 1 auto;
   }
 
   .header-action {
@@ -520,12 +536,12 @@
     padding: 1.35rem 1.25rem;
   }
 
-  .stack__mark {
-    margin-bottom: 0.75rem;
+  .stack__title {
+    font-size: 1.2rem;
   }
 
   .stack__text {
-    margin-top: 0.55rem;
+    margin-top: 0.8rem;
   }
 }
 
@@ -1051,13 +1067,143 @@
     display: block;
   }
 
+  :root {
+    --stack-step: 2.9rem;
+    --stack-card-h: 11.5rem;
+  }
+
+  .stack::after {
+    content: "";
+    display: block;
+    height: 10svh;
+  }
+
   .stack__card {
     position: sticky;
-    top: var(--m-sticky-top);
-    min-height: 11.5rem;
+    top: calc(var(--m-sticky-top) + var(--stack-offset, var(--i, 0) * var(--stack-step)));
   }
 
   .stack__card:not(:last-child) {
     margin-bottom: 0.85rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 17 — ModelBoard + returns worksheet                                 */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .model-board {
+    gap: 1.5rem;
+  }
+
+  /* 88px of figure against a 360px viewport leaves the body text a measure
+     it cannot set at. The diagram shrinks; the hairline thickens to stay
+     legible at the smaller size. */
+  .model-row {
+    grid-template-columns: 56px minmax(0, 1fr);
+    column-gap: 0.875rem;
+  }
+
+  .model-row__fig {
+    width: 56px;
+    height: 56px;
+  }
+
+  .model-fig {
+    stroke-width: 2;
+  }
+
+  .model-board__roic {
+    padding-top: 0.75rem;
+  }
+
+  .calc-trigger {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .calc__grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .calc__note {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .calc__row {
+    padding-block: 0.6rem;
+  }
+
+  .calc__figure {
+    font-size: 1.25rem;
+  }
+
+  .calc__foot .btn {
+    width: 100%;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Change round 2: the fitted home hero and the awards band             */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  /* The whole hero, photo included, fits the first screen under the header.
+     The copy takes the height it needs; the photo takes what is left (with a
+     floor, so a tall headline on a short handset still shows a real picture
+     rather than a sliver). */
+  .hero--fit {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - var(--m-header-h));
+    padding-top: 1.25rem;
+    padding-bottom: 0;
+  }
+
+  .hero--fit .hero-fit__grid {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    /* The desktop grid centres its cells; a phone column must stretch them,
+       or the photo (which has no intrinsic width) collapses to a sliver. */
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .hero--fit .hero-copy {
+    gap: 0.9rem;
+  }
+
+  .hero--fit .hero-fit__media {
+    display: flex;
+    flex: 1 1 0;
+    min-height: 8.5rem;
+  }
+
+  .hero--fit .hero-frame {
+    --m-frame-ratio: auto;
+    flex: 1 1 auto;
+    height: auto;
+  }
+
+  .hero-points__row {
+    padding-block: 0.5rem;
+    font-size: 1.02rem;
+  }
+
+  .hero-points__fig {
+    font-size: 1.7em;
+  }
+
+  /* Awards band: the ruled list stays a list; the voices become the same
+     snap rail every other testimonial block uses on a phone. */
+  .award-list--compact .award-row {
+    padding-block: 0.95rem;
+  }
+
+  .award-list--compact .award-row::before {
+    top: 0.95rem;
   }
 }

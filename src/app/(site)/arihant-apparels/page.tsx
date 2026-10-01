@@ -11,7 +11,6 @@ import {
   Reveal,
   SectionHeading,
   StaggerGroup,
-  VideoFeature,
   cn,
 } from "@/components";
 import {
@@ -64,7 +63,6 @@ export default async function ArihantApparelsPage() {
   const apparelsPartners = partners.filter((p) => p.unit === UNIT);
   const { hero, sections } = copy;
   const mission = sections.mission;
-  const filmSection = sections.film;
   const teamSection = sections.team;
   const brandsSection = sections.brands;
   const faqSection = sections.faq;
@@ -102,17 +100,17 @@ export default async function ArihantApparelsPage() {
         }}
       >
         <div className="container-site">
-          <Reveal variant="fade" className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-start">
+          <Reveal variant="fade" className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-12 md:items-start">
             <ParallaxImage
               src={photos.apparelsWarehouse.src}
               alt={photos.apparelsWarehouse.alt}
               ratio={photos.apparelsWarehouse.ratio}
-              sizes="(max-width: 1023px) 100vw, 40vw"
-              className="m-ar-4-3 border border-line lg:col-span-5"
+              sizes="(max-width: 767px) 100vw, 40vw"
+              className="m-ar-4-3 border border-line md:col-span-5"
               tilt
               mBleed
             />
-            <div className="m-flow flex flex-col gap-6 lg:col-span-7">
+            <div className="m-flow flex flex-col gap-6 md:col-span-7">
               <div>
                 <h2 className="t-h2 text-ink">{mission.heading}</h2>
                 <div
@@ -144,38 +142,9 @@ export default async function ArihantApparelsPage() {
         </div>
       </section>
 
-      {/* 2b — Film (paper): the event promo, click-to-play */}
-      <section className="section-pad bg-paper" style={unitScope(UNIT)}>
-        <div className="container-site">
-          <div className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-12 lg:items-center">
-            <div className="m-flow-tight flex flex-col gap-5 lg:col-span-5">
-              <div>
-                <h2 className="t-h2 text-ink">{filmSection.heading}</h2>
-                <div
-                  aria-hidden="true"
-                  className="mt-5"
-                  style={{
-                    height: 3,
-                    width: "clamp(3rem, 8vw, 4.5rem)",
-                    background: "var(--unit-accent)",
-                  }}
-                />
-              </div>
-              {filmSection.lead ? (
-                <p className="t-lead measure text-ink-soft">{filmSection.lead}</p>
-              ) : null}
-            </div>
-            <Reveal variant="clip" className="lg:col-span-7">
-              <VideoFeature
-                mp4="/videos/apparels-promo.mp4"
-                poster="/images/photos/apparels-promo-poster.jpg"
-                label="Play the Arihant Apparels film"
-                className="m-bleed"
-              />
-            </Reveal>
-          </div>
-        </div>
-      </section>
+      {/* The film that used to sit here is Arihant Marketing's event footage,
+          not Apparels', so it moved to /arihant-marketing. The asset keeps its
+          original filename. */}
 
       {/* 3b — Team (accent-wash): the real people who run it */}
       {team.length ? (
@@ -191,20 +160,20 @@ export default async function ArihantApparelsPage() {
             <Reveal variant="fade">
               <SectionHeading heading={teamSection.heading} lead={teamSection.lead} />
             </Reveal>
-            <div className="m-flow grid gap-y-10 gap-x-16 lg:grid-cols-12 lg:items-start">
+            <div className="m-flow grid gap-y-10 gap-x-16 md:grid-cols-12 md:items-start">
               <ParallaxImage
                 src={photos.apparelsTeam.src}
                 alt={photos.apparelsTeam.alt}
                 ratio={photos.apparelsTeam.ratio}
-                sizes="(max-width: 1023px) 100vw, 46vw"
-                className="border border-line lg:col-span-6"
+                sizes="(max-width: 767px) 100vw, 46vw"
+                className="border border-line md:col-span-6"
                 tilt
                 mBleed
               />
               <StaggerGroup
                 as="ul"
                 from="up"
-                className="flex flex-col border-t border-line lg:col-span-6"
+                className="flex flex-col border-t border-line md:col-span-6"
                 stagger={0.08}
                 mLedger
               >
@@ -233,7 +202,7 @@ export default async function ArihantApparelsPage() {
       {/* 4 — Category-leaders strip (paper): pull-line + accent-marked facts */}
       <section className="section-pad bg-paper" style={unitScope(UNIT)}>
         <div className="container-site">
-          <div className="m-flow grid gap-y-8 gap-x-16 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+          <div className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-[1.4fr_1fr] md:items-start">
             {leadersPoint ? (
               <Reveal
                 as="p"
@@ -285,7 +254,7 @@ export default async function ArihantApparelsPage() {
       {faqs.length ? (
         <section className="section-pad bg-paper">
           <div className="container-site">
-            <div className="m-flow grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+            <div className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
               <Reveal variant="fade">
                 <SectionHeading heading={faqSection?.heading ?? ""} />
               </Reveal>
@@ -311,7 +280,7 @@ export default async function ArihantApparelsPage() {
           ) : null}
           <div data-drench-reveal className="m-cta mt-1 flex flex-wrap items-center gap-x-6 gap-y-4">
             <Button href="/contact?intent=retailer" variant="onDark" size="lg" className="press">
-              Stock our brands
+              Shop fast moving brands
             </Button>
             <a
               href="/contact?intent=brand"

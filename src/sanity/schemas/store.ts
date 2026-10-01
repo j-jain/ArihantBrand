@@ -29,6 +29,19 @@ export const store = defineType({
       },
       validation: (r) => r.required(),
     }),
+    defineField({
+      name: "ownership",
+      title: "Ownership",
+      description:
+        "Who owns the asset. Every store is run by Arihant either way, so this says nothing about who operates it. Shown as the badge on the store card.",
+      type: "string",
+      options: {
+        list: [
+          { title: "Company-owned", value: "Company-owned" },
+          { title: "Franchisee-owned", value: "Franchisee-owned" },
+        ],
+      },
+    }),
     defineField({ name: "image", title: "Photo (uploaded — preferred)", type: "image", options: { hotspot: true } }),
     defineField({ name: "imagePath", title: "Photo path (fallback, e.g. /images/photos/x.jpg)", type: "string" }),
     defineField({ name: "caption", title: "Caption / alt text", type: "text", rows: 2 }),
@@ -42,5 +55,5 @@ export const store = defineType({
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
   ],
   orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
-  preview: { select: { title: "name", subtitle: "status", media: "image" } },
+  preview: { select: { title: "name", subtitle: "ownership", media: "image" } },
 });

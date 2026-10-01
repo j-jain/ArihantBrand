@@ -24,8 +24,14 @@ export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 export const apiVersion = "2025-06-01";
 
-/** True when a Sanity project id is present — the data layer's read switch. */
-export const sanityConfigured: boolean = Boolean(projectId);
+/** True when a Sanity project id is present — the data layer's read switch.
+ *
+ *  `SANITY_READS=off` forces the seed while keeping the project id (so Studio
+ *  and `npm run seed` still work). Use it to preview code-side copy edits
+ *  locally before they are seeded: the dataset is shared with production, so
+ *  seeding is a publish, not a preview. */
+export const sanityConfigured: boolean =
+  Boolean(projectId) && process.env.SANITY_READS !== "off";
 
 /** True when Sanity can be written to (project id + server token present). */
 export function sanityWriteConfigured(): boolean {

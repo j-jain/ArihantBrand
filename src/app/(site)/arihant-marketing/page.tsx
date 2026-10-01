@@ -12,6 +12,7 @@ import {
   Reveal,
   SectionHeading,
   StaggerGroup,
+  VideoFeature,
 } from "@/components";
 import {
   getBusinesses,
@@ -77,6 +78,7 @@ export default async function ArihantMarketingPage() {
   const marketingPartners = partners.filter((p) => p.unit === UNIT);
   const { hero, sections } = copy;
   const award = sections.award;
+  const film = sections.film;
   const strengthsSection = sections.strengths;
   const how = sections.how;
   const specialist = sections.specialist;
@@ -86,7 +88,7 @@ export default async function ArihantMarketingPage() {
 
   // Content is selected by stable id, never by matching the copy — a rewrite
   // must never be able to blank a section.
-  const twentyDayPromise = pointById(business, "visit-cycle");
+  const reachPromise = pointById(business, "visit-cycle");
 
   return (
     <div>
@@ -112,17 +114,17 @@ export default async function ArihantMarketingPage() {
       {award ? (
         <section className="am-award on-dark">
           <CurtainReveal className="container-site w-full">
-            <div className="m-flow grid items-center gap-x-10 gap-y-8 lg:grid-cols-12">
+            <div className="m-flow grid items-center gap-x-10 gap-y-8 md:grid-cols-12">
               <ParallaxImage
                 src={photos.marketingAward.src}
                 alt={photos.marketingAward.alt}
                 ratio={photos.marketingAward.ratio}
-                sizes="(max-width: 1023px) 100vw, 30vw"
-                className="am-award__object lg:col-span-4"
+                sizes="(max-width: 767px) 100vw, 30vw"
+                className="am-award__object md:col-span-4"
                 parallax={false}
                 tilt
               />
-              <div className="m-flow-tight flex flex-col gap-5 lg:col-span-7 lg:col-start-6">
+              <div className="m-flow-tight flex flex-col gap-5 md:col-span-7 md:col-start-6">
                 <p className="am-award__date t-label text-on-charcoal-soft">
                   {facts.marketing.awardYear}
                 </p>
@@ -152,6 +154,44 @@ export default async function ArihantMarketingPage() {
         </section>
       ) : null}
 
+      {/* 2a — Film (paper): the event promo, click-to-play. This footage is
+          Arihant Marketing's; it was previously mounted on the Apparels page,
+          where it argued for the wrong business. The asset paths keep their
+          original filenames. */}
+      {film ? (
+        <section className="section-pad bg-paper" style={unitScope(UNIT)}>
+          <div className="container-site">
+            <div className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-12 md:items-center">
+              <div className="m-flow-tight flex flex-col gap-5 md:col-span-5">
+                <div>
+                  <h2 className="t-h2 text-ink">{film.heading}</h2>
+                  <div
+                    aria-hidden="true"
+                    className="mt-5"
+                    style={{
+                      height: 3,
+                      width: "clamp(3rem, 8vw, 4.5rem)",
+                      background: "var(--unit-accent)",
+                    }}
+                  />
+                </div>
+                {film.lead ? (
+                  <p className="t-lead measure text-ink-soft">{film.lead}</p>
+                ) : null}
+              </div>
+              <Reveal variant="clip" className="md:col-span-7">
+                <VideoFeature
+                  mp4="/videos/apparels-promo.mp4"
+                  poster="/images/photos/apparels-promo-poster.jpg"
+                  label="Play the Arihant Marketing film"
+                  className="m-bleed"
+                />
+              </Reveal>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {/* 2b — What a brand gets (paper-shade): the same four strengths the home
           page argues to a retailer, argued here to a brand manager. Separate
           copy on purpose, so neither page reprints the other (AM10). Set as a
@@ -160,8 +200,8 @@ export default async function ArihantMarketingPage() {
       {strengths.length && strengthsSection ? (
         <section className="am-band bg-paper-shade" style={unitScope(UNIT)}>
           <div className="container-site">
-            <div className="m-flow grid gap-x-12 gap-y-8 lg:grid-cols-12">
-              <Reveal variant="fade" className="lg:col-span-4">
+            <div className="m-flow grid gap-x-12 gap-y-8 md:grid-cols-12">
+              <Reveal variant="fade" className="md:col-span-4">
                 <SectionHeading
                   heading={strengthsSection.heading}
                   lead={strengthsSection.lead}
@@ -170,7 +210,7 @@ export default async function ArihantMarketingPage() {
               <StaggerGroup
                 as="ul"
                 from="up"
-                className="am-plate lg:col-span-7 lg:col-start-6"
+                className="am-plate md:col-span-7 md:col-start-6"
                 stagger={0.08}
                 mLedger
               >
@@ -199,7 +239,7 @@ export default async function ArihantMarketingPage() {
           are one thought. Together they stood 1,274px on a laptop, so a reader
           had to scroll up and down to hold either half. They are two folds now,
           and the ground changes underneath them to say so. */}
-      {twentyDayPromise ? (
+      {reachPromise ? (
         <section className="bg-paper" style={unitScope(UNIT)}>
           <div className="am-promise">
             <div className="am-promise__copy container-site">
@@ -224,7 +264,7 @@ export default async function ArihantMarketingPage() {
                     maxWidth: "17ch",
                   }}
                 >
-                  {twentyDayPromise}
+                  {reachPromise}
                 </blockquote>
               </Reveal>
             </div>
@@ -238,7 +278,7 @@ export default async function ArihantMarketingPage() {
                 src={photos.marketingWarehouse.src}
                 alt={photos.marketingWarehouse.alt}
                 ratio={photos.marketingWarehouse.ratio}
-                sizes="(max-width: 1023px) 100vw, 46vw"
+                sizes="(max-width: 767px) 100vw, 46vw"
                 className="m-ar-4-3 border border-line"
                 tilt
                 mBleed
@@ -260,7 +300,7 @@ export default async function ArihantMarketingPage() {
             <StaggerGroup
               as="ol"
               from="up"
-              className="m-am-steps grid gap-x-8 gap-y-9 md:grid-cols-2 lg:grid-cols-4"
+              className="m-am-steps grid gap-x-8 gap-y-9 md:grid-cols-4"
               stagger={0.1}
               mLedger
             >
@@ -309,8 +349,8 @@ export default async function ArihantMarketingPage() {
       {specialist && reasons.length ? (
         <section className="am-band on-dark">
           <div className="container-site m-flow flex flex-col gap-[clamp(1.5rem,3vw,2.25rem)]">
-            <div className="grid items-end gap-x-12 gap-y-10 lg:grid-cols-12">
-              <div className="lg:col-span-7">
+            <div className="grid items-end gap-x-12 gap-y-10 md:grid-cols-12">
+              <div className="md:col-span-7">
                 <SectionHeading
                   heading={specialist.heading}
                   lead={specialist.lead}
@@ -321,8 +361,8 @@ export default async function ArihantMarketingPage() {
                 src={photos.marketingCorridor.src}
                 alt={photos.marketingCorridor.alt}
                 ratio={photos.marketingCorridor.ratio}
-                sizes="(max-width: 1023px) 100vw, 30vw"
-                className="m-ar-16-9 border border-line-dark lg:col-span-4 lg:col-start-9"
+                sizes="(max-width: 767px) 100vw, 30vw"
+                className="m-ar-16-9 border border-line-dark md:col-span-4 md:col-start-9"
                 tilt
                 mBleed
               />
@@ -335,7 +375,7 @@ export default async function ArihantMarketingPage() {
             <StaggerGroup
               as="ul"
               from="up"
-              className="grid gap-x-12 gap-y-[clamp(1.75rem,3vw,2.5rem)] lg:grid-cols-2"
+              className="grid gap-x-12 gap-y-[clamp(1.75rem,3vw,2.5rem)] md:grid-cols-2"
               stagger={0.09}
               mLedger
             >
@@ -394,7 +434,7 @@ export default async function ArihantMarketingPage() {
       {faqs.length ? (
         <section className="am-band bg-paper-shade">
           <div className="container-site">
-            <div className="m-flow grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+            <div className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
               <Reveal variant="fade">
                 <SectionHeading heading={faqSection?.heading ?? "Straight answers"} />
               </Reveal>

@@ -2,6 +2,11 @@ import type { Testimonial } from "@/content/types";
 
 interface TestimonialColumnsProps {
   testimonials: Testimonial[];
+  /** Columns from 768px up. Three on /recognition's full-width band; two
+   *  where the wall shares a row with other content (the home awards band). */
+  columns?: 2 | 3;
+  /** "dark" sets the cards for a charcoal ground. */
+  tone?: "paper" | "dark";
 }
 
 function initialsOf(name: string): string {
@@ -36,24 +41,32 @@ function TestimonialCard({
   );
 }
 
-/** A wall of testimonials. Desktop shows three columns of gently self-scrolling
- *  cards (each column a CSS marquee at its own pace, paused on hover/focus);
- *  tablet drops to two columns; mobile shows the first four as a snap rail. The
+/** A wall of testimonials. From 768px up it shows two or three columns of
+ *  gently self-scrolling cards (each column a CSS marquee at its own pace,
+ *  paused on hover/focus), the same count at every width so the wall never
+ *  re-flows; mobile shows the first four as a snap rail. The
  *  duplicated marquee copy is `aria-hidden`, and reduced motion / the global
  *  motion reset leave every column static. All motion is CSS keyframe based —
  *  no JS is required for it to be legible. */
-export function TestimonialColumns({ testimonials }: TestimonialColumnsProps) {
+export function TestimonialColumns({
+  testimonials,
+  columns: count = 3,
+  tone = "paper",
+}: TestimonialColumnsProps) {
   if (testimonials.length === 0) return null;
 
-  const columns: Testimonial[][] = [[], [], []];
+  const columns: Testimonial[][] = Array.from({ length: count }, () => []);
   testimonials.forEach((t, i) => {
-    columns[i % 3].push(t);
+    columns[i % count].push(t);
   });
 
   const durations = ["38s", "46s", "42s"];
 
   return (
-    <div className="tcols">
+    <div
+      className={tone === "dark" ? "tcols tcols--dark" : "tcols"}
+      style={{ ["--tcols" as string]: count }}
+    >
       {/* Mobile: the first four as a horizontal snap rail (see .tcols__mobile
           in mobile.css). `display: none` above 767px keeps this out of the
           desktop tab order entirely, so the tabindex the scroll region needs

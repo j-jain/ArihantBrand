@@ -13,6 +13,10 @@ export interface Hero {
   /** Optional word inside heading to set in Besley italic + unit accent. */
   headingEmphasis?: string;
   lead: string;
+  /** Short figure lines set under the lead ("300+ retailers served"). The
+   *  leading figure in each line is picked out typographically; the wording
+   *  stays exactly as written. Optional: most heroes carry none. */
+  points?: string[];
   primaryCta: Cta;
   secondaryCta?: Cta;
 }
@@ -83,6 +87,9 @@ export interface Store {
    *  added without a data migration. */
   format: "Multi-brand";
   status: "Open" | "Fit-out";
+  /** Who owns the asset. Every store is run by Arihant either way, which is
+   *  the whole point of the model, so this says nothing about operations. */
+  ownership?: "Company-owned" | "Franchisee-owned";
   image?: string;
   caption?: string;
   /** Address string for a maps "Get directions" link. Present only where the
@@ -155,7 +162,17 @@ export interface Post {
    *  resolves to a cdn.sanity.io URL, which the code image manifest cannot
    *  match, and an unmatched lookup would silently leave the alt empty. */
   imageAlt?: string;
+  /** A named author, for notes written by a person rather than the house
+   *  (e.g. posts first published on LinkedIn). Absent means "Arihant Group". */
+  author?: PostAuthor;
   body: PostBlock[];
+}
+
+export interface PostAuthor {
+  name: string;
+  role: string;
+  /** Where the note was first published, if anywhere (a LinkedIn post URL). */
+  sourceUrl?: string;
 }
 
 export interface UnitContact {
@@ -193,6 +210,72 @@ export interface ProcessStep {
 /** One of the site's audience funnels, rendered as its own card and its own
  *  CTA on the home page. `id` matches the inquiry-form intent it routes to
  *  where one exists, so the card and the form agree. */
+/* ------------------------------------------------------------------ */
+/* The Arihant Retail managed-store model, as rendered by ModelBoard.   */
+/* ------------------------------------------------------------------ */
+
+/** Stable selector. It picks the figure drawn beside each row, so renaming a
+ *  value drops that row rather than changing its copy. */
+export type ModelPillarId =
+  | "zero-deadstock"
+  | "multi-brand"
+  | "no-frills"
+  | "company-run";
+
+export interface ModelPillar {
+  id: ModelPillarId;
+  title: string;
+  text: string;
+}
+
+/** One labelled input in the returns worksheet. There is deliberately no
+ *  default value on this shape: a prefilled figure would be an Arihant
+ *  projection with an extra step (PRODUCT.md honesty rails). */
+export interface CalculatorField {
+  label: string;
+  help: string;
+}
+
+/** Every string the returns worksheet prints. Nothing in this shape is, or may
+ *  become, a number. The worksheet computes only from visitor input. */
+export interface ReturnsCalculatorCopy {
+  triggerLabel: string;
+  heading: string;
+  lead: string;
+  fields: {
+    area: CalculatorField;
+    rent: CalculatorField;
+    sales: CalculatorField;
+    margin: CalculatorField;
+    otherCosts: CalculatorField;
+  };
+  results: {
+    grossMargin: string;
+    statedCosts: string;
+    leftOver: string;
+    salesPerSqFt: string;
+    rentShare: string;
+    /** Printed in place of a figure while an input it needs is empty. */
+    empty: string;
+  };
+  /** The honesty rail. Always visible, never collapsed, and referenced by the
+   *  dialog's aria-describedby. */
+  disclosure: string;
+  resultNote: string;
+  /** Printed under the "what your numbers leave" row, which is the one a
+   *  reader will otherwise mistake for profit. */
+  leftOverNote: string;
+  cta: Cta;
+}
+
+export interface RetailModel {
+  pillars: ModelPillar[];
+  /** Qualitative return-on-capital statement. Carries no percentage and no
+   *  figure; the Studio validation rejects digits in this field. */
+  roicNote: string;
+  calculator: ReturnsCalculatorCopy;
+}
+
 export interface Funnel {
   id: string;
   title: string;

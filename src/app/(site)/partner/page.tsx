@@ -8,6 +8,7 @@ import {
   getPageCopy,
   getPartnerSteps,
   getPhotoSlots,
+  getRetailModel,
   getSiteSettings,
   getStores,
 } from "@/lib/content";
@@ -20,6 +21,7 @@ import {
   HeroIntro,
   InquiryForm,
   JsonLd,
+  ModelBoard,
   ParallaxImage,
   Reveal,
   SectionHeading,
@@ -27,7 +29,6 @@ import {
   cn,
 } from "@/components";
 import { submitLeadAction } from "@/app/actions/lead";
-import { PromiseList } from "./_components/PromiseList";
 import { ProofStrip } from "./_components/ProofStrip";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -41,15 +42,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PartnerPage() {
-  const [copy, faqs, steps, businesses, settings, stores, photos] = await Promise.all([
-    getPageCopy("partner"),
-    getFaqs("partner"),
-    getPartnerSteps(),
-    getBusinesses(),
-    getSiteSettings(),
-    getStores(),
-    getPhotoSlots(),
-  ]);
+  const [copy, faqs, steps, businesses, settings, stores, photos, retailModel] =
+    await Promise.all([
+      getPageCopy("partner"),
+      getFaqs("partner"),
+      getPartnerSteps(),
+      getBusinesses(),
+      getSiteSettings(),
+      getStores(),
+      getPhotoSlots(),
+      getRetailModel(),
+    ]);
 
   if (!copy) notFound();
 
@@ -71,7 +74,7 @@ export default async function PartnerPage() {
       {/* 1 — Hero: this page opens dark, for gravitas */}
       <section className="hero-pad on-dark">
         <HeroIntro className="container-site">
-          <div className="m-flow grid items-start gap-12 lg:grid-cols-[1.5fr_1fr]">
+          <div className="m-flow grid items-start gap-12 md:grid-cols-[1.5fr_1fr]">
             <div className="m-flow flex flex-col gap-6">
               <h1
                 data-hero-title
@@ -142,25 +145,29 @@ export default async function PartnerPage() {
         </HeroIntro>
       </section>
 
-      {/* 2 — Promise: the objection-handling core, beside the storefront image */}
-      <section className="section-pad bg-paper">
-        <div className="container-site m-flow flex flex-col gap-10">
-          <Reveal variant="fade">
-            <SectionHeading heading={sections.promise.heading} lead={sections.promise.lead} />
-          </Reveal>
-          <div className="m-flow grid gap-x-12 gap-y-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <ParallaxImage
-              src={photos.partnerStorefront.src}
-              alt={photos.partnerStorefront.alt}
-              ratio={photos.partnerStorefront.ratio}
-              sizes="(max-width: 1023px) 100vw, 34vw"
-              className="m-ar-4-3 border border-line"
-              mBleed
-            />
-            <PromiseList items={sections.promise.body ?? []} />
-          </div>
-        </div>
-      </section>
+      {/* 2 — Promise: the objection-handling core, beside the storefront image.
+          The five plain lines this section used to list are superseded by the
+          ModelBoard's four pillars, which make the same points with a diagram
+          against each one and carry the returns worksheet. Paper ground here,
+          because this page's hero is already charcoal. */}
+      <ModelBoard
+        id="model"
+        tone="paper"
+        heading={sections.promise.heading}
+        lead={sections.promise.lead}
+        model={retailModel}
+        pageCta={{ label: "Request franchise details", href: "#inquiry" }}
+        media={
+          <ParallaxImage
+            src={photos.partnerStorefront.src}
+            alt={photos.partnerStorefront.alt}
+            ratio={photos.partnerStorefront.ratio}
+            sizes="(max-width: 767px) 100vw, 34vw"
+            className="m-ar-4-3 border border-line"
+            mBleed
+          />
+        }
+      />
 
       {/* 3 — Proof: real stores, already trading */}
       <section className="section-pad bg-paper-shade">
@@ -212,7 +219,7 @@ export default async function PartnerPage() {
       {/* 5 — FAQ: on charcoal, the questions serious investors ask */}
       <section className="section-pad on-dark">
         <div className="container-site">
-          <div className="m-flow grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+          <div className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
             <SectionHeading heading={sections.faq.heading} onDark />
             <FaqAccordion faqs={faqs} />
           </div>
@@ -224,8 +231,8 @@ export default async function PartnerPage() {
         <div className="container-site">
           <div className="m-flow flex flex-col gap-10">
             <SectionHeading heading={sections.inquiry.heading} lead={sections.inquiry.lead} />
-            <div className="m-flow grid gap-x-12 gap-y-12 lg:grid-cols-12">
-              <div className="lg:col-span-7">
+            <div className="m-flow grid gap-x-12 gap-y-12 md:grid-cols-12">
+              <div className="md:col-span-7">
                 <InquiryForm
                   action={submitLeadAction}
                   defaultIntent="franchise"
@@ -234,7 +241,7 @@ export default async function PartnerPage() {
                 />
               </div>
               {retailContact ? (
-                <aside className="m-flow-tight flex flex-col gap-5 lg:col-span-5">
+                <aside className="m-flow-tight flex flex-col gap-5 md:col-span-5">
                   <p className="t-h4 text-ink">Prefer to talk first?</p>
                   <p className="t-body text-ink-soft measure">
                     Skip the form. Call or WhatsApp the Arihant Retail desk directly.

@@ -71,8 +71,8 @@ export default async function ContactPage() {
       {/* 2 — Form + direct channels split */}
       <section id="inquiry" className="section-pad bg-paper-shade">
         <div className="container-site">
-          <div className="m-flow-loose grid gap-x-12 gap-y-14 lg:grid-cols-12">
-            <Reveal variant="clip" className="lg:col-span-7">
+          <div className="m-flow-loose grid gap-x-12 gap-y-14 md:grid-cols-12">
+            <Reveal variant="clip" className="md:col-span-7">
               <div className="m-flow flex flex-col gap-8">
                 <SectionHeading heading={sections.form.heading} />
                 <Suspense fallback={null}>
@@ -84,7 +84,7 @@ export default async function ContactPage() {
               </div>
             </Reveal>
 
-            <Reveal variant="fade" delay={0.08} className="lg:col-span-5">
+            <Reveal variant="fade" delay={0.08} className="md:col-span-5">
               <aside className="m-flow flex flex-col gap-8">
                 <SectionHeading heading={sections.direct.heading} lead={sections.direct.lead} />
 

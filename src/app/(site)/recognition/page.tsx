@@ -7,15 +7,14 @@ import {
   DrenchBand,
   HeroIntro,
   JsonLd,
-  Reveal,
   SectionHeading,
   TestimonialColumns,
+  Timeline,
 } from "@/components";
 import {
   getAwards,
   getPageCopy,
   getRecognitionPhotos,
-  getSiteSettings,
   getTestimonials,
   getTimeline,
 } from "@/lib/content";
@@ -31,21 +30,17 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-/** Group the WhatsApp/phone digits into the spoken "+91 94350 45528" form. */
-function formatTel(digits: string): string {
-  const local = digits.replace(/^91/, "");
-  const grouped = local.replace(/(\d{5})(\d{5})/, "$1 $2");
-  return `+91 ${grouped}`;
-}
+/* No phone formatter here any more. This page's closing band used to print a
+   tel: link beside its CTA; it was removed at the client's request, and with
+   it the only reason this route read site settings at all. */
 
 export default async function RecognitionPage() {
-  const [copy, awards, photos, timeline, testimonials, settings] = await Promise.all([
+  const [copy, awards, photos, timeline, testimonials] = await Promise.all([
     getPageCopy("recognition"),
     getAwards(),
     getRecognitionPhotos(),
     getTimeline(),
     getTestimonials(),
-    getSiteSettings(),
   ]);
 
   if (!copy) notFound();
@@ -90,7 +85,7 @@ export default async function RecognitionPage() {
       {/* 2 — Trophy case (charcoal, curtain-revealed) ----------------------- */}
       <section className="on-dark">
         <CurtainReveal className="container-site section-pad">
-          <div className="m-flow flex flex-col gap-12 lg:gap-16">
+          <div className="m-flow flex flex-col gap-12 md:gap-16">
             <SectionHeading
               heading={sections.awards.heading}
               lead={sections.awards.lead}
@@ -160,31 +155,16 @@ export default async function RecognitionPage() {
       ) : null}
 
       {/* 3 — Milestones (paper-shade) --------------------------------------- */}
-      {/* A strip, not a story: six years read across in one glance, which is
-          what a trophy page wants between the awards above and the voices
-          below. The scroll-driven Timeline stays on /about, where the years
-          are the argument rather than a footnote to it. */}
+      {/* The six-cell strip that used to sit here printed a year and a title
+          and threw the `text` away, so a reader learned when each thing
+          happened without learning what it was. The scroll-driven Timeline is
+          the same data with the sentence restored. /about renders it too; the
+          headings differ because the pages are asking different questions of
+          the same years. */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad m-flow flex flex-col gap-8">
+        <div className="container-site section-pad m-flow flex flex-col gap-10">
           <SectionHeading heading={sections.milestones.heading} />
-          <Reveal variant="fade">
-            <ol className="milestones grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
-              {timeline.map((entry) => (
-                <li
-                  key={entry.year}
-                  className="milestone flex flex-col gap-1 bg-paper px-4 py-5"
-                >
-                  <span
-                    className="font-display text-ink"
-                    style={{ fontWeight: 700, fontSize: "1.15rem", lineHeight: 1.2 }}
-                  >
-                    {entry.year}
-                  </span>
-                  <span className="t-small text-ink-soft">{entry.title}</span>
-                </li>
-              ))}
-            </ol>
-          </Reveal>
+          <Timeline entries={timeline} />
         </div>
       </section>
 
@@ -212,19 +192,15 @@ export default async function RecognitionPage() {
           >
             {sections.cta.lead}
           </p>
-          <div
-            data-drench-reveal
-            className="m-cta mt-1 flex flex-wrap items-center gap-x-7 gap-y-4"
-          >
+          {/* No tel: link here, at the client's request. This band offers
+              references on a call, and putting one family member's personal
+              number under that promise made him the switchboard for every
+              reference request on the site. The inquiry route below reaches
+              the right person instead. */}
+          <div data-drench-reveal className="m-cta mt-1">
             <Button variant="onDark" href={hero.primaryCta.href} className="press">
               {hero.primaryCta.label}
             </Button>
-            <a
-              href={`tel:+${settings.defaultWhatsapp}`}
-              className="m-tap font-sans font-semibold text-white underline-offset-4 hover:underline"
-            >
-              Call {formatTel(settings.defaultWhatsapp)}
-            </a>
           </div>
         </div>
       </DrenchBand>

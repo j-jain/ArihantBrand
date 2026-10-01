@@ -26,7 +26,14 @@ export { InquiryForm } from "./InquiryForm";
 export { JsonLd } from "./JsonLd";
 export { Analytics, track, trackClass } from "./Analytics";
 export { cn, initialsOf } from "./cn";
-export { MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "./icons";
+export {
+  CalculatorIcon,
+  MailIcon,
+  MapPinIcon,
+  PhoneIcon,
+  TrendIcon,
+  WhatsAppIcon,
+} from "./icons";
 export { businessLinks, primaryNav, type NavItem } from "./nav";
 /* Phase 3 additions */
 export { PartnerModal } from "./PartnerModal";
@@ -40,3 +47,7 @@ export { CardFan } from "./motion/CardFan";
 export { TestimonialColumns } from "./TestimonialColumns";
 export { ValuePanels } from "./ValuePanels";
 export { VideoFeature } from "./VideoFeature";
+/* The Arihant Retail managed-store model board and its returns worksheet */
+export { ModelBoard } from "./ModelBoard";
+export { ModelFigure } from "./ModelFigures";
+export { ReturnsCalculator } from "./ReturnsCalculator";

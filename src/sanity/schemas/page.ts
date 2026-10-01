@@ -42,6 +42,14 @@ export const page = defineType({
           type: "string",
         }),
         defineField({ name: "lead", title: "Lead", type: "text", rows: 3 }),
+        defineField({
+          name: "points",
+          title: "Figure lines under the lead",
+          description:
+            'Short lines such as "300+ retailers served". The first figure in each line is set large; the words stay exactly as typed. Leave empty for none.',
+          type: "array",
+          of: [{ type: "string" }],
+        }),
         defineField({ name: "primaryCta", title: "Primary CTA", type: "cta" }),
         defineField({ name: "secondaryCta", title: "Secondary CTA", type: "cta" }),
       ],

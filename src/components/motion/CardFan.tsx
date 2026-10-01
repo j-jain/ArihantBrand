@@ -71,7 +71,7 @@ export function CardFan({ photos, label }: CardFanProps) {
       });
 
       mm.add(
-        "(prefers-reduced-motion: no-preference) and (min-width: 1024px) and (pointer: fine)",
+        "(prefers-reduced-motion: no-preference) and (min-width: 768px) and (pointer: fine)",
         () => {
           root.classList.add("fan--on");
           setFanned(true);
@@ -228,7 +228,7 @@ export function CardFan({ photos, label }: CardFanProps) {
                   src={photo.src}
                   alt={photo.alt}
                   fill
-                  sizes="(max-width: 639px) 45vw, (max-width: 1023px) 30vw, 16rem"
+                  sizes="(max-width: 639px) 45vw, (max-width: 767px) 30vw, 16rem"
                   className="fan__img"
                 />
               </span>

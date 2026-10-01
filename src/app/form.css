@@ -173,3 +173,85 @@
   color: var(--vermillion-deep);
   text-decoration: underline;
 }
+
+/* ------------------------------------------------------------------ */
+/* Returns worksheet (ReturnsCalculator, inside the shared .modal)      */
+/*                                                                      */
+/* A form, so it lives here and reuses .field-label / .field-input /     */
+/* .field-help / .field-error from globals.css verbatim.                 */
+/* ------------------------------------------------------------------ */
+
+/* The honesty disclosure. Ruled and tinted so it reads as a condition of
+   using the tool rather than as fine print under it. Never collapsed. */
+.calc__note {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper-shade);
+  color: var(--ink-soft);
+}
+
+.calc__grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 560px) {
+  .calc__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.calc__out {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
+.calc__result-note {
+  margin-bottom: 0.5rem;
+  font-weight: 650;
+  color: var(--ink-soft);
+}
+
+.calc__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-block: 0.7rem;
+}
+
+.calc__row-note {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  max-width: 34ch;
+}
+
+.calc__figure {
+  flex: none;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 800;
+  font-stretch: 85%;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.4rem;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+/* The waiting state is a sentence, not a dash: em and en dashes are barred
+   from user-visible copy, and a lone hyphen reads as a minus here. */
+.calc__figure--empty {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.calc__foot {
+  margin-top: 1.75rem;
+}

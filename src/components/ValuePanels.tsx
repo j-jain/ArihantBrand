@@ -45,7 +45,7 @@ export function ValuePanels({ heading, lead, items, images }: ValuePanelsProps) 
 
       const mm = gsap.matchMedia(ref);
       mm.add(
-        "(prefers-reduced-motion: no-preference) and (min-width: 1024px) and (pointer: fine)",
+        "(prefers-reduced-motion: no-preference) and (min-width: 768px) and (pointer: fine)",
         () => {
           root.classList.add("vp-band--on");
           setEnhanced(true);
@@ -118,7 +118,7 @@ export function ValuePanels({ heading, lead, items, images }: ValuePanelsProps) 
                         src={image.src}
                         alt=""
                         fill
-                        sizes="(max-width: 1023px) 100vw, 30vw"
+                        sizes="(max-width: 767px) 100vw, 30vw"
                         className="vp__img"
                       />
                     ) : null}

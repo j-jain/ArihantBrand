@@ -86,8 +86,8 @@ export default async function AboutPage() {
       {/* 1 — Hero (paper) --------------------------------------------------- */}
       <section className="bg-paper">
         <HeroIntro className="container-site hero-pad">
-          <div className="m-flow grid gap-x-14 gap-y-12 lg:grid-cols-12 lg:items-stretch">
-            <div className="m-flow-tight flex flex-col items-start gap-6 lg:col-span-7">
+          <div className="m-flow grid gap-x-14 gap-y-12 md:grid-cols-12 md:items-stretch">
+            <div className="m-flow-tight flex flex-col items-start gap-6 md:col-span-7">
               <h1 data-hero-title className="t-display text-ink">
                 {hero.heading}
               </h1>
@@ -101,7 +101,7 @@ export default async function AboutPage() {
                 floating as a short card. Each row opens that unit's page. */}
             <div
               data-hero-reveal
-              className="flex flex-col border-t border-line lg:col-span-5"
+              className="flex flex-col border-t border-line md:col-span-5"
             >
               {businesses.map((business) => (
                 <Link
@@ -142,8 +142,8 @@ export default async function AboutPage() {
       {/* 2 — Story (paper) -------------------------------------------------- */}
       <section className="border-t border-line bg-paper">
         <div className="container-site section-pad">
-          <div className="m-flow grid gap-x-14 gap-y-10 lg:grid-cols-12">
-            <div className="prose lg:col-span-7">
+          <div className="m-flow grid gap-x-14 gap-y-10 md:grid-cols-12">
+            <div className="prose md:col-span-7">
               <h2 className="t-h2 text-ink">{sections.story.heading}</h2>
               {storyBody.map((paragraph, i) => (
                 <p
@@ -159,8 +159,8 @@ export default async function AboutPage() {
             </div>
 
             {/* Standing aside: the values headline over an editorial craft photo. */}
-            <aside className="lg:col-span-5">
-              <div className="m-flow flex flex-col gap-8 lg:sticky lg:top-28">
+            <aside className="md:col-span-5">
+              <div className="m-flow flex flex-col gap-8 md:sticky md:top-28">
                 <div>
                   <span
                     aria-hidden="true"
@@ -177,7 +177,7 @@ export default async function AboutPage() {
                   src={photos.aboutCraft.src}
                   alt={photos.aboutCraft.alt}
                   ratio={photos.aboutCraft.ratio}
-                  sizes="(max-width: 1023px) 100vw, 40vw"
+                  sizes="(max-width: 767px) 100vw, 40vw"
                   tilt
                   mBleed
                   className="m-ar-4-3"
@@ -206,7 +206,7 @@ export default async function AboutPage() {
             />
           </Reveal>
           <StaggerGroup
-            className="leaders grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="leaders grid gap-5 sm:grid-cols-2 md:grid-cols-4"
             from="scale"
             stagger={0.08}
           >
@@ -226,7 +226,7 @@ export default async function AboutPage() {
                         src={portrait.src}
                         alt={portrait.alt}
                         fill
-                        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 22vw"
+                        sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, 22vw"
                         className="object-cover"
                       />
                     ) : (
