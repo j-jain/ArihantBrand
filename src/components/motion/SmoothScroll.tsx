@@ -30,6 +30,9 @@ export default function SmoothScroll() {
     // Delegated same-page anchor scrolling: let Lenis animate to the target and
     // clear the sticky header, but only when the target actually exists.
     const onAnchorClick = (event: MouseEvent) => {
+      // A component that already handled the click (the retail store atlas
+      // focusing an entry that is on screen) has said "do not scroll".
+      if (event.defaultPrevented) return;
       const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>(
         'a[href^="#"]',
       );

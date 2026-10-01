@@ -29,6 +29,7 @@ export const photoSlot = defineType({
           { title: "Apparels: warehouse", value: "apparelsWarehouse" },
           { title: "Apparels: team", value: "apparelsTeam" },
           { title: "Retail: store interior", value: "retailInterior" },
+          { title: "Retail: storefront (uncaptioned, on /partner)", value: "retailStorefront" },
           { title: "Partner: storefront", value: "partnerStorefront" },
           { title: "About: craft", value: "aboutCraft" },
           { title: "About: values panel 1", value: "aboutValue1" },

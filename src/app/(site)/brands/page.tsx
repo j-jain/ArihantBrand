@@ -27,7 +27,7 @@ function HeroHeading({ heading, emphasis }: { heading: string; emphasis?: string
   return (
     <h1 data-hero-title className="t-display text-ink">
       {heading.slice(0, i)}
-      <em className="font-display" style={{ fontStyle: "italic", color: "var(--vermillion-deep)" }}>
+      <em className="font-display" style={{ fontStyle: "normal", color: "var(--vermillion-deep)" }}>
         {emphasis}
       </em>
       {heading.slice(i + emphasis.length)}

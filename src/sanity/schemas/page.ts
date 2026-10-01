@@ -38,7 +38,7 @@ export const page = defineType({
         defineField({ name: "heading", title: "Heading", type: "text", rows: 2 }),
         defineField({
           name: "headingEmphasis",
-          title: "Heading emphasis (word set in italic accent)",
+          title: "Heading emphasis (word set in the accent colour)",
           type: "string",
         }),
         defineField({ name: "lead", title: "Lead", type: "text", rows: 3 }),
@@ -46,7 +46,7 @@ export const page = defineType({
           name: "points",
           title: "Figure lines under the lead",
           description:
-            'Short lines such as "300+ retailers served". The first figure in each line is set large; the words stay exactly as typed. Leave empty for none.',
+            'Short lines that open on a figure, such as "300+ Retailers served". The figure is set large in its own column; the words stay exactly as typed. Leave empty for none.',
           type: "array",
           of: [{ type: "string" }],
         }),

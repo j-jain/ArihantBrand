@@ -13,13 +13,12 @@ export const pages: Record<string, PageCopy> = {
       heading: "The leading garment house of Northeast India",
       headingEmphasis: "leading",
       // The lead is the client's own line, typed in the Studio. The two figures
-      // the trade actually weighs sit under it as `points`, worded exactly as
-      // the client wrote them (change round 2); the hero sets each leading
-      // figure large without touching the words.
+      // the trade actually weighs sit under it as `points`: number first, label
+      // capitalised (change round 3, the client's wording).
       lead: "Let's understand the house of North East India",
       points: [
-        `${phrase.groupRetailers} retailers served`,
-        `Catering to ${phrase.groupBrandPartners} brand partners`,
+        `${phrase.groupRetailers} Retailers served`,
+        `${phrase.groupBrandPartners} Brand partners`,
       ],
       primaryCta: { label: "Partner with us", href: "/contact" },
       secondaryCta: { label: "The three businesses", href: "#businesses" },

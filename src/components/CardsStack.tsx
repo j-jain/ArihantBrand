@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 
 interface StackItem {
@@ -10,151 +10,303 @@ interface StackItem {
 
 interface CardsStackProps {
   items: StackItem[];
+  /** The section heading. Rendered in the rail beside the deck on desktop and
+   *  above it on a phone; it sits INSIDE the pinned element, so it must not
+   *  wrap the deck in a transformed ancestor (a Reveal around the heading is
+   *  fine, a Reveal around this component is not). */
+  heading: ReactNode;
 }
 
-/** A deck of sticky cards laid one on top of the next (change round 2).
- *
- *  Each card pins lower than the card before it by exactly the height of that
- *  card's heading strip (its top padding plus its heading, measured, since the
- *  headings run one to three lines), so when the deck has gathered the whole
- *  heading of every earlier card still shows above the next one: cards placed
- *  on a table, not cards hidden behind each other. CSS carries a uniform-step
- *  fallback (`--stack-step`) for the first paint and for no-JS.
- *
- *  As each new card lands, every card beneath it settles back a little further
- *  (a small scale about its own top edge, and a slight shift of its ground
- *  toward paper-shade), so depth reads from the whole stack rather than only
- *  the card directly behind.
- *
- *  Depth is computed from where each card actually sits, not from guessed
- *  scroll offsets: a card's "landed" progress is how far it has travelled from
- *  the lower part of the viewport to its own sticky line, read from its live
- *  position and its computed `top`. That keeps the effect correct at every
- *  root size, header height and breakpoint without a single hard-coded pixel.
- *
- *  Cards stay opaque throughout, so the card on top always hides the body text
- *  of the cards beneath it. Reduced motion gets a plain gapped column (CSS) and
- *  no listeners; every transform here is applied only from JS. */
-export function CardsStack({ items }: CardsStackProps) {
-  const ref = useRef<HTMLDivElement>(null);
+/* Timeline units are viewport heights: scroll maps linearly onto the deck. */
+const ENTER = { desktop: 0.55, mobile: 0.5 }; // per incoming card
+const DWELL = { desktop: 0.5, mobile: 0.4 }; // gathered deck holds still
+const FADE = 0.3; // fraction of a card's segment spent fading in
+const START_SCALE = 0.96; // an incoming card grows from 0.96 to 1 as it lands
+const LIFT_MIN = 2.5; // an incoming card starts at least 2.5x its overlap below its slot
+const SCALE_STEP = 0.02; // settle-back per card resting on top
+const MAX_DEPTH = 3;
+const STRIP_GAP = 0.5; // a strip ends halfway between heading and body
+const HYSTERESIS = 4; // px, so a deck right at the fit limit does not flicker
+const FLIP_DELAY = 200; // ms before switching between deck and static column
 
-  // Measure the heading strips and write the cascade as CSS variables. Runs at
-  // every width (the phone deck cascades too) and under reduced motion, where
-  // the static column simply ignores the variables.
-  useEffect(() => {
-    const root = ref.current;
-    if (!root) return;
-    const cards = Array.from(root.querySelectorAll<HTMLElement>(".stack__card"));
-    if (cards.length < 2) return;
+const RM = "(prefers-reduced-motion: reduce)";
+const MOB = "(prefers-reduced-motion: no-preference) and (max-width: 767px)";
+const DESK = "(prefers-reduced-motion: no-preference) and (min-width: 768px)";
 
-    let frame = 0;
-    const layout = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        // A card's strip runs from its top edge to halfway between its
-        // heading and its body text: the whole heading shows, none of the
-        // body does, at whatever size the root and the breakpoint set.
-        const strips = cards.map((card) => {
-          const title = card.querySelector<HTMLElement>(".stack__title");
-          const text = card.querySelector<HTMLElement>(".stack__text");
-          if (!title) return 0;
-          const titleBottom = title.offsetTop + title.offsetHeight;
-          const gap = text ? text.offsetTop - titleBottom : 0;
-          return titleBottom + gap * 0.55;
-        });
-        let offset = 0;
-        cards.forEach((card, i) => {
-          card.style.setProperty("--stack-offset", `${offset}px`);
-          offset += strips[i];
-        });
-        ScrollTrigger.refresh();
-      });
-    };
-
-    layout();
-    const observer = new ResizeObserver(layout);
-    observer.observe(root);
-    document.fonts?.ready.then(layout);
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
-  }, []);
+/** "Why us?" as a pinned deck of cards (change round 3).
+ *
+ *  The server renders a plain, readable column: that is also what no-JS,
+ *  reduced motion and any viewport too short for the gathered deck get. In the
+ *  motion branches JS switches the deck into stage mode (`data-deck`): the
+ *  section (desktop) or the deck column (phone) pins and holds one viewport
+ *  tall, card 1 rests in place, and cards 2 to 4 slide up one at a time and
+ *  land one measured heading strip below the card before, so every earlier
+ *  heading stays readable. A card beneath settles back (a small scale about its
+ *  top edge and a tint toward paper-shade) only once an incoming card actually
+ *  overlaps it. After a dwell the pin releases and the rail and the gathered
+ *  deck scroll away together as one rigid piece: nothing is sticky per card, so
+ *  nothing can cross over or un-stack on the way out.
+ *
+ *  The timeline tweens unitless proxies ({p, o} per card); one `render()`
+ *  turns them plus the measured geometry into each card's y, scale, opacity
+ *  and depth, so no two tweens ever fight over a card's transform. The pin's
+ *  geometry is CSS (svh) and its distance is a multiple of the viewport, so
+ *  re-measuring cards never moves a trigger and never needs a global refresh;
+ *  the only refresh happens when the fit result flips. */
+export function CardsStack({ items, heading }: CardsStackProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      const root = ref.current;
+      const root = rootRef.current;
       if (!root) return;
-      const cards = gsap.utils.toArray<HTMLElement>(
-        root.querySelectorAll(".stack__card"),
-      );
-      if (cards.length < 2) return;
+      const rail = root.querySelector<HTMLElement>(".stack-rail");
+      const col = root.querySelector<HTMLElement>(".stack-col");
+      const deck = root.querySelector<HTMLElement>(".stack");
+      const probe = root.querySelector<HTMLElement>(".stack-probe");
+      if (!rail || !col || !deck || !probe) return;
+      const cards = Array.from(deck.querySelectorAll<HTMLElement>(".stack__card"));
+      const n = cards.length;
+      if (n < 2) return;
+      const parts = cards.map((card) => ({
+        title: card.querySelector<HTMLElement>(".stack__title"),
+        text: card.querySelector<HTMLElement>(".stack__text"),
+      }));
 
-      const mm = gsap.matchMedia(ref);
+      const mm = gsap.matchMedia(rootRef);
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const SCALE_STEP = 0.025; // per card resting on top
-        const MAX_DEPTH = 3;
+      mm.add({ reduced: RM, mobile: MOB, desktop: DESK }, (ctx) => {
+        const { reduced, mobile } = ctx.conditions as Record<string, boolean>;
+        if (reduced) return;
 
-        const update = () => {
-          const vh = window.innerHeight;
-          // How far each card has landed: 0 while it is still low in the
-          // viewport, 1 once it sits on its sticky line.
-          const landed = cards.map((card) => {
-            const top = card.getBoundingClientRect().top;
-            const stickyTop = parseFloat(getComputedStyle(card).top) || 0;
-            const start = vh * 0.85;
-            if (start <= stickyTop) return top <= stickyTop ? 1 : 0;
-            return gsap.utils.clamp(0, 1, (start - top) / (start - stickyTop));
+        const pinEl = mobile ? col : root;
+        const enter = mobile ? ENTER.mobile : ENTER.desktop;
+        const dwell = mobile ? DWELL.mobile : DWELL.desktop;
+        // Lenis already smooths a fine-pointer desktop; touch gets a light scrub.
+        const smooth = !mobile && window.matchMedia("(pointer: fine)").matches;
+
+        const state = cards.map((_, i) => ({ p: i ? 0 : 1, o: i ? 0 : 1 }));
+        const g = {
+          slot: new Array<number>(n).fill(0),
+          H: new Array<number>(n).fill(0),
+          ov: new Array<number>(n).fill(0),
+          y0: new Array<number>(n).fill(0),
+          fits: false,
+        };
+        let tl: gsap.core.Timeline | null = null;
+        let raf = 0;
+        let flipTimer = 0;
+
+        /** Card geometry from the cards' own boxes (card width is the same in
+         *  both modes, so the numbers do not depend on the mode). */
+        const measure = () => {
+          const strips: number[] = [];
+          const nat: number[] = [];
+          cards.forEach((card, i) => {
+            const cs = getComputedStyle(card);
+            const bt = parseFloat(cs.borderTopWidth) || 0;
+            const bb = parseFloat(cs.borderBottomWidth) || 0;
+            const pb = parseFloat(cs.paddingBottom) || 0;
+            const { title, text } = parts[i];
+            const titleEnd = title ? title.offsetTop + title.offsetHeight : 0;
+            const textTop = text ? text.offsetTop : titleEnd;
+            const textH = text ? text.offsetHeight : 0;
+            const gap = textTop - titleEnd;
+            // The strip may never show body text, even with the card fully
+            // settled back (scaled), hence the second bound.
+            const sMin = 1 - SCALE_STEP * Math.min(n - 1 - i, MAX_DEPTH);
+            strips[i] = Math.round(
+              Math.min(bt + titleEnd + STRIP_GAP * gap, sMin * (bt + textTop)),
+            );
+            nat[i] = Math.ceil(bt + textTop + textH + pb + bb);
           });
 
-          cards.forEach((card, i) => {
-            let depth = 0;
-            for (let j = i + 1; j < cards.length; j++) depth += landed[j];
-            depth = Math.min(depth, MAX_DEPTH);
-            gsap.set(card, {
-              scale: 1 - depth * SCALE_STEP,
-              transformOrigin: "50% 0%",
-              "--stack-depth": Math.min(depth, 1),
-            });
+          // Coverage rule: each card is at least tall enough to hide the part
+          // of the card beneath it that its strip does not show.
+          g.H[0] = nat[0];
+          g.slot[0] = 0;
+          g.ov[0] = 0;
+          for (let k = 1; k < n; k++) {
+            g.H[k] = Math.max(nat[k], g.H[k - 1] - strips[k - 1]);
+            g.slot[k] = g.slot[k - 1] + strips[k - 1];
+            g.ov[k] = g.H[k - 1] - strips[k - 1];
+          }
+          const deckH = g.slot[n - 1] + g.H[n - 1];
+          const rowH = mobile ? deckH : Math.max(rail.offsetHeight, deckH);
+          const avail = probe.offsetHeight;
+          g.fits = rowH <= avail + (tl ? HYSTERESIS : 0);
+
+          deck.style.setProperty("--deck-h", `${deckH}px`);
+          cards.forEach((card, k) => {
+            card.style.setProperty("--slot", `${g.slot[k]}px`);
+            card.style.setProperty("--cover-h", `${g.H[k]}px`);
+          });
+
+          if (root.hasAttribute("data-deck")) {
+            const stageH = pinEl.offsetHeight;
+            const deckTop =
+              deck.getBoundingClientRect().top - pinEl.getBoundingClientRect().top;
+            for (let k = 0; k < n; k++) {
+              // Each incoming card starts at (or below) the bottom of the stage,
+              // and far enough down that it is fully opaque before it touches
+              // the card it lands on.
+              g.y0[k] = k ? Math.max(stageH - deckTop - g.slot[k], LIFT_MIN * g.ov[k]) : 0;
+            }
+          }
+        };
+
+        /** The single writer of every card's transform, opacity and depth.
+         *  Plain style writes, not gsap.set(): this runs on every scrub frame,
+         *  and each gsap.set() is a Tween that the matchMedia context keeps
+         *  until revert, so set() here grew memory with every pass. */
+        const render = () => {
+          if (!tl) return;
+          let above = 0;
+          for (let i = n - 1; i >= 0; i--) {
+            const { p, o } = state[i];
+            const lift = i ? g.y0[i] * (1 - p) : 0;
+            const depth = Math.min(above, MAX_DEPTH);
+            const scale =
+              (i ? START_SCALE + (1 - START_SCALE) * p : 1) * (1 - SCALE_STEP * depth);
+            const style = cards[i].style;
+            style.transform = `translate3d(0, ${lift.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+            style.opacity = String(o);
+            style.setProperty("--stack-depth", Math.min(depth, 1).toFixed(3));
+            // How far card i has covered card i-1: zero until its top edge
+            // crosses card i-1's bottom, so nothing settles back early.
+            if (i) {
+              above +=
+                g.ov[i] > 0 ? gsap.utils.clamp(0, 1, (g.ov[i] - lift) / g.ov[i]) : p;
+            }
+          }
+        };
+
+        const build = () => {
+          root.setAttribute("data-deck", "");
+          measure();
+          cards.forEach((card) => {
+            card.style.transformOrigin = "50% 0%";
+          });
+          tl = gsap.timeline({
+            defaults: { ease: "none" },
+            onUpdate: render,
+            scrollTrigger: {
+              trigger: pinEl,
+              pin: pinEl,
+              pinSpacing: true,
+              start: () => "bottom bottom",
+              end: () =>
+                `+=${Math.round(window.innerHeight * (enter * (n - 1) + dwell))}`,
+              anticipatePin: 1,
+              invalidateOnRefresh: false,
+              scrub: smooth ? true : 0.3,
+            },
+          });
+          for (let k = 1; k < n; k++) {
+            const at = (k - 1) * enter;
+            tl.fromTo(state[k], { p: 0 }, { p: 1, duration: enter, ease: "power2.out" }, at);
+            tl.fromTo(state[k], { o: 0 }, { o: 1, duration: enter * FADE }, at);
+          }
+          tl.to({}, { duration: dwell }, (n - 1) * enter);
+          render();
+        };
+
+        const teardown = () => {
+          if (tl) {
+            tl.scrollTrigger?.kill(true);
+            tl.kill();
+            tl = null;
+          }
+          cards.forEach((card) => {
+            card.style.removeProperty("transform");
+            card.style.removeProperty("transform-origin");
+            card.style.removeProperty("opacity");
+            card.style.removeProperty("--stack-depth");
+          });
+          root.removeAttribute("data-deck");
+          state.forEach((s, i) => {
+            s.p = i ? 0 : 1;
+            s.o = i ? 0 : 1;
           });
         };
 
-        const trigger = ScrollTrigger.create({
-          trigger: root,
-          start: "top bottom",
-          end: "bottom top",
-          onUpdate: update,
-          onRefresh: update,
+        const reconcile = () => {
+          if (g.fits === Boolean(tl)) return;
+          window.clearTimeout(flipTimer);
+          flipTimer = window.setTimeout(() => {
+            measure();
+            if (g.fits === Boolean(tl)) return;
+            if (g.fits) build();
+            else teardown();
+            ScrollTrigger.sort();
+            ScrollTrigger.refresh();
+          }, FLIP_DELAY);
+        };
+
+        const update = () => {
+          measure();
+          render();
+          reconcile();
+        };
+
+        measure();
+        if (g.fits) build();
+
+        // Re-measure when the copy reflows (font swap, a heading reverting
+        // from its split, a Studio edit). Observing the text boxes, not the
+        // cards, avoids a loop with the --cover-h writes.
+        const ro = new ResizeObserver(() => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(update);
         });
-        update();
+        parts.forEach(({ title, text }) => {
+          if (title) ro.observe(title);
+          if (text) ro.observe(text);
+        });
+        if (!mobile) ro.observe(rail);
+        ScrollTrigger.addEventListener("refresh", update);
 
         return () => {
-          trigger.kill();
-          gsap.set(cards, { clearProps: "transform,transformOrigin,--stack-depth" });
+          ScrollTrigger.removeEventListener("refresh", update);
+          ro.disconnect();
+          cancelAnimationFrame(raf);
+          window.clearTimeout(flipTimer);
+          teardown();
+          deck.style.removeProperty("--deck-h");
+          cards.forEach((card) => {
+            card.style.removeProperty("--slot");
+            card.style.removeProperty("--cover-h");
+          });
         };
       });
 
       return () => mm.revert();
     },
-    { scope: ref },
+    { scope: rootRef, dependencies: [items], revertOnUpdate: true },
   );
 
   return (
-    <div ref={ref} className="stack">
-      {items.map((item, i) => (
-        <article
-          key={item.title}
-          className="stack__card"
-          style={{ zIndex: i + 1, ["--i" as string]: i }}
-        >
-          <h3 className="stack__title">
-            <span className="stack__mark" aria-hidden="true" />
-            {item.title}
-          </h3>
-          <p className="t-body stack__text">{item.text}</p>
-        </article>
-      ))}
+    <div ref={rootRef} className="stack-section section-pad">
+      <div className="container-site">
+        <div className="stack-stage m-flow grid gap-x-12 gap-y-10 md:grid-cols-12">
+          <div className="stack-rail md:col-span-5">{heading}</div>
+          <div className="stack-col md:col-span-7">
+            <div className="stack">
+              {items.map((item, i) => (
+                <article key={item.title} className="stack__card" style={{ zIndex: i + 1 }}>
+                  <h3 className="stack__title">
+                    <span className="stack__mark" aria-hidden="true" />
+                    {item.title}
+                  </h3>
+                  <p className="t-body stack__text">{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Resolves the CSS fit budget (--deck-avail) to pixels for the fit guard. */}
+      <span className="stack-probe" aria-hidden="true" />
     </div>
   );
 }

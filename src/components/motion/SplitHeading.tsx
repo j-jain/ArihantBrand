@@ -13,7 +13,7 @@ interface SplitHeadingProps {
 }
 
 /** A heading that rises its words out of a mask when it scrolls into view. It
- *  renders through {@link EmphasisHeading} (so a one-word italic accent still
+ *  renders through {@link EmphasisHeading} (so a one-word colour accent still
  *  works) and splits on words gated to `document.fonts.ready`, reverting the
  *  split when the reveal lands. Above-the-fold headings and reduced motion stay
  *  static; mobile does a short single fade. The masked start state is applied

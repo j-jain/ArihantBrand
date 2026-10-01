@@ -2,13 +2,11 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { project } from "@/lib/ne-grid";
 import { NE_MAP_DOTS } from "./ne-map-dots";
 
-/** Equirectangular projection matching the committed dot field: lon 88.0->97.5E
- *  and lat 21.5->29.5N mapped onto the 640x520 viewBox. */
-function project(lon: number, lat: number): [number, number] {
-  return [((lon - 88.0) / 9.5) * 640, ((29.5 - lat) / 8.0) * 520];
-}
+/* The projection lives in src/lib/ne-grid.ts, shared with the retail store
+ * atlas, so the two maps can never disagree about where a town sits. */
 
 const round = (n: number) => Math.round(n * 10) / 10;
 

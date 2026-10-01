@@ -2,10 +2,16 @@
 
 import { useRef, type ReactNode } from "react";
 import { gsap, SplitText, useGSAP, EASE } from "@/lib/gsap";
+import { playPixelWord, preparePixelWord } from "./pixelWord";
 
 interface HeroIntroProps {
   children: ReactNode;
   className?: string;
+  /** Build the headline's emphasised word (its <em>) out of square pixels as
+   *  its line rises (change round 3; the home hero only). Plays once per page
+   *  load; reduced motion, forced colours or any measuring doubt leave the
+   *  word as rendered. */
+  pixelEmphasis?: boolean;
 }
 
 /** Hero headline choreography. It splits the `[data-hero-title]` element into
@@ -18,8 +24,11 @@ interface HeroIntroProps {
  *  The reveal tweens are `gsap.from()` created synchronously, so they always
  *  settle to the visible state even if the async font split never runs — the
  *  hero can never be stranded hidden. */
-export function HeroIntro({ children, className }: HeroIntroProps) {
+export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIntroProps) {
   const ref = useRef<HTMLDivElement>(null);
+  // Set on the pixel timeline's first tick, so a React StrictMode discard (a
+  // run that never ticks) still lets the effect play once.
+  const pixelPlayed = useRef(false);
 
   useGSAP(
     () => {
@@ -70,9 +79,20 @@ export function HeroIntro({ children, className }: HeroIntroProps) {
           // the first thing the reader sees, and a flat block fade is exactly
           // what made the old mobile build feel like a shrunken desktop.
           if (!title) return;
+          const L = mobile ? { y: 106, dur: 0.62, st: 0.07 } : { y: 112, dur: 0.9, st: 0.1 };
           let split: SplitText | null = null;
+          let pixels: { snap: () => void } | null = null;
+          let alive = true;
           const runSplit = () => {
-            if (!title.isConnected) return;
+            // A stale fonts.ready callback (unmount, StrictMode) no-ops.
+            if (!alive || !title.isConnected) return;
+            // Measure and sample BEFORE splitting: SplitText clones the <em>
+            // into the line and revert() rebuilds the h1's children.
+            const word =
+              pixelEmphasis && !pixelPlayed.current
+                ? title.querySelector<HTMLElement>("em")
+                : null;
+            const prep = word ? preparePixelWord({ root, title, word, mobile }) : null;
             try {
               split = SplitText.create(title, {
                 type: "lines",
@@ -81,9 +101,9 @@ export function HeroIntro({ children, className }: HeroIntroProps) {
                 aria: "auto",
               });
               gsap.from(split.lines, {
-                yPercent: mobile ? 106 : 112,
-                duration: mobile ? 0.62 : 0.9,
-                stagger: mobile ? 0.07 : 0.1,
+                yPercent: L.y,
+                duration: L.dur,
+                stagger: L.st,
                 ease: EASE,
                 onComplete: () => {
                   // Restore the clean, unsplit headline once the reveal lands;
@@ -92,14 +112,36 @@ export function HeroIntro({ children, className }: HeroIntroProps) {
                   split = null;
                 },
               });
+              if (prep) {
+                // The pixels land as the word's own line finishes rising.
+                // SplitText leaves an EMPTY <em> clone ahead of the real one
+                // in the line, so test every <em>, not just the first.
+                const line = split.lines.findIndex((l) =>
+                  Array.from(l.querySelectorAll("em")).some((e) => e.textContent?.trim()),
+                );
+                pixels = playPixelWord(prep, {
+                  delay: Math.max(0, line) * L.st,
+                  onStart: () => {
+                    pixelPlayed.current = true;
+                  },
+                  onDone: () => {
+                    pixels = null;
+                  },
+                });
+              }
             } catch {
               /* headline stays visible and unsplit */
+              pixels?.snap();
+              pixels = null;
             }
           };
           if (document.fonts?.status === "loaded") runSplit();
           else document.fonts.ready.then(runSplit);
 
           return () => {
+            alive = false;
+            pixels?.snap();
+            pixels = null;
             split?.revert();
             split = null;
           };

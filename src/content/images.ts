@@ -346,10 +346,24 @@ export const photoSlots = {
     ratio: "4 / 5",
     real: true,
   },
+  /* Deliberately unplaced (change round 3): a single-brand outlet with
+     third-party fascias, which contradicts the multi-brand pillar and AR2.
+     Kept in the register so the asset is not lost; do not place it. */
   retailShopfront: {
     src: "/images/photos/store-ebo-indian-terrain.jpg",
     alt: "A national brand partner's outlet run by Arihant Retail",
     ratio: "3 / 2",
+    real: true,
+  },
+  /* The one storefront photograph we hold. Its sign reads URBAN CLOSET and
+     which town it shows is unconfirmed, so it belongs to no store record and
+     its alt names no town. Rendered uncaptioned on /partner (ProofStrip) while
+     no store record carries a photograph of its own. The file was trimmed of
+     its black border strips in place (401 x 472). */
+  retailStorefront: {
+    src: "/images/photos/store-urban-closet.jpg",
+    alt: "An Arihant Retail multi-brand store front, lit for the evening trade",
+    ratio: "6 / 7",
     real: true,
   },
 

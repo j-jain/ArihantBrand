@@ -14,7 +14,6 @@ export { LogoMarquee } from "./LogoMarquee";
 export { ProcessSteps } from "./ProcessSteps";
 export { FaqAccordion } from "./FaqAccordion";
 export { Timeline } from "./Timeline";
-export { StoreCard } from "./StoreCard";
 export { TestimonialRail } from "./TestimonialRail";
 export { ContactChannels } from "./ContactChannels";
 export { SiteHeader } from "./SiteHeader";

@@ -1,16 +1,6 @@
 import type { Metadata } from "next";
 
-import {
-  Button,
-  DrenchBand,
-  JsonLd,
-  ModelBoard,
-  ParallaxImage,
-  Reveal,
-  SectionHeading,
-  StaggerGroup,
-  StoreCard,
-} from "@/components";
+import { Button, DrenchBand, JsonLd, ModelBoard, ParallaxImage } from "@/components";
 import {
   getBusinesses,
   getPageCopy,
@@ -26,6 +16,7 @@ import {
   storeListJsonLd,
 } from "@/lib/seo";
 import { UnitHero } from "../_components/UnitHero";
+import { StoreAtlas } from "./_components/StoreAtlas";
 
 const UNIT = "retail" as const;
 const PATH = "/arihant-retail";
@@ -39,6 +30,20 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
+/**
+ * Arihant Retail (change round 3 re-composition).
+ *
+ *  1. Hero (paper): the one unit hero with a photograph. The store-interior
+ *     shot moved here from the model band, and the stat band went: its three
+ *     figures now key the store atlas. No CTA on the hero.
+ *  2. Store atlas (paper-shade): where the stores are and who owns each one,
+ *     on a square-pixel map over a ruled list, then the page's first two asks.
+ *  3. ModelBoard (charcoal): the worksheet is its only control. Without the
+ *     photograph and the page CTA its rail no longer outruns its rows.
+ *  4. Drench: the franchise ask that follows the model (AR8).
+ *
+ * Exactly two /partner asks, with the model between them.
+ */
 export default async function ArihantRetailPage() {
   const [copy, businesses, stores, settings, photos, retailModel] = await Promise.all([
     getPageCopy(UNIT),
@@ -72,56 +77,52 @@ export default async function ArihantRetailPage() {
       {/* Trading stores only. A door that has not opened is not a place. */}
       <JsonLd data={storeListJsonLd(settings, stores)} />
 
-      {/* 1 — Hero (paper): lockup, headline, then the numbers full-measure */}
-      {business ? <UnitHero business={business} hero={hero} /> : null}
+      {/* 1 — Hero (paper): lockup, headline, rule, then the lead beside
+          Arihant Retail's own floor. Real, so it outranks stock. */}
+      {business ? (
+        <UnitHero
+          business={business}
+          hero={hero}
+          showStats={false}
+          media={
+            <ParallaxImage
+              src={photos.retailInterior.src}
+              alt={photos.retailInterior.alt}
+              ratio="4 / 5"
+              parallax={false}
+              sizes="(max-width: 767px) 100vw, 280px"
+              className="m-ar-4-3 border border-line"
+              tilt
+              priority
+              mBleed
+            />
+          }
+        />
+      ) : null}
 
-      {/* 2 — Stores (paper-shade): the three REAL store photos lead, staggered */}
-      <section className="section-pad bg-paper-shade">
-        <div className="container-site">
-          <div className="m-flow flex flex-col gap-10">
-            <Reveal variant="fade">
-              <SectionHeading heading={storesSection.heading} lead={storesSection.lead} />
-            </Reveal>
-            <StaggerGroup
-              from="scale"
-              className="m-rail grid gap-6 md:grid-cols-4"
-              stagger={0.12}
-            >
-              {stores.map((store, i) => (
-                <StoreCard key={`${store.name}-${store.city}-${i}`} store={store} />
-              ))}
-            </StaggerGroup>
-          </div>
-        </div>
-      </section>
+      {/* 2 — Store atlas (paper-shade) */}
+      <StoreAtlas
+        heading={storesSection.heading}
+        lead={storesSection.lead}
+        stores={stores}
+        stats={business?.stats ?? []}
+        primaryCta={hero.primaryCta}
+        secondaryCta={hero.secondaryCta}
+      />
 
       {/* 3 — Model band (charcoal): four pillars, each with a diagram that
-          draws itself, plus the returns worksheet. This used to be three
-          sentences in a hairline list, which could state the zero-deadstock
-          claim but could not show it. The franchise ask stays inside the band,
-          because this is where the model has just been explained (AR8). */}
+          draws itself, plus the returns worksheet, its only control. The
+          franchise asks sit either side of it: the atlas foot above, the
+          drench below. */}
       <ModelBoard
         id="model"
         tone="dark"
         heading={model.heading}
         lead={model.lead}
         model={retailModel}
-        pageCta={{ label: "Own a retail store", href: "/partner" }}
-        media={
-          /* Arihant Retail's own floor, so it outranks stock here. */
-          <ParallaxImage
-            src={photos.retailInterior.src}
-            alt={photos.retailInterior.alt}
-            ratio={photos.retailInterior.ratio}
-            sizes="(max-width: 767px) 100vw, 35vw"
-            className="m-ar-4-3 border border-line-dark"
-            tilt
-            mBleed
-          />
-        }
       />
 
-      {/* 5 — Partner cross-sell (single vermillion drench) */}
+      {/* 4 — Partner cross-sell (single vermillion drench) */}
       <DrenchBand className="section-pad">
         <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
           <h2 data-drench-reveal className="t-h2">{cta.heading}</h2>

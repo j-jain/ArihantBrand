@@ -502,7 +502,7 @@ async function main() {
     "homeHero", "homeProofGround",
     "marketingWarehouse", "marketingAward", "marketingCorridor",
     "apparelsWarehouse", "apparelsTeam",
-    "retailInterior", "partnerStorefront",
+    "retailInterior", "retailStorefront", "partnerStorefront",
     "aboutCraft", "aboutValue1", "aboutValue2", "aboutValue3",
   ];
   for (const key of EDITABLE_SLOTS) {

@@ -11,6 +11,13 @@ interface UnitHeroProps {
   hero: Hero;
   /** Optional extra beneath the stat band (e.g. a single inline CTA). */
   children?: ReactNode;
+  /** Optional photograph set beside the lead (4 of 12 columns from 768px,
+   *  capped at 15.5rem). Retail only: Marketing and Apparels pass nothing
+   *  and render exactly as before. */
+  media?: ReactNode;
+  /** Render the stat band under the lead. Default true. Retail passes false,
+   *  because its three figures key the store atlas instead. */
+  showStats?: boolean;
 }
 
 /**
@@ -26,8 +33,26 @@ interface UnitHeroProps {
  *  - The stats ran down a thin right-hand rail at 2.5rem. They now run across
  *    the full measure under the headline at display size, which makes the
  *    numbers the visual anchor of the page they are the proof for.
+ *  - Retail (change round 3) is the one unit hero with a photograph: the lead
+ *    sits beside the store-interior photo in a 7/4 row, and it carries no
+ *    stat band, because its three figures key the store atlas below.
  */
-export function UnitHero({ business, hero, children }: UnitHeroProps) {
+export function UnitHero({
+  business,
+  hero,
+  children,
+  media,
+  showStats = true,
+}: UnitHeroProps) {
+  const lead = (
+    <p
+      data-hero-reveal
+      className={media ? "t-lead measure text-ink-soft md:col-span-7" : "t-lead measure text-ink-soft"}
+    >
+      {hero.lead}
+    </p>
+  );
+
   return (
     <section className="hero-pad bg-paper" style={unitScope(business.unit)}>
       <HeroIntro className="container-site">
@@ -69,13 +94,20 @@ export function UnitHero({ business, hero, children }: UnitHeroProps) {
               />
             </div>
 
-            <p data-hero-reveal className="t-lead measure text-ink-soft">
-              {hero.lead}
-            </p>
+            {media ? (
+              <div className="unit-hero__row grid items-start gap-x-10 md:grid-cols-12">
+                {lead}
+                <div data-hero-reveal className="unit-hero__media md:col-span-4 md:col-start-9">
+                  {media}
+                </div>
+              </div>
+            ) : (
+              lead
+            )}
           </div>
 
           {/* The numbers, across the whole measure. */}
-          {business.stats.length ? (
+          {showStats && business.stats.length ? (
             <div data-hero-reveal className="unit-hero__figures">
               <StatBand stats={business.stats} />
             </div>

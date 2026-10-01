@@ -10,7 +10,7 @@ export interface Cta {
 
 export interface Hero {
   heading: string;
-  /** Optional word inside heading to set in Besley italic + unit accent. */
+  /** Optional word inside the heading set in the accent colour (upright). */
   headingEmphasis?: string;
   lead: string;
   /** Short figure lines set under the lead ("300+ retailers served"). The

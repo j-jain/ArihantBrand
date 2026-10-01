@@ -49,7 +49,7 @@ Each flagship fact has one canonical home plus at most one varied echo — say i
 - **300+ SIS counters** → the marketing pull-quote + the marketing stat rail, echoed once in the home businesses highlight.
 - **Values trio (integrity, discipline, trust)** → about-page values + the footer only.
 - **Zero-deadstock** → canonical in the `ModelBoard` pillars, which render on both `/arihant-retail` and `/partner` from one source, so the two pages cannot drift.
-- **Retail store split (2 company-owned, 2 franchisee-owned, all company-run)** → the retail page.
+- **Retail store split (2 company-owned, 2 franchisee-owned, all company-run)** → stated in the retail hero lead, keyed once in the store atlas legend (the hero stat band that repeated it was removed in change round 3).
 
 ## Honesty rails (do not violate)
 
@@ -59,10 +59,11 @@ Each flagship fact has one canonical home plus at most one varied echo — say i
 - Every stat used comes from the brand profile PDF or public records (CMAI 2015 award, NEGTA founding membership, 1999 registration).
 - Number discipline: **every published figure lives in `src/content/facts.ts` and nowhere else.** Copy interpolates from it; nothing types a business number by hand. Figures are explicitly scoped, because group and unit numbers legitimately differ: `facts.group.years` (35+) is the age of the house, `facts.marketing.years` (30+) is how long the distribution arm has traded. The wall counts (`group.labels` 77, `marketing.brandsOnWall` 48, `apparels.brandsOnWall` 29) are DERIVED from `src/content/partners.ts`, so they can never disagree with the logo wall that renders them. The one non-derived exception is `group.brandPartners` (80), documented above. Never restate a number outside `facts.ts`.
 - Imagery stays honest: the 3 real store photos are the only images presented as Arihant's own operations. Curated royalty-free stock (committed under `public/images/stock/`, referenced only via the `src/content/images.ts` manifest) is generic trade context and never masquerades as Arihant facilities, staff, or stores. Real photos always outrank stock.
+- Store map (change round 3): town-level pins from `src/content/towns.ts` only; directions only where a confirmed `mapsQuery` exists; trading (`Open`) stores only. Map geometry (town coordinates, grid cells) is geography, never printed, and lives outside `facts.ts`; the atlas key prints `business.stats` only.
 
 ## Site map
 
-- `/` — home (change round 2): the hero fills exactly the first screen at every size: headline, the client's lead ("Let's understand the house of North East India"), the two figure lines ("300+ retailers served", "Catering to 80+ brand partners") and the photograph. Then the two funnel cards ("Shop fast moving brands for your store" → "Partner with us"; "Own a retail store" → "Tap the North East with us"), the charcoal **Awards and testimonials** band (the three awards as a ruled list beside two scrolling columns of trade voices), the "Why us?" card deck, businesses, brands, Trade Notes teaser, CTA. Nothing sits between the funnels and the awards band, or between the awards band and "Why us?".
+- `/` — home (change round 2): the hero fills exactly the first screen at every size: headline, the client's lead ("Let's understand the house of North East India"), the two number-first figure rows ("300+ Retailers served", "80+ Brand partners", change round 3) and the photograph; the emphasised word "leading" is upright and assembles from square pixels on load. Then the two funnel cards ("Shop fast moving brands for your store" → "Partner with us"; "Own a retail store" → "Tap the North East with us"), the charcoal **Awards and testimonials** band (the three awards as a ruled list beside two scrolling columns of trade voices), the pinned "Why us?" card deck, businesses, brands, Trade Notes teaser, CTA. Nothing sits between the funnels and the awards band, or between the awards band and "Why us?".
 - `/arihant-marketing`, `/arihant-apparels`, `/arihant-retail` — the three business units.
 - `/partner` — the managed-franchise money page (audience 3).
 - `/brands` — the full portfolio wall (77 labels).

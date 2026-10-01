@@ -80,14 +80,15 @@
 /* CardsStack                                                           */
 /* ------------------------------------------------------------------ */
 
-/* Shared by the deck and the heading rail beside it (both read them). */
-:root {
-  /* The top card's resting height. */
-  --stack-card-h: 11.5rem;
-  /* How far each card pins below the one before it: one heading line plus
-     the card's top padding, so every earlier heading stays readable above
-     the card that lands on it. */
-  --stack-step: 5.5rem;
+/* Base: a plain readable column. This is the server render, and what no-JS,
+   reduced motion and any viewport too short for the gathered deck keep. Only
+   JS sets [data-deck] (CardsStack), so CSS alone never hides a card. */
+.stack-section {
+  position: relative;
+}
+
+.stack-rail {
+  align-self: start;
 }
 
 .stack {
@@ -97,12 +98,12 @@
 }
 
 .stack__card {
-  /* 0 = on top, 1 = resting under at least one card. Driven from JS. */
+  /* 0 = on top, 1 = resting under at least one card. Written by JS. */
   --stack-depth: 0;
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: var(--stack-card-h);
+  min-height: 11.5rem;
   padding: 1.6rem 2rem 2rem;
   background: color-mix(
     in oklch,
@@ -147,57 +148,69 @@
   color: var(--ink-soft);
 }
 
+/* Resolves the fit budget (--deck-avail) to pixels for the JS fit guard. */
+.stack-probe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: var(--deck-avail, 0px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Deck mode: absolute slots at the summed heading strips, each card tall
+   enough to cover the card beneath (JS writes --deck-h, --slot, --cover-h). */
+.stack-section[data-deck] .stack {
+  display: block;
+  position: relative;
+  height: var(--deck-h);
+}
+
+.stack-section[data-deck] .stack__card {
+  position: absolute;
+  top: var(--slot, 0px);
+  left: 0;
+  right: 0;
+  min-height: var(--cover-h, 0px);
+}
+
 @media (min-width: 768px) {
-  .stack {
-    display: block;
+  .stack-section {
+    /* The scrolled header (3px rule + 3.5rem bar + 1px border) plus air, so a
+       header sliding back in on scroll-up lands in clear paper. */
+    --deck-clear: calc(3px + 3.5rem + 1px + 1rem);
+    --deck-avail: calc(100svh - 2 * var(--deck-clear));
   }
-  /* Dwell: once the last card lands, the gathered deck holds for this much
-     scroll. Then, as the section leaves, the cards gather into one pile (the
-     top card first, sliding up over the headings beneath it) and go off with
-     the heading rail. An in-flow spacer, not padding: sticky boxes are held
-     inside their container's CONTENT box, so padding would add blank space
-     without adding any hold. */
-  .stack::after {
-    content: "";
-    display: block;
-    height: var(--stack-dwell, 14svh);
-  }
-  /* The cascade. Card i pins at the shared line plus i steps, so the deck
-     gathers as a staircase of headings rather than a single card. */
-  .stack__card {
-    position: sticky;
-    top: calc(
-      var(--stack-top, 6rem) + var(--stack-offset, var(--i, 0) * var(--stack-step))
-    );
-  }
-  .stack__card:not(:last-child) {
-    margin-bottom: 1.25rem;
-  }
-  /* Heading rail beside the stack, pinned on the first card's line. Lives on
-     an inner wrapper because Reveal writes its own inline transform on the
-     grid cell. Its min-height matches a card, so the rail and the first card
-     (the last to let go as the deck leaves) release together. */
-  .stack-heading {
-    position: sticky;
-    top: var(--stack-top, 6rem);
-    min-height: var(--stack-card-h, 11.5rem);
+
+  /* The pinned stage: one viewport tall, like .hero--fit, rail and deck
+     centred in it. Specificity (0,2,0) beats .section-pad. */
+  .stack-section[data-deck] {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100svh;
+    padding-block: var(--deck-clear);
   }
 }
 
-/* Reduced motion: no sticky, no overlap: a plain gapped column. */
-@media (prefers-reduced-motion: reduce) {
-  .stack {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .stack::after {
-    display: none;
-  }
-  .stack__card {
-    position: static;
-    min-height: var(--stack-card-h);
-  }
+/* ------------------------------------------------------------------ */
+/* Pixel emphasis (HeroIntro pixelEmphasis, the home hero only)          */
+/* ------------------------------------------------------------------ */
+
+/* Created, placed and removed by JS (src/components/motion/pixelWord.ts). */
+.hero-pixels {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+/* Opacity only, never visibility or display: the word stays in the
+   accessibility tree. The state lives on the h1 because SplitText rebuilds
+   the <em>; JS sets the variable, CSS alone never hides the word. */
+[data-hero-emphasis] em {
+  opacity: var(--hero-emphasis-o, 1);
 }
 
 /* ------------------------------------------------------------------ */

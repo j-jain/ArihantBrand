@@ -51,20 +51,32 @@ function formatTel(digits: string): string {
   return `+91 ${grouped}`;
 }
 
-/** One hero figure line: the leading figure ("300+", "80+") set large in the
- *  stat face, the words around it left exactly as written. A line with no
- *  figure renders as plain text. */
+/** One hero figure line (change round 3): the figure first, set in the stat
+ *  face and right-aligned in a shared column so both figures align, then the
+ *  label. A line that does not open on a figure (a Studio document still
+ *  holding older wording) keeps the old inline treatment across both columns,
+ *  so it still reads as one sentence. The words are never changed. */
+const LEADING_FIGURE = /^(\d[\d,]*\+?)\s+(\S.*)$/;
 function HeroPoint({ text }: { text: string }) {
-  const match = text.match(/\d[\d,]*\+?/);
-  if (!match || match.index === undefined) return <>{text}</>;
-  const before = text.slice(0, match.index);
-  const after = text.slice(match.index + match[0].length);
+  const lead = text.match(LEADING_FIGURE);
+  if (lead) {
+    return (
+      <>
+        <span className="hero-points__fig">{lead[1]}</span>{" "}
+        <span className="hero-points__label">{lead[2]}</span>
+      </>
+    );
+  }
+  const fig = text.match(/\d[\d,]*\+?/);
+  if (!fig || fig.index === undefined) {
+    return <span className="hero-points__inline">{text}</span>;
+  }
   return (
-    <>
-      {before ? <span className="hero-points__text">{before}</span> : null}
-      <span className="hero-points__fig">{match[0]}</span>
-      {after ? <span className="hero-points__text">{after}</span> : null}
-    </>
+    <span className="hero-points__inline">
+      {text.slice(0, fig.index)}
+      <span className="hero-points__fig">{fig[0]}</span>
+      {text.slice(fig.index + fig[0].length)}
+    </span>
   );
 }
 
@@ -119,7 +131,7 @@ export default async function HomePage() {
           the picture wider instead of pushing the figures below the fold. On a
           phone the photo takes whatever height the copy leaves (mobile.css). */}
       <section className="relative overflow-hidden bg-paper">
-        <HeroIntro className="container-site hero--fit relative">
+        <HeroIntro className="container-site hero--fit relative" pixelEmphasis>
           <div className="hero-fit__grid grid items-center gap-x-10 gap-y-8 md:grid-cols-12">
             <div className="hero-copy flex flex-col items-start gap-6 md:col-span-6">
               <EmphasisHeading
@@ -132,10 +144,9 @@ export default async function HomePage() {
               <p data-hero-reveal className="t-lead measure text-ink-soft">
                 {hero.lead}
               </p>
-              {/* The two figures, worded exactly as the client wrote them. The
-                  leading figure in each line is set large; the words around it
-                  are untouched, so "Catering to 80+ brand partners" still reads
-                  as one sentence. */}
+              {/* The two figures, number first (change round 3): figures in
+                  one right-aligned column, labels beside them, one ledger row
+                  each, no taller than the sentence rows they replaced. */}
               {hero.points?.length ? (
                 <ul data-hero-reveal className="hero-points">
                   {hero.points.map((point) => (
@@ -313,20 +324,18 @@ export default async function HomePage() {
         </CurtainReveal>
       ) : null}
 
-      {/* 3 — Why Arihant (paper): sticky heading beside the pillar card stack */}
+      {/* 3 — Why us? (paper): the pinned card deck. From 768px up the section
+          holds one viewport tall while the cards land; on a phone only the deck
+          pins and the heading scrolls away. See CardsStack. */}
       <section className="bg-paper">
-        <div className="container-site section-pad">
-          <div className="m-flow grid gap-x-12 gap-y-10 md:grid-cols-12">
-            <Reveal variant="fade" className="md:col-span-5">
-              <div className="stack-heading">
-                <SectionHeading heading={sections.why.heading} lead={sections.why.lead} />
-              </div>
+        <CardsStack
+          items={pillars.slice(0, 4)}
+          heading={
+            <Reveal variant="fade">
+              <SectionHeading heading={sections.why.heading} lead={sections.why.lead} />
             </Reveal>
-            <div className="md:col-span-7">
-              <CardsStack items={pillars.slice(0, 4)} />
-            </div>
-          </div>
-        </div>
+          }
+        />
       </section>
 
       {/* 4 — Businesses (paper-shade) -------------------------------------- */}

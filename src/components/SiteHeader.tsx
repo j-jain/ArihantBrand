@@ -112,6 +112,22 @@ export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // From 768px up the bar's height changes with this state (4rem <-> 3.5rem),
+  // which moves everything below it. Scroll triggers measured in the other
+  // state would then fire half a rem off (the pinned "Why us?" deck visibly
+  // snapped 8px as it engaged and released), so re-measure once the height
+  // transition has settled. Skipped on mount, where nothing was measured yet.
+  const scrolledMounted = useRef(false);
+  useEffect(() => {
+    if (!scrolledMounted.current) {
+      scrolledMounted.current = true;
+      return;
+    }
+    if (!window.matchMedia("(min-width: 768px)").matches) return;
+    const id = window.setTimeout(() => ScrollTrigger.refresh(), 400);
+    return () => window.clearTimeout(id);
+  }, [scrolled]);
+
   const [businessesOpen, setBusinessesOpen] = useState(false);
   // The panel is kept mounted through its close animation, then unmounted, so
   // it can animate out before it leaves the DOM (and is never in the SSR DOM

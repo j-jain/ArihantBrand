@@ -176,7 +176,9 @@ export default async function PartnerPage() {
             <Reveal variant="fade">
               <SectionHeading heading={sections.proof.heading} lead={sections.proof.lead} />
             </Reveal>
-            <ProofStrip stores={stores} />
+            {/* Store photographs when a store record carries one; until then
+                the one storefront shot we hold, uncaptioned (it names no town). */}
+            <ProofStrip stores={stores} fallback={photos.retailStorefront} />
           </div>
         </div>
       </section>

@@ -495,10 +495,11 @@ export const marketingReasons = [
 /* to close this list are gone with the forward-looking store target, so      */
 /* every row here is a door a customer can walk into today.                   */
 /*                                                                      */
-/* PHOTOGRAPHS: the one store shot we hold is the Itanagar store, not the     */
-/* Guwahati one it was previously captioned as. Guwahati and Goalpara carry   */
-/* no photograph until the client supplies one; a store card without an       */
-/* image renders its light plate, which is better than a wrong caption.       */
+/* PHOTOGRAPHS: no store carries one (change round 3). The one storefront     */
+/* shot we hold has a sign reading URBAN CLOSET, which contradicted the        */
+/* Itanagar (Tanzee) caption it used to sit under, so it is detached from     */
+/* every store and shown uncaptioned as photoSlots.retailStorefront on        */
+/* /partner. A store gets a photograph again when the client confirms one.    */
 /* ------------------------------------------------------------------ */
 
 export const stores: Store[] = [
@@ -530,9 +531,10 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Franchisee-owned",
-    image: "/images/photos/store-urban-closet.jpg",
-    caption:
-      "The Itanagar store: a franchisee-owned, Arihant-run multi-brand floor, lit for the evening trade.",
+    // No photograph and no caption (change round 3, client decision). The
+    // storefront shot this record used to carry has a sign reading URBAN
+    // CLOSET, so it was detached from Tanzee and now stands on its own as
+    // photoSlots.retailStorefront, uncaptioned, on /partner.
   },
 ];
 

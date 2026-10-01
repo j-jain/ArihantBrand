@@ -7,7 +7,13 @@ export const store = defineType({
   type: "document",
   fields: [
     defineField({ name: "name", title: "Name", type: "string", validation: (r) => r.required() }),
-    defineField({ name: "city", title: "City / area", type: "string" }),
+    defineField({
+      name: "city",
+      title: "City / area",
+      description:
+        "Must match a town in the site's store map (src/content/towns.ts) to get a pin; other towns are listed without one.",
+      type: "string",
+    }),
     defineField({
       name: "format",
       title: "Format",
@@ -33,7 +39,7 @@ export const store = defineType({
       name: "ownership",
       title: "Ownership",
       description:
-        "Who owns the asset. Every store is run by Arihant either way, so this says nothing about who operates it. Shown as the badge on the store card.",
+        "Shown as the solid (company-owned) or framed (franchisee-owned) mark on the retail store map and list.",
       type: "string",
       options: {
         list: [

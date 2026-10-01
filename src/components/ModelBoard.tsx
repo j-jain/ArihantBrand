@@ -38,8 +38,8 @@ interface ModelBoardProps {
  * owner's books) and a sentence cannot show that.
  *
  * It is deliberately not a four-up icon card grid. DESIGN.md bans that shape,
- * and on the retail page a row of StoreCards already sits directly above this
- * band, so a second card grid would read as one long undifferentiated deck.
+ * and on the retail page the store atlas sits directly above this band (its
+ * ruled store list included), so a card grid here would read as a template.
  * Hairline ledger rows are both compliant and truer to the trade-book identity.
  *
  * Row entry motion is delegated to StaggerGroup, which already owns the

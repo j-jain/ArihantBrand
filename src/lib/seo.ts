@@ -13,10 +13,17 @@ export function fullAddress(s: SiteSettings): string {
   return `${s.orgName}, ${s.addressLine}, ${s.locality}, ${s.city}, ${s.state} ${s.postalCode}`;
 }
 
+/** A plain external Google Maps link for one address string. Never an embed:
+ *  the site makes no third-party requests of its own. Used by the store atlas
+ *  for stores with a confirmed `mapsQuery`, and by `mapsUrl` below. */
+export function directionsUrl(query: string): string {
+  return `https://maps.google.com/?q=${encodeURIComponent(query)}`;
+}
+
 /** Directions to the office. One definition, used by the footer, /contact and
  *  any store that has no address of its own. */
 export function mapsUrl(s: SiteSettings): string {
-  return `https://maps.google.com/?q=${encodeURIComponent(fullAddress(s))}`;
+  return directionsUrl(fullAddress(s));
 }
 
 /** Canonical site origin. Set NEXT_PUBLIC_SITE_URL in production (no trailing slash). */

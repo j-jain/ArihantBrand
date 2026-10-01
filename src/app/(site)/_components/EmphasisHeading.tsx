@@ -3,8 +3,8 @@ import type { ComponentPropsWithoutRef, ElementType } from "react";
 interface EmphasisHeadingProps {
   /** Full heading text. */
   text: string;
-  /** Substring to set in Besley italic + accent colour. If absent or not
-   *  found in `text`, the heading renders plain. */
+  /** Substring to set in the accent colour (upright). If absent or not found
+   *  in `text`, the heading renders plain. */
   emphasis?: string;
   as?: ElementType;
   className?: string;
@@ -15,9 +15,10 @@ interface EmphasisHeadingProps {
   rest?: ComponentPropsWithoutRef<"h1"> & Record<`data-${string}`, string>;
 }
 
-/** Splits a heading on its emphasis substring and wraps that word in an
- *  italic Besley `<em>` tinted with the brand accent — the one-word display
- *  emphasis the type system calls for, without italicising the whole line. */
+/** Splits a heading on its emphasis substring and wraps it in an `<em>` tinted
+ *  with the brand accent. Upright, not italic (change round 3, sitewide): the
+ *  colour carries the emphasis. `fontStyle: "normal"` is explicit because a
+ *  browser sets `em` in italics by default and the reset does not undo it. */
 export function EmphasisHeading({
   text,
   emphasis,
@@ -49,7 +50,7 @@ export function EmphasisHeading({
   return (
     <Tag className={cls} {...rest}>
       {before}
-      <em style={{ fontStyle: "italic", color: emphasisColor }}>{emphasis}</em>
+      <em style={{ fontStyle: "normal", color: emphasisColor }}>{emphasis}</em>
       {after}
     </Tag>
   );
