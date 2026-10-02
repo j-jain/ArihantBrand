@@ -13,9 +13,10 @@
 /* is rem, so the composition scales once, through the root font size,  */
 /* from 768px up (one composition, no lg:/xl: switches).                */
 /*                                                                     */
-/* Colour roles: purple (--unit-accent) only on the land tint, the      */
-/* stitches, the pins and the ownership marks, none of them a click     */
-/* target. Ink and charcoal carry the tags and every active cue.        */
+/* Colour roles: purple (--unit-accent) only on the stitches, the pins  */
+/* and the ownership marks, none of them the hover cue. The terrain is  */
+/* a committed relief image; water is the atlas-only --atlas-water.     */
+/* Ink and charcoal carry the tags, the borders and every active cue.   */
 /* Vermillion only on the CTA, the directions link and the focus ring.  */
 /* ================================================================== */
 
@@ -39,9 +40,13 @@
 /* ------------------------------------------------------------------ */
 
 .atlas {
-  /* A motif tint of the unit purple on paper-shade (14%). Fallback if the
-     purple land is refused: color-mix(in oklch, var(--ink) 10%, var(--paper-shade)). */
-  --atlas-land: color-mix(in oklch, var(--unit-accent) 14%, var(--paper-shade));
+  /* Atlas-only tokens (change round 4, the terrain map). Water is a quiet
+     slate blue, never a brand colour; its label is a deeper shade of it for
+     contrast on the relief. */
+  --atlas-water: oklch(0.7 0.045 232);
+  --atlas-water-ink: oklch(0.47 0.05 236);
+  --atlas-border: color-mix(in oklch, var(--ink) 78%, transparent);
+  --atlas-border-soft: color-mix(in oklch, var(--ink-soft) 60%, transparent);
 }
 
 .atlas__head {
@@ -132,28 +137,115 @@
 /* ------------------------------------------------------------------ */
 
 /* One cell is 1/45 of the stage width: --cell resolves in the tags, whose
-   nearest container is this stage. */
+   nearest container is this stage. The stage holds the relief image, the
+   drawn SVG over it, and the tags over both. */
 .atlas__stage {
   position: relative;
   aspect-ratio: 45 / 25;
   container-type: inline-size;
   --cell: calc(100cqi / 45);
+  border-radius: 0.375rem;
+  /* The map plate: a hairline gives the paper relief an edge on paper-shade. */
+  box-shadow: 0 0 0 1px var(--line);
+  background: var(--paper-shade);
 }
 
+.atlas-relief {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.atlas-relief img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: 46% 60%;
+}
+
+/* Clipped to the plate: borders and rivers are drawn a little past the
+   frame so they run off its edge rather than stopping short of it. */
 .atlas-map {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   max-width: none;
-  overflow: visible;
+  overflow: hidden;
+  border-radius: inherit;
   pointer-events: none;
 }
 
-.atlas-ring {
-  fill: var(--atlas-land);
+/* Geography is drawn in map units, so it scales with the plate; strokes
+   that must stay crisp at any size are non-scaling. */
+.atlas-border {
+  fill: none;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 
+.atlas-border--neighbour {
+  stroke: var(--atlas-border-soft);
+  stroke-width: 0.75px;
+}
+
+.atlas-border--state {
+  stroke: var(--atlas-border-soft);
+  stroke-width: 1px;
+  stroke-dasharray: 4 3;
+}
+
+/* India's international border: the cartographer's dash and dot. */
+.atlas-border--india {
+  stroke: var(--atlas-border);
+  stroke-width: 1.35px;
+  stroke-dasharray: 9 3.5 2 3.5;
+}
+
+.atlas-river {
+  fill: none;
+  stroke: var(--atlas-water);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.atlas-label {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-stretch: 85%;
+  text-transform: uppercase;
+  fill: var(--ink-soft);
+  paint-order: stroke;
+  stroke: color-mix(in oklch, var(--paper) 70%, transparent);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.atlas-label--state {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+}
+
+.atlas-label--country {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  fill: color-mix(in oklch, var(--ink-soft) 75%, var(--paper));
+}
+
+.atlas-label--river {
+  font-family: var(--font-besley), Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  fill: var(--atlas-water-ink);
+}
+
+/* Thread from a pin to its tag's eyelet. */
 .atlas-thread {
   stroke: var(--ink-soft);
   stroke-width: 1.25px;
@@ -165,8 +257,12 @@
     stroke-width var(--dur-fast) var(--ease);
 }
 
+/* The route: a running stitch, as if sewn into the map. */
 .atlas-stitch {
-  fill: var(--unit-accent);
+  stroke: var(--unit-accent);
+  stroke-width: 2.4px;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .atlas-route,
@@ -174,13 +270,21 @@
   transition: opacity var(--dur-fast) var(--ease);
 }
 
-.atlas-pin__scale {
+/* Pins: a raised square head on a paper keyline, casting a soft shadow. */
+.atlas-pin__hit {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.atlas-pin__scale,
+.atlas-pin__drop,
+.atlas-pin__ripple {
   transform-box: fill-box;
   transform-origin: center;
 }
 
 .atlas-pin__keyline {
-  fill: var(--paper-shade);
+  fill: var(--paper);
 }
 
 .atlas-pin__solid {
@@ -188,16 +292,25 @@
 }
 
 .atlas-pin__framed {
-  fill: var(--paper-shade);
+  fill: var(--paper);
   stroke: var(--unit-accent);
-  stroke-width: 0.2;
+  stroke-width: 4.5;
 }
 
 /* No ownership on record: neutral, never the purple ownership marks. */
 .atlas-pin__unknown {
-  fill: var(--paper-shade);
+  fill: var(--paper);
   stroke: var(--ink-soft);
-  stroke-width: 0.16;
+  stroke-width: 3.5;
+}
+
+/* The landing ripple: invisible at rest; only the entry build plays it. */
+.atlas-pin__ripple {
+  fill: none;
+  stroke: var(--unit-accent);
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
 }
 
 /* The active cue round a pin is ink, never purple. */
@@ -359,6 +472,143 @@
 
 .atlas[data-active] .atlas-pin:not([data-on]):not([data-hub]) {
   opacity: 0.45;
+}
+
+/* ------------------------------------------------------------------ */
+/* Atlas: hover cards (change round 4)                                 */
+/* ------------------------------------------------------------------ */
+
+/* Only with JS: the cards repeat the tag and the list (plus a town or
+   store photograph), so without JS nothing opens them and they are not
+   shown at all. They sit over the figure, which is the stage's own box from
+   768px up (the key is absolutely placed). */
+.atlas-cards {
+  display: none;
+}
+
+.atlas[data-js] .atlas-cards {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.atlas-card {
+  --card-dx: 1.5rem;
+  --card-dy: 0.9rem;
+  position: absolute;
+  left: calc(var(--px) * 1%);
+  top: calc(var(--py) * 1%);
+  width: 15rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 0.9rem 2.2rem -0.6rem color-mix(in oklch, var(--ink) 34%, transparent),
+    0 0.2rem 0.5rem color-mix(in oklch, var(--ink) 10%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  translate: var(--card-tx) var(--card-ty);
+  scale: 0.96;
+  transition:
+    opacity 160ms var(--ease),
+    scale 220ms var(--ease),
+    visibility 0s linear 220ms;
+}
+
+.atlas-card[data-card-x="right"] {
+  --card-tx: var(--card-dx);
+  transform-origin: left;
+}
+
+.atlas-card[data-card-x="left"] {
+  --card-tx: calc(-100% - var(--card-dx));
+  transform-origin: right;
+}
+
+.atlas-card[data-card-y="above"] {
+  --card-ty: calc(-100% - var(--card-dy));
+}
+
+.atlas-card[data-card-y="below"] {
+  --card-ty: var(--card-dy);
+}
+
+.atlas-card[data-on] {
+  opacity: 1;
+  visibility: visible;
+  scale: 1;
+  transition:
+    opacity 160ms var(--ease),
+    scale 220ms var(--ease),
+    visibility 0s;
+}
+
+.atlas-card__photo {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  background: var(--paper-shade);
+}
+
+.atlas-card__photo img {
+  object-fit: cover;
+}
+
+.atlas-card__body {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.8rem 0.95rem 0.9rem;
+}
+
+.atlas-card__town {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 800;
+  font-stretch: 85%;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.atlas-card__name {
+  font-family: var(--font-besley), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.atlas-card__own {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.atlas-card__mark {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  color: var(--unit-accent);
+}
+
+.atlas-card__credit {
+  margin-top: 0.35rem;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-card,
+  .atlas-card[data-on] {
+    scale: 1;
+    transition: none;
+  }
 }
 
 /* ------------------------------------------------------------------ */

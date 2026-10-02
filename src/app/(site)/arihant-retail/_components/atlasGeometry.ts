@@ -1,31 +1,28 @@
 import type { Stat, Store } from "@/content/types";
 import { RETAIL_HUB, TOWNS, townKey } from "@/content/towns";
-import {
-  NE_LAND,
-  cellOf,
-  rasterArc,
-  ringBuckets,
-  squaresPath,
-  type Cell,
-} from "@/lib/ne-grid";
-import { PIXEL } from "@/lib/pixel";
+import { MAP_H, MAP_W, project } from "./atlasProjection";
 import type { Ownership } from "./OwnershipMark";
 
 /**
- * Geometry for the Arihant Retail store atlas. Pure, and run on the server, so
- * the served markup is the finished map and the client only ever animates it.
+ * Geometry for the Arihant Retail store atlas (change round 4: the terrain
+ * map). Pure, and run on the server, so the served markup is the finished map
+ * and the client only ever animates it.
  *
- * The crop is columns 5 to 49 and rows 0 to 24 of the dot field (45 x 25
- * cells, one SVG user unit per cell). It keeps every land cell of Arunachal
- * Pradesh, drops Sikkim whole, and cuts straight through Nagaland, Manipur and
- * Mizoram at the bottom edge. No borders are drawn.
+ * Everything here is in map units (atlasProjection.ts, 1800 x 1000), the same
+ * space as the relief image and the drawn borders and rivers.
  */
 
-export const CROP = { col: 5, row: 0, cols: 45, rows: 25 } as const;
-export const ATLAS_VIEWBOX = `${CROP.col} ${CROP.row} ${CROP.cols} ${CROP.rows}`;
+/** A tag offset "cell": 1/45 of the stage's width (and 1/25 of its height),
+ *  the unit towns.ts places the swing tags in. */
+export const CELL = MAP_W / 45;
 
-/** Route curvature: negative bows the stitched arcs north. */
-const ROUTE_BEND = -0.14;
+/** How far the routes bow north, as a share of their length. */
+const ROUTE_BEND = 0.16;
+/** The running stitch: stitch and gap lengths, and the clearance left
+ *  round each pin, in map units. */
+const STITCH = 10;
+const STITCH_GAP = 7;
+const PIN_CLEAR = 16;
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -35,6 +32,8 @@ export interface StagePoint {
   y: number;
 }
 
+export type Segment = [x1: number, y1: number, x2: number, y2: number];
+
 export interface AtlasStore {
   /** State key shared by every element of this store (`data-store`). */
   id: string;
@@ -42,20 +41,22 @@ export interface AtlasStore {
   entryId: string;
   store: Store;
   own?: Ownership;
-  cell?: Cell;
+  /** Pin centre, in map units. */
+  at?: [number, number];
   /** Pin centre on the stage. */
   pin?: StagePoint;
-  /** Where the swing tag's eyelet hangs. */
+  /** Where the swing tag's eyelet hangs, in map units and on the stage. */
+  eyeAt?: [number, number];
   eye?: StagePoint;
   phoneSide?: "above" | "below";
-  /** Stitched cells from the hub to this store (destinations only). */
-  route?: Cell[];
+  /** The running stitch from the hub to this store (destinations only). */
+  route?: Segment[];
   hub?: boolean;
+  /** Which side of the pin the hover card opens on, clear of the tag. */
+  card?: { x: "left" | "right"; y: "above" | "below" };
 }
 
 export interface AtlasModel {
-  /** One squares path per land ring, nearest Guwahati first. */
-  landRings: string[];
   /** Open stores, in data order. */
   stores: AtlasStore[];
   /** Pinned stores in build order: the hub first, then nearest first. */
@@ -65,6 +66,7 @@ export interface AtlasModel {
   legend: { own: Ownership; stat: Stat }[];
 }
 
+const r1 = (n: number) => Math.round(n * 10) / 10;
 const pct = (n: number) => Math.round(n * 100) / 100;
 
 const slug = (s: string) =>
@@ -73,12 +75,10 @@ const slug = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-function toPoint(cx: number, cy: number): StagePoint {
-  return {
-    x: pct(((cx - CROP.col) / CROP.cols) * 100),
-    y: pct(((cy - CROP.row) / CROP.rows) * 100),
-  };
-}
+const toStage = ([x, y]: [number, number]): StagePoint => ({
+  x: pct((x / MAP_W) * 100),
+  y: pct((y / MAP_H) * 100),
+});
 
 function ownOf(store: Store): Ownership | undefined {
   if (store.ownership === "Company-owned") return "company";
@@ -86,17 +86,53 @@ function ownOf(store: Store): Ownership | undefined {
   return undefined;
 }
 
-const inCrop = ([c, r]: Cell) =>
-  c >= CROP.col && c < CROP.col + CROP.cols && r >= CROP.row && r < CROP.row + CROP.rows;
+/** A running stitch along a quadratic curve from a to b, bowed north. */
+function stitchRoute(a: [number, number], b: [number, number]): Segment[] {
+  const [ax, ay] = a;
+  const [bx, by] = b;
+  const dx = bx - ax;
+  const dy = by - ay;
+  const len = Math.hypot(dx, dy) || 1;
+  // The normal that points north (up the page).
+  let nx = -dy / len;
+  let ny = dx / len;
+  if (ny > 0) {
+    nx = -nx;
+    ny = -ny;
+  }
+  const cx = (ax + bx) / 2 + nx * ROUTE_BEND * len;
+  const cy = (ay + by) / 2 + ny * ROUTE_BEND * len;
 
-/* The land never changes, so the rings are computed once per server process.
- * About 32 paths, so the build tweens 32 nodes rather than 505 squares. */
-const HUB_TOWN = TOWNS[RETAIL_HUB];
-const HUB_CELL: Cell = HUB_TOWN ? cellOf(HUB_TOWN.lon, HUB_TOWN.lat) : [19, 16];
-const LAND_RINGS: string[] = ringBuckets(
-  [...NE_LAND].map((k) => k.split(",").map(Number) as unknown as Cell).filter(inCrop),
-  HUB_CELL,
-).map((ring) => squaresPath(ring, PIXEL.fill));
+  // Sample the curve, then walk it by arc length.
+  const pts: [number, number][] = [];
+  for (let i = 0; i <= 240; i++) {
+    const t = i / 240;
+    const u = 1 - t;
+    pts.push([u * u * ax + 2 * u * t * cx + t * t * bx, u * u * ay + 2 * u * t * cy + t * t * by]);
+  }
+  const cum = [0];
+  for (let i = 1; i < pts.length; i++) {
+    cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  }
+  const total = cum[cum.length - 1];
+  const at = (s: number): [number, number] => {
+    let i = 1;
+    while (i < cum.length - 1 && cum[i] < s) i++;
+    const t = (s - cum[i - 1]) / (cum[i] - cum[i - 1] || 1);
+    return [
+      pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * t,
+      pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * t,
+    ];
+  };
+
+  const segs: Segment[] = [];
+  for (let s = PIN_CLEAR; s + STITCH <= total - PIN_CLEAR; s += STITCH + STITCH_GAP) {
+    const p = at(s);
+    const q = at(s + STITCH);
+    segs.push([r1(p[0]), r1(p[1]), r1(q[0]), r1(q[1])]);
+  }
+  return segs;
+}
 
 function warn(message: string) {
   if (isDev) console.warn(`[store atlas] ${message}`);
@@ -129,13 +165,20 @@ export function buildAtlas(stores: Store[], stats: Stat[]): AtlasModel {
     }
     pinnedTowns.add(tk);
 
-    const cell = cellOf(town.lon, town.lat);
-    const cx = cell[0] + 0.5;
-    const cy = cell[1] + 0.5;
-    entry.cell = cell;
-    entry.pin = toPoint(cx, cy);
-    entry.eye = toPoint(cx + town.tag.dx, cy + town.tag.dy);
+    const [x, y] = project(town.lon, town.lat);
+    const at: [number, number] = [r1(x), r1(y)];
+    const eyeAt: [number, number] = [r1(x + town.tag.dx * CELL), r1(y + town.tag.dy * CELL)];
+    entry.at = at;
+    entry.pin = toStage(at);
+    entry.eyeAt = eyeAt;
+    entry.eye = toStage(eyeAt);
     entry.phoneSide = town.phoneSide;
+    // The card opens away from the tag: on the other side vertically, and
+    // toward the middle of the map horizontally.
+    entry.card = {
+      x: town.tag.dx > 0 ? "left" : town.tag.dx < 0 ? "right" : x < MAP_W / 2 ? "right" : "left",
+      y: town.tag.dy > 0 ? "above" : "below",
+    };
     if (tk === RETAIL_HUB) entry.hub = true;
     return entry;
   });
@@ -143,20 +186,16 @@ export function buildAtlas(stores: Store[], stats: Stat[]): AtlasModel {
   // Routes stitch out of the hub, and only if the hub has a pinned store.
   const hub = atlasStores.find((s) => s.hub);
   const destinations = atlasStores
-    .filter((s) => s.cell && !s.hub)
+    .filter((s) => s.at && !s.hub)
     .map((s) => ({
       s,
-      d: hub?.cell
-        ? Math.hypot(s.cell![0] - hub.cell[0], s.cell![1] - hub.cell[1])
-        : 0,
+      d: hub?.at ? Math.hypot(s.at![0] - hub.at[0], s.at![1] - hub.at[1]) : 0,
     }))
     .sort((a, b) => a.d - b.d)
     .map(({ s }) => s);
 
-  if (hub?.cell) {
-    for (const dest of destinations) {
-      dest.route = rasterArc(hub.cell, dest.cell!, ROUTE_BEND);
-    }
+  if (hub?.at) {
+    for (const dest of destinations) dest.route = stitchRoute(hub.at, dest.at!);
   }
 
   // Printed figures always come from business.stats, never from a count of
@@ -179,10 +218,9 @@ export function buildAtlas(stores: Store[], stats: Stat[]): AtlasModel {
   if (franchisee) legend.push({ own: "franchisee", stat: franchisee });
 
   return {
-    landRings: LAND_RINGS,
     stores: atlasStores,
-    buildOrder: [...(hub?.cell ? [hub.id] : []), ...destinations.map((s) => s.id)],
-    hubId: hub?.cell ? hub.id : undefined,
+    buildOrder: [...(hub?.at ? [hub.id] : []), ...destinations.map((s) => s.id)],
+    hubId: hub?.at ? hub.id : undefined,
     tally,
     legend,
   };

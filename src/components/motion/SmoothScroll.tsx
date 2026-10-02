@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap, ScrollTrigger, setBaseLagSmoothing } from "@/lib/gsap";
 import Lenis from "lenis";
 
 /** Site-wide smooth scroll, driven by Lenis and synced to the GSAP ticker so
@@ -25,7 +25,8 @@ export default function SmoothScroll() {
 
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
+    // Off whenever no hero intro holds it (see holdLagSmoothing in lib/gsap).
+    setBaseLagSmoothing(0);
 
     // Delegated same-page anchor scrolling: let Lenis animate to the target and
     // clear the sticky header, but only when the target actually exists.
@@ -48,6 +49,7 @@ export default function SmoothScroll() {
     return () => {
       document.removeEventListener("click", onAnchorClick);
       gsap.ticker.remove(raf);
+      setBaseLagSmoothing(500);
       lenis.destroy();
     };
   }, []);

@@ -431,3 +431,33 @@ export function pendingPhotoSlots(): { key: string; wanted: string }[] {
     .filter(([, slot]) => !slot.real)
     .map(([key, slot]) => ({ key, wanted: (slot as PhotoSlot).wanted ?? "" }));
 }
+
+/* ------------------------------------------------------------------ */
+/* 3. Town photographs (change round 4)                                 */
+/* ------------------------------------------------------------------ */
+
+/** A licensed photograph of a TOWN, never of a store. The Arihant Retail
+ *  store atlas shows it in a store's hover card until the client sends a
+ *  photograph of the store itself (a store's own `image`, set in the Studio,
+ *  always outranks it). Alt text and caption name the town only.
+ *
+ *  Unlike the stock register these can come from Wikimedia Commons, so the
+ *  licence travels with the file and the card prints the credit the licence
+ *  asks for. */
+export interface TownPhoto {
+  src: string;
+  /** What is visible, naming the town, never a store. */
+  alt: string;
+  width: number;
+  height: number;
+  /** Photographer as the licence asks to credit them. */
+  credit: string;
+  /** e.g. "CC BY-SA 4.0", "Unsplash License". */
+  license: string;
+  /** Photo page URL (not the file). */
+  sourceUrl: string;
+}
+
+/** Keyed by town (src/content/towns.ts `townKey`). A town without a row
+ *  gets a card without a photograph. */
+export const townPhotos: Readonly<Record<string, TownPhoto>> = {};

@@ -54,3 +54,6 @@ Arihant Event Promo.mov
 
 # sanity
 /.sanity
+
+# atlas map build inputs (scripts/build-atlas-map.mjs): downloaded, never committed
+/assets/atlas-source/

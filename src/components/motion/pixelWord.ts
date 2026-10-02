@@ -5,8 +5,15 @@ import { PIXEL } from "@/lib/pixel";
 
 /**
  * "Pixels forming the word" for the home hero's emphasised word (change
- * round 3). One of exactly two pixel-formation moments on the site (the other
- * is the Arihant Retail store atlas); both share src/lib/pixel.ts.
+ * round 3, rebuilt in round 4). The site's one pixel-formation moment; its
+ * finish comes from src/lib/pixel.ts.
+ *
+ * What it looks like: a cloud of square pixels rides up with the word's own
+ * line as the headline rises out of its mask. The squares hop cell to cell on
+ * the word's grid (never drifting between cells), arrive in a left-to-right
+ * sweep, and set in full colour as each one lands, until the word stands as a
+ * solid mosaic. Then the real word appears underneath and the squares drop
+ * away in a stepped dither, so the hand-over never shows a soft double image.
  *
  * How it stays honest and robust:
  *  - The real word never leaves the h1. While the pixels play, an attribute
@@ -26,53 +33,60 @@ import { PIXEL } from "@/lib/pixel";
  */
 
 interface Cfg {
-  /** Grid pitch in CSS px. */
-  step: number;
-  /** Gap between squares, in device px, given the DPR. */
-  gapDev: (dpr: number) => number;
-  /** Total travel time; every particle has landed at T (spread + u === T). */
-  T: number;
-  /** Each particle's own travel time. */
+  /** Smallest grid pitch, in CSS px. */
+  pitch: number;
+  /** The pitch otherwise follows the type: font size / perEm. */
+  perEm: number;
+  /** Each square's own travel time. */
   u: number;
-  /** Spread of start delays across the word (left to right sweep). */
-  spread: number;
-  /** Final stretch over which the gaps close into a solid mosaic. */
-  close: number;
-  /** Cloud fade-in at the start. */
+  /** Arrival spread across the word, left to right. */
+  sweep: number;
+  /** Random slack on top of the sweep, so columns do not land as a wall. */
+  jitter: number;
+  /** The cloud arrives in three steps over this long. */
   appear: number;
-  /** Canvas-to-real-word crossfade. */
-  fade: number;
+  /** The finished mosaic holds this long before it hands over. */
+  hold: number;
+  /** Stepped dither from the mosaic to the real word. */
+  dissolve: number;
+  dissolveSteps: number;
   /** Cloud size, as a multiple of the font size. */
   amp: number;
-  /** Most particles allowed (the grid coarsens above it). */
+  /** Most squares allowed (the grid coarsens above it). */
   cap: number;
 }
 
 const DESKTOP: Cfg = {
-  step: 3,
-  gapDev: () => 1,
-  T: 0.95,
-  u: 0.62,
-  spread: 0.33,
-  close: 0.12,
-  appear: 0.15,
-  fade: 0.28,
-  amp: 1.0,
-  cap: 3000,
+  pitch: 4,
+  perEm: 18,
+  u: 0.56,
+  sweep: 0.3,
+  jitter: 0.08,
+  appear: 0.12,
+  hold: 0.06,
+  dissolve: 0.24,
+  dissolveSteps: 4,
+  amp: 0.9,
+  cap: 1200,
 };
 
 const PHONE: Cfg = {
-  step: 3,
-  gapDev: (d) => Math.max(1, Math.round(0.75 * d)),
-  T: 0.7,
-  u: 0.48,
-  spread: 0.22,
-  close: 0.1,
-  appear: 0.15,
-  fade: 0.2,
-  amp: 0.8,
-  cap: 1200,
+  pitch: 3,
+  perEm: 14,
+  u: 0.42,
+  sweep: 0.2,
+  jitter: 0.06,
+  appear: 0.1,
+  hold: 0.04,
+  dissolve: 0.18,
+  dissolveSteps: 3,
+  amp: 0.75,
+  cap: 500,
 };
+
+/** Alpha of a square still in flight: a light tint of the word's colour on
+ *  paper, so the word visibly sets as each square lands at full strength. */
+const FLIGHT_ALPHA = 0.4;
 
 export interface PixelWordPrep {
   root: HTMLElement;
@@ -81,38 +95,43 @@ export interface PixelWordPrep {
   ctx: CanvasRenderingContext2D;
   cfg: Cfg;
   mobile: boolean;
+  dpr: number;
   n: number;
   W: number;
   H: number;
   step: number;
-  size: number;
+  /** Square size in flight (device px); a landed square fills its cell. */
+  small: number;
+  /** All squares have landed at T. */
+  T: number;
   tx: Float32Array;
   ty: Float32Array;
-  sx: Float32Array;
-  sy: Float32Array;
+  ox: Float32Array;
+  oy: Float32Array;
   d: Float32Array;
-  a0: Float32Array;
+  rank: Float32Array;
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const clamp01 = (v: number) => clamp(v, 0, 1);
-const smoothstep = (a: number, b: number, v: number) => {
-  const t = clamp01((v - a) / (b - a));
-  return t * t * (3 - 2 * t);
-};
+const easeOut = gsap.parseEase(PIXEL.ease);
 
 /** Measures and samples the word. Makes no DOM writes; returns null whenever
- *  the effect should not run, which leaves the word exactly as rendered. */
+ *  the effect should not run, which leaves the word exactly as rendered.
+ *  `rise` is how far the word's line starts below its mask, as a fraction of
+ *  the line's height (the headline's yPercent / 100). */
 export function preparePixelWord({
   root,
   title,
   word,
   mobile,
+  rise,
 }: {
   root: HTMLElement;
   title: HTMLElement;
   word: HTMLElement;
   mobile: boolean;
+  rise: number;
 }): PixelWordPrep | null {
   if (window.matchMedia("(forced-colors: active)").matches) return null;
   if (typeof TextMetrics === "undefined" || !("fontBoundingBoxAscent" in TextMetrics.prototype)) {
@@ -136,13 +155,16 @@ export function preparePixelWord({
 
   const cfg = mobile ? PHONE : DESKTOP;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const pitch = Math.max(cfg.pitch, Math.round(fs / cfg.perEm));
+  const lh = parseFloat(cs.lineHeight) || fs * 1.1;
 
-  // Canvas box (viewport px): the word plus room for the cloud, clipped to the
-  // hero <section>, which hides its overflow.
+  // Canvas box (viewport px): the word, the cloud round it, and the distance
+  // its line travels on the way up, clipped to the hero <section>, which
+  // hides its overflow.
   const clip = (root.closest("section") ?? root).getBoundingClientRect();
-  const padX = Math.ceil(0.8 * fs * cfg.amp) + 4;
-  const padT = Math.ceil(0.45 * fs * cfg.amp) + 4;
-  const padB = Math.ceil(1.3 * fs * cfg.amp) + 4;
+  const padX = Math.ceil(0.4 * fs * cfg.amp) + pitch;
+  const padT = Math.ceil(0.3 * fs * cfg.amp) + pitch;
+  const padB = Math.ceil(rise * (lh + 0.14 * fs) + 1.05 * fs * cfg.amp) + pitch;
   const snap = (v: number) => Math.round(v * dpr) / dpr; // device-aligned origin
   const left = snap(Math.max(r.left - padX, clip.left));
   const top = snap(Math.max(r.top - padT, clip.top));
@@ -187,9 +209,9 @@ export function preparePixelWord({
     return null;
   }
 
-  // 2) A grid in DEVICE px, so squares and gaps are whole device pixels;
-  //    sample each cell's centre.
-  let step = Math.max(2, Math.round(cfg.step * dpr));
+  // 2) A grid in DEVICE px, so squares are whole device pixels; sample each
+  //    cell's centre.
+  let step = Math.max(2, Math.round(pitch * dpr));
   let t: number[] = [];
   for (let k = 0; k < 4; k++, step++) {
     t = [];
@@ -203,30 +225,34 @@ export function preparePixelWord({
   }
   const n = t.length / 2;
   if (n < 20) return null;
-  const size = Math.max(1, step - cfg.gapDev(dpr));
+  const small = Math.max(1, Math.round(step * PIXEL.fill));
 
-  // 3) Scatter: a loose cloud mostly BELOW the word that rises into it, the
-  //    same direction as the masked line rise, so the headline reads as one
-  //    upward motion. A few pixels start just above so it is not a curtain.
+  // 3) Scatter: a cloud mostly BELOW the word, so it rises into place in the
+  //    same direction as the line, and the headline reads as one upward
+  //    motion. A few squares start just above so it is not a curtain. Offsets
+  //    are whole cells, so a square always sits on the word's own grid.
   const A = fs * dpr * cfg.amp;
+  const wordL = (r.left - left) * dpr;
+  const wordW = Math.max(1, r.width * dpr);
   const tx = new Float32Array(n);
   const ty = new Float32Array(n);
-  const sx = new Float32Array(n);
-  const sy = new Float32Array(n);
+  const ox = new Float32Array(n);
+  const oy = new Float32Array(n);
   const d = new Float32Array(n);
-  const a0 = new Float32Array(n);
+  const rank = new Float32Array(n);
   for (let i = 0; i < n; i++) {
     tx[i] = t[2 * i];
     ty[i] = t[2 * i + 1];
-    const dx = (Math.random() - 0.5) * 1.5 * A;
+    const dx = (Math.random() - 0.5) * 0.7 * A;
     const dy =
-      Math.random() < 0.85
-        ? (0.2 + 0.8 * Math.random() ** 0.8) * A
-        : -(0.1 + 0.25 * Math.random()) * A;
-    sx[i] = clamp(tx[i] + dx, 0, W - size);
-    sy[i] = clamp(ty[i] + dy, 0, H - size);
-    d[i] = cfg.spread * (0.65 * (tx[i] / W) + 0.35 * Math.random()); // left-to-right sweep
-    a0[i] = 0.25 + 0.35 * Math.random();
+      Math.random() < 0.8
+        ? (0.15 + 0.85 * Math.random() ** 0.9) * A
+        : -(0.05 + 0.2 * Math.random()) * A;
+    ox[i] = Math.round(dx / step) * step;
+    oy[i] = Math.round(dy / step) * step;
+    const xn = clamp01((tx[i] - wordL) / wordW);
+    d[i] = cfg.sweep * xn + cfg.jitter * Math.random(); // left-to-right sweep
+    rank[i] = Math.random(); // the order the dither drops this square
   }
 
   // 4) The visible canvas: built, positioned, but not yet mounted.
@@ -250,42 +276,67 @@ export function preparePixelWord({
   ctx.fillStyle = cs.color;
   if (ctx.fillStyle === "#010203") return null;
 
-  return { root, title, canvas, ctx, cfg, mobile, n, W, H, step, size, tx, ty, sx, sy, d, a0 };
+  const T = cfg.sweep + cfg.jitter + cfg.u;
+  return {
+    root, title, canvas, ctx, cfg, mobile, dpr, n, W, H, step, small, T,
+    tx, ty, ox, oy, d, rank,
+  };
 }
 
-/** Mounts the canvas, hides the real word by opacity, plays, crossfades back
- *  to the real word and removes everything. `snap()` jumps to the final state
- *  at any moment (resize, breakpoint change, unmount). */
+/** Mounts the canvas, hides the real word by opacity, and returns the effect
+ *  as a timeline for the caller to place in its own (it does not start on its
+ *  own if the caller adds it to a paused parent). `line` is the word's split
+ *  line, whose live rise the pixels ride. `snap()` jumps to the final state at
+ *  any moment (resize, breakpoint change, unmount). */
 export function playPixelWord(
   p: PixelWordPrep,
   {
+    line,
     delay,
     onStart,
     onDone,
-  }: { delay: number; onStart?: () => void; onDone?: () => void },
-): { snap: () => void } {
+  }: { line: HTMLElement | null; delay: number; onStart?: () => void; onDone?: () => void },
+): { snap: () => void; timeline: gsap.core.Timeline | null } {
   const st = { t: 0 };
   let torn = false;
   const w0 = window.innerWidth;
   const h0 = window.innerHeight;
   let tl: gsap.core.Timeline | null = null;
+  const { cfg, T } = p;
+  const handover = T + cfg.hold;
+  const total = handover + cfg.dissolve;
+  const lineH = line?.offsetHeight ?? 0;
 
   const draw = (time: number) => {
-    const { ctx, n, W, H, cfg } = p;
+    const { ctx, n, W, H, step, small } = p;
     ctx.clearRect(0, 0, W, H);
-    const appear = Math.min(1, time / cfg.appear);
-    const close = smoothstep(cfg.T - cfg.close, cfg.T, time);
-    const s = Math.round(p.size + (p.step - p.size) * close); // gaps close: a solid mosaic
+    // The cloud arrives in steps, like everything else here.
+    const appear = Math.floor(clamp01(time / cfg.appear) * 3) / 3;
+    if (appear <= 0) return;
+    // Squares ride their line: its live rise, in device px.
+    const yp = line ? Number(gsap.getProperty(line, "yPercent")) || 0 : 0;
+    const lift = Math.round((yp / 100) * lineH * p.dpr);
+    // After the hand-over the squares drop away in a stepped dither.
+    const gone =
+      time <= handover
+        ? 0
+        : Math.ceil(clamp01((time - handover) / cfg.dissolve) * cfg.dissolveSteps) /
+          cfg.dissolveSteps;
+    const inset = (step - small) / 2;
     for (let i = 0; i < n; i++) {
+      if (p.rank[i] < gone) continue;
       const k = clamp01((time - p.d[i]) / cfg.u);
-      const e = 1 - (1 - k) ** 4; // easeOutQuart, the site's EASE family
-      ctx.globalAlpha = appear * (p.a0[i] + (1 - p.a0[i]) * Math.min(1, k * 1.6));
-      ctx.fillRect(
-        Math.round(p.sx[i] + (p.tx[i] - p.sx[i]) * e),
-        Math.round(p.sy[i] + (p.ty[i] - p.sy[i]) * e),
-        s,
-        s,
-      );
+      if (k >= 1) {
+        ctx.globalAlpha = 1;
+        ctx.fillRect(p.tx[i], p.ty[i] + lift, step, step);
+        continue;
+      }
+      // Hop cell to cell: the remaining offset is rounded to whole cells.
+      const rest = 1 - easeOut(k);
+      const x = p.tx[i] + Math.round((p.ox[i] * rest) / step) * step;
+      const y = p.ty[i] + Math.round((p.oy[i] * rest) / step) * step + lift;
+      ctx.globalAlpha = appear * (FLIGHT_ALPHA + 0.2 * k);
+      ctx.fillRect(x + inset, y + inset, small, small);
     }
     ctx.globalAlpha = 1;
   };
@@ -312,22 +363,16 @@ export function playPixelWord(
     p.title.setAttribute("data-hero-emphasis", "pixels");
     p.title.style.setProperty("--hero-emphasis-o", "0");
     p.root.appendChild(p.canvas);
-    draw(0); // the first frame is blank (appear = 0), drawn before paint
+    draw(0); // the first frame is blank (the cloud has not arrived), drawn before paint
     tl = gsap.timeline({ onStart, onComplete: teardown });
-    tl.to(st, { t: p.cfg.T, duration: p.cfg.T, ease: "none", onUpdate: () => draw(st.t) }, delay)
-      .to(p.canvas, { opacity: 0, duration: p.cfg.fade, ease: "power1.inOut" }, delay + p.cfg.T)
-      .to(
-        p.title,
-        { "--hero-emphasis-o": 1, duration: p.cfg.fade, ease: "power1.inOut" },
-        delay + p.cfg.T,
-      );
+    tl.to(st, { t: total, duration: total, ease: "none", onUpdate: () => draw(st.t) }, delay)
+      // The real word appears under the finished mosaic, then the squares
+      // drop away to reveal it: no crossfade, no double image.
+      .set(p.title, { "--hero-emphasis-o": 1 }, delay + handover);
     window.addEventListener("resize", onResize, { passive: true });
   } catch {
     teardown();
   }
 
-  return { snap: teardown };
+  return { snap: teardown, timeline: torn ? null : tl };
 }
-
-/** Re-exported so the hero and the atlas read one vocabulary. */
-export { PIXEL };

@@ -133,7 +133,7 @@ export default async function ArihantRetailPage() {
           ) : null}
           <div data-drench-reveal className="m-cta mt-1">
             <Button href="/partner" variant="onDark" size="lg" className="press">
-              See the partnership model
+              {cta.ctaLabel}
             </Button>
           </div>
         </div>

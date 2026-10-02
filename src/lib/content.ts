@@ -314,6 +314,7 @@ interface RawPageSection {
   heading?: string | null;
   lead?: string | null;
   body?: string[] | null;
+  ctaLabel?: string | null;
 }
 interface RawPage {
   metaTitle?: string | null;
@@ -492,6 +493,7 @@ function mapPage(p: RawPage): PageCopy {
       heading: s.heading ?? "",
       ...(s.lead ? { lead: s.lead } : {}),
       ...(s.body && s.body.length ? { body: s.body } : {}),
+      ...(s.ctaLabel ? { ctaLabel: s.ctaLabel } : {}),
     };
   }
   return {
@@ -566,7 +568,7 @@ const PAGE_QUERY = `*[_type == "page" && pageId == $pageId][0]{
   metaTitle, metaDescription,
   hero{ heading, headingEmphasis, lead, points,
     primaryCta{ label, href }, secondaryCta{ label, href } },
-  sections[]{ key, heading, lead, body }
+  sections[]{ key, heading, lead, body, ctaLabel }
 }`;
 
 const GROUP_STATS_QUERY = `*[_type == "groupStat"] | order(order asc){ id, value, suffix, label }`;
@@ -755,7 +757,15 @@ export function getPageCopy(pageId: string): Promise<PageCopy | undefined> {
       // does not carry yet (a new band shipped before a re-seed) falls back to
       // its seed copy instead of throwing on undefined.
       const page = mapPage(raw as RawPage);
-      return seed ? { ...page, sections: { ...seed.sections, ...page.sections } } : page;
+      if (!seed) return page;
+      // A button label is newer than most Studio documents (change round 4),
+      // so a section that has no label in the Studio keeps the seed's.
+      const sections = { ...seed.sections, ...page.sections };
+      for (const [key, s] of Object.entries(page.sections)) {
+        const label = seed.sections[key]?.ctaLabel;
+        if (!s.ctaLabel && label) sections[key] = { ...s, ctaLabel: label };
+      }
+      return { ...page, sections };
     },
     seed,
   );

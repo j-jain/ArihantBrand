@@ -195,6 +195,28 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* Hero intro gate (change round 4)                                     */
+/* ------------------------------------------------------------------ */
+
+/* The one place CSS holds content hidden before JS, and only under three
+   guards: html[data-intro] exists only when the inline head script ran (so
+   JS is on and motion is allowed); HeroIntro removes it as soon as its own
+   from-states are set; and the failsafe below shows the hero after 3s if
+   that never happens. Without it the hero paints finished, then blanks and
+   replays the moment React hydrates. */
+html[data-intro] [data-hero-intro] [data-hero-reveal],
+html[data-intro] [data-hero-intro] [data-hero-title] {
+  visibility: hidden;
+  animation: hero-intro-failsafe 0s linear 3s forwards;
+}
+
+@keyframes hero-intro-failsafe {
+  to {
+    visibility: visible;
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Pixel emphasis (HeroIntro pixelEmphasis, the home hero only)          */
 /* ------------------------------------------------------------------ */
 

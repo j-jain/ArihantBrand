@@ -402,6 +402,7 @@ async function main() {
         heading: s.heading,
         ...(s.lead ? { lead: s.lead } : {}),
         ...(s.body ? { body: s.body } : {}),
+        ...(s.ctaLabel ? { ctaLabel: s.ctaLabel } : {}),
       })),
     });
   });

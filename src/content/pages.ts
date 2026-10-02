@@ -144,22 +144,23 @@ export const pages: Record<string, PageCopy> = {
       heading:
         "The most modern and professionally run retail stores in Northeast India",
       headingEmphasis: "most modern",
-      lead: `Multi-brand stores staffed, stocked and marketed by our team. ${facts.retail.storesCompanyOwned} company-owned and company-run, ${facts.retail.storesFranchisee} franchisee-owned and company-run.`,
+      lead: `Multi-brand stores our own team staffs, stocks and markets. We run all ${facts.retail.storesOpen}. We own ${facts.retail.storesCompanyOwned}, and franchisees own the other ${facts.retail.storesFranchisee}.`,
       primaryCta: { label: "Own a retail store", href: "/partner" },
       secondaryCta: { label: "Put your brand in our stores", href: "/contact?intent=brand" },
     },
     sections: {
       stores: {
         heading: "On the street today",
-        lead: "Where our stores are, and who owns each one.",
+        lead: "Every store is stocked from our warehouse in Guwahati. Pick a town to see the store and who owns it.",
       },
       model: {
         heading: "The zero-deadstock model",
-        lead: "The store carries what sells and returns what does not. Buying, rotation and markdowns stay with us, which is the whole reason a first store survives its first bad season.",
+        lead: "The store keeps what sells and sends back what does not. Buying, rotation and markdowns stay with us. That is how a first store survives its first bad season.",
       },
       cta: {
         heading: "One of the next stores could be yours",
-        lead: "Franchisee-owned, company-run. See how the model works.",
+        lead: "You own the store. We run it, from the first hire to the last markdown.",
+        ctaLabel: "See the partnership model",
       },
     },
   },

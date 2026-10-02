@@ -1272,9 +1272,63 @@
     display: none;
   }
 
-  /* Pins read at phone scale. */
+  /* The terrain plate runs edge to edge (.m-bleed), so it drops its frame. */
+  .atlas__stage {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Place names would print at 3 to 4px on a phone: the chips name the
+     towns that matter, and the terrain and borders carry the rest. */
+  .atlas-label {
+    display: none;
+  }
+
+  /* At phone scale round caps close the stitch gaps into a solid line. */
+  .atlas-stitch {
+    stroke-width: 2px;
+    stroke-linecap: butt;
+  }
+
+  /* Pins read at phone scale (the map itself is drawn at about a fifth). */
   .atlas-pin__scale {
-    transform: scale(1.5);
+    transform: scale(2.4);
+  }
+
+  /* The hover card docks under the map and opens for the store a chip tap
+     pins: a photograph beside the store's name and ownership. */
+  .atlas[data-js] .atlas-cards {
+    position: static;
+    margin-top: 0.75rem;
+  }
+
+  .atlas-card {
+    position: static;
+    display: none;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    width: auto;
+    translate: none;
+    scale: 1;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+
+  .atlas-card:not([data-photo]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .atlas-card[data-on] {
+    display: grid;
+  }
+
+  .atlas-card__photo {
+    aspect-ratio: auto;
+    min-height: 6rem;
+  }
+
+  .atlas-card__body {
+    padding: 0.7rem 0.85rem;
   }
 
   /* Each tag becomes a town chip beside its pin. */

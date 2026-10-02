@@ -77,6 +77,11 @@ export const page = defineType({
               type: "array",
               of: [defineArrayMember({ type: "text", rows: 2 })],
             }),
+            defineField({
+              name: "ctaLabel",
+              title: "Button label (sections that carry a button)",
+              type: "string",
+            }),
           ],
           preview: { select: { title: "heading", subtitle: "key" } },
         }),

@@ -305,5 +305,14 @@ export interface PageCopy {
   hero: Hero;
   metaTitle: string;
   metaDescription: string;
-  sections: Record<string, { heading: string; lead?: string; body?: string[] }>;
+  sections: Record<
+    string,
+    {
+      heading: string;
+      lead?: string;
+      body?: string[];
+      /** The section's own button label, where it has one. */
+      ctaLabel?: string;
+    }
+  >;
 }

@@ -3,7 +3,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 import { EASE, ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
-import { PIXEL } from "@/lib/pixel";
 
 interface AtlasBehaviourProps {
   children: ReactNode;
@@ -23,14 +22,21 @@ interface AtlasBehaviourProps {
  *  - the root gets `data-js` on mount, `data-active` while anything is
  *    active, and `data-active-hub` while the hub is;
  *  - every `[data-store]` element of the active store (tag, thread, route,
- *    pin, list entry) gets `data-on`. The CSS in src/app/atlas.css (and mobile.css section 18) does the rest.
+ *    pin, hover card, list entry) gets `data-on`. The CSS in
+ *    src/app/atlas.css (and mobile.css section 18) does the rest, including
+ *    opening the store's hover card.
  *
- * Motion-safety: GSAP here only ever animates `a.atlas-tag`,
- * `.atlas-pin__mark`, `.atlas-stitch`, `.atlas-ring`, the key, the stage
- * (phones) and the thread's stroke-opacity attribute. CSS owns the active
- * states (`.atlas-tag__body`, `.atlas-pin`, `.atlas-pin__frame`,
- * `.atlas-route`, the thread's opacity), so the two never fight over one
- * property. Every tween is a `from`, so the served markup is the end state.
+ * Hover (mouse only) works on a tag, a pin or a list entry; a click on a
+ * pin pins its store, a click on a tag also moves focus to its entry.
+ *
+ * Motion-safety: GSAP here only ever animates `a.atlas-tag`, the relief
+ * image, the borders, rivers and labels, `.atlas-pin__drop`,
+ * `.atlas-pin__ripple`, `.atlas-stitch`, the key, the stage (phones, and the
+ * pointer tilt) and the thread's stroke-opacity attribute. CSS owns the
+ * active states (`.atlas-tag__body`, `.atlas-pin`, `.atlas-pin__frame`,
+ * `.atlas-route`, `.atlas-card`, the thread's opacity), so the two never
+ * fight over one property. Every build tween is a `from`, so the served
+ * markup is the end state.
  */
 export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -74,7 +80,7 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
     const onPointerOver = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
       const hit = (event.target as Element | null)?.closest(
-        ".atlas-tag[data-store], .atlas-entry[data-store]",
+        ".atlas-tag[data-store], .atlas-entry[data-store], .atlas-pin[data-store]",
       );
       if (hit && root.contains(hit)) {
         setPreview(hit.getAttribute("data-store"));
@@ -173,6 +179,17 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
         return;
       }
 
+      // A pin: pin (or unpin) its store, which keeps its card open.
+      const pin = target?.closest<SVGGElement>(".atlas-pin[data-store]");
+      if (pin && root.contains(pin)) {
+        settleBuild();
+        const id = pin.getAttribute("data-store");
+        pinned = pinned === id ? null : id;
+        if (pinned === null && preview === id) preview = null;
+        apply();
+        return;
+      }
+
       const entry = target?.closest<HTMLElement>(".atlas-entry[data-store]");
       if (entry && root.contains(entry) && !target?.closest("a, button")) {
         const id = entry.getAttribute("data-store");
@@ -234,67 +251,132 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
           reduced: "(prefers-reduced-motion: reduce)",
           mobile: "(prefers-reduced-motion: no-preference) and (max-width: 767px)",
           desktop: "(prefers-reduced-motion: no-preference) and (min-width: 768px)",
+          tilt: "(prefers-reduced-motion: no-preference) and (min-width: 1024px) and (pointer: fine)",
         },
         (ctx) => {
-          const { reduced, mobile } = ctx.conditions as {
+          const { reduced, mobile, tilt } = ctx.conditions as {
             reduced: boolean;
             mobile: boolean;
             desktop: boolean;
+            tilt: boolean;
           };
           // Reduced motion: the served map is already the finished map.
           if (reduced) return;
 
+          const stage = figure.querySelector<HTMLElement>(".atlas__stage");
+
+          // The plate tips a little toward the pointer, like a printed map
+          // held in the hand: one rigid piece, so the drawn borders and pins
+          // never slide off the terrain. Fine pointers at 1024px and up only.
+          let untilt: (() => void) | undefined;
+          if (tilt && stage) {
+            gsap.set(stage, { transformPerspective: 1600 });
+            const rx = gsap.quickTo(stage, "rotationX", { duration: 0.7, ease: "power3.out" });
+            const ry = gsap.quickTo(stage, "rotationY", { duration: 0.7, ease: "power3.out" });
+            const onMove = (e: PointerEvent) => {
+              if (e.pointerType !== "mouse") return;
+              const b = stage.getBoundingClientRect();
+              const nx = (e.clientX - b.left) / b.width - 0.5;
+              const ny = (e.clientY - b.top) / b.height - 0.5;
+              ry(nx * 2.4);
+              rx(-ny * 1.8);
+            };
+            const onLeave = () => {
+              rx(0);
+              ry(0);
+            };
+            stage.addEventListener("pointermove", onMove);
+            stage.addEventListener("pointerleave", onLeave);
+            untilt = () => {
+              stage.removeEventListener("pointermove", onMove);
+              stage.removeEventListener("pointerleave", onLeave);
+            };
+          }
+
           // Already on screen at mount (a reload mid-page, a #stores link):
           // never build in front of the reader, leave the final state.
           const box = figure.getBoundingClientRect();
-          if (box.top < window.innerHeight * 0.85 && box.bottom > 0) return;
+          if (box.top < window.innerHeight * 0.85 && box.bottom > 0) return untilt;
 
           const key = figure.querySelector<HTMLElement>(".atlas__key");
-          const stage = figure.querySelector<HTMLElement>(".atlas__stage");
+          const relief = figure.querySelector<HTMLElement>(".atlas-relief img");
+          const borders = figure.querySelectorAll<SVGPathElement>(".atlas-border");
+          const rivers = figure.querySelectorAll<SVGPathElement>(".atlas-river");
+          const labels = figure.querySelectorAll<SVGTextElement>(".atlas-label");
           const pins = gsap.utils.toArray<SVGGElement>(figure.querySelectorAll(".atlas-pin"));
-          const markOf = (pin: Element) => pin.querySelector<SVGGElement>(".atlas-pin__mark");
           const stitchesOf = (id: string) =>
-            figure.querySelectorAll<SVGRectElement>(`.atlas-route[data-store="${id}"] .atlas-stitch`);
+            figure.querySelectorAll<SVGLineElement>(`.atlas-route[data-store="${id}"] .atlas-stitch`);
+          const tl = gsap.timeline({ paused: true });
+
+          // Rivers draw from source to mouth (the paths are stored that way),
+          // on a normalised length (pathLength="1").
+          const flow = (at: number, duration: number) => {
+            if (!rivers.length) return;
+            tl.fromTo(
+              rivers,
+              { strokeDasharray: "1 1", strokeDashoffset: 1 },
+              {
+                strokeDashoffset: 0,
+                duration,
+                ease: "power1.inOut",
+                stagger: 0.03,
+                clearProps: "strokeDasharray,strokeDashoffset",
+              },
+              at,
+            );
+          };
+
+          // A pin drops onto the map and settles; a single ring spreads out
+          // from where it lands. The ring rests invisible (atlas.css), so it
+          // only ever exists inside this build.
+          const drop = (pin: Element, at: number) => {
+            const head = pin.querySelector(".atlas-pin__drop");
+            if (head) {
+              tl.from(
+                head,
+                {
+                  y: mobile ? -16 : -34,
+                  opacity: 0,
+                  duration: mobile ? 0.35 : 0.5,
+                  ease: "back.out(1.9)",
+                  clearProps: "transform,opacity",
+                },
+                at,
+              );
+            }
+            const ripple = pin.querySelector(".atlas-pin__ripple");
+            if (ripple && !mobile) {
+              tl.fromTo(
+                ripple,
+                { opacity: 0.8, scale: 1 },
+                {
+                  opacity: 0,
+                  scale: 3.4,
+                  duration: 0.9,
+                  ease: "power2.out",
+                  immediateRender: false,
+                  clearProps: "transform,opacity",
+                },
+                at + 0.32,
+              );
+            }
+          };
 
           if (mobile) {
-            // Phones: no pixel build and no tag drop. The map fades in, the
-            // stitches draw once, the pins stamp, then it is still.
-            const tl = gsap.timeline({ paused: true });
+            // Phones: the plate fades in, the rivers run, the routes stitch
+            // in one pass, the pins drop, then it is still. No tag swing.
+            // Opacity, never autoAlpha: the key's text and the tag links stay
+            // in the accessibility tree and the tab order while faded.
             const blocks = [key, stage].filter(Boolean) as HTMLElement[];
             if (blocks.length) {
-              // Opacity, never autoAlpha: the key's text and the tag links
-              // stay in the accessibility tree and the tab order while faded.
-              tl.from(blocks, {
-                opacity: 0,
-                duration: 0.4,
-                ease: EASE,
-                clearProps: "opacity",
-              });
+              tl.from(blocks, { opacity: 0, duration: 0.4, ease: EASE, clearProps: "opacity" });
             }
+            flow(0.15, 0.9);
             const stitches = figure.querySelectorAll(".atlas-stitch");
             if (stitches.length) {
-              tl.from(stitches, {
-                scale: 0,
-                transformOrigin: "50% 50%",
-                duration: 0.14,
-                ease: PIXEL.ease,
-                stagger: 0.02,
-              });
+              tl.from(stitches, { opacity: 0, duration: 0.08, ease: "none", stagger: 0.012 }, 0.3);
             }
-            const marks = pins.map(markOf).filter(Boolean) as SVGGElement[];
-            if (marks.length) {
-              tl.from(marks, {
-                scale: 1.3,
-                autoAlpha: 0,
-                transformOrigin: "50% 50%",
-                duration: 0.25,
-                ease: "back.out(1.7)",
-                stagger: 0.06,
-                clearProps: "transform,opacity,visibility",
-              });
-            }
-            // Created inside the matchMedia context, so a breakpoint change
-            // reverts the timeline and kills the trigger with it.
+            pins.forEach((pin, i) => drop(pin, 0.45 + i * 0.08));
             const trigger = ScrollTrigger.create({
               trigger: figure,
               start: "top 85%",
@@ -303,104 +385,85 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
             });
             buildRef.current = { tl, trigger };
             return () => {
+              untilt?.();
               buildRef.current = null;
             };
           }
 
-          /* Desktop: one paused timeline, about 2.1s, then still. */
+          /* Desktop: one paused timeline, about 3.5s, then still. */
           const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-          const tl = gsap.timeline({ paused: true });
 
           // Opacity, never autoAlpha, for the key and the tags: real text and
           // real links must stay readable and focusable while they fade in.
           if (key) tl.from(key, { opacity: 0, y: 12, duration: 0.5, ease: EASE }, 0);
 
-          // Land lights up ring by ring out of Guwahati, in stepped frames.
-          const rings = figure.querySelectorAll(".atlas-ring");
-          if (rings.length) {
+          // The terrain comes up out of the paper with a slow push in, the
+          // way a camera settles on a map.
+          if (relief) {
             tl.from(
-              rings,
-              { autoAlpha: 0, duration: 0.24, ease: PIXEL.step, stagger: PIXEL.ringStagger },
-              0.05,
+              relief,
+              { opacity: 0, scale: 1.045, duration: 1.2, ease: "power2.out", clearProps: "opacity,transform" },
+              0,
             );
           }
-
-          const stamp = (pin: Element, at: number) => {
-            const mark = markOf(pin);
-            if (!mark) return;
-            tl.from(
-              mark,
-              {
-                scale: 1.6,
-                autoAlpha: 0,
-                transformOrigin: "50% 50%",
-                duration: 0.3,
-                ease: "back.out(1.7)",
-                clearProps: "transform,opacity,visibility",
-              },
-              at,
-            );
-          };
+          if (borders.length) {
+            tl.from(borders, { opacity: 0, duration: 0.7, ease: "power1.out", stagger: 0.14 }, 0.3);
+          }
+          flow(0.4, 1.4);
+          if (labels.length) {
+            tl.from(labels, { opacity: 0, duration: 0.6, ease: "power1.out", stagger: 0.05 }, 0.8);
+          }
 
           // The thread fades on its stroke-opacity attribute, not its CSS
-          // opacity, which the active/dim states own.
+          // opacity, which the active/dim states own. The tag swings in on
+          // its eyelet like a real swing tag on a string, and comes to rest.
           const hang = (id: string, at: number) => {
             const thread = figure.querySelector<SVGLineElement>(`.atlas-thread[data-store="${id}"]`);
             if (thread) {
-              tl.from(
-                thread,
-                { attr: { "stroke-opacity": 0 }, duration: 0.3, ease: "power1.out" },
-                at,
-              );
+              tl.from(thread, { attr: { "stroke-opacity": 0 }, duration: 0.3, ease: "power1.out" }, at);
             }
             const tag = root.querySelector<HTMLElement>(`a.atlas-tag[data-store="${id}"]`);
             if (tag) {
+              tl.from(tag, { opacity: 0, duration: 0.2, ease: "power1.out", clearProps: "opacity" }, at);
               tl.from(
                 tag,
                 {
-                  opacity: 0,
-                  y: -10,
-                  rotation: -5,
+                  rotation: -11,
+                  y: -6,
                   transformOrigin: `50% ${0.55 * rootPx}px`,
-                  duration: 0.5,
-                  ease: "back.out(1.4)",
-                  clearProps: "transform,transformOrigin,opacity",
+                  duration: 1.3,
+                  ease: "elastic.out(1, 0.36)",
+                  clearProps: "transform,transformOrigin",
                 },
                 at,
               );
             }
           };
 
-          // Pins are rendered in build order: the hub first, then nearest first.
+          // Pins are rendered in build order: the hub (the Guwahati
+          // warehouse) first, then the stores nearest first. Each route sews
+          // itself out stitch by stitch, and its store's pin lands as the
+          // last stitch goes in.
           let routeIndex = 0;
           pins.forEach((pin) => {
             const id = pin.getAttribute("data-store");
             if (!id) return;
             if (pin.hasAttribute("data-hub")) {
-              stamp(pin, 0.3);
-              hang(id, 0.38);
+              drop(pin, 0.95);
+              hang(id, 1.15);
               return;
             }
-            const start = 0.55 + routeIndex * 0.18;
+            const start = 1.25 + routeIndex * 0.3;
             routeIndex += 1;
             const stitches = stitchesOf(id);
             let end = start;
             if (stitches.length) {
-              tl.from(
-                stitches,
-                {
-                  scale: 0,
-                  transformOrigin: "50% 50%",
-                  duration: 0.16,
-                  ease: PIXEL.ease,
-                  stagger: PIXEL.stitchStagger,
-                },
-                start,
-              );
-              end = start + (stitches.length - 1) * PIXEL.stitchStagger + 0.16;
+              const each = 0.026;
+              tl.from(stitches, { opacity: 0, duration: 0.09, ease: "none", stagger: each }, start);
+              end = start + (stitches.length - 1) * each + 0.09;
             }
-            stamp(pin, end);
-            hang(id, end + 0.08);
+            drop(pin, end);
+            hang(id, end + 0.12);
           });
 
           const trigger = ScrollTrigger.create({
@@ -411,6 +474,7 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
           });
           buildRef.current = { tl, trigger };
           return () => {
+            untilt?.();
             buildRef.current = null;
           };
         },

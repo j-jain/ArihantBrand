@@ -1,12 +1,25 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { Button, SplitHeading, StaggerGroup, cn, trackClass } from "@/components";
+import { townPhotos } from "@/content/images";
+import { townKey } from "@/content/towns";
 import type { Cta, Stat, Store } from "@/content/types";
 import { directionsUrl } from "@/lib/seo";
 import { unitScope } from "@/lib/units";
 import { AtlasBehaviour } from "./AtlasBehaviour";
-import { ATLAS_VIEWBOX, CROP, buildAtlas, type AtlasStore, type StagePoint } from "./atlasGeometry";
+import { buildAtlas, type AtlasStore } from "./atlasGeometry";
+import {
+  ATLAS_RELIEF,
+  INDIA_BORDER,
+  MAP_LABELS,
+  NEIGHBOUR_BORDERS,
+  RIVERS,
+  RIVER_LABEL,
+  STATE_BORDERS,
+} from "./atlasMap.data";
+import { MAP_VIEWBOX } from "./atlasProjection";
 import { OwnershipMark } from "./OwnershipMark";
 
 interface StoreAtlasProps {
@@ -18,34 +31,50 @@ interface StoreAtlasProps {
   secondaryCta?: Cta;
 }
 
-const r2 = (n: number) => Math.round(n * 100) / 100;
-
-/** Stage percent back to SVG user units (one unit per cell). */
-const toUser = (p: StagePoint) => ({
-  x: r2(CROP.col + (p.x / 100) * CROP.cols),
-  y: r2(CROP.row + (p.y / 100) * CROP.rows),
-});
-
 const figure = (stat: Stat) => `${stat.value}${stat.suffix ?? ""}`;
 
+/** Pin head sizes in map units: the warehouse town is a size up. */
+const HEAD = 20;
+const HUB_HEAD = 25;
+
+type Pinned = AtlasStore & Required<Pick<AtlasStore, "at" | "pin" | "eye" | "eyeAt" | "card">>;
+
+/** The photograph a store's card shows: the store's own (set in the Studio)
+ *  always first, else a licensed photograph of its town, credited. */
+function cardPhoto(s: AtlasStore) {
+  if (s.store.image) {
+    return { src: s.store.image, credit: undefined as string | undefined };
+  }
+  const town = townPhotos[townKey(s.store.city)];
+  return town ? { src: town.src, credit: `${town.credit}, ${town.license}` } : null;
+}
+
 /**
- * "On the street today": the Arihant Retail stores on a square-pixel map of the
+ * "On the street today": the Arihant Retail stores on a terrain map of the
  * Northeast, keyed by the unit's three figures, over a ruled list of the
- * stores themselves (change round 3, the store atlas).
+ * stores themselves (change round 3; the terrain map is change round 4).
  *
- * Server-rendered in its finished state: land, stitched routes out of
- * Guwahati, a pin and a swing tag per town, the key and the list. Nothing is
- * hidden by CSS. AtlasBehaviour (client) adds the hover/focus/pin state and
- * the one-shot entry build; with JS off the tags are plain anchors into the
- * list and `:target` highlights the entry.
+ * The map is a shaded-relief image with the borders, rivers and place names
+ * drawn over it as SVG, all through one projection (atlasProjection.ts), and
+ * built offline by scripts/build-atlas-map.mjs from Natural Earth and open
+ * terrain data. India's borders are shown as India draws them.
+ *
+ * Server-rendered in its finished state: terrain, borders, rivers, running
+ * stitches out of the Guwahati warehouse, a raised pin and a swing tag per
+ * town, the key and the list. Nothing is hidden by CSS except the hover cards,
+ * which only exist with JS (they repeat the list, plus a photograph).
+ * AtlasBehaviour (client) adds hover/focus/pin state, the cards and the
+ * one-shot entry build; with JS off the tags are plain anchors into the list
+ * and `:target` highlights the entry.
  *
  * Honesty rails: trading stores only, town-level pins only (src/content/
- * towns.ts), directions only where a confirmed `mapsQuery` exists, and every
- * printed figure from `business.stats`, never a count of records.
+ * towns.ts), directions only where a confirmed `mapsQuery` exists, every
+ * printed figure from `business.stats`, and a town photograph is captioned
+ * and credited as the town, never as the store.
  *
- * Deliberately distinct from the footer NetworkMap: square pixels on
- * paper-shade (never round dots on charcoal), purple and ink (never
- * vermillion), stepped stitches to trading stores only, one build then still.
+ * Still distinct from the footer NetworkMap: a paper terrain map in purple
+ * and ink (never round dots on charcoal, never vermillion), routes to trading
+ * stores only, one build then still.
  */
 export function StoreAtlas({
   heading,
@@ -59,10 +88,7 @@ export function StoreAtlas({
   const byId = new Map(model.stores.map((s) => [s.id, s]));
   const pinned = model.buildOrder
     .map((id) => byId.get(id))
-    .filter((s): s is AtlasStore & Required<Pick<AtlasStore, "cell" | "pin" | "eye">> =>
-      Boolean(s?.cell && s.pin && s.eye),
-    );
-  const tagged = model.stores.filter((s) => s.pin && s.eye);
+    .filter((s): s is Pinned => Boolean(s?.at && s.pin && s.eye && s.eyeAt && s.card));
   const routed = pinned.filter((s) => s.route?.length);
   const hasKey = Boolean(model.tally) || model.legend.length > 0;
 
@@ -103,44 +129,80 @@ export function StoreAtlas({
           ) : null}
 
           <div className="atlas__stage m-bleed">
-            <svg className="atlas-map" viewBox={ATLAS_VIEWBOX} aria-hidden="true" focusable="false">
-              <g className="atlas-land">
-                {model.landRings.map((d, i) => (
-                  <path key={i} className="atlas-ring" d={d} />
-                ))}
+            <div className="atlas-relief">
+              <Image
+                src={ATLAS_RELIEF.src}
+                width={ATLAS_RELIEF.width}
+                height={ATLAS_RELIEF.height}
+                alt=""
+                sizes="(max-width: 767px) 100vw, 72rem"
+              />
+            </div>
+
+            <svg className="atlas-map" viewBox={MAP_VIEWBOX} aria-hidden="true" focusable="false">
+              <defs>
+                <filter id="atlas-pin-shadow" x="-60%" y="-60%" width="220%" height="240%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="2.4" floodColor="#1d1716" floodOpacity="0.38" />
+                </filter>
+                <path id="atlas-river-label" d={RIVER_LABEL.d} />
+              </defs>
+
+              <g className="atlas-geo">
+                <path className="atlas-border atlas-border--neighbour" d={NEIGHBOUR_BORDERS} />
+                <path className="atlas-border atlas-border--state" d={STATE_BORDERS} />
+                <path className="atlas-border atlas-border--india" d={INDIA_BORDER} />
+                <g className="atlas-rivers">
+                  {RIVERS.map((r, i) => (
+                    <path
+                      key={i}
+                      className="atlas-river"
+                      d={r.d}
+                      pathLength={1}
+                      strokeWidth={r.w * 1.5}
+                    />
+                  ))}
+                </g>
+                <text className="atlas-label atlas-label--river">
+                  <textPath href="#atlas-river-label" startOffset="50%" textAnchor="middle">
+                    {RIVER_LABEL.text}
+                  </textPath>
+                </text>
+                <g className="atlas-labels">
+                  {MAP_LABELS.map((l) => (
+                    <text
+                      key={l.text}
+                      className={`atlas-label atlas-label--${l.kind}`}
+                      x={l.x}
+                      y={l.y}
+                      textAnchor="middle"
+                      transform={l.rotate ? `rotate(${l.rotate} ${l.x} ${l.y})` : undefined}
+                    >
+                      {l.text}
+                    </text>
+                  ))}
+                </g>
               </g>
 
               <g className="atlas-threads">
-                {pinned.map((s) => {
-                  const a = toUser(s.pin);
-                  const b = toUser(s.eye);
-                  return (
-                    <line
-                      key={s.id}
-                      className="atlas-thread"
-                      data-store={s.id}
-                      x1={a.x}
-                      y1={a.y}
-                      x2={b.x}
-                      y2={b.y}
-                      strokeOpacity={1}
-                    />
-                  );
-                })}
+                {pinned.map((s) => (
+                  <line
+                    key={s.id}
+                    className="atlas-thread"
+                    data-store={s.id}
+                    x1={s.at[0]}
+                    y1={s.at[1]}
+                    x2={s.eyeAt[0]}
+                    y2={s.eyeAt[1]}
+                    strokeOpacity={1}
+                  />
+                ))}
               </g>
 
               <g className="atlas-routes">
                 {routed.map((s) => (
                   <g key={s.id} className="atlas-route" data-store={s.id}>
-                    {s.route!.map(([c, r]) => (
-                      <rect
-                        key={`${c},${r}`}
-                        className="atlas-stitch"
-                        x={r2(c + 0.28)}
-                        y={r2(r + 0.28)}
-                        width={0.44}
-                        height={0.44}
-                      />
+                    {s.route!.map(([x1, y1, x2, y2], i) => (
+                      <line key={i} className="atlas-stitch" x1={x1} y1={y1} x2={x2} y2={y2} />
                     ))}
                   </g>
                 ))}
@@ -148,52 +210,52 @@ export function StoreAtlas({
 
               <g className="atlas-pins">
                 {pinned.map((s) => {
-                  const [c, r] = s.cell;
+                  const h = s.hub ? HUB_HEAD : HEAD;
+                  const k = h + 7; // the paper keyline round the head
                   return (
                     <g
                       key={s.id}
                       className="atlas-pin"
                       data-store={s.id}
                       data-hub={s.hub ? "" : undefined}
+                      transform={`translate(${s.at[0]} ${s.at[1]})`}
                     >
+                      <rect className="atlas-pin__hit" x={-24} y={-24} width={48} height={48} />
+                      <rect className="atlas-pin__ripple" x={-h / 2} y={-h / 2} width={h} height={h} />
                       <g className="atlas-pin__scale">
-                        <g className="atlas-pin__mark">
-                          <rect
-                            className="atlas-pin__keyline"
-                            x={r2(c - 0.12)}
-                            y={r2(r - 0.12)}
-                            width={1.24}
-                            height={1.24}
-                          />
-                          {s.own === "franchisee" ? (
-                            <rect
-                              className="atlas-pin__framed"
-                              x={r2(c + 0.1)}
-                              y={r2(r + 0.1)}
-                              width={0.8}
-                              height={0.8}
-                            />
-                          ) : s.own === "company" ? (
-                            <rect className="atlas-pin__solid" x={c} y={r} width={1} height={1} />
-                          ) : (
-                            // No ownership on record: a neutral ink-framed pin,
-                            // so it never reads as the legend's company-owned
-                            // solid square (matches its neutral paper tag).
-                            <rect
-                              className="atlas-pin__unknown"
-                              x={r2(c + 0.1)}
-                              y={r2(r + 0.1)}
-                              width={0.8}
-                              height={0.8}
-                            />
-                          )}
+                        <g className="atlas-pin__drop">
+                          <g className="atlas-pin__head" filter="url(#atlas-pin-shadow)">
+                            <rect className="atlas-pin__keyline" x={-k / 2} y={-k / 2} width={k} height={k} />
+                            {s.own === "franchisee" ? (
+                              <rect
+                                className="atlas-pin__framed"
+                                x={-h / 2 + 2.5}
+                                y={-h / 2 + 2.5}
+                                width={h - 5}
+                                height={h - 5}
+                              />
+                            ) : s.own === "company" ? (
+                              <rect className="atlas-pin__solid" x={-h / 2} y={-h / 2} width={h} height={h} />
+                            ) : (
+                              // No ownership on record: a neutral ink-framed
+                              // pin, so it never reads as the legend's
+                              // company-owned solid square.
+                              <rect
+                                className="atlas-pin__unknown"
+                                x={-h / 2 + 2.5}
+                                y={-h / 2 + 2.5}
+                                width={h - 5}
+                                height={h - 5}
+                              />
+                            )}
+                          </g>
                         </g>
                         <rect
                           className="atlas-pin__frame"
-                          x={r2(c - 0.4)}
-                          y={r2(r - 0.4)}
-                          width={1.8}
-                          height={1.8}
+                          x={-(h + 18) / 2}
+                          y={-(h + 18) / 2}
+                          width={h + 18}
+                          height={h + 18}
                         />
                       </g>
                     </g>
@@ -202,19 +264,19 @@ export function StoreAtlas({
               </g>
             </svg>
 
-            {tagged.length ? (
+            {pinned.length ? (
               <ul className="atlas-tags">
-                {tagged.map((s) => (
+                {pinned.map((s) => (
                   <li
                     key={s.id}
                     className="atlas-tags__item"
                     data-phone-side={s.phoneSide}
                     style={
                       {
-                        "--x": String(s.eye!.x),
-                        "--y": String(s.eye!.y),
-                        "--px": String(s.pin!.x),
-                        "--py": String(s.pin!.y),
+                        "--x": String(s.eye.x),
+                        "--y": String(s.eye.y),
+                        "--px": String(s.pin.x),
+                        "--py": String(s.pin.y),
                       } as CSSProperties
                     }
                   >
@@ -237,6 +299,48 @@ export function StoreAtlas({
               </ul>
             ) : null}
           </div>
+
+          {/* Hover cards. They repeat what the tag and the list already say,
+              plus a photograph, so they are hidden from assistive tech. */}
+          {pinned.length ? (
+            <div className="atlas-cards" aria-hidden="true">
+              {pinned.map((s) => {
+                const photo = cardPhoto(s);
+                return (
+                  <div
+                    key={s.id}
+                    className="atlas-card"
+                    data-store={s.id}
+                    data-card-x={s.card.x}
+                    data-card-y={s.card.y}
+                    data-photo={photo ? "" : undefined}
+                    style={{ "--px": String(s.pin.x), "--py": String(s.pin.y) } as CSSProperties}
+                  >
+                    {photo ? (
+                      <div className="atlas-card__photo">
+                        <Image src={photo.src} alt="" fill sizes="16rem" />
+                      </div>
+                    ) : null}
+                    <div className="atlas-card__body">
+                      <p className="atlas-card__town">{s.store.city}</p>
+                      <p className="atlas-card__name">{s.store.name}</p>
+                      {s.store.ownership ? (
+                        <p className="atlas-card__own">
+                          {s.own ? <OwnershipMark own={s.own} className="atlas-card__mark" /> : null}
+                          {s.store.ownership}
+                        </p>
+                      ) : null}
+                      {photo?.credit ? (
+                        <p className="atlas-card__credit">
+                          {s.store.city}. Photo: {photo.credit}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
 
         <StaggerGroup as="ul" from="up" stagger={0.08} mLedger className="atlas__list">

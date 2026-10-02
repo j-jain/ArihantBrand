@@ -31,6 +31,39 @@ if (typeof window !== "undefined") {
 
 export { gsap, ScrollTrigger, SplitText, useGSAP };
 
+/* Lag smoothing, shared. SmoothScroll turns it off (Lenis wants a ticker that
+ * never fakes time), but the hero intro plays while hydration, image decode
+ * and the first ScrollTrigger refresh are still landing; with smoothing off,
+ * one long task makes the intro jump straight past its opening frames. The
+ * intro holds a tight smoothing window while it plays and lets go after, and
+ * whichever runs first, the base setting is restored once nothing holds. */
+let baseLag: [number, number] = [500, 33]; // GSAP's own default
+let lagHolds = 0;
+const applyLag = () => {
+  if (lagHolds > 0) gsap.ticker.lagSmoothing(100, 33);
+  else gsap.ticker.lagSmoothing(baseLag[0], baseLag[1]);
+};
+
+/** The lag smoothing in force whenever no intro holds it (0 turns it off). */
+export function setBaseLagSmoothing(threshold: number, adjustedLag = 33) {
+  baseLag = [threshold, adjustedLag];
+  applyLag();
+}
+
+/** Treats any frame gap over 100ms as one frame until the returned release
+ *  is called, so a long task delays the motion instead of skipping it. */
+export function holdLagSmoothing(): () => void {
+  lagHolds++;
+  applyLag();
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    lagHolds--;
+    applyLag();
+  };
+}
+
 /** Canonical motion tokens, mirroring globals.css --ease / --dur-slow so JS and
  *  CSS motion feel identical. cubic-bezier(0.16, 1, 0.3, 1) ≈ power3.out. */
 export const EASE = "power3.out";
