@@ -300,6 +300,7 @@ interface RawSiteSettings {
   metaTitleSuffix?: string | null;
   gstin?: string | null;
   cin?: string | null;
+  mapsLink?: string | null;
   contacts?: RawContact[] | null;
 }
 interface RawHero {
@@ -465,6 +466,7 @@ function mapSiteSettings(s: RawSiteSettings): SiteSettings {
     metaTitleSuffix: s.metaTitleSuffix ?? "",
     ...(s.gstin ? { gstin: s.gstin } : {}),
     ...(s.cin ? { cin: s.cin } : {}),
+    ...(s.mapsLink?.trim() ? { mapsLink: s.mapsLink.trim() } : {}),
     contacts: (s.contacts ?? []).map((c) => ({
       unit: c.unit,
       businessName: c.businessName,
@@ -512,7 +514,7 @@ function mapPage(p: RawPage): PageCopy {
 
 const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   orgName, tagline, addressLine, locality, city, state, postalCode, country,
-  defaultWhatsapp, metaTitleSuffix, gstin, cin,
+  defaultWhatsapp, metaTitleSuffix, gstin, cin, mapsLink,
   contacts[]{ unit, businessName, floor, phones[]{ name, phone }, email, whatsapp }
 }`;
 

@@ -2,6 +2,10 @@
 @import "./motion.css";
 @import "./form.css";
 @import "./atlas.css";
+@import "./feature-hero.css";
+@import "./brand-index.css";
+@import "./rail.css";
+@import "./street.css";
 
 /* The mobile layer is imported at the FOOT of this file, not here.
  *
@@ -1011,6 +1015,93 @@ svg {
   color: var(--_text-soft);
 }
 
+/* The office on a live map (footer, change round 7). Google's widget in a
+   keylined frame, a little desaturated at rest so a full-colour map does not
+   shout from the charcoal, in colour as soon as a pointer or focus is on it.
+   The paper card on the right is the plain link to the pin; Google's own place
+   card keeps the top-left corner and its controls the bottom-right. */
+.footer-office {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  background: color-mix(in oklch, var(--charcoal), white 8%);
+  box-shadow: 0 0 0 1px var(--line-dark);
+}
+
+.footer-office__map {
+  height: 16rem;
+}
+
+.footer-office__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  filter: grayscale(0.6) contrast(0.95);
+  transition: filter var(--dur) var(--ease);
+}
+
+.footer-office:hover .footer-office__frame,
+.footer-office:focus-within .footer-office__frame {
+  filter: none;
+}
+
+.footer-office__card {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  max-width: 19rem;
+  padding: 0.95rem 1.15rem 1rem 0.95rem;
+  border-radius: 0.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 1.2rem 2.4rem -1.2rem oklch(0.18 0.01 30 / 0.6);
+  transition: translate var(--dur-fast) var(--ease);
+}
+
+.footer-office__card:hover {
+  translate: 0 -2px;
+}
+
+.footer-office__card p,
+.footer-office__card span {
+  line-height: 1.4;
+}
+
+.footer-office__pin {
+  display: inline-flex;
+  flex: none;
+  padding-top: 0.2rem;
+  color: var(--vermillion-deep);
+}
+
+.footer-office__name {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.footer-office__go {
+  margin-top: 0.4rem;
+  font-weight: 650;
+  color: var(--vermillion-deep);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-fast) var(--ease);
+}
+
+.footer-office__card:hover .footer-office__go {
+  text-decoration-color: currentColor;
+}
+
 /* ------------------------------------------------------------------ */
 /* Site header nav                                                     */
 /* ------------------------------------------------------------------ */
@@ -1092,9 +1183,9 @@ svg {
 /* ------------------------------------------------------------------ */
 /* Arihant Marketing page                                              */
 /*                                                                     */
-/* Only the three things Tailwind cannot express cleanly: a full-bleed  */
-/* grid, the oversized award numeral, and the 2x2 hairline spec plate.  */
-/* Everything else on that page is composed from utilities in the JSX.  */
+/* Only what Tailwind cannot express cleanly: the band rhythm and the   */
+/* 2x2 hairline spec plate (the award fold and the promise grid went in */
+/* change round 7). The rest is composed from utilities in the JSX.     */
 /* ------------------------------------------------------------------ */
 
 /* This page is read section by section, so every band is sized to be taken in
@@ -1102,97 +1193,6 @@ svg {
    scoped to this page so no other route moves. */
 .am-band {
   padding-block: clamp(3rem, 4.5vw, 4.25rem);
-}
-
-/* The award fold is a fold, not a strip: it holds one claim beside the object
-   that backs it, so it is sized to be looked at rather than scrolled past. The
-   cap keeps it inside one screen on a laptop. */
-.am-award {
-  display: flex;
-  align-items: center;
-  min-height: clamp(27rem, 56vh, 34rem);
-  padding-block: clamp(2.5rem, 5vw, 4rem);
-}
-
-/* The trophy is 899x1599, so a 2/3 frame trims about 16% of its height. Bias
-   the crop high and that comes off the empty tabletop under the plaque rather
-   than off the wings. */
-.am-award__object .parallax-img {
-  object-position: center 35%;
-}
-
-/* The year is a date line, not the claim. It used to be a 9.5rem painted
-   numeral, which told a reader the date mattered more than what was won. */
-.am-award__date {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.14em;
-}
-
-/* The 20-day promise: one idea, the widest air on the page, and a photograph
-   that runs off the right edge of the viewport instead of stopping at the
-   container. Named grid lines rather than a 100vw negative margin — a 100vw
-   bleed overflows by the scrollbar width on Windows and scrolls the body
-   sideways. */
-.am-promise {
-  padding-block: clamp(3rem, 5vw, 4.5rem);
-}
-
-/* A 4/5 frame at 46vw stands about 825px tall on a laptop, which put this one
-   idea over a screen on its own. The cap costs the frame nothing a reader
-   notices and buys back the whole overflow. */
-.am-promise__photo .parallax-frame {
-  max-block-size: min(58svh, 30rem);
-}
-
-/* Stacked, the two halves are ordinary container-width blocks. The photo's
-   gutter lives on this wrapper rather than on the frame, so the frame's own
-   mBleed margin has a padding to cancel instead of a full-width box to widen. */
-.am-promise__photo {
-  width: 100%;
-  max-width: 72rem;
-  margin-inline: auto;
-  margin-top: 2.5rem;
-  padding-inline: var(--gutter, clamp(1.25rem, 4vw, 2.5rem));
-}
-
-@media (min-width: 768px) {
-  .am-promise {
-    --am-g: clamp(1.25rem, 4vw, 2.5rem);
-    --am-content: min(72rem - var(--am-g) * 2, 100% - var(--am-g) * 2);
-    display: grid;
-    grid-template-columns:
-      [full-start] minmax(var(--am-g), 1fr)
-      [content-start] minmax(0, calc(var(--am-content) * 0.56))
-      [mid] minmax(0, calc(var(--am-content) * 0.44))
-      [content-end] minmax(var(--am-g), 1fr)
-      [full-end];
-    align-items: center;
-    column-gap: clamp(2.5rem, 5vw, 4.5rem);
-  }
-
-  /* The grid owns the alignment now, so the container class on each half
-     stands down rather than centring inside its own track. */
-  .am-promise__copy,
-  .am-promise__photo {
-    max-width: none;
-    margin-inline: 0;
-    margin-top: 0;
-    padding-inline: 0;
-  }
-
-  .am-promise__copy {
-    grid-column: content-start / mid;
-  }
-
-  .am-promise__photo {
-    grid-column: mid / full-end;
-  }
-}
-
-/* The steps used to close the promise's own section, so this paid only a foot.
-   They stand as a band of their own now and pay both sides. */
-.am-how__steps {
-  padding-block: clamp(3rem, 5vw, 4.5rem);
 }
 
 /* Four strengths as a spec plate rather than a fifth ruled list. Hairlines are

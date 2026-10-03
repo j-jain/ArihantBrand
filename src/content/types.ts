@@ -203,6 +203,9 @@ export interface SiteSettings {
    *  the client supplies them; nothing ships as a placeholder. */
   gstin?: string;
   cin?: string;
+  /** The office's Google Maps link (Maps > Share > Copy link on the pin).
+   *  Empty falls back to a Maps search for the address (src/lib/seo.ts). */
+  mapsLink?: string;
 }
 
 export interface ProcessStep {

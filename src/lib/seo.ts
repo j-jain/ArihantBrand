@@ -13,17 +13,40 @@ export function fullAddress(s: SiteSettings): string {
   return `${s.orgName}, ${s.addressLine}, ${s.locality}, ${s.city}, ${s.state} ${s.postalCode}`;
 }
 
-/** A plain external Google Maps link for one address string. Never an embed:
- *  the site makes no third-party requests of its own. Used by the store atlas
- *  for stores with a confirmed `mapsQuery`, and by `mapsUrl` below. */
+/** A plain external Google Maps link for one address string. Google's
+ *  documented cross-platform Maps URL (change round 6): it opens the Maps app
+ *  on a phone and the site on a desktop. Used by the store atlas for stores
+ *  with a confirmed `mapsQuery`, and by `mapsUrl` below. */
 export function directionsUrl(query: string): string {
-  return `https://maps.google.com/?q=${encodeURIComponent(query)}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
-/** Directions to the office. One definition, used by the footer, /contact and
- *  any store that has no address of its own. */
+/** The office on Google Maps. One definition, used by the footer, /contact
+ *  and the JSON-LD. The Studio's "Google Maps link" (the exact pin) wins;
+ *  until it is set, a search for the building, its locality and postcode.
+ *  The landmark phrases ("Opposite Bhagwat Dham, near Shankar Hotel") stay out
+ *  of the query: they help a person, but they throw a geocoder off. */
 export function mapsUrl(s: SiteSettings): string {
-  return directionsUrl(fullAddress(s));
+  if (s.mapsLink) return s.mapsLink;
+  return directionsUrl(officeQuery(s));
+}
+
+/** The office as a geocoder reads it: the building, its locality and the
+ *  postcode, without the landmark phrases. */
+function officeQuery(s: SiteSettings): string {
+  const building = s.addressLine.split(",")[0]?.trim() || s.addressLine;
+  return `${building}, ${s.locality}, ${s.city}, ${s.state} ${s.postalCode}`;
+}
+
+/** The office as a live Google Map, for the footer's map strip (change round
+ *  7, at the client's request). Google's keyless embed for a search, which
+ *  resolves to the Arihant Tower listing with its own Directions card. It is
+ *  the site's one third-party frame, loaded lazily, so a reader who never
+ *  reaches the footer never requests it. A Studio share link cannot be
+ *  embedded, so the exact pin (`mapsLink`) stays on the "Open in Google Maps"
+ *  link beside it. */
+export function mapsEmbedUrl(s: SiteSettings): string {
+  return `https://www.google.com/maps?q=${encodeURIComponent(officeQuery(s))}&z=16&output=embed`;
 }
 
 /** Canonical site origin. Set NEXT_PUBLIC_SITE_URL in production (no trailing slash). */
@@ -79,6 +102,7 @@ export function organizationJsonLd(s: SiteSettings) {
     description: s.tagline,
     foundingDate: "1999",
     address: postalAddress(s),
+    hasMap: mapsUrl(s),
     // Genuine, documented awards only (honesty rail: no invented awards). The
     // NEGTA founder role is modelled as membership via `memberOf`, not an award.
     award: ["Best Distributor of India 2015, CMAI (Clothing Manufacturers Association of India)"],
@@ -186,6 +210,7 @@ export function localBusinessJsonLd(s: SiteSettings) {
     description: s.tagline,
     parentOrganization: { "@id": `${siteUrl()}/#organization` },
     address: postalAddress(s),
+    hasMap: mapsUrl(s),
     telephone: `+${s.defaultWhatsapp}`,
     priceRange: "$$",
     areaServed: [

@@ -58,9 +58,11 @@ export const pages: Record<string, PageCopy> = {
     metaTitle: "Garment Distributor in Guwahati | Arihant Marketing",
     metaDescription: `Northeast India's pioneer readymade garments distributor: ${atLeast(facts.marketing.years)} years, ${phrase.marketingRetailers} retailers, ${phrase.sisCounters} shop-in-shop counters, a ${phrase.marketingWarehouse} Guwahati warehouse.`,
     hero: {
-      heading: "The pioneer distributor of readymade garments in Northeast India",
+      // Change round 6: the positioning in five words, then the proof in one
+      // sentence (reach, region, rhythm). Every figure from facts.ts.
+      heading: "The Northeast's pioneer garment distributor",
       headingEmphasis: "pioneer",
-      lead: `For more than ${facts.marketing.years} years we have moved national brands into the region's counters, across ${phrase.marketingRetailers} retailers and ${phrase.sisCounters} shop-in-shop counters.`,
+      lead: `Since the 1990s we have carried national brands to ${phrase.marketingRetailers} retailers in all seven states of the Northeast, visiting every counter on a ${facts.marketing.visitCycleDays}-day cycle.`,
       primaryCta: { label: "Become a retail partner", href: "/contact?intent=retailer" },
       secondaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
     },
@@ -105,11 +107,12 @@ export const pages: Record<string, PageCopy> = {
     metaTitle: "Apparel Distributor in Northeast India | Arihant Apparels",
     metaDescription: `Founded ${facts.apparels.established}. A Guwahati apparel distributor carrying ${phrase.apparelsBrands} labels across Northeast India and building several of them into category leaders. Stock our labels today.`,
     hero: {
-      // The client's tagline, set as the hero heading in the Studio (round 2).
-      // "retailer" is pluralised; otherwise it is their wording.
-      heading: "The most modern & systematic distribution house, the best relations with retailers & brands alike.",
-      headingEmphasis: "systematic",
-      lead: `Founded in ${facts.apparels.established} by Ajay Sancheti. We have built several brands into category leaders across the Northeast, and we carry ${phrase.apparelsBrands} labels today.`,
+      // Change round 6 (the client's tagline was the heading from round 2 and
+      // stays as Apparels' positioning line): what the house does for a label,
+      // then who, how many and how it buys. Every figure from facts.ts.
+      heading: "We turn labels into the Northeast's category leaders",
+      headingEmphasis: "category leaders",
+      lead: `Founded in ${facts.apparels.established} by Ajay Sancheti, Arihant Apparels carries ${phrase.apparelsBrands} labels, led by the region's leading ladies' ethnic wear, and buys on sell-through data so retailers stock what sells.`,
       primaryCta: {
         label: "Shop fast moving brands for your store",
         href: "/contact?intent=retailer",

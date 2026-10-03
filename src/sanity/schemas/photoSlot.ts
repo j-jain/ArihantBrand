@@ -23,9 +23,10 @@ export const photoSlot = defineType({
         list: [
           { title: "Home: hero", value: "homeHero" },
           { title: "Home: award band background (a texture, not a picture)", value: "homeProofGround" },
-          { title: "Marketing: godown", value: "marketingWarehouse" },
-          { title: "Marketing: award", value: "marketingAward" },
-          { title: "Marketing: corridor", value: "marketingCorridor" },
+          { title: "Marketing: hero (wide)", value: "marketingHero" },
+          { title: "Marketing: hero inset (the award trophy)", value: "marketingAward" },
+          { title: "Apparels: hero (wide)", value: "apparelsHero" },
+          { title: "Apparels: hero inset", value: "apparelsHeroInset" },
           { title: "Apparels: warehouse", value: "apparelsWarehouse" },
           { title: "Apparels: team", value: "apparelsTeam" },
           { title: "Retail: store interior", value: "retailInterior" },

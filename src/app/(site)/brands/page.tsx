@@ -5,12 +5,13 @@ import {
   DrenchBand,
   HeroIntro,
   JsonLd,
-  LogoWall,
   Reveal,
   SectionHeading,
 } from "@/components";
 import { getPageCopy, getPartners, getSiteSettings } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { whatsappFor } from "@/lib/whatsapp";
+import { BrandIndex } from "./_components/BrandIndex";
 import { BrandListGate } from "./_components/BrandListGate";
 
 const PATH = "/brands";
@@ -99,13 +100,18 @@ export default async function BrandsPage() {
         </HeroIntro>
       </section>
 
-      {/* 2 — The wall (paper-shade): filterable, every tile opens the modal */}
+      {/* 2 — The index (paper-shade, change round 6): every label as an A to Z
+          in large type with a search that answers "do you carry X?", a
+          business filter and a logo view. Every name opens the modal. */}
       <section className="section-pad bg-paper-shade">
         <div className="container-wide m-flow flex flex-col gap-8">
           <Reveal variant="fade">
             <SectionHeading heading={sections.wall?.heading ?? "The portfolio"} />
           </Reveal>
-          <LogoWall partners={partners} filterable />
+          <BrandIndex
+            partners={partners}
+            whatsapp={whatsappFor(PATH, settings.defaultWhatsapp).whatsapp}
+          />
         </div>
       </section>
 

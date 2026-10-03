@@ -1,0 +1,400 @@
+/* ------------------------------------------------------------------ */
+/* Storefront street: Arihant Apparels, "From first counter to          */
+/* category leader" (change round 6). Drawn in the ModelBoard /         */
+/* StorePlaceholder line idiom: ink lines, paper fills, the unit accent */
+/* for the label. Page-local, like atlas.css: components in             */
+/* app/(site)/arihant-apparels/_components/, phone rules in mobile.css  */
+/* section 20.                                                          */
+/* ------------------------------------------------------------------ */
+
+.ga {
+  /* The scrolled header plus air, as the pinned deck clears it. */
+  --ga-clear: calc(3px + 3.5rem + 1px + 1.5rem);
+}
+
+.ga__head {
+  margin-bottom: clamp(2rem, 4vw, 3.25rem);
+}
+
+/* ---- stages ---- */
+
+.ga-stages {
+  display: flex;
+  flex-direction: column;
+}
+
+.ga-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  align-content: start;
+  column-gap: 0.4rem;
+  row-gap: 0.55rem;
+  padding-block: 1.1rem 1.6rem;
+}
+
+.ga-stage__rule {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.ga-stage__fill {
+  position: absolute;
+  inset: 0;
+  height: 2px;
+  margin-top: -0.5px;
+  background: var(--unit-accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.ga-stage__num {
+  grid-row: 1;
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: var(--text-h4);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  color: var(--vermillion-deep);
+  transition: color var(--dur) var(--ease);
+}
+
+.ga-stage__title {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.ga-stage__text {
+  grid-column: 2;
+  max-width: 40ch;
+}
+
+.ga[data-ga] .ga-stage:not([data-active]) .ga-stage__num {
+  color: color-mix(in oklch, var(--ink-soft) 60%, var(--paper));
+}
+
+/* ---- the plate ---- */
+
+.ga__sticky {
+  margin: 0;
+}
+
+/* JS only: the drawing holds while the stages scroll past it, and each
+   stage gets the same reading length (the timeline assumes 60svh each). */
+@media (min-width: 768px) {
+  .ga[data-ga] .ga__sticky {
+    position: sticky;
+    top: max(var(--ga-clear), calc(50svh - 16rem));
+  }
+
+  .ga[data-ga] .ga-stage {
+    min-height: 60svh;
+  }
+
+  /* Room under the last stage, so the drawing still holds through its hold
+     instead of leaving with the list. */
+  .ga[data-ga] .ga-stages {
+    padding-bottom: 30svh;
+  }
+}
+
+.ga__plate {
+  padding: clamp(0.8rem, 1.4vw, 1.2rem);
+  border-radius: 0.5rem;
+  background: var(--paper-shade);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 1.5rem 3rem -2rem color-mix(in oklch, var(--ink) 28%, transparent),
+    0 0.3rem 0.8rem -0.4rem color-mix(in oklch, var(--ink) 10%, transparent);
+  overflow: hidden;
+}
+
+.ga-fig {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- line idiom ---- */
+
+.ga-ink {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-ink--thin {
+  stroke-width: 1.2px;
+}
+
+.ga-ink--slat {
+  stroke: color-mix(in oklch, var(--ink) 45%, transparent);
+  stroke-width: 1px;
+}
+
+.ga-ground {
+  fill: none;
+  stroke: color-mix(in oklch, var(--ink) 40%, transparent);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-lane {
+  fill: none;
+  stroke: color-mix(in oklch, var(--ink) 30%, transparent);
+  stroke-width: 1.2px;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-fascia {
+  fill: var(--unit-accent);
+}
+
+/* ---- stores ---- */
+
+.ga-store__ghost path {
+  fill: none;
+  stroke: color-mix(in oklch, var(--ink-soft) 45%, transparent);
+  stroke-width: 1px;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+/* A lit store covers its own ghost; with no JS the ghost is simply hidden
+   under the finished front. */
+.ga-store:not([data-stage="none"]) .ga-store__ghost {
+  opacity: 0;
+}
+
+.ga-store__lit {
+  /* The front reads as a building, not a wireframe. */
+  fill: var(--paper);
+}
+
+.ga-stripe {
+  fill: var(--unit-accent);
+}
+
+.ga-stripe--paper {
+  fill: var(--paper);
+}
+
+.ga-garment {
+  fill: color-mix(in oklch, var(--ink-soft) 30%, var(--paper));
+  stroke: var(--ink);
+  stroke-width: 1px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-garment--accent {
+  fill: var(--unit-accent);
+  stroke: color-mix(in oklch, var(--unit-accent), black 30%);
+}
+
+.ga-tag__string {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-tag__body {
+  fill: var(--paper);
+  stroke: var(--unit-accent);
+  stroke-width: 1.4px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-tag__eye {
+  fill: var(--unit-accent);
+}
+
+.ga-badge__frame {
+  fill: none;
+  stroke: var(--paper);
+  stroke-width: 1.4px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-badge__core {
+  fill: var(--paper);
+}
+
+/* ---- warehouse ---- */
+
+.ga-stockpile rect {
+  fill: color-mix(in oklch, var(--paper-shade), var(--ink-soft) 20%);
+  stroke: var(--ink);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---- fair stall ---- */
+
+.ga-bunting {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-pennant {
+  fill: var(--unit-accent);
+}
+
+.ga-pennant--paper {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-canopy {
+  fill: var(--unit-accent);
+}
+
+.ga-counter {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.4px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-crowd circle,
+.ga-crowd path {
+  fill: color-mix(in oklch, var(--ink-soft) 55%, var(--paper-shade));
+}
+
+/* ---- movers (transient: invisible at rest) ---- */
+
+.ga-carton,
+.ga-slip {
+  opacity: 0;
+}
+
+.ga-carton rect {
+  fill: color-mix(in oklch, var(--paper-shade), var(--ink-soft) 20%);
+  stroke: var(--ink);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-carton path,
+.ga-slip path:last-child {
+  fill: none;
+  stroke: color-mix(in oklch, var(--ink) 55%, transparent);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-slip path:first-child {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---- the shop-in-shop detail ---- */
+
+.ga-zoom__line {
+  fill: none;
+  stroke: color-mix(in oklch, var(--ink) 40%, transparent);
+  stroke-width: 1px;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-inset__panel {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.4px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-inset__caption {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 650;
+  fill: var(--ink);
+}
+
+.ga-inset__others path {
+  fill: none;
+  stroke: color-mix(in oklch, var(--ink-soft) 50%, transparent);
+  stroke-width: 1px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-bay__frame {
+  fill: color-mix(in oklch, var(--unit-accent) 5%, var(--paper));
+  stroke: var(--ink);
+  stroke-width: 1.6px;
+  vector-effect: non-scaling-stroke;
+}
+
+.ga-bay__plinth {
+  fill: var(--unit-accent);
+}
+
+/* ---- key ---- */
+
+.ga__key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem 1.5rem;
+  margin-top: 1rem;
+}
+
+.ga-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-size: var(--text-small);
+  color: var(--ink);
+}
+
+.ga-key li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ga-key__mark {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
+
+.ga-key__line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.ga-key__fill {
+  fill: var(--unit-accent);
+}
+
+.ga-key__frame {
+  fill: none;
+  stroke: var(--unit-accent);
+  stroke-width: 2;
+}
+
+.ga-key__note {
+  font-size: var(--text-small);
+  font-style: italic;
+  color: var(--ink-soft);
+}

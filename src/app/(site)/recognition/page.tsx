@@ -9,14 +9,12 @@ import {
   JsonLd,
   SectionHeading,
   TestimonialColumns,
-  Timeline,
 } from "@/components";
 import {
   getAwards,
   getPageCopy,
   getRecognitionPhotos,
   getTestimonials,
-  getTimeline,
 } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
@@ -35,11 +33,10 @@ export async function generateMetadata(): Promise<Metadata> {
    it the only reason this route read site settings at all. */
 
 export default async function RecognitionPage() {
-  const [copy, awards, photos, timeline, testimonials] = await Promise.all([
+  const [copy, awards, photos, testimonials] = await Promise.all([
     getPageCopy("recognition"),
     getAwards(),
     getRecognitionPhotos(),
-    getTimeline(),
     getTestimonials(),
   ]);
 
@@ -154,22 +151,12 @@ export default async function RecognitionPage() {
         </section>
       ) : null}
 
-      {/* 3 — Milestones (paper-shade) --------------------------------------- */}
-      {/* The six-cell strip that used to sit here printed a year and a title
-          and threw the `text` away, so a reader learned when each thing
-          happened without learning what it was. The scroll-driven Timeline is
-          the same data with the sentence restored. /about renders it too; the
-          headings differ because the pages are asking different questions of
-          the same years. */}
+      {/* 3 — Voices (paper-shade) ------------------------------------------- */}
+      {/* The dated milestones that sat here ("When each of these happened")
+          went in change round 7 at the client's request; /about still tells
+          the same years as its timeline. Paper-shade now, so the cabinet and
+          the voices do not run together on one paper ground. */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad m-flow flex flex-col gap-10">
-          <SectionHeading heading={sections.milestones.heading} />
-          <Timeline entries={timeline} />
-        </div>
-      </section>
-
-      {/* 4 — Voices (paper) ------------------------------------------------- */}
-      <section className="bg-paper">
         <div className="container-site section-pad m-flow flex flex-col gap-12">
           <SectionHeading
             heading={sections.voices.heading}
@@ -179,7 +166,7 @@ export default async function RecognitionPage() {
         </div>
       </section>
 
-      {/* 5 — Closing CTA (single vermillion drench) ------------------------- */}
+      {/* 4 — Closing CTA (single vermillion drench) ------------------------- */}
       <DrenchBand className="section-pad">
         <div className="container-site m-flow flex flex-col items-start gap-6">
           <h2 data-drench-reveal className="t-h2 max-w-[20ch]">

@@ -31,6 +31,14 @@ export const siteSettings = defineType({
       description: "Printed in the footer when filled. Leave blank to hide the line.",
       type: "string",
     }),
+    defineField({
+      name: "mapsLink",
+      title: "Google Maps link",
+      description:
+        "The office pin: in Google Maps open Arihant Tower, then Share > Copy link, and paste it here. The footer address and /contact open it. Leave blank to fall back to a Maps search for the address.",
+      type: "url",
+      validation: (r) => r.uri({ scheme: ["https"] }),
+    }),
     defineField({ name: "metaTitleSuffix", title: "Meta title suffix", type: "string" }),
     defineField({
       name: "contacts",

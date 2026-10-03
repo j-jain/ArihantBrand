@@ -239,6 +239,7 @@ async function main() {
     metaTitleSuffix: ss.metaTitleSuffix,
     gstin: ss.gstin,
     cin: ss.cin,
+    ...(ss.mapsLink ? { mapsLink: ss.mapsLink } : {}),
     contacts: ss.contacts.map((c, ci) => ({
       _type: "unitContact",
       _key: `contact-${ci}`,
@@ -502,7 +503,8 @@ async function main() {
    * renders (retailShopfront, officeMap) are deliberately not listed. */
   const EDITABLE_SLOTS = [
     "homeHero", "homeProofGround",
-    "marketingWarehouse", "marketingAward", "marketingCorridor",
+    "marketingHero", "marketingAward",
+    "apparelsHero", "apparelsHeroInset",
     "apparelsWarehouse", "apparelsTeam",
     "retailInterior", "retailStorefront", "partnerStorefront",
     "aboutCraft", "aboutValue1", "aboutValue2", "aboutValue3",

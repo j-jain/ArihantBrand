@@ -3,6 +3,7 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { Flip } from "gsap/Flip";
 import { useGSAP } from "@gsap/react";
 
 /* Central GSAP hub. Every animated component imports gsap / ScrollTrigger /
@@ -10,7 +11,9 @@ import { useGSAP } from "@gsap/react";
  * and never touched during SSR. All GSAP plugins are free (Webflow acquisition),
  * so SplitText needs no auth token. */
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
+  // Flip (change round 6): the /brands index re-flows its names as a search
+  // narrows them.
+  gsap.registerPlugin(ScrollTrigger, SplitText, Flip, useGSAP);
   // Mobile browsers fire resize when the URL bar shows/hides; ignoring it stops
   // needless ScrollTrigger refreshes (a common source of scroll jank).
   ScrollTrigger.config({ ignoreMobileResize: true });
@@ -29,7 +32,7 @@ if (typeof window !== "undefined") {
   else window.addEventListener("load", refresh, { once: true });
 }
 
-export { gsap, ScrollTrigger, SplitText, useGSAP };
+export { gsap, ScrollTrigger, SplitText, Flip, useGSAP };
 
 /* Lag smoothing, shared. SmoothScroll turns it off (Lenis wants a ticker that
  * never fakes time), but the hero intro plays while hydration, image decode

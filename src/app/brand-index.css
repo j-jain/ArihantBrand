@@ -1,0 +1,496 @@
+/*
+ * /brands: the brand index (BrandIndex, change round 6). Imported by
+ * globals.css before its own rules and before mobile.css (section 23 is the
+ * phone layer). Every size is rem, so the composition scales through the
+ * root font size from 768px up.
+ *
+ * Colour roles: ink and paper carry the type, the controls and every active
+ * state; each name's small square is its business's decorative accent;
+ * vermillion only on the one CTA in the empty state and the focus ring.
+ */
+
+.bi {
+  position: relative;
+  /* Kept in step with the header by BrandIndex (it hides on scroll). */
+  --bi-top: 4rem;
+  /* The toolbar's height, for the sticky letters and the jump anchors. */
+  --bi-tools-h: 7.75rem;
+}
+
+.bi [data-unit="marketing"],
+.bi-card__meta[data-unit="marketing"] {
+  --mark: var(--unit-marketing);
+}
+
+.bi [data-unit="apparels"],
+.bi-card__meta[data-unit="apparels"] {
+  --mark: var(--unit-apparels);
+}
+
+/* ------------------------------------------------------------------ */
+/* Toolbar                                                             */
+/* ------------------------------------------------------------------ */
+
+.bi-tools {
+  position: sticky;
+  top: var(--bi-top);
+  z-index: 5;
+  margin-inline: -1rem;
+  padding: 0.85rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in oklch, var(--paper-shade) 86%, transparent);
+  backdrop-filter: blur(12px) saturate(1.1);
+  transition: top 0s;
+}
+
+/* The controls only work with JS: until then their space is kept but they
+   are not shown, so nobody types into a search that cannot answer. */
+.bi:not([data-ready]) .bi-tools {
+  visibility: hidden;
+}
+
+.bi-tools__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.bi-tools__row--sub {
+  justify-content: space-between;
+  margin-top: 0.65rem;
+}
+
+/* Search */
+.bi-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.bi-search__icon {
+  position: absolute;
+  left: 1rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.bi-search__input {
+  width: 100%;
+  height: 3.25rem;
+  padding: 0 3.25rem 0 2.9rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.bi-search__input::placeholder {
+  color: var(--ink-soft);
+}
+
+.bi-search__input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.bi-search__input:hover {
+  border-color: color-mix(in oklch, var(--ink) 35%, var(--line));
+}
+
+.bi-search__input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--ink);
+}
+
+.bi-search__key {
+  position: absolute;
+  right: 0.85rem;
+  display: grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.bi-search__clear {
+  position: absolute;
+  right: 0.35rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 2px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.bi-search__clear:hover {
+  color: var(--ink);
+  background: var(--paper-shade);
+}
+
+/* Segmented controls: business filter and view */
+.bi-seg {
+  display: inline-flex;
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+}
+
+.bi-seg__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 0.95rem;
+  border-radius: 2px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+/* A business's square beside its filter, keying the marks in the index. */
+.bi-seg__btn[data-unit="marketing"]::before,
+.bi-seg__btn[data-unit="apparels"]::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  background: var(--mark);
+}
+
+.bi-seg__btn:hover {
+  color: var(--ink);
+  background: var(--paper-shade);
+}
+
+.bi-seg__btn[aria-pressed="true"] {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+/* A to Z */
+.bi-az {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+}
+
+.bi-az__l {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 2px;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+a.bi-az__l:hover,
+.bi-az__l[aria-current="true"] {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.bi-az__l--off {
+  color: color-mix(in oklch, var(--ink-soft) 38%, transparent);
+}
+
+.bi-count {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ */
+/* The index                                                           */
+/* ------------------------------------------------------------------ */
+
+.bi-groups {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bi-group {
+  position: relative;
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  column-gap: 2rem;
+  padding-block: 1.6rem 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+/* The jump target sits a toolbar's height above its group, so a jump lands
+   the letter just under the sticky toolbar rather than behind it. */
+.bi-anchor {
+  position: absolute;
+  top: calc(var(--bi-tools-h) * -1);
+  left: 0;
+  width: 1px;
+  height: 1px;
+}
+
+/* The letter holds while its names pass under the toolbar. */
+.bi-letter {
+  position: sticky;
+  top: calc(var(--bi-top) + var(--bi-tools-h) + 1rem);
+  align-self: start;
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.bi-names {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each name opens on its business's small square. */
+.bi-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.bi-item::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--mark, var(--ink-soft));
+}
+
+.bi-name {
+  position: relative;
+  padding: 0.1rem 0;
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 240ms var(--ease);
+}
+
+/* An ink rule sweeps in under the name in hand, left to right. */
+.bi-name::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.08em;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 380ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.bi-name:hover::after,
+.bi-name:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* While a name is in hand the rest step back, so it reads as a spotlight. */
+@media (hover: hover) {
+  .bi-groups:has(.bi-name:hover) .bi-name:not(:hover) {
+    color: color-mix(in oklch, var(--ink) 42%, var(--paper-shade));
+  }
+}
+
+.bi-name:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* The letters a search matched: a highlighter stroke through the lower
+   half, in a tint of the brand red (an index mark, which DESIGN.md allows). */
+.bi-mark {
+  color: inherit;
+  background: linear-gradient(
+    transparent 54%,
+    color-mix(in oklch, var(--vermillion) 30%, transparent) 54% 90%,
+    transparent 90%
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Logos view                                                          */
+/* ------------------------------------------------------------------ */
+
+.bi-logos {
+  display: grid;
+  grid-template-columns: var(--logo-cols, repeat(auto-fill, minmax(150px, 1fr)));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Nothing matched                                                     */
+/* ------------------------------------------------------------------ */
+
+.bi-empty {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 42rem;
+  margin-top: 1.5rem;
+  padding-block: 2.5rem 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.bi-empty__title {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.bi-empty__asks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* The floating logo card                                              */
+/* ------------------------------------------------------------------ */
+
+.bi-card {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  width: 14rem;
+  padding: 0.75rem 0.75rem 0.85rem;
+  border-radius: 0.5rem;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 1.3rem 2.8rem -1rem color-mix(in oklch, var(--ink) 42%, transparent),
+    0 0.2rem 0.5rem color-mix(in oklch, var(--ink) 10%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  scale: 0.88;
+  transform-origin: top left;
+  transition:
+    opacity 140ms var(--ease),
+    scale 200ms var(--ease),
+    visibility 0s linear 200ms;
+}
+
+.bi-card[data-on] {
+  opacity: 1;
+  visibility: visible;
+  scale: 1;
+  transition:
+    opacity 180ms var(--ease),
+    scale 420ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    visibility 0s;
+}
+
+.bi-card__logo {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  margin-bottom: 0.7rem;
+  border-radius: 0.375rem;
+  background: color-mix(in oklch, var(--paper-shade) 55%, var(--paper));
+}
+
+.bi-card__logo img {
+  padding: 12%;
+}
+
+.bi-card__name {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bi-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.3rem;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 650;
+  font-stretch: 87%;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.bi-card__dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--mark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bi-card,
+  .bi-card[data-on] {
+    scale: 1;
+    transition: none;
+  }
+
+  .bi-name,
+  .bi-name::after {
+    transition: none;
+  }
+}

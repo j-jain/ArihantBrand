@@ -3,12 +3,10 @@ import Link from "next/link";
 
 import {
   Button,
-  CurtainReveal,
   DrenchBand,
   FaqAccordion,
   JsonLd,
   LogoWall,
-  ParallaxImage,
   Reveal,
   SectionHeading,
   StaggerGroup,
@@ -17,14 +15,12 @@ import {
 import {
   getBusinesses,
   getFaqs,
-  getMarketingReasons,
   getMarketingSteps,
   getMarketingStrengths,
   getPageCopy,
   getPartners,
   getPhotoSlots,
   getSiteSettings,
-  pointById,
 } from "@/lib/content";
 import {
   breadcrumbJsonLd,
@@ -34,7 +30,9 @@ import {
 } from "@/lib/seo";
 import { facts } from "@/content/facts";
 import { unitScope } from "@/lib/units";
+import { FeatureHeroMedia } from "../_components/FeatureHeroMedia";
 import { UnitHero } from "../_components/UnitHero";
+import { CounterRail } from "./_components/CounterRail";
 
 const UNIT = "marketing" as const;
 const PATH = "/arihant-marketing";
@@ -57,7 +55,6 @@ export default async function ArihantMarketingPage() {
     settings,
     strengths,
     steps,
-    reasons,
     photos,
   ] = await Promise.all([
     getPageCopy(UNIT),
@@ -67,7 +64,6 @@ export default async function ArihantMarketingPage() {
     getSiteSettings(),
     getMarketingStrengths(),
     getMarketingSteps(),
-    getMarketingReasons(),
     getPhotoSlots(),
   ]);
 
@@ -81,14 +77,12 @@ export default async function ArihantMarketingPage() {
   const film = sections.film;
   const strengthsSection = sections.strengths;
   const how = sections.how;
-  const specialist = sections.specialist;
   const brandsSection = sections.brands;
   const faqSection = sections.faq;
   const ctaSection = sections.cta;
-
-  // Content is selected by stable id, never by matching the copy — a rewrite
-  // must never be able to blank a section.
-  const reachPromise = pointById(business, "visit-cycle");
+  // The award is told once, in the hero: its name on the proof line and the
+  // trophy itself as the photograph on the corner of the wide one.
+  const awardLine = award ? `${award.heading} · CMAI ${facts.marketing.awardYear}` : undefined;
 
   return (
     <div>
@@ -102,64 +96,36 @@ export default async function ArihantMarketingPage() {
         ])}
       />
 
-      {/* 1 — Hero (paper): lockup, headline, then the numbers full-measure */}
-      {business ? <UnitHero business={business} hero={hero} /> : null}
-
-      {/* 2 — Award (charcoal, full-bleed). The band used to be a 9.5rem painted
-          "2015" floating in five empty columns over a stock godown dimmed to
-          30%, which read as a title slide rather than a citation. It now stands
-          on the trophy itself: a real object we hold, lit against charcoal,
-          with the year set small as the date line it always was. One
-          CurtainReveal, then the band lands still. */}
-      {award ? (
-        <section className="am-award on-dark">
-          <CurtainReveal className="container-site w-full">
-            <div className="m-flow grid items-center gap-x-10 gap-y-8 md:grid-cols-12">
-              <ParallaxImage
-                src={photos.marketingAward.src}
-                alt={photos.marketingAward.alt}
-                ratio={photos.marketingAward.ratio}
-                sizes="(max-width: 767px) 100vw, 30vw"
-                className="am-award__object md:col-span-4"
-                parallax={false}
-                tilt
-              />
-              <div className="m-flow-tight flex flex-col gap-5 md:col-span-7 md:col-start-6">
-                <p className="am-award__date t-label text-on-charcoal-soft">
-                  {facts.marketing.awardYear}
-                </p>
-                <h2 className="t-h2 text-on-charcoal">{award.heading}</h2>
-                <div
-                  aria-hidden="true"
-                  style={{
-                    height: 3,
-                    width: "clamp(3rem, 8vw, 4.5rem)",
-                    background: "var(--vermillion)",
-                  }}
-                />
-                {award.lead ? (
-                  <p className="t-lead measure text-on-charcoal-soft">{award.lead}</p>
-                ) : null}
-                <p>
-                  <Link
-                    href="/recognition"
-                    className="m-tap t-small font-semibold text-on-charcoal underline decoration-[var(--vermillion)] decoration-2 underline-offset-4 hover:decoration-[var(--on-charcoal)]"
-                  >
-                    See the trophy case &rarr;
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </CurtainReveal>
-        </section>
+      {/* 1 — Hero (paper), one screen (change round 6): the claim, its two
+          asks, the figures and the award beside a wide photograph run to the
+          screen's edge. Change round 7: the charcoal award band that followed
+          is gone, and its trophy is the small photograph laid on the wide
+          one, beside the proof line that names it. Both are Studio slots
+          (the wide one on stock for now, the trophy real). */}
+      {business ? (
+        <UnitHero
+          business={business}
+          hero={hero}
+          feature
+          proof={awardLine}
+          media={
+            <FeatureHeroMedia
+              main={photos.marketingHero}
+              inset={photos.marketingAward}
+              insetRatio={photos.marketingAward.ratio}
+            />
+          }
+        />
       ) : null}
 
-      {/* 2a — Film (paper): the event promo, click-to-play. This footage is
-          Arihant Marketing's; it was previously mounted on the Apparels page,
-          where it argued for the wrong business. The asset paths keep their
-          original filenames. */}
+      {/* 2 — Film (paper-shade): the event promo, click-to-play. This footage
+          is Arihant Marketing's; it was previously mounted on the Apparels
+          page, where it argued for the wrong business. The asset paths keep
+          their original filenames. On the page's own band rhythm (am-band)
+          and the shaded ground since round 7, so it reads as the first fold
+          after the hero rather than more of it. */}
       {film ? (
-        <section className="section-pad bg-paper" style={unitScope(UNIT)}>
+        <section className="am-band bg-paper-shade" style={unitScope(UNIT)}>
           <div className="container-site">
             <div className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-12 md:items-center">
               <div className="m-flow-tight flex flex-col gap-5 md:col-span-5">
@@ -192,13 +158,13 @@ export default async function ArihantMarketingPage() {
         </section>
       ) : null}
 
-      {/* 2b — What a brand gets (paper-shade): the same four strengths the home
-          page argues to a retailer, argued here to a brand manager. Separate
-          copy on purpose, so neither page reprints the other (AM10). Set as a
-          2x2 spec plate beside a narrow heading rail rather than a fifth
+      {/* 3 — What a brand gets (paper): the same four strengths the home page
+          argues to a retailer, argued here to a brand manager. Separate copy
+          on purpose, so neither page reprints the other (AM10). Set as a 2x2
+          spec plate beside a narrow heading rail rather than a fifth
           identical run of ruled rows. */}
       {strengths.length && strengthsSection ? (
-        <section className="am-band bg-paper-shade" style={unitScope(UNIT)}>
+        <section className="am-band bg-paper" style={unitScope(UNIT)}>
           <div className="container-site">
             <div className="m-flow grid gap-x-12 gap-y-8 md:grid-cols-12">
               <Reveal variant="fade" className="md:col-span-4">
@@ -231,180 +197,25 @@ export default async function ArihantMarketingPage() {
         </section>
       ) : null}
 
-      {/* 3a — The promise (paper): one idea, the widest air on the page, and
-          the godown running off the right edge of the viewport.
-
-          The promise and the four steps used to share one <section> with an
-          internal seam, on the argument that the claim and the cycle behind it
-          are one thought. Together they stood 1,274px on a laptop, so a reader
-          had to scroll up and down to hold either half. They are two folds now,
-          and the ground changes underneath them to say so. */}
-      {reachPromise ? (
-        <section className="bg-paper" style={unitScope(UNIT)}>
-          <div className="am-promise">
-            <div className="am-promise__copy container-site">
-              <Reveal variant="clip" className="m-pull flex flex-col gap-6">
-                <span
-                  aria-hidden="true"
-                  className="block"
-                  style={{
-                    height: 3,
-                    width: "clamp(3rem, 8vw, 4.5rem)",
-                    background: "var(--vermillion)",
-                  }}
-                />
-                <blockquote
-                  className="font-display text-ink"
-                  style={{
-                    fontSize: "var(--text-display)",
-                    fontWeight: 700,
-                    lineHeight: 1.08,
-                    letterSpacing: "-0.015em",
-                    textWrap: "balance",
-                    maxWidth: "17ch",
-                  }}
-                >
-                  {reachPromise}
-                </blockquote>
-              </Reveal>
-            </div>
-
-            {/* The wrapper carries the container padding; mBleed cancels that
-                padding from the frame inside it. Putting both on one element
-                makes the negative margin expand a box that is already full
-                width, which scrolls the page sideways on a phone. */}
-            <div className="am-promise__photo">
-              <ParallaxImage
-                src={photos.marketingWarehouse.src}
-                alt={photos.marketingWarehouse.alt}
-                ratio={photos.marketingWarehouse.ratio}
-                sizes="(max-width: 767px) 100vw, 46vw"
-                className="m-ar-4-3 border border-line"
-                tilt
-                mBleed
-              />
-            </div>
-          </div>
-        </section>
+      {/* 4 — How we work with retailers (paper-shade), as a counter rail
+          (change round 6, re-placed in round 7). The whole screen holds while
+          it plays: the heading across the top; the four step titles, one slot
+          for the active step's text and the retailer ask on the left; the
+          drawing on the right, played by the scroll: the portfolio fills a
+          counter, a rep visits, supply and credit notes land, the books
+          settle. Numbers stay earned: this is a true sequence. The SIS
+          pull-quote that stood before it and the "Why the Northeast needs a
+          specialist" band after it went in round 7 at the client's request. */}
+      {how && steps.length === 4 ? (
+        <CounterRail
+          heading={how.heading}
+          lead={how.lead}
+          steps={steps}
+          cta={hero.primaryCta}
+        />
       ) : null}
 
-      {/* 3b — the sequence itself (paper-shade). Four steps read across, not
-          down: this is the one place on the page numbers are earned. */}
-      {how && steps.length ? (
-        <section className="bg-paper-shade" style={unitScope(UNIT)}>
-          <div className="am-how__steps container-site m-flow flex flex-col gap-10">
-            <Reveal variant="fade">
-              <SectionHeading heading={how.heading} lead={how.lead} />
-            </Reveal>
-
-            <StaggerGroup
-              as="ol"
-              from="up"
-              className="m-am-steps grid gap-x-8 gap-y-9 md:grid-cols-4"
-              stagger={0.1}
-              mLedger
-            >
-              {steps.map((step, index) => (
-                <li
-                  key={step.title}
-                  className="m-am-step flex flex-col gap-2 border-t border-line pt-5"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="font-display text-vermillion-deep"
-                    style={{
-                      fontVariantNumeric: "tabular-nums",
-                      fontSize: "var(--text-h3)",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="t-h4 text-ink">{step.title}</h3>
-                  <p className="t-body text-ink-soft">{step.text}</p>
-                </li>
-              ))}
-            </StaggerGroup>
-
-            {/* The retailer ask, placed after the reader has seen how the cycle
-                actually works rather than before (AM8). */}
-            <div className="m-cta">
-              <Button
-                href={hero.primaryCta.href}
-                variant="primary"
-                size="lg"
-                className="press"
-              >
-                {hero.primaryCta.label}
-              </Button>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {/* 3c — Why a specialist (charcoal): written for a national brand manager
-          weighing whether the region needs its own partner at all (X3). Four
-          parallel arguments, so they carry named lead-ins and step down the
-          measure rather than running as numbered rows. */}
-      {specialist && reasons.length ? (
-        <section className="am-band on-dark">
-          <div className="container-site m-flow flex flex-col gap-[clamp(1.5rem,3vw,2.25rem)]">
-            <div className="grid items-end gap-x-12 gap-y-10 md:grid-cols-12">
-              <div className="md:col-span-7">
-                <SectionHeading
-                  heading={specialist.heading}
-                  lead={specialist.lead}
-                  onDark
-                />
-              </div>
-              <ParallaxImage
-                src={photos.marketingCorridor.src}
-                alt={photos.marketingCorridor.alt}
-                ratio={photos.marketingCorridor.ratio}
-                sizes="(max-width: 767px) 100vw, 30vw"
-                className="m-ar-16-9 border border-line-dark md:col-span-4 md:col-start-9"
-                tilt
-                mBleed
-              />
-            </div>
-
-            {/* Two up, not four deep. Read as an alternating stack these four
-                arguments cost two full screens and looked like the third ruled
-                ledger in a row; paired, they are one table a brand manager can
-                take in at once. */}
-            <StaggerGroup
-              as="ul"
-              from="up"
-              className="grid gap-x-12 gap-y-[clamp(1.75rem,3vw,2.5rem)] md:grid-cols-2"
-              stagger={0.09}
-              mLedger
-            >
-              {reasons.map((reason) => (
-                <li
-                  key={reason.title}
-                  className="m-ledger-row flex flex-col gap-2.5 border-t border-line-dark pt-5"
-                >
-                  <h3 className="t-h4 text-on-charcoal">{reason.title}</h3>
-                  <p className="t-body text-on-charcoal-soft">{reason.text}</p>
-                </li>
-              ))}
-            </StaggerGroup>
-
-            <div className="m-cta">
-              <Button
-                href="/contact?intent=brand"
-                variant="onDark"
-                size="lg"
-                className="press"
-              >
-                Distribute your brand
-              </Button>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {/* 4 — Brand wall (paper, run wide). The wall is capped at three rows so
+      {/* 5 — Brand wall (paper, run wide). The wall is capped at three rows so
           the section can be read without scrolling inside it; the labels a
           retailer is most likely to recognise lead (byPopularity, see
           src/content/partners.ts) and the link below carries the rest. */}
@@ -430,7 +241,7 @@ export default async function ArihantMarketingPage() {
         </section>
       ) : null}
 
-      {/* 5 — FAQ (paper-shade). Deliberately the quiet fold before the close. */}
+      {/* 6 — FAQ (paper-shade). Deliberately the quiet fold before the close. */}
       {faqs.length ? (
         <section className="am-band bg-paper-shade">
           <div className="container-site">
@@ -445,7 +256,7 @@ export default async function ArihantMarketingPage() {
         </section>
       ) : null}
 
-      {/* 6 — CTA band (single vermillion drench), set across rather than down
+      {/* 7 — CTA band (single vermillion drench), set across rather than down
           so the closing line and the ask share a line instead of queueing. */}
       <DrenchBand className="am-band">
         <div className="container-site m-flow flex flex-col gap-10 md:flex-row md:items-end md:justify-between md:gap-16">

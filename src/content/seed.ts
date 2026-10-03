@@ -40,6 +40,10 @@ export const siteSettings: SiteSettings = {
   // it has a value, so the site never prints an empty label.
   gstin: "",
   cin: "",
+  // AWAITING CLIENT (change round 6): the Google Maps share link for the
+  // Arihant Tower pin. Until then the footer and /contact open a Maps search
+  // for the address (mapsUrl in src/lib/seo.ts).
+  mapsLink: "",
   contacts: [
     {
       unit: "marketing",

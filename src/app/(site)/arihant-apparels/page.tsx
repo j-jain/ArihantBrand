@@ -11,7 +11,6 @@ import {
   Reveal,
   SectionHeading,
   StaggerGroup,
-  cn,
 } from "@/components";
 import {
   getBusinesses,
@@ -21,8 +20,6 @@ import {
   getPhotoSlots,
   getSiteSettings,
   getTeam,
-  pointById,
-  pointsByIds,
 } from "@/lib/content";
 import {
   breadcrumbJsonLd,
@@ -31,7 +28,11 @@ import {
   pageMetadata,
 } from "@/lib/seo";
 import { unitScope } from "@/lib/units";
+import { storeStreetCopy } from "@/content/sectionArt";
+import { FeatureHeroMedia } from "../_components/FeatureHeroMedia";
 import { UnitHero } from "../_components/UnitHero";
+import { StoreStreet } from "./_components/StoreStreet";
+import { stagesFrom } from "./_components/streetStages";
 
 const UNIT = "apparels" as const;
 const PATH = "/arihant-apparels";
@@ -68,12 +69,8 @@ export default async function ArihantApparelsPage() {
   const faqSection = sections.faq;
   const ctaSection = sections.cta;
 
-  // Content is selected by stable id, never by matching the copy.
-  // Category-leaders point drives the pull-line; the warehouse and portfolio
-  // points support it. The exhibition-footfall point already headlines section
-  // 3 and the mission point is carried by section 2, so neither is echoed here.
-  const leadersPoint = pointById(business, "category-leaders");
-  const supportingPoints = pointsByIds(business, ["warehouse", "portfolio"]);
+  // The storefront street tells the brand FAQ's own three-stage path.
+  const growth = stagesFrom(faqs);
 
   return (
     <div>
@@ -87,8 +84,23 @@ export default async function ArihantApparelsPage() {
         ])}
       />
 
-      {/* 1 — Hero (paper): lockup, headline, then the numbers full-measure */}
-      {business ? <UnitHero business={business} hero={hero} /> : null}
+      {/* 1 — Hero (paper), one screen (change round 6): the claim, its two
+          asks and the figures beside the team on the warehouse floor, with
+          the 2024 fair laid over it. Both are Studio photo slots. */}
+      {business ? (
+        <UnitHero
+          business={business}
+          hero={hero}
+          feature
+          media={
+            <FeatureHeroMedia
+              main={photos.apparelsHero}
+              inset={photos.apparelsHeroInset}
+              caption={photos.apparelsHeroInset.caption}
+            />
+          }
+        />
+      ) : null}
 
       {/* 2 — Mission split (ink accent-wash ground): garment-rack image + the mission */}
       <section
@@ -199,38 +211,13 @@ export default async function ArihantApparelsPage() {
         </section>
       ) : null}
 
-      {/* 4 — Category-leaders strip (paper): pull-line + accent-marked facts */}
-      <section className="section-pad bg-paper" style={unitScope(UNIT)}>
-        <div className="container-site">
-          <div className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-[1.4fr_1fr] md:items-start">
-            {leadersPoint ? (
-              <Reveal
-                as="p"
-                variant="fade"
-                className="font-display measure text-ink"
-                style={{ fontSize: "var(--text-h3)", lineHeight: 1.3 }}
-              >
-                {leadersPoint}
-              </Reveal>
-            ) : null}
-            {supportingPoints.length ? (
-              <StaggerGroup as="ul" from="right" className="flex flex-col" stagger={0.1} mLedger>
-                {supportingPoints.map((point, index) => (
-                  <li
-                    key={point}
-                    className={cn(
-                      "m-ledger-row t-body border-t border-line py-5 text-ink-soft",
-                      index === supportingPoints.length - 1 && "border-b border-line",
-                    )}
-                  >
-                    {point}
-                  </li>
-                ))}
-              </StaggerGroup>
-            ) : null}
-          </div>
-        </div>
-      </section>
+      {/* 4 — Storefront street (paper, change round 6): how a label becomes a
+          category leader, drawn rather than claimed. The drawing holds beside
+          the three stages (the brand FAQ's own path) and is scrubbed by the
+          scroll: anchors seeded from the warehouse, a fair lights more stores,
+          a shop-in-shop counter opens up in detail. Illustrative, and says so.
+          It replaces the category-leaders pull-line and its two facts. */}
+      <StoreStreet heading={storeStreetCopy.heading} lead={growth.lead} stages={growth.stages} />
 
       {/* 5 — Brand wall (paper-shade) */}
       <section className="section-pad bg-paper-shade" style={unitScope(UNIT)}>

@@ -46,6 +46,10 @@ export interface PhotoSlot {
   real: boolean;
   /** What the client needs to shoot to make this slot real. */
   wanted?: string;
+  /** A caption the photograph itself proves (its own banner, say). It
+   *  belongs to the shipped file: a Studio upload replaces the slot without
+   *  it (getPhotoSlots), so a new picture is never mislabelled. */
+  caption?: string;
 }
 
 export const stockImages = {
@@ -297,6 +301,21 @@ export const photoSlots = {
   },
 
   /* ---- Arihant Marketing --------------------------------------- AM4 */
+  /* The feature hero (change round 6): a wide photograph run to the screen's
+     edge and a smaller inset on it. The wide one stands on stock until the
+     client's own arrives, and its alt claims no Arihant premises. Since
+     change round 7 the inset is the trophy (`marketingAward`, below). */
+  marketingHero: {
+    src: stockImages.marketingWarehouse2.src,
+    alt: stockImages.marketingWarehouse2.alt,
+    ratio: "4 / 5",
+    real: false,
+    wanted:
+      "The Arihant Marketing godown, landscape: racking loaded with the season's cartons, staff at work.",
+  },
+  /* This and marketingCorridor render nowhere since change round 7 (the
+     promise fold and the specialist band went); kept as positions a future
+     layout can use, like retailShopfront and officeMap. */
   marketingWarehouse: {
     src: stockImages.marketingWarehouse1.src,
     alt: stockImages.marketingWarehouse1.alt,
@@ -305,16 +324,16 @@ export const photoSlots = {
     wanted:
       "Portrait of the 15,000 sq ft Marketing godown: binned stock, a picker mid-indent.",
   },
-  /* The award band stands on the trophy itself. It is a real object we hold,
-     photographed as it sits, which is worth more to a brand manager than a
-     stock godown dimmed to 30% behind a headline. */
+  /* The trophy itself, a real object we hold, photographed as it sits. It
+     stood beside the award band until change round 7; it is now the small
+     photograph on the corner of the hero's wide one, in a 3/4 frame whose
+     crop (feature-hero.css, the portrait inset) spends the file's spare
+     height on the empty tabletop rather than on the trophy. Uncaptioned:
+     the hero's proof line beside it already names the award. */
   marketingAward: {
-    // The file is 899x1599, so a 2/3 frame trims about 16% of the height. The
-    // object-position in .am-award__object spends that on the empty tabletop
-    // below the plaque rather than on the trophy.
     src: "/images/photos/awards/award-distributor-of-the-year.jpg",
     alt: "The Golden Star Seller Distributor of the Year trophy awarded to Arihant Marketing",
-    ratio: "2 / 3",
+    ratio: "3 / 4",
     real: true,
   },
   marketingCorridor: {
@@ -326,6 +345,21 @@ export const photoSlots = {
       "A loaded Arihant vehicle on the Guwahati corridor, shot from the roadside.",
   },
   /* ---- Arihant Apparels ---------------------------------------- AA6 */
+  /* The feature hero (change round 6): the team working the warehouse floor,
+     and the 2024 spring summer fair (its banner names the event). */
+  apparelsHero: {
+    src: "/images/photos/apparels-warehouse-3.jpg",
+    alt: "The Arihant Apparels team at work on the warehouse floor in Guwahati, cartons and bales around them",
+    ratio: "4 / 5",
+    real: true,
+  },
+  apparelsHeroInset: {
+    src: "/images/photos/apparels-fair-2024.jpg",
+    alt: "The Arihant Apparels team outside the Spring Summer Garment Fair, January 2024",
+    ratio: "4 / 3",
+    real: true,
+    caption: "Spring Summer Garment Fair, January 2024",
+  },
   apparelsWarehouse: {
     src: "/images/photos/apparels-warehouse-2.jpg",
     alt: "Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati",
