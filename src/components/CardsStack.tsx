@@ -23,9 +23,16 @@ const DWELL = { desktop: 0.5, mobile: 0.4 }; // gathered deck holds still
 const FADE = 0.3; // fraction of a card's segment spent fading in
 const START_SCALE = 0.96; // an incoming card grows from 0.96 to 1 as it lands
 const LIFT_MIN = 2.5; // an incoming card starts at least 2.5x its overlap below its slot
-const SCALE_STEP = 0.02; // settle-back per card resting on top
+const SCALE_STEP = 0.035; // settle-back per card resting on top
 const MAX_DEPTH = 3;
-const STRIP_GAP = 0.5; // a strip ends halfway between heading and body
+/** How much of each card stays visible above the one that lands on it, in
+ *  rem (the site scales through the root font size). Change round 8: a sliver
+ *  of edge, so the deck reads as cards stacked on cards. It used to be the
+ *  card's whole heading strip, which read as a list. */
+const PEEK_REM = { desktop: 0.9, mobile: 0.65 };
+/** The least a deck card stands, in rem: the round 8 copy is short, and a
+ *  card only as tall as two lines read as a strip, not a card. */
+const CARD_MIN_REM = { desktop: 14, mobile: 10 };
 const HYSTERESIS = 4; // px, so a deck right at the fit limit does not flicker
 const FLIP_DELAY = 200; // ms before switching between deck and static column
 
@@ -40,10 +47,11 @@ const DESK = "(prefers-reduced-motion: no-preference) and (min-width: 768px)";
  *  motion branches JS switches the deck into stage mode (`data-deck`): the
  *  section (desktop) or the deck column (phone) pins and holds one viewport
  *  tall, card 1 rests in place, and cards 2 to 4 slide up one at a time and
- *  land one measured heading strip below the card before, so every earlier
- *  heading stays readable. A card beneath settles back (a small scale about its
- *  top edge and a tint toward paper-shade) only once an incoming card actually
- *  overlaps it. After a dwell the pin releases and the rail and the gathered
+ *  land a sliver below the card before (PEEK_REM), covering it all but its top
+ *  edge, like cards stacked on a table (change round 8; until then each card
+ *  kept its whole heading in view). A card beneath settles back (a scale about
+ *  its top edge, so the edges narrow going back, and a tint toward
+ *  paper-shade) only once an incoming card actually overlaps it. After a dwell the pin releases and the rail and the gathered
  *  deck scroll away together as one rigid piece: nothing is sticky per card, so
  *  nothing can cross over or un-stack on the way out.
  *
@@ -100,6 +108,13 @@ export function CardsStack({ items, heading }: CardsStackProps) {
         /** Card geometry from the cards' own boxes (card width is the same in
          *  both modes, so the numbers do not depend on the mode). */
         const measure = () => {
+          const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+          const peek = Math.round((mobile ? PEEK_REM.mobile : PEEK_REM.desktop) * rootPx);
+          const cardMin = (mobile ? CARD_MIN_REM.mobile : CARD_MIN_REM.desktop) * rootPx;
+          // In deck mode the text sits at the card's foot (margin-top: auto,
+          // its gap as padding-top), so its position says nothing about the
+          // content's height: add the parts up instead.
+          const deckMode = root.hasAttribute("data-deck");
           const strips: number[] = [];
           const nat: number[] = [];
           cards.forEach((card, i) => {
@@ -109,16 +124,12 @@ export function CardsStack({ items, heading }: CardsStackProps) {
             const pb = parseFloat(cs.paddingBottom) || 0;
             const { title, text } = parts[i];
             const titleEnd = title ? title.offsetTop + title.offsetHeight : 0;
-            const textTop = text ? text.offsetTop : titleEnd;
-            const textH = text ? text.offsetHeight : 0;
-            const gap = textTop - titleEnd;
-            // The strip may never show body text, even with the card fully
-            // settled back (scaled), hence the second bound.
-            const sMin = 1 - SCALE_STEP * Math.min(n - 1 - i, MAX_DEPTH);
-            strips[i] = Math.round(
-              Math.min(bt + titleEnd + STRIP_GAP * gap, sMin * (bt + textTop)),
-            );
-            nat[i] = Math.ceil(bt + textTop + textH + pb + bb);
+            const ts = text ? getComputedStyle(text) : null;
+            const textPad = ts ? parseFloat(ts.paddingTop) || 0 : 0;
+            const gap = ts ? (deckMode ? textPad : parseFloat(ts.marginTop) || 0) : 0;
+            const textH = text ? text.offsetHeight - (deckMode ? textPad : 0) : 0;
+            strips[i] = peek;
+            nat[i] = Math.ceil(Math.max(bt + titleEnd + gap + textH + pb + bb, cardMin));
           });
 
           // Coverage rule: each card is at least tall enough to hide the part

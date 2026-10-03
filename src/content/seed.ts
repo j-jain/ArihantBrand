@@ -392,29 +392,31 @@ export const retailModel: RetailModel = {
 /* Why-Arihant pillars (group)                                          */
 /* ------------------------------------------------------------------ */
 
-/* The four "Why us?" cards, headed in the client's own words (change round
-   2): the range, the team, the brands, and the visit cycle. The client asked
-   for the 20-day cycle back on the home page, so this card is the one place
-   the home scroll states the number (see PRODUCT.md, repetition discipline).
-   Each body is the paragraph the card already carried in the Studio; the
-   third is new, since that card is. The Marketing page argues the same ground
-   for a brand audience, in different words, from `marketingStrengths` below. */
+/* The four "Why us?" cards: the range, the team, the brands, and the visit
+   cycle. Change round 8 cut them down at the client's request, meaning kept:
+   one partner for every category (the client's "one point of truth"), an
+   experienced team with the authority to decide (their "single point of
+   clearance"), only category leaders, and the visit that does not slip. The
+   client asked for the 20-day cycle back on the home page, so the last card
+   is the one place the home scroll states the number (see PRODUCT.md,
+   repetition discipline). The Marketing page argues the same ground for a
+   brand audience, in different words, from `marketingStrengths` below. */
 export const pillars = [
   {
-    title: "All categories, all genders, one group, one point of truth",
-    text: `Menswear, womenswear, kidswear, denim, ethnic and footwear. ${phrase.groupLabels} labels on one set of terms, one indent and one visit.`,
+    title: "Every category, one partner",
+    text: `Men, women, kids, denim, ethnic, footwear. ${phrase.groupLabels} labels, one set of terms, one indent, one visit.`,
   },
   {
-    title: "The best and most experienced team with full authority and one single point of clearance",
-    text: "Our field staff have worked these routes for years. They know your counter, your customer and what sold there last season.",
+    title: "A seasoned team that decides",
+    text: "Years on these routes. They know your counter, your customer and last season's sellers.",
   },
   {
-    title: "Best brands in the respective categories",
-    text: "We do not carry a label to fill a gap in the catalogue. Each one leads, or is being built to lead, in the category it sits in.",
+    title: "Only category leaders",
+    text: "No fillers. Every label leads its category, or is being built to.",
   },
   {
     title: `In your store every ${phrase.visitCycle}`,
-    text: "Orders, claims and market feedback move face to face, on a cycle that does not slip. Serviceability is what we compete on.",
+    text: "Orders, claims and feedback, face to face. The cycle never slips.",
   },
 ];
 

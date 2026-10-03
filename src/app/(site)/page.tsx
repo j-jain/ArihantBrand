@@ -31,8 +31,8 @@ import {
   getTestimonials,
 } from "@/lib/content";
 import { localBusinessJsonLd, organizationJsonLd, pageMetadata } from "@/lib/seo";
+import { BusinessTags } from "./_components/BusinessTags";
 import { EmphasisHeading } from "./_components/EmphasisHeading";
-import { UnitShowcase } from "./_components/UnitShowcase";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("home");
@@ -338,28 +338,19 @@ export default async function HomePage() {
         />
       </section>
 
-      {/* 4 — Businesses (paper-shade) -------------------------------------- */}
+      {/* 4 — Businesses (paper-shade), as swing tags (change round 8, the
+          client's pick from four prototypes): one tag per business on a
+          clothes rail, its line, figures and barcode on the front, its asks
+          on the back; a tap turns it over and back, the cord winding as it
+          turns. The hero's "The three businesses" link lands here. See
+          BusinessTags. */}
       <section id="businesses" className="bg-paper-shade">
-        <div className="container-site section-pad m-flow flex flex-col gap-12">
-          <Reveal variant="fade">
-            <SectionHeading
-              heading={sections.businesses.heading}
-              lead={sections.businesses.lead}
-            />
-          </Reveal>
-          <div className="flex flex-col">
-            {businesses.map((business, i) => (
-              <Reveal
-                key={business.slug}
-                as="div"
-                variant={i % 2 === 0 ? "rise" : "clip"}
-                className={cn(i > 0 && "m-divide mt-16 border-t border-line pt-16")}
-              >
-                <UnitShowcase business={business} flip={i % 2 === 1} />
-              </Reveal>
-            ))}
-          </div>
-        </div>
+        <BusinessTags
+          businesses={businesses}
+          floors={Object.fromEntries(settings.contacts.map((c) => [c.unit, c.floor]))}
+          heading={sections.businesses.heading}
+          lead={sections.businesses.lead}
+        />
       </section>
 
       {/* 5 — Brand marquee (paper) ----------------------------------------- */}

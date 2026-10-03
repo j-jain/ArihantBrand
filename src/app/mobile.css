@@ -53,7 +53,6 @@
     /* Retargeted inline sizes (see the var(--m-x, …) fallbacks in JSX). */
     --m-unit-stat: 1.85rem;
     --m-exh-figure: clamp(4.5rem, 26vw, 7rem);
-    --m-showcase-stat: 1.45rem;
     --m-ticket-name: 1.05rem;
     --m-hero-compact-pad: 2rem;
     --m-award-year: clamp(3.25rem, 17vw, 4.5rem);
@@ -132,12 +131,6 @@
 
   .m-flow-loose {
     gap: 2rem;
-  }
-
-  /* Row rhythm inside the businesses list and similar repeated blocks. */
-  .m-divide {
-    margin-top: 2rem;
-    padding-top: 2rem;
   }
 }
 
@@ -553,6 +546,12 @@
   .stack__text {
     margin-top: 0.8rem;
   }
+
+  /* Deck mode carries the gap as padding (the line sits at the card's foot). */
+  .stack-section[data-deck] .stack__text {
+    margin-top: auto;
+    padding-top: 0.8rem;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -628,54 +627,6 @@
     padding: 0.95rem 1rem;
     border: 1px solid var(--line);
     border-radius: 2px;
-  }
-
-  /* Businesses: name and proof first, identity plate second, and the same
-     way round for all three, since alternating sides means nothing once the
-     columns have stacked. */
-  .unit-showcase {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-  }
-
-  .unit-showcase__copy {
-    order: 1;
-    gap: 0.7rem;
-  }
-
-  .unit-showcase__media {
-    order: 2;
-  }
-
-  /* The plate is a large empty white box at phone width. Compact it to a
-     logo strip over a three-up hairline stat row. */
-  .unit-showcase__plate {
-    gap: 1rem;
-    padding: 1.1rem 1rem;
-  }
-
-  .unit-showcase__logo {
-    height: 2.5rem;
-  }
-
-  .unit-showcase__stats {
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding-top: 1rem;
-  }
-
-  .unit-showcase__points {
-    gap: 0.5rem;
-  }
-
-  .unit-showcase__action {
-    margin-top: 0.5rem;
-  }
-
-  .unit-showcase__action .btn {
-    width: 100%;
   }
 }
 
@@ -1021,6 +972,11 @@
   .stack-section[data-deck] .stack-col {
     height: calc(100svh - var(--deck-clear));
     padding-bottom: var(--deck-foot);
+    /* Since change round 8 the gathered deck is a card and three edges, far
+       shorter than the screen: hold it in the middle, not at the top. */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 
@@ -1778,5 +1734,37 @@
   .bi-empty__asks {
     align-items: stretch;
     flex-direction: column;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 24 — Business swing tags (home, change round 8)                     */
+/* The three tags become a sideways row on the rail, one in view with   */
+/* the next peeking, snapping to centre. No pointer sway on touch; a    */
+/* tap still turns a tag over and back.                                 */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .btag {
+    gap: 2rem;
+  }
+
+  .btag-row {
+    display: flex;
+    gap: 1rem;
+    margin-inline: calc(-1 * var(--m-gutter));
+    padding: 0 var(--m-gutter) 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .btag-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .btag-hang {
+    flex: 0 0 80%;
+    scroll-snap-align: center;
   }
 }

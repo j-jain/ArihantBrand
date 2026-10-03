@@ -24,10 +24,11 @@ export const pages: Record<string, PageCopy> = {
       secondaryCta: { label: "The three businesses", href: "#businesses" },
     },
     sections: {
-      // Heading and lead as the client typed them in the Studio.
+      // The heading as the client typed it in the Studio; the lead shortened
+      // in change round 8 at the client's request.
       why: {
         heading: "Why us?",
-        lead: "Four reasons to convince you enough",
+        lead: "Four reasons retailers stay.",
       },
       businesses: {
         heading: "Three businesses, one standard",

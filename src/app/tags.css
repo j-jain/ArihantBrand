@@ -1,0 +1,294 @@
+/* ------------------------------------------------------------------ */
+/* Business swing tags: home, "Three businesses, one standard"          */
+/* (change round 8). Component: app/(site)/_components/BusinessTags.    */
+/* Phone rules in mobile.css section 24. The tag turns are driven by    */
+/* GSAP (inline transform on .btag-tag), never by a CSS transition.     */
+/* ------------------------------------------------------------------ */
+
+.btag {
+  display: flex;
+  flex-direction: column;
+  gap: 2.75rem;
+}
+
+.btag-rack {
+  position: relative;
+}
+
+/* The clothes rail. */
+.btag-rail {
+  position: relative;
+  z-index: 1;
+  height: 0.55rem;
+  margin-inline: -0.75rem;
+  border-radius: 1rem;
+  background: color-mix(in oklch, var(--ink) 78%, var(--paper));
+  box-shadow: 0 0.3rem 0.5rem -0.25rem color-mix(in oklch, var(--ink) 55%, transparent);
+}
+
+.btag-rail__cap {
+  position: absolute;
+  top: 50%;
+  left: -0.35rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.btag-rail__cap--end {
+  left: auto;
+  right: -0.35rem;
+}
+
+.btag-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  margin: -0.3rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.btag-hang {
+  display: flex;
+  justify-content: center;
+}
+
+/* Sways about the point where the cord meets the rail. */
+.btag-swing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 18.5rem);
+  transform-origin: 50% 0;
+  filter: drop-shadow(0 1rem 1.1rem color-mix(in oklch, var(--ink) 20%, transparent));
+}
+
+/* The two-ply cord, from the rail into the eyelet. Its strands are redrawn
+   on every frame of a turn (BusinessTags, cordPaths). */
+.btag-cord {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 0.75rem;
+  height: 4.5rem;
+  margin-bottom: -1.9rem;
+  overflow: visible;
+  /* A hairline of paper round the strands, so the cord still reads where it
+     crosses a dark tag back. */
+  filter: drop-shadow(0 0 0.6px var(--paper)) drop-shadow(0 0 0.4px var(--paper));
+}
+
+.btag-cord path {
+  fill: none;
+  stroke-width: 1.7px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.btag-cord__back {
+  stroke: color-mix(in oklch, var(--ink) 30%, var(--paper-shade));
+}
+
+.btag-cord__front {
+  stroke: color-mix(in oklch, var(--ink) 82%, transparent);
+}
+
+/* Every tag as long as the longest, so the three hang level. */
+.btag-tag {
+  position: relative;
+  display: grid;
+  flex: 1;
+  width: 100%;
+  transform: perspective(1400px) rotateY(0deg);
+  transform-style: preserve-3d;
+}
+
+.btag-face {
+  position: relative;
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 3rem 1.4rem 1.2rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  clip-path: polygon(17% 0, 83% 0, 100% 4.5%, 100% 100%, 0 100%, 0 4.5%);
+}
+
+.btag-face--front {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.btag-face--back {
+  justify-content: center;
+  background: var(--unit-accent);
+  color: var(--paper);
+  transform: rotateY(180deg);
+}
+
+.btag-eyelet {
+  position: absolute;
+  top: 1.15rem;
+  left: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: color-mix(in oklch, var(--ink) 10%, var(--paper-shade));
+  box-shadow:
+    inset 0 0 0 0.28rem oklch(0.74 0.09 82),
+    0 0 0 1px color-mix(in oklch, var(--ink) 18%, transparent);
+}
+
+.btag-logo {
+  position: relative;
+  width: 100%;
+  height: 2.5rem;
+  margin-top: 0.35rem;
+}
+
+.btag-name {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* The business's line, printed on a band in its colour. */
+.btag-band {
+  margin-inline: -1.4rem;
+  padding: 0.55rem 1.4rem;
+  background: var(--unit-accent);
+  color: var(--paper);
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.btag-spec {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.15rem 0 0;
+}
+
+.btag-spec__row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.btag-spec__row dt {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 0.4rem;
+  color: var(--ink-soft);
+}
+
+.btag-spec__row dt::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px dotted color-mix(in oklch, var(--ink) 35%, transparent);
+}
+
+.btag-spec__row dd {
+  margin: 0;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.btag-barcode {
+  display: block;
+  flex: none;
+  width: 72%;
+  height: 2rem;
+  margin: 0.45rem auto 0.3rem;
+  fill: var(--ink);
+}
+
+.btag-turn {
+  align-self: center;
+  margin-top: auto;
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  background: none;
+  color: var(--vermillion-deep);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Both turn buttons stretch over their whole face, so a tap anywhere turns
+   the tag. On the back the asks sit above the stretch (z-index), so they
+   stay links; the rest of the back turns it back. */
+.btag-turn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.btag-turn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btag-turn--back {
+  color: var(--paper);
+}
+
+.btag-turn--back:focus-visible {
+  outline-color: var(--paper);
+}
+
+.btag-back__line {
+  font-family: var(--font-besley), Georgia, serif;
+  font-size: 1.22rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.btag-back__meta {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: color-mix(in oklch, var(--paper) 80%, var(--unit-accent));
+}
+
+.btag-back__asks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+
+.btag-back__asks > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btag-back__link {
+  font-weight: 600;
+  color: var(--paper);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, var(--paper) 45%, transparent);
+  text-underline-offset: 4px;
+}
+
+.btag-back__link:hover {
+  text-decoration-color: var(--paper);
+}
