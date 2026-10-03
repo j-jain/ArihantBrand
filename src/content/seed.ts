@@ -102,6 +102,9 @@ export const businesses: Business[] = [
     founded: "Since the 1990s",
     leaders: ["Sagar Sancheti", "Anand Sancheti"],
     positioning: "The founding arm. The routes, the relationships and the brand roster everything else stands on.",
+    // The header's Businesses menu line (change round 5): one line, parallel
+    // across the three units.
+    tagline: "Brand distribution since the 1990s",
     summary: `Arihant Marketing has moved national menswear, womenswear and kidswear brands across Northeast India for more than ${facts.marketing.years} years, on a fixed visit cycle.`,
     // No highlights (change round 2): on the home row they restated the
     // figures printed on the logo plate beside them, so the plate keeps the
@@ -168,6 +171,7 @@ export const businesses: Business[] = [
     // carries.
     positioning:
       "The most modern & systematic distribution house, the best relations with retailers & brands alike.",
+    tagline: "Building category leaders since 2013",
     summary: `Founded in ${facts.apparels.established} by Ajay Sancheti, a second-generation garment entrepreneur. Arihant Apparels carries ${phrase.apparelsBrands} labels from a ${phrase.apparelsWarehouse} Guwahati warehouse. Buying runs on sell-through data. Several of those labels are now category leaders in the region.`,
     // Removed at the client's request (change round 2).
     highlights: [],
@@ -221,6 +225,7 @@ export const businesses: Business[] = [
     founded: "Founded 2023",
     leaders: ["Shreyansh Sancheti"],
     positioning: "Multi-brand modern retail, run by the house that supplies the region.",
+    tagline: "Company-run multi-brand stores",
     summary: `Arihant's retail arm runs the most modern and professionally run multi-brand stores in Northeast India: ${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, every one of them run by our team.`,
     highlights: [
       `${InWords(facts.retail.storesCompanyOwned)} company-owned, company-run stores and ${inWords(facts.retail.storesFranchisee)} franchisee-owned, company-run stores`,
@@ -278,6 +283,11 @@ export const businesses: Business[] = [
 /* never share a button. These are the home page's split.                */
 /* ------------------------------------------------------------------ */
 
+/** Printed under each form's submit button (change round 5; it used to sit
+ *  in the footer, far from the form it describes). */
+export const privacyNote =
+  "We use the details you send us only to answer your enquiry. We do not sell or share them.";
+
 export const funnels: Funnel[] = [
   {
     id: "retailer",
@@ -310,26 +320,27 @@ export const retailModel: RetailModel = {
     {
       id: "zero-deadstock",
       title: "Unsold stock leaves your books",
-      text: "What does not sell goes back into our distribution network and moves through another counter. A bad season is ours to absorb, not yours to discount.",
+      text: "It goes back into our network and sells through another counter. A bad season is ours, not yours.",
     },
     {
       id: "multi-brand",
       title: "Multi-brand, not one label",
-      text: "Menswear, womenswear, kidswear, denim, ethnic and footwear on one floor, ranged from the same portfolio we already sell to the region's retailers.",
+      text: "Menswear to footwear on one floor, from the portfolio we already sell across the region.",
     },
     {
       id: "no-frills",
       title: "A no-frills store format",
-      text: "The fit-out is built to trade, not to impress. Capital goes into stock and into the floor rather than into fixtures nobody buys from.",
+      text: "Built to trade, not to impress. Capital goes into stock and the floor, not fixtures.",
     },
     {
       id: "company-run",
       title: "We run it, you own it",
-      text: "Hiring, targets, merchandising, marketing and the CRM sit with our team. The store, the lease and the asset sit with you.",
+      text: "Hiring, targets, merchandising, marketing and CRM sit with us. The store and the asset stay yours.",
     },
   ],
+  // Change round 5: four sentences to two, same rail (no figure, and why).
   roicNote:
-    "We argue this model on return on invested capital, not on turnover. The ROIC record of the stores already trading is something we take you through in person, with the cost sheet in front of you. We publish no percentage here, because a number that does not know your city, your rent and your floor is a guess.",
+    "We judge this model on return on capital, not turnover. We share the trading stores' record in person, cost sheet open: a printed percentage cannot know your rent or your floor.",
   calculator: {
     triggerLabel: "Work it out on your own numbers",
     heading: "Your numbers, your arithmetic",

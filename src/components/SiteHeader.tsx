@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { phrase } from "@/content/facts";
 import { businesses } from "@/content/seed";
+import type { UnitKey } from "@/content/types";
 import { DUR, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { Button } from "./Button";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
@@ -16,6 +17,10 @@ interface SiteHeaderProps {
   /** Digits with country code, e.g. "919435045528". Powers the direct-contact
    *  row at the foot of the mobile sheet; omit it and the row is not rendered. */
   whatsapp?: string;
+  /** The Businesses menu line per unit, read from the CMS by the layout
+   *  (change round 5). Missing units fall back to the seed. Logos and names
+   *  stay on the seed: they are the committed local files. */
+  menuLines?: Partial<Record<UnitKey, string>>;
 }
 
 function useActive() {
@@ -87,7 +92,7 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
   );
 }
 
-export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
+export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
   const isActive = useActive();
   const pathname = usePathname();
 
@@ -577,17 +582,20 @@ export function SiteHeader({ whatsapp }: SiteHeaderProps = {}) {
                     className="nav-panel__col"
                     data-active={isActive(`/${b.slug}`) || undefined}
                   >
-                    <Image
-                      src={b.logo}
-                      alt=""
-                      width={144}
-                      height={36}
-                      className="nav-panel__logo"
-                      unoptimized
-                    />
+                    {/* One fixed box per logo, so the three names below
+                        share a baseline whatever each mark's shape. */}
+                    <span className="nav-panel__logo" aria-hidden="true">
+                      <Image
+                        src={b.logo}
+                        alt=""
+                        width={144}
+                        height={40}
+                        unoptimized
+                      />
+                    </span>
                     <span className="nav-panel__name">{b.name}</span>
                     <span className="nav-panel__pos t-small">
-                      {b.positioning}
+                      {menuLines?.[b.unit] ?? b.tagline ?? b.positioning}
                     </span>
                     <span
                       className="nav-panel__explore t-label"

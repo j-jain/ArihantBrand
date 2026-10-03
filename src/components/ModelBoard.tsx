@@ -8,6 +8,7 @@ import { Button } from "./Button";
 import { ModelFigure } from "./ModelFigures";
 import { ReturnsCalculator } from "./ReturnsCalculator";
 import { SectionHeading } from "./SectionHeading";
+import { SplitHeading } from "./motion/SplitHeading";
 import { StaggerGroup } from "./motion/StaggerGroup";
 import { CalculatorIcon, TrendIcon } from "./icons";
 import { cn } from "./cn";
@@ -25,6 +26,11 @@ interface ModelBoardProps {
   /** The photograph for the rail. Passed as an element so each page keeps
    *  ownership of which photo slot and which `sizes` it uses. */
   media?: ReactNode;
+  /** One screen (change round 5, retail): from 768px up the band is one
+   *  viewport tall under the header with its content centred, the rail is not
+   *  sticky, the rows are tighter and the figures draw as one sequence. Pages
+   *  with a photograph in the rail (/partner) leave it off. */
+  fit?: boolean;
   id?: string;
   className?: string;
 }
@@ -54,6 +60,7 @@ export function ModelBoard({
   pageCta,
   tone = "dark",
   media,
+  fit = false,
   id,
   className,
 }: ModelBoardProps) {
@@ -85,7 +92,13 @@ export function ModelBoard({
             root.querySelectorAll(".model-row"),
           );
 
-          rows.forEach((row) => {
+          // One screen: the four rows are in view together, so four per-row
+          // triggers would fire at once. Their figures draw as one sequence
+          // instead, each a beat after the one above, as the rows land.
+          const master =
+            fit && conditions.desktop ? gsap.timeline({ paused: true }) : null;
+
+          rows.forEach((row, index) => {
             const figure = row.querySelector<SVGSVGElement>(".model-fig");
             if (!figure) return;
 
@@ -103,7 +116,7 @@ export function ModelBoard({
               return;
             }
 
-            const tl = gsap.timeline({ paused: true });
+            const tl = gsap.timeline({ paused: !master });
 
             // Every tween is a `from`. The resting state in the HTML is the
             // finished state, so nothing is ever hidden by an un-run tween.
@@ -178,6 +191,11 @@ export function ModelBoard({
               return;
             }
 
+            if (master) {
+              master.add(tl, 0.3 + index * 0.12);
+              return;
+            }
+
             ScrollTrigger.create({
               trigger: row,
               start: "top 85%",
@@ -185,12 +203,21 @@ export function ModelBoard({
               onEnter: () => tl.play(0),
             });
           });
+
+          if (master && master.totalDuration()) {
+            ScrollTrigger.create({
+              trigger: root.querySelector(".model-rows") ?? root,
+              start: "top 80%",
+              once: true,
+              onEnter: () => master.play(0),
+            });
+          }
         },
       );
 
       return () => mm.revert();
     },
-    { scope: ref, dependencies: [model.pillars.length] },
+    { scope: ref, dependencies: [model.pillars.length, fit] },
   );
 
   return (
@@ -200,14 +227,38 @@ export function ModelBoard({
       aria-labelledby={headingId}
       className={cn(
         "section-pad model-band",
+        fit && "model-band--fit",
         onDark ? "on-dark" : "model-band--paper bg-paper",
         className,
       )}
     >
       <div className="container-site">
+        {/* One screen: the heading takes the full measure, on one line, above
+            both columns; in the rail it wrapped to three. */}
+        {fit ? (
+          <SplitHeading
+            as="h2"
+            id={headingId}
+            className={cn("t-h2 model-board__title", onDark ? "text-on-charcoal" : "text-ink")}
+            text={heading}
+          />
+        ) : null}
         <div className="model-board">
           <div className="model-board__rail m-flow flex flex-col gap-7">
-            <SectionHeading id={headingId} heading={heading} lead={lead} onDark={onDark} />
+            {fit ? (
+              lead ? (
+                <p
+                  className={cn(
+                    "t-lead measure",
+                    onDark ? "text-on-charcoal-soft" : "text-ink-soft",
+                  )}
+                >
+                  {lead}
+                </p>
+              ) : null
+            ) : (
+              <SectionHeading id={headingId} heading={heading} lead={lead} onDark={onDark} />
+            )}
 
             {/* The return-on-capital line. Ruled, not boxed, and carrying no
                 figure: franchise economics stay qualitative here by policy,

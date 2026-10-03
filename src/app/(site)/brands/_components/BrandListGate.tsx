@@ -5,6 +5,7 @@ import { WhatsAppIcon, track } from "@/components";
 import { whatsappFor } from "@/lib/whatsapp";
 import { submitLeadAction } from "@/app/actions/lead";
 import type { LeadInput } from "@/content/types";
+import { privacyNote } from "@/content/seed";
 
 interface BrandListGateProps {
   /** WhatsApp digits with country code, for the confirmation fallback. */
@@ -230,6 +231,8 @@ export function BrandListGate({ whatsapp, fileHref }: BrandListGateProps) {
           {formError}
         </p>
       ) : null}
+
+      <p className="form-privacy t-small mt-3 text-ink-soft">{privacyNote}</p>
     </form>
   );
 }

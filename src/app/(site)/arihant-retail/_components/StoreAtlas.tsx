@@ -21,6 +21,7 @@ import {
 } from "./atlasMap.data";
 import { MAP_VIEWBOX } from "./atlasProjection";
 import { OwnershipMark } from "./OwnershipMark";
+import { StorePlaceholder } from "./StorePlaceholder";
 
 interface StoreAtlasProps {
   heading: string;
@@ -40,7 +41,8 @@ const HUB_HEAD = 25;
 type Pinned = AtlasStore & Required<Pick<AtlasStore, "at" | "pin" | "eye" | "eyeAt" | "card">>;
 
 /** The photograph a store's card shows: the store's own (set in the Studio)
- *  always first, else a licensed photograph of its town, credited. */
+ *  always first, else a licensed photograph of its town, credited. With
+ *  neither, the card draws the shopfront instead (StorePlaceholder). */
 function cardPhoto(s: AtlasStore) {
   if (s.store.image) {
     return { src: s.store.image, credit: undefined as string | undefined };
@@ -313,14 +315,20 @@ export function StoreAtlas({
                     data-store={s.id}
                     data-card-x={s.card.x}
                     data-card-y={s.card.y}
-                    data-photo={photo ? "" : undefined}
+                    data-photo=""
+                    data-placeholder={photo ? undefined : ""}
                     style={{ "--px": String(s.pin.x), "--py": String(s.pin.y) } as CSSProperties}
                   >
-                    {photo ? (
-                      <div className="atlas-card__photo">
+                    <div className="atlas-card__photo">
+                      {photo ? (
                         <Image src={photo.src} alt="" fill sizes="16rem" />
-                      </div>
-                    ) : null}
+                      ) : (
+                        <>
+                          <StorePlaceholder store={s.store} />
+                          <span className="atlas-card__soon">Store photo coming soon</span>
+                        </>
+                      )}
+                    </div>
                     <div className="atlas-card__body">
                       <p className="atlas-card__town">{s.store.city}</p>
                       <p className="atlas-card__name">{s.store.name}</p>

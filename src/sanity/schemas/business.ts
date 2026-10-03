@@ -34,6 +34,14 @@ export const business = defineType({
     defineField({ name: "founded", title: "Founded (label)", type: "string" }),
     defineField({ name: "leaders", title: "Leaders", type: "array", of: [defineArrayMember({ type: "string" })] }),
     defineField({ name: "positioning", title: "Positioning", type: "string" }),
+    defineField({
+      name: "tagline",
+      title: "Menu line",
+      description:
+        "One short line for the header's Businesses menu, about five words. Empty falls back to Positioning.",
+      type: "string",
+      validation: (r) => r.max(48).warning("Keep it to one short line."),
+    }),
     defineField({ name: "summary", title: "Summary", type: "text", rows: 3 }),
     defineField({
       name: "highlights",

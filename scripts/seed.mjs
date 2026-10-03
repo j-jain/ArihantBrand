@@ -270,6 +270,7 @@ async function main() {
       founded: b.founded,
       leaders: b.leaders,
       positioning: b.positioning,
+      ...(b.tagline ? { tagline: b.tagline } : {}),
       summary: b.summary,
       highlights: b.highlights,
       points: b.points.map(businessPoint),

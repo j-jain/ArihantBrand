@@ -45,6 +45,9 @@ export interface Business {
   founded: string;
   leaders: string[];
   positioning: string;
+  /** One short line for the header's Businesses menu (change round 5). The
+   *  menu falls back to `positioning` when it is empty. */
+  tagline?: string;
   summary: string;
   /** Three short lines for the home page's unit row. Kept separate from
    *  `points` so the home page summarises a business and the unit page argues

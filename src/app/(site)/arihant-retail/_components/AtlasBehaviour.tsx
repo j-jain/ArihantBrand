@@ -335,10 +335,10 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
               tl.from(
                 head,
                 {
-                  y: mobile ? -16 : -34,
+                  y: mobile ? -16 : -28,
                   opacity: 0,
-                  duration: mobile ? 0.35 : 0.5,
-                  ease: "back.out(1.9)",
+                  duration: mobile ? 0.35 : 0.45,
+                  ease: "back.out(1.7)",
                   clearProps: "transform,opacity",
                 },
                 at,
@@ -351,13 +351,13 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
                 { opacity: 0.8, scale: 1 },
                 {
                   opacity: 0,
-                  scale: 3.4,
-                  duration: 0.9,
-                  ease: "power2.out",
+                  scale: 3.2,
+                  duration: 0.8,
+                  ease: "expo.out",
                   immediateRender: false,
                   clearProps: "transform,opacity",
                 },
-                at + 0.32,
+                at + 0.26,
               );
             }
           };
@@ -390,28 +390,32 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
             };
           }
 
-          /* Desktop: one paused timeline, about 3.5s, then still. */
+          /* Desktop: one paused timeline, about 2.5s, then still. Stages
+             overlap (change round 5; it used to run about 3.5s, one stage
+             after another): the terrain settles while the borders and rivers
+             come in, and the routes start sewing before the labels finish. */
           const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
 
           // Opacity, never autoAlpha, for the key and the tags: real text and
           // real links must stay readable and focusable while they fade in.
-          if (key) tl.from(key, { opacity: 0, y: 12, duration: 0.5, ease: EASE }, 0);
+          if (key) tl.from(key, { opacity: 0, y: 12, duration: 0.55, ease: EASE }, 0.1);
 
           // The terrain comes up out of the paper with a slow push in, the
           // way a camera settles on a map.
           if (relief) {
             tl.from(
               relief,
-              { opacity: 0, scale: 1.045, duration: 1.2, ease: "power2.out", clearProps: "opacity,transform" },
+              { opacity: 0, scale: 1.06, duration: 1.1, ease: "expo.out", clearProps: "opacity,transform" },
               0,
             );
           }
           if (borders.length) {
-            tl.from(borders, { opacity: 0, duration: 0.7, ease: "power1.out", stagger: 0.14 }, 0.3);
+            tl.from(borders, { opacity: 0, duration: 0.5, ease: "power1.out", stagger: 0.08 }, 0.15);
           }
-          flow(0.4, 1.4);
+          flow(0.2, 1.05);
           if (labels.length) {
-            tl.from(labels, { opacity: 0, duration: 0.6, ease: "power1.out", stagger: 0.05 }, 0.8);
+            // Opacity only: some labels carry a rotate() transform attribute.
+            tl.from(labels, { opacity: 0, duration: 0.45, ease: "power2.out", stagger: 0.03 }, 0.45);
           }
 
           // The thread fades on its stroke-opacity attribute, not its CSS
@@ -425,14 +429,16 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
             const tag = root.querySelector<HTMLElement>(`a.atlas-tag[data-store="${id}"]`);
             if (tag) {
               tl.from(tag, { opacity: 0, duration: 0.2, ease: "power1.out", clearProps: "opacity" }, at);
+              // A calmer swing than round 4's (1.3s at 0.36 wobbled): it
+              // settles in under a second, like a tag on a short string.
               tl.from(
                 tag,
                 {
-                  rotation: -11,
+                  rotation: -9,
                   y: -6,
                   transformOrigin: `50% ${0.55 * rootPx}px`,
-                  duration: 1.3,
-                  ease: "elastic.out(1, 0.36)",
+                  duration: 0.9,
+                  ease: "elastic.out(1, 0.55)",
                   clearProps: "transform,transformOrigin",
                 },
                 at,
@@ -449,26 +455,26 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
             const id = pin.getAttribute("data-store");
             if (!id) return;
             if (pin.hasAttribute("data-hub")) {
-              drop(pin, 0.95);
-              hang(id, 1.15);
+              drop(pin, 0.6);
+              hang(id, 0.72);
               return;
             }
-            const start = 1.25 + routeIndex * 0.3;
+            const start = 0.8 + routeIndex * 0.18;
             routeIndex += 1;
             const stitches = stitchesOf(id);
             let end = start;
             if (stitches.length) {
-              const each = 0.026;
-              tl.from(stitches, { opacity: 0, duration: 0.09, ease: "none", stagger: each }, start);
-              end = start + (stitches.length - 1) * each + 0.09;
+              const each = 0.012;
+              tl.from(stitches, { opacity: 0, duration: 0.07, ease: "none", stagger: each }, start);
+              end = start + (stitches.length - 1) * each + 0.07;
             }
             drop(pin, end);
-            hang(id, end + 0.12);
+            hang(id, end + 0.08);
           });
 
           const trigger = ScrollTrigger.create({
             trigger: figure,
-            start: "top 72%",
+            start: "top 78%",
             once: true,
             onEnter: () => tl.play(),
           });

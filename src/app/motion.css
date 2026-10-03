@@ -205,6 +205,7 @@
    that never happens. Without it the hero paints finished, then blanks and
    replays the moment React hydrates. */
 html[data-intro] [data-hero-intro] [data-hero-reveal],
+html[data-intro] [data-hero-intro] [data-hero-clip],
 html[data-intro] [data-hero-intro] [data-hero-title] {
   visibility: hidden;
   animation: hero-intro-failsafe 0s linear 3s forwards;
@@ -1011,6 +1012,55 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
 
 .model-board__media {
   margin-top: 0.5rem;
+}
+
+/* One screen (change round 5, the retail band). From 768px up the band is
+   one viewport tall under the header with its content centred, so the
+   heading, the line, the worksheet and all four rows read together. The rail
+   does not stick: a sticky rail slid against the rows as the page scrolled.
+   Doubled class so it outranks .section-pad, which globals.css sets later. */
+@media (min-width: 768px) {
+  .model-band.model-band--fit {
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - var(--header-h, 4rem));
+    padding-block: clamp(2.5rem, 7svh, 4.5rem);
+  }
+
+  /* The heading runs the full measure above both columns, so it sets on one
+     line; on a short, wide screen (1280 by 720) it is bounded by the
+     viewport's height too, as the fitted heroes are. */
+  .model-band--fit .model-board__title {
+    margin-bottom: clamp(1.75rem, 4.5svh, 3rem);
+    font-size: min(var(--text-h2), 7svh);
+  }
+
+  .model-band--fit .model-board {
+    grid-template-columns: 1fr 1.2fr;
+    align-items: start;
+    column-gap: 4.5rem;
+  }
+
+  .model-band--fit .model-board__rail {
+    position: static;
+    gap: 1.5rem;
+  }
+
+  .model-band--fit .model-row {
+    grid-template-columns: 4rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1.4rem;
+    padding-block: clamp(0.85rem, 2svh, 1.15rem);
+  }
+
+  .model-band--fit .model-row__fig {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .model-band--fit .model-row__text {
+    margin-top: 0.2rem;
+  }
 }
 
 /* A ruled block, not a side-striped card: DESIGN.md keeps callout stripes

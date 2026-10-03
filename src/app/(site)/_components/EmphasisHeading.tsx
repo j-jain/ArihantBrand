@@ -1,4 +1,24 @@
-import type { ComponentPropsWithoutRef, ElementType } from "react";
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
+
+/** Hyphenated words ("zero-deadstock") set as one unbreakable unit (change
+ *  round 5). A browser may break plain text after a hyphen, but SplitHeading's
+ *  word split cannot, so the same heading wrapped one way before the split,
+ *  another while it ran and the first way again once it reverted: the line
+ *  visibly jumped. With the nowrap span both states wrap identically. */
+const HYPHENATED = /(\S+-\S+)/;
+
+function keepHyphens(text: string): ReactNode {
+  if (!HYPHENATED.test(text)) return text;
+  return text.split(HYPHENATED).map((part, i) =>
+    i % 2 === 1 ? (
+      <span key={i} className="nobr">
+        {part}
+      </span>
+    ) : (
+      part
+    ),
+  );
+}
 
 interface EmphasisHeadingProps {
   /** Full heading text. */
@@ -39,7 +59,7 @@ export function EmphasisHeading({
   if (!emphasis || index === -1) {
     return (
       <Tag className={cls} {...rest}>
-        {text}
+        {keepHyphens(text)}
       </Tag>
     );
   }
@@ -49,9 +69,9 @@ export function EmphasisHeading({
 
   return (
     <Tag className={cls} {...rest}>
-      {before}
-      <em style={{ fontStyle: "normal", color: emphasisColor }}>{emphasis}</em>
-      {after}
+      {keepHyphens(before)}
+      <em style={{ fontStyle: "normal", color: emphasisColor }}>{keepHyphens(emphasis)}</em>
+      {keepHyphens(after)}
     </Tag>
   );
 }

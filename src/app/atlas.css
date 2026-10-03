@@ -21,18 +21,104 @@
 /* ================================================================== */
 
 /* ------------------------------------------------------------------ */
-/* Retail hero: the lead beside the store-interior photo               */
+/* Retail hero: one screen, copy beside a two-photo stack (round 5)     */
 /* ------------------------------------------------------------------ */
 
-/* A 386px-wide photograph: capped so a 2x screen upscales it no more than
-   about 1.3x at 1440. width: 100% because the frame has no intrinsic width
-   (the image is absolutely filled) and justify-self would collapse it. */
+/* From 768px up the hero is one viewport tall under the sticky header, like
+   the home hero, with a floor so a very short window scrolls rather than
+   crushes. The headline sits in eight columns here, not twelve, so it steps
+   down from the display size and is bounded by the screen's height too. The
+   lockup's mark is a size up: the logos are trimmed cutouts now, so the old
+   box set the Retail bag at a few pixels. */
 @media (min-width: 768px) {
-  .unit-hero__media {
-    width: 100%;
-    max-width: 15.5rem;
-    justify-self: end;
+  .unit-hero--fit {
+    display: grid;
+    align-items: center;
+    min-height: max(32rem, calc(100svh - var(--header-h, 4rem) - 4px));
+    padding-block: clamp(1.5rem, 4svh, 3rem);
   }
+
+  .unit-hero--fit .t-display {
+    font-size: min(calc(var(--text-display) * 0.8), 7.4svh);
+    line-height: 1.08;
+  }
+
+  .unit-hero--fit .unit-lockup__logo {
+    width: 4.75rem;
+    height: 2.6rem;
+  }
+}
+
+/* The stack. Two real photographs of about 400px each: the frames are capped
+   in rem so a 2x screen upscales them about 1.3x at most. Both sit in one
+   grid cell; the front frame's top margin (a share of the stack's width)
+   sets the overlap and the stack's height. width: 100% on each frame because
+   it has no intrinsic width (the image is absolutely filled). */
+.retail-stack {
+  display: grid;
+  grid-template: 1fr / 1fr;
+  width: min(100%, 22rem);
+  margin-inline-start: auto;
+}
+
+.retail-stack__back,
+.retail-stack__front {
+  grid-area: 1 / 1;
+  position: relative;
+}
+
+.retail-stack__back {
+  align-self: start;
+  justify-self: start;
+  width: 68%;
+}
+
+.retail-stack__front {
+  align-self: start;
+  justify-self: end;
+  width: 57%;
+  margin-top: 46%;
+  z-index: 1;
+}
+
+.retail-stack__frame {
+  width: 100%;
+  border-radius: 0.375rem;
+}
+
+.retail-stack__back .retail-stack__frame {
+  box-shadow: 0 1.4rem 2.6rem -1.6rem color-mix(in oklch, var(--ink) 45%, transparent);
+}
+
+/* The hero's one action: a quiet jump to the store atlas, not a /partner
+   ask. The chevron is decorative, so it may carry the unit's purple. */
+.hero-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.hero-jump__chev {
+  color: var(--unit-accent);
+  transition: translate var(--dur-fast) var(--ease);
+}
+
+.hero-jump:hover .hero-jump__chev {
+  translate: 0 0.15rem;
+}
+
+/* The front photograph sits on a paper keyline, like a print laid on top. */
+.retail-stack__keyline {
+  padding: 0.4rem;
+  border-radius: 0.6rem;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 1.6rem 3rem -1.4rem color-mix(in oklch, var(--ink) 50%, transparent);
 }
 
 /* ------------------------------------------------------------------ */
@@ -40,13 +126,14 @@
 /* ------------------------------------------------------------------ */
 
 .atlas {
-  /* Atlas-only tokens (change round 4, the terrain map). Water is a quiet
-     slate blue, never a brand colour; its label is a deeper shade of it for
-     contrast on the relief. */
-  --atlas-water: oklch(0.7 0.045 232);
-  --atlas-water-ink: oklch(0.47 0.05 236);
-  --atlas-border: color-mix(in oklch, var(--ink) 78%, transparent);
-  --atlas-border-soft: color-mix(in oklch, var(--ink-soft) 60%, transparent);
+  /* Atlas-only tokens (change round 4, the terrain map; round 5 deepened
+     them a step so the map reads at a glance). Water is a quiet slate blue,
+     never a brand colour; its label is a deeper shade of it for contrast on
+     the relief. */
+  --atlas-water: oklch(0.64 0.06 234);
+  --atlas-water-ink: oklch(0.44 0.06 236);
+  --atlas-border: color-mix(in oklch, var(--ink) 86%, transparent);
+  --atlas-border-soft: color-mix(in oklch, var(--ink-soft) 72%, transparent);
 }
 
 .atlas__head {
@@ -77,10 +164,19 @@
 
 .atlas__key {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 1rem;
+  left: 1rem;
   z-index: 2;
-  max-width: 13rem;
+  max-width: 14rem;
+  /* Round 5: inset off the plate's edge on a frosted paper panel, so the
+     figures never sit on the frame line and read over any terrain. */
+  padding: 0.95rem 1.1rem 1rem;
+  border-radius: 0.375rem;
+  background: color-mix(in oklch, var(--paper) 84%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 0.6rem 1.4rem -0.9rem color-mix(in oklch, var(--ink) 30%, transparent);
 }
 
 .atlas__tally {
@@ -144,9 +240,13 @@
   aspect-ratio: 45 / 25;
   container-type: inline-size;
   --cell: calc(100cqi / 45);
-  border-radius: 0.375rem;
-  /* The map plate: a hairline gives the paper relief an edge on paper-shade. */
-  box-shadow: 0 0 0 1px var(--line);
+  border-radius: 0.5rem;
+  /* The map plate (round 5): a hairline edge, then a quiet lift off the
+     paper-shade ground, like a printed plate laid on the desk. */
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 1.5rem 3rem -2rem color-mix(in oklch, var(--ink) 32%, transparent),
+    0 0.3rem 0.8rem -0.4rem color-mix(in oklch, var(--ink) 12%, transparent);
   background: var(--paper-shade);
 }
 
@@ -163,6 +263,20 @@
   height: 100%;
   object-fit: cover;
   transform-origin: 46% 60%;
+  /* The relief was toned to the paper and read washed out (round 5): more
+     depth in the hills, the same paper tone in the plains. */
+  filter: contrast(1.16) saturate(1.08) brightness(0.985);
+}
+
+/* A soft inner vignette: the plate's edge falls away into the paper, so
+   the eye settles on the valley where the stores are. */
+.atlas-relief::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 3.5rem 0.4rem color-mix(in oklch, var(--paper-shade) 70%, transparent);
 }
 
 /* Clipped to the plate: borders and rivers are drawn a little past the
@@ -278,9 +392,20 @@
 
 .atlas-pin__scale,
 .atlas-pin__drop,
-.atlas-pin__ripple {
+.atlas-pin__ripple,
+.atlas-pin__head {
   transform-box: fill-box;
   transform-origin: center;
+}
+
+/* The head springs up a size on hover, focus or a pinned store (round 5).
+   CSS owns this element; the entry build only ever moves .atlas-pin__drop. */
+.atlas-pin__head {
+  transition: scale 420ms cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+.atlas-pin[data-on] .atlas-pin__head {
+  scale: 1.16;
 }
 
 .atlas-pin__keyline {
@@ -451,6 +576,16 @@
   transform: translateY(-0.2rem);
 }
 
+/* The lifted tag casts a soft shadow. A filter on the link, not a shadow on
+   the body, because the body's clip-path would cut a box-shadow off. */
+.atlas-tag {
+  transition: filter var(--dur-fast) var(--ease);
+}
+
+.atlas-tag[data-on] {
+  filter: drop-shadow(0 0.45rem 0.5rem color-mix(in oklch, var(--ink) 22%, transparent));
+}
+
 .atlas-thread[data-on] {
   stroke: var(--ink);
   stroke-width: 1.5px;
@@ -497,6 +632,10 @@
 .atlas-card {
   --card-dx: 1.5rem;
   --card-dy: 0.9rem;
+  /* How far the card travels as it opens: it rises out of the pin's side,
+     settling into place with a slight spring (change round 5). */
+  --card-rise: 0.7rem;
+  --card-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
   position: absolute;
   left: calc(var(--px) * 1%);
   top: calc(var(--py) * 1%);
@@ -506,60 +645,110 @@
   background: var(--paper);
   box-shadow:
     0 0 0 1px var(--line),
-    0 0.9rem 2.2rem -0.6rem color-mix(in oklch, var(--ink) 34%, transparent),
+    0 1.1rem 2.6rem -0.7rem color-mix(in oklch, var(--ink) 38%, transparent),
     0 0.2rem 0.5rem color-mix(in oklch, var(--ink) 10%, transparent);
   opacity: 0;
   visibility: hidden;
-  translate: var(--card-tx) var(--card-ty);
-  scale: 0.96;
+  translate: var(--card-tx) calc(var(--card-ty) + var(--card-rise));
+  scale: 0.92;
+  transform-origin: var(--card-ox) var(--card-oy);
   transition:
-    opacity 160ms var(--ease),
-    scale 220ms var(--ease),
-    visibility 0s linear 220ms;
+    opacity 130ms var(--ease),
+    scale 160ms var(--ease),
+    translate 160ms var(--ease),
+    visibility 0s linear 160ms;
 }
 
 .atlas-card[data-card-x="right"] {
   --card-tx: var(--card-dx);
-  transform-origin: left;
+  --card-ox: left;
 }
 
 .atlas-card[data-card-x="left"] {
   --card-tx: calc(-100% - var(--card-dx));
-  transform-origin: right;
+  --card-ox: right;
 }
 
 .atlas-card[data-card-y="above"] {
   --card-ty: calc(-100% - var(--card-dy));
+  --card-oy: bottom;
 }
 
 .atlas-card[data-card-y="below"] {
   --card-ty: var(--card-dy);
+  --card-oy: top;
+  --card-rise: -0.7rem;
 }
 
+/* Open. Only the custom property moves the card, never `translate` itself,
+   so the phone layer's `translate: none` (the docked card) still holds. */
 .atlas-card[data-on] {
+  --card-rise: 0rem;
   opacity: 1;
   visibility: visible;
   scale: 1;
   transition:
-    opacity 160ms var(--ease),
-    scale 220ms var(--ease),
+    opacity 200ms var(--ease),
+    scale 460ms var(--card-spring),
+    translate 460ms var(--card-spring),
     visibility 0s;
 }
 
+/* The picture opens out of a mask from the bottom edge while it settles from
+   a slight push in, then the text follows, line by line. The resting states
+   below exist only on a closed card, which is never shown. */
 .atlas-card__photo {
   position: relative;
   aspect-ratio: 3 / 2;
+  overflow: hidden;
   background: var(--paper-shade);
+  clip-path: inset(100% 0 0 0);
+}
+
+.atlas-card[data-on] .atlas-card__photo {
+  clip-path: inset(0);
+  transition: clip-path 520ms cubic-bezier(0.16, 1, 0.3, 1) 40ms;
 }
 
 .atlas-card__photo img {
   object-fit: cover;
+  scale: 1.1;
+}
+
+.atlas-card[data-on] .atlas-card__photo img {
+  scale: 1;
+  transition: scale 900ms cubic-bezier(0.16, 1, 0.3, 1) 40ms;
 }
 
 .atlas-card__body {
   display: grid;
   gap: 0.2rem;
   padding: 0.8rem 0.95rem 0.9rem;
+}
+
+.atlas-card__body > * {
+  opacity: 0;
+  translate: 0 0.35rem;
+}
+
+.atlas-card[data-on] .atlas-card__body > * {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 260ms var(--ease) calc(120ms + var(--i, 0) * 45ms),
+    translate 360ms cubic-bezier(0.16, 1, 0.3, 1) calc(120ms + var(--i, 0) * 45ms);
+}
+
+.atlas-card__body > :nth-child(2) {
+  --i: 1;
+}
+
+.atlas-card__body > :nth-child(3) {
+  --i: 2;
+}
+
+.atlas-card__body > :nth-child(4) {
+  --i: 3;
 }
 
 .atlas-card__town {
@@ -603,10 +792,136 @@
   color: var(--ink-soft);
 }
 
+/* ------------------------------------------------------------------ */
+/* Atlas: the drawn shopfront (StorePlaceholder, change round 5)        */
+/* ------------------------------------------------------------------ */
+
+/* The stand-in for a store photograph: ink line work on the paper shade,
+   the fascia in charcoal with the store's name, the awning in the unit's
+   purple. Drawn in (every stroke has pathLength 1) as its card opens. */
+.store-ph {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--paper) 0%, transparent 70%),
+    var(--paper-shade);
+}
+
+.ph-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ph-line--soft {
+  stroke: var(--ink-soft);
+  stroke-width: 1.3;
+}
+
+.ph-ground {
+  fill: color-mix(in oklch, var(--ink) 6%, var(--paper-shade));
+}
+
+.ph-fascia {
+  fill: var(--charcoal);
+}
+
+.ph-name {
+  font-family: var(--font-besley), Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  fill: var(--on-charcoal);
+}
+
+.ph-stripe {
+  fill: var(--unit-accent);
+}
+
+.ph-knob {
+  fill: var(--ink);
+}
+
+.atlas-card__soon {
+  position: absolute;
+  left: 0.6rem;
+  top: 0.55rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 2px;
+  background: color-mix(in oklch, var(--paper) 88%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 700;
+  font-stretch: 87%;
+  font-size: 0.625rem;
+  line-height: 1.2;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.atlas[data-js] .atlas-card:not([data-on]) .ph-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.atlas[data-js] .atlas-card[data-on] .ph-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 700ms cubic-bezier(0.65, 0, 0.35, 1) 160ms;
+}
+
+.atlas-card .ph-awning rect,
+.atlas-card .ph-fascia,
+.atlas-card .ph-name {
+  transition: opacity 300ms var(--ease) 380ms;
+}
+
+.atlas[data-js] .atlas-card:not([data-on]) :is(.ph-awning rect, .ph-fascia, .ph-name) {
+  opacity: 0;
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .atlas-card,
   .atlas-card[data-on] {
+    --card-rise: 0rem;
     scale: 1;
+    transition: none;
+  }
+
+  .atlas-card__photo,
+  .atlas-card[data-on] .atlas-card__photo {
+    clip-path: none;
+    transition: none;
+  }
+
+  .atlas-card__photo img,
+  .atlas-card[data-on] .atlas-card__photo img {
+    scale: 1;
+    transition: none;
+  }
+
+  .atlas-card__body > *,
+  .atlas-card[data-on] .atlas-card__body > * {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+
+  .atlas[data-js] .atlas-card .ph-line,
+  .atlas[data-js] .atlas-card[data-on] .ph-line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+
+  .atlas[data-js] .atlas-card :is(.ph-awning rect, .ph-fascia, .ph-name) {
+    opacity: 1;
     transition: none;
   }
 }

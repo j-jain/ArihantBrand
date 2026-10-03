@@ -19,6 +19,7 @@ import { gsap, useGSAP, EASE, DUR } from "@/lib/gsap";
 import { track } from "./Analytics";
 import { cn } from "./cn";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
+import { privacyNote } from "@/content/seed";
 
 type Intent = LeadInput["intent"];
 type FieldName = "name" | "phone" | "email" | "city" | "company" | "message";
@@ -671,6 +672,7 @@ export function InquiryForm({
                       </span>
                     )}
                   </button>
+                  <p className="form-privacy t-small mt-3 text-ink-soft">{privacyNote}</p>
                 </div>
               </div>
 

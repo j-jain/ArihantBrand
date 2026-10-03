@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
-import { Button, DrenchBand, JsonLd, ModelBoard, ParallaxImage } from "@/components";
+import { Button, DrenchBand, JsonLd, ModelBoard } from "@/components";
 import {
   getBusinesses,
   getPageCopy,
@@ -16,6 +17,7 @@ import {
   storeListJsonLd,
 } from "@/lib/seo";
 import { UnitHero } from "../_components/UnitHero";
+import { RetailHeroPhotos } from "./_components/RetailHeroPhotos";
 import { StoreAtlas } from "./_components/StoreAtlas";
 
 const UNIT = "retail" as const;
@@ -31,15 +33,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Arihant Retail (change round 3 re-composition).
+ * Arihant Retail (change round 3 re-composition; round 5 made it one screen
+ * per band and moved up a grade in finish and motion).
  *
- *  1. Hero (paper): the one unit hero with a photograph. The store-interior
- *     shot moved here from the model band, and the stat band went: its three
- *     figures now key the store atlas. No CTA on the hero.
+ *  1. Hero (paper): one screen, the copy beside a stack of the two real store
+ *     photographs. No stat band (its three figures key the store atlas) and
+ *     no /partner ask: its one action is a quiet jump to the stores.
  *  2. Store atlas (paper-shade): where the stores are and who owns each one,
- *     on a square-pixel map over a ruled list, then the page's first two asks.
- *  3. ModelBoard (charcoal): the worksheet is its only control. Without the
- *     photograph and the page CTA its rail no longer outruns its rows.
+ *     on a terrain map over a ruled list, then the page's first two asks.
+ *     Hovering a store opens its card: its photograph, or until there is one
+ *     a drawn shopfront with its name on the fascia.
+ *  3. ModelBoard (charcoal), fitted to one screen: the worksheet is its only
+ *     control.
  *  4. Drench: the franchise ask that follows the model (AR8).
  *
  * Exactly two /partner asks, with the model between them.
@@ -77,27 +82,33 @@ export default async function ArihantRetailPage() {
       {/* Trading stores only. A door that has not opened is not a place. */}
       <JsonLd data={storeListJsonLd(settings, stores)} />
 
-      {/* 1 — Hero (paper): lockup, headline, rule, then the lead beside
-          Arihant Retail's own floor. Real, so it outranks stock. */}
+      {/* 1 — Hero (paper), one screen: lockup, headline, rule and lead
+          beside Arihant Retail's own floor and storefront. Real, so they
+          outrank stock. */}
       {business ? (
         <UnitHero
           business={business}
           hero={hero}
           showStats={false}
+          fit
           media={
-            <ParallaxImage
-              src={photos.retailInterior.src}
-              alt={photos.retailInterior.alt}
-              ratio="4 / 5"
-              parallax={false}
-              sizes="(max-width: 767px) 100vw, 280px"
-              className="m-ar-4-3 border border-line"
-              tilt
-              priority
-              mBleed
+            <RetailHeroPhotos
+              interior={photos.retailInterior}
+              storefront={photos.retailStorefront}
             />
           }
-        />
+        >
+          <div data-hero-reveal>
+            <Link href="#stores" className="hero-jump group press">
+              <span className="underline decoration-line decoration-2 underline-offset-4 transition-colors group-hover:decoration-[var(--unit-accent)]">
+                {storesSection.heading}
+              </span>
+              <span aria-hidden="true" className="hero-jump__chev">
+                ▾
+              </span>
+            </Link>
+          </div>
+        </UnitHero>
       ) : null}
 
       {/* 2 — Store atlas (paper-shade) */}
@@ -117,6 +128,7 @@ export default async function ArihantRetailPage() {
       <ModelBoard
         id="model"
         tone="dark"
+        fit
         heading={model.heading}
         lead={model.lead}
         model={retailModel}

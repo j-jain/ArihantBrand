@@ -402,26 +402,23 @@
     max-height: 240px;
   }
 
-  .footer-nav {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.15rem 1rem;
+  /* The one bottom line (change round 5) stacks: copyright, address, then a
+     directions link with a full tap height. */
+  .footer-base {
+    flex-direction: column;
+    align-items: flex-start;
     margin-top: 2.25rem;
-  }
-
-  .footer-nav a {
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
+    padding-top: 1.25rem;
   }
 
   .footer-nap {
-    margin-top: 1.75rem;
+    align-items: flex-start;
   }
 
-  .footer-legal {
-    margin-top: 1.5rem;
-    padding-top: 1.25rem;
+  .footer-dir {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }
 
@@ -461,12 +458,6 @@
   /* Inside the column on a phone: the 20px gutter cannot take half of it. */
   .marquee__toggle {
     translate: 0 -50%;
-  }
-
-  /* Logo wall: tighter tiles, less inner padding so small marks stay legible
-     at three across. */
-  .logo-tile {
-    padding: 12%;
   }
 
   /* FAQ: the summary is a tap target, so it keeps its height, but the type
@@ -1092,6 +1083,12 @@
     gap: 1.5rem;
   }
 
+  /* The fitted band's heading sits above the rail (change round 5); on a
+     phone it keeps the heading-to-lead step SectionHeading used to give. */
+  .model-board__title {
+    margin-bottom: 0.75rem;
+  }
+
   /* 88px of figure against a 360px viewport leaves the body text a measure
      it cannot set at. The diagram shrinks; the hairline thickens to stay
      legible at the smaller size. */
@@ -1212,13 +1209,43 @@
 /* ------------------------------------------------------------------ */
 
 /* Section 10 (unit pages): the retail hero stacks lockup, headline, rule,
-   lead, then the photograph edge to edge at 4:3 (.m-bleed + .m-ar-4-3). */
+   lead and the jump link, then its two photographs side by side. */
 @media (max-width: 767px) {
-  .unit-hero__row {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.25rem;
+  /* The fitted retail hero (change round 5): the hero rhythm, then the two
+     photographs as a plain two-up row under the copy, bottoms aligned. No
+     overlap, no keyline shadow and no drift on a phone. */
+  .unit-hero--fit {
+    padding-top: 1.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .unit-hero-fit__grid {
+    gap: 1.75rem;
+  }
+
+  .retail-stack {
+    width: 100%;
+    grid-template: auto / 1fr 1fr;
+    gap: 0.75rem;
+    align-items: end;
+  }
+
+  .retail-stack__back,
+  .retail-stack__front {
+    grid-area: auto;
+    width: auto;
+    margin-top: 0;
+    justify-self: stretch;
+  }
+
+  .retail-stack__keyline {
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .retail-stack__back .retail-stack__frame {
+    box-shadow: none;
   }
 }
 
@@ -1243,6 +1270,12 @@
     align-items: end;
     max-width: none;
     margin-bottom: 1rem;
+    /* Off the map on a phone, so no frosted panel (change round 5). */
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+    box-shadow: none;
   }
 
   .atlas__tally-fig {
@@ -1325,6 +1358,30 @@
   .atlas-card__photo {
     aspect-ratio: auto;
     min-height: 6rem;
+  }
+
+  /* The drawn shopfront (change round 5) keeps its 3:2 frame, inset in the
+     card, so the store's name on the fascia is never cropped by a tall row;
+     its label sets on one line in the sky above the fascia. */
+  .atlas-card[data-placeholder] {
+    grid-template-columns: 9rem minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .atlas-card[data-placeholder] .atlas-card__photo {
+    aspect-ratio: 3 / 2;
+    min-height: 0;
+    margin: 0.6rem 0 0.6rem 0.6rem;
+    border-radius: 0.25rem;
+  }
+
+  .atlas-card__soon {
+    left: 0.3rem;
+    top: 0.3rem;
+    padding: 0.12rem 0.3rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
   }
 
   .atlas-card__body {

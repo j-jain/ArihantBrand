@@ -33,7 +33,7 @@ export {
   TrendIcon,
   WhatsAppIcon,
 } from "./icons";
-export { businessLinks, primaryNav, type NavItem } from "./nav";
+export { primaryNav, type NavItem } from "./nav";
 /* Phase 3 additions */
 export { PartnerModal } from "./PartnerModal";
 /* Wave B — motion + display components */

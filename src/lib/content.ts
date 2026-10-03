@@ -162,6 +162,7 @@ interface RawBusiness {
   founded?: string | null;
   leaders?: string[] | null;
   positioning?: string | null;
+  tagline?: string | null;
   summary?: string | null;
   highlights?: string[] | null;
   points?: RawBusinessPoint[] | null;
@@ -370,6 +371,7 @@ function mapBusiness(b: RawBusiness): Business {
     founded: b.founded ?? "",
     leaders: b.leaders ?? [],
     positioning: b.positioning ?? "",
+    tagline: b.tagline?.trim() || undefined,
     summary: b.summary ?? "",
     highlights: b.highlights ?? [],
     // Points without an id are unselectable by page code, so drop them rather
@@ -516,7 +518,7 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
 
 const BUSINESSES_QUERY = `*[_type == "business"] | order(order asc){
   unit, name, "slug": slug.current, logo, logoPath, founded, leaders, positioning,
-  summary, highlights, points[]{ id, text }, stats[]{ id, value, suffix, label },
+  tagline, summary, highlights, points[]{ id, text }, stats[]{ id, value, suffix, label },
   audienceCtas[]{ label, href }
 }`;
 

@@ -1,4 +1,4 @@
-import { atLeast, facts, phrase } from "./facts";
+import { atLeast, facts, inWords, phrase } from "./facts";
 import type { PageCopy } from "./types";
 
 /** Per-route copy. Sanity `page` documents mirror this; seed is the fallback.
@@ -144,18 +144,20 @@ export const pages: Record<string, PageCopy> = {
       heading:
         "The most modern and professionally run retail stores in Northeast India",
       headingEmphasis: "most modern",
-      lead: `Multi-brand stores our own team staffs, stocks and markets. We run all ${facts.retail.storesOpen}. We own ${facts.retail.storesCompanyOwned}, and franchisees own the other ${facts.retail.storesFranchisee}.`,
+      // Change round 5: one sentence on what the stores are, one on who owns
+      // them. Every figure from facts.ts.
+      lead: `Multi-brand stores our team staffs, stocks and markets. We run all ${inWords(facts.retail.storesOpen)}: ${inWords(facts.retail.storesCompanyOwned)} we own, ${inWords(facts.retail.storesFranchisee)} owned by franchisees.`,
       primaryCta: { label: "Own a retail store", href: "/partner" },
       secondaryCta: { label: "Put your brand in our stores", href: "/contact?intent=brand" },
     },
     sections: {
       stores: {
         heading: "On the street today",
-        lead: "Every store is stocked from our warehouse in Guwahati. Pick a town to see the store and who owns it.",
+        lead: "Every store runs on stock from our Guwahati warehouse. Pick a town to see it.",
       },
       model: {
         heading: "The zero-deadstock model",
-        lead: "The store keeps what sells and sends back what does not. Buying, rotation and markdowns stay with us. That is how a first store survives its first bad season.",
+        lead: "The store keeps what sells and returns what does not. Buying, rotation and markdowns stay with us.",
       },
       cta: {
         heading: "One of the next stores could be yours",

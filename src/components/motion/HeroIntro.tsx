@@ -99,6 +99,47 @@ export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIn
               mobile ? 0.05 : 0.15,
             );
           }
+          // Photographs that opt in with [data-hero-clip] (the retail hero's
+          // photo stack, change round 5) open out of a mask from the bottom
+          // edge while the picture settles from a slight push in. Both are
+          // cleared on landing: a resting inset(0) still clips to the box.
+          const clips = gsap.utils.toArray<HTMLElement>("[data-hero-clip]", root);
+          if (clips.length) {
+            const at = mobile ? 0.1 : 0.3;
+            const dur = mobile ? 0.75 : 1.15;
+            const gap = mobile ? 0.1 : 0.16;
+            // The sides and the far edge sit outside the box (negative
+            // insets), so a frame's own shadow is never clipped and nothing
+            // pops when the clip is cleared.
+            tl.fromTo(
+              clips,
+              { clipPath: "inset(100% -15% -15% -15%)" },
+              {
+                clipPath: "inset(-15% -15% -15% -15%)",
+                duration: dur,
+                ease: "expo.out",
+                stagger: gap,
+                clearProps: "clipPath",
+              },
+              at,
+            );
+            const pictures = clips
+              .map((c) => c.querySelector<HTMLElement>("img"))
+              .filter((img): img is HTMLElement => Boolean(img));
+            if (pictures.length) {
+              tl.from(
+                pictures,
+                {
+                  scale: 1.12,
+                  duration: dur + 0.35,
+                  ease: "expo.out",
+                  stagger: gap,
+                  clearProps: "transform",
+                },
+                at,
+              );
+            }
+          }
           if (title) gsap.set(title, { autoAlpha: 0 });
           release();
 

@@ -45,6 +45,43 @@ export function marqueeBox(g: PartnerLogoGeometry): { w: number; h: number } {
   return { w: r3(w), h: r3(h) };
 }
 
+/**
+ * The logo walls (Apparels, Marketing, /brands) without tiles (change round
+ * 5). A wall cell is a 3:2 box whose width changes with the grid, so sizes
+ * here are FRACTIONS of the cell's width, not rem: the same equal-area rule
+ * as the marquee, clamped to the cell. Badges (and the one photographic
+ * artwork file) keep their plate at one height, as on the marquee.
+ */
+export const WALL = {
+  markArea: 0.13,
+  markMinH: 0.16,
+  markMaxH: 0.42,
+  markMaxW: 0.78,
+  badgeH: 0.34,
+  /** Cell height as a share of its width (3:2). */
+  cellH: 2 / 3,
+} as const;
+
+/** The logo's box as percentages of the wall cell's width and height. */
+export function wallBox(g: PartnerLogoGeometry): { w: string; h: string } {
+  const ratio = g.w > 0 && g.h > 0 ? g.w / g.h : 2;
+  let h: number;
+  let w: number;
+  if (g.treatment === "mark") {
+    h = Math.min(WALL.markMaxH, Math.max(WALL.markMinH, Math.sqrt(WALL.markArea / ratio)));
+    w = h * ratio;
+  } else {
+    h = WALL.badgeH;
+    w = h * ratio;
+  }
+  if (w > WALL.markMaxW) {
+    w = WALL.markMaxW;
+    h = w / ratio;
+  }
+  const pct = (v: number) => `${Math.round(v * 1000) / 10}%`;
+  return { w: pct(w), h: pct(h / WALL.cellH) };
+}
+
 /** Marquee order: photographic/artwork logos are left out (they cannot be cut
  *  out cleanly and stay on /brands); the ranked prefix keeps its order; the
  *  unranked tail is interleaved so no two badges sit side by side. The tail's

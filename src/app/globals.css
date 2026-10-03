@@ -220,6 +220,12 @@ p {
   max-width: 68ch;
 }
 
+/* A hyphenated heading word set as one unit (EmphasisHeading, change round
+   5), so a heading wraps the same before, during and after its word split. */
+.nobr {
+  white-space: nowrap;
+}
+
 a {
   color: inherit;
 }
@@ -1443,27 +1449,40 @@ svg {
   background: var(--paper-shade);
 }
 
+/* One identical box per logo (change round 5). The marks are transparent
+   cutouts trimmed to their ink, set bottom-left in the box, so the three
+   names below them start on one baseline whatever each mark's shape. */
 .nav-panel__logo {
-  height: 2.25rem; /* h-9 */
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 2.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.nav-panel__logo img {
   width: auto;
+  height: 100%;
+  max-width: 7.5rem;
   object-fit: contain;
+  object-position: left bottom;
+  transform: none;
 }
 
 .nav-panel__name {
   font-family: var(--font-besley), Georgia, serif;
-  font-weight: 600;
-  font-size: 1.05rem;
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1.2;
   color: var(--ink);
 }
 
+/* One short line from the Studio ("Menu line"). Never clamped: an ellipsis
+   in a menu reads as a mistake, so an over-long line wraps instead. */
 .nav-panel__pos {
   max-width: 32ch;
   color: var(--ink-soft);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
+  text-wrap: pretty;
 }
 
 .nav-panel__explore {
@@ -1836,21 +1855,43 @@ textarea.field-input {
 /* Phase 3 additions (append-only)                                     */
 /* ------------------------------------------------------------------ */
 
-/* Interactive brand logo tile: the static tile visual plus a quiet lift and
-   shadow on hover/focus. Reduced-motion users get no transition (killed
-   globally). The visible focus ring is handled by :focus-visible. */
-.logo-tile-btn {
-  cursor: pointer;
-  transition:
-    transform var(--dur-fast) var(--ease),
-    border-color var(--dur-fast) var(--ease),
-    box-shadow var(--dur-fast) var(--ease);
+/* Logo wall cell, tile-less (change round 5): no plate, no border, the logo
+   on the section ground. The cell is a uniform 3:2 box; the mark inside is
+   sized as a share of it (--lw/--lh, from wallBox in src/lib/logoGeometry.ts)
+   and centred. A badge keeps its coloured block with the photo radius. */
+.logo-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: 0.375rem;
+  background: transparent;
 }
 
-.logo-tile-btn:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklch, var(--ink), transparent 72%);
-  box-shadow: 0 12px 26px -16px oklch(0.215 0.01 30 / 0.4);
+.logo-tile__mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--lw, 62%);
+  height: var(--lh, 40%);
+  translate: -50% -50%;
+  transition: scale var(--dur-fast) var(--ease);
+}
+
+.logo-tile__mark[data-treatment="badge"] {
+  overflow: hidden;
+  border-radius: 0.375rem;
+}
+
+/* The interactive cell: the mark lifts a little on hover. Reduced-motion
+   users get no transition (killed globally); the visible focus ring is the
+   global :focus-visible one, round the whole cell. */
+.logo-tile-btn {
+  cursor: pointer;
+}
+
+.logo-tile-btn:hover .logo-tile__mark {
+  scale: 1.07;
 }
 
 /* Imported LAST so the phone layer can retune anything above it. Every rule

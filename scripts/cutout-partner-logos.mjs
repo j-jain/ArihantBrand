@@ -979,7 +979,26 @@ async function main() {
   console.log("");
 }
 
-main().catch((err) => {
-  console.error(`\n  ${err.message ?? err}\n`);
-  process.exit(1);
-});
+/* The keying steps, shared with scripts/cutout-unit-logos.mjs (change round
+   5), which cuts the three business logos out the same way. Importing this
+   file runs nothing: main() only runs when the file is the entry point. */
+export {
+  backgroundColour,
+  coreMask,
+  decode,
+  despeckle,
+  flattenOnWhite,
+  keyOut,
+  pad,
+  protectMask,
+  settleEnclosed,
+  trim,
+  T_HARD,
+};
+
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch((err) => {
+    console.error(`\n  ${err.message ?? err}\n`);
+    process.exit(1);
+  });
+}
