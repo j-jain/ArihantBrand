@@ -25,6 +25,8 @@ Requested 4 October 2026, home page.
 
 ## Follow-up: spacing pass (after publishing)
 
+Live 4 October 2026: commit e179b5a, code only (no seed), Vercel deploy succeeded, checked on arihant-brand.vercel.app (deck heading-to-line gap 11px at 1536x864, brands heading on the left axis, tags tightened).
+
 | Item | Status | Evidence |
 |---|---|---|
 | Gap between a "Why us?" heading and its line | Done | The deck cards had been given a 14rem minimum with the line pushed to the foot, which opened a gap under each heading. Cards are sized by their content again, set a size up instead (more padding, 1.85rem heading, the line in a 1.15rem lead size 0.7rem under it). |
