@@ -546,12 +546,6 @@
   .stack__text {
     margin-top: 0.8rem;
   }
-
-  /* Deck mode carries the gap as padding (the line sits at the card's foot). */
-  .stack-section[data-deck] .stack__text {
-    margin-top: auto;
-    padding-top: 0.8rem;
-  }
 }
 
 /* ------------------------------------------------------------------ */

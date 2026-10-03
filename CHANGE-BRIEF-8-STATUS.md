@@ -23,6 +23,15 @@ Requested 4 October 2026, home page.
 | Motion settings | Done | Tags drop onto the rail as the section arrives and sway as a fine pointer passes; a turn kicks the sway. Reduced motion: an instant turn (cord still winds), no drop, no sway. No JS: each back shows under its front. |
 | The prototype page | Done (local only) | `http://localhost:3000/proto/businesses` now holds only the swing tags and renders the same `BusinessTags`, so it cannot drift from the home page. The other three prototypes are deleted. 404 in a production build (verified); `src/app/(site)/proto/` is never committed. |
 
+## Follow-up: spacing pass (after publishing)
+
+| Item | Status | Evidence |
+|---|---|---|
+| Gap between a "Why us?" heading and its line | Done | The deck cards had been given a 14rem minimum with the line pushed to the foot, which opened a gap under each heading. Cards are sized by their content again, set a size up instead (more padding, 1.85rem heading, the line in a 1.15rem lead size 0.7rem under it). |
+| Swing tags: dead space inside | Done | The longest back (Marketing's positioning line) set every tag's height and left a gap above "Turn over". The backs' type is a touch smaller, spare height now opens above the barcode, and both faces end on their turn button. The three tags fit one 1536x864 screen. |
+| One left axis | Done | "The brands we carry" was the only centred heading on the home page; its heading and "See all" link now sit on the same left edge as every other section. |
+| Rest of the page | Checked | Section padding (about 140px top and bottom at 1536x864) and heading-to-content gaps (about 40px) are consistent across hero, awards, "Why us?", businesses, brands, Trade Notes and the closing band; nothing else changed. |
+
 ## Checks
 
 - `tsc --noEmit`, `eslint src scripts`: clean. `next build`: passes, all routes static.

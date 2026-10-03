@@ -30,9 +30,6 @@ const MAX_DEPTH = 3;
  *  of edge, so the deck reads as cards stacked on cards. It used to be the
  *  card's whole heading strip, which read as a list. */
 const PEEK_REM = { desktop: 0.9, mobile: 0.65 };
-/** The least a deck card stands, in rem: the round 8 copy is short, and a
- *  card only as tall as two lines read as a strip, not a card. */
-const CARD_MIN_REM = { desktop: 14, mobile: 10 };
 const HYSTERESIS = 4; // px, so a deck right at the fit limit does not flicker
 const FLIP_DELAY = 200; // ms before switching between deck and static column
 
@@ -110,11 +107,6 @@ export function CardsStack({ items, heading }: CardsStackProps) {
         const measure = () => {
           const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
           const peek = Math.round((mobile ? PEEK_REM.mobile : PEEK_REM.desktop) * rootPx);
-          const cardMin = (mobile ? CARD_MIN_REM.mobile : CARD_MIN_REM.desktop) * rootPx;
-          // In deck mode the text sits at the card's foot (margin-top: auto,
-          // its gap as padding-top), so its position says nothing about the
-          // content's height: add the parts up instead.
-          const deckMode = root.hasAttribute("data-deck");
           const strips: number[] = [];
           const nat: number[] = [];
           cards.forEach((card, i) => {
@@ -124,12 +116,10 @@ export function CardsStack({ items, heading }: CardsStackProps) {
             const pb = parseFloat(cs.paddingBottom) || 0;
             const { title, text } = parts[i];
             const titleEnd = title ? title.offsetTop + title.offsetHeight : 0;
-            const ts = text ? getComputedStyle(text) : null;
-            const textPad = ts ? parseFloat(ts.paddingTop) || 0 : 0;
-            const gap = ts ? (deckMode ? textPad : parseFloat(ts.marginTop) || 0) : 0;
-            const textH = text ? text.offsetHeight - (deckMode ? textPad : 0) : 0;
+            const textTop = text ? text.offsetTop : titleEnd;
+            const textH = text ? text.offsetHeight : 0;
             strips[i] = peek;
-            nat[i] = Math.ceil(Math.max(bt + titleEnd + gap + textH + pb + bb, cardMin));
+            nat[i] = Math.ceil(bt + textTop + textH + pb + bb);
           });
 
           // Coverage rule: each card is at least tall enough to hide the part

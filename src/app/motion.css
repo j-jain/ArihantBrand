@@ -103,8 +103,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 11.5rem;
-  padding: 1.6rem 2rem 2rem;
+  padding: 1.6rem 2rem 1.8rem;
   background: color-mix(
     in oklch,
     var(--paper),
@@ -176,15 +175,6 @@
   min-height: var(--cover-h, 0px);
 }
 
-/* A deck card is a card, not a strip (change round 8): the heading at the
-   top, the line at the foot. The gap moves from margin to padding so the
-   auto margin can take the slack; CardsStack measures the parts, not the
-   text's position. */
-.stack-section[data-deck] .stack__text {
-  margin-top: auto;
-  padding-top: 1.2rem;
-}
-
 @media (min-width: 768px) {
   .stack-section {
     /* The scrolled header (3px rule + 3.5rem bar + 1px border) plus air, so a
@@ -203,8 +193,22 @@
     padding-block: var(--deck-clear);
   }
 
+  /* A deck card is seen on its own, so it is set a size up (change round
+     8): more air inside, a larger heading, the line in the lead size close
+     under it. Sized by its content, never stretched, so the heading and its
+     line always read as one block. */
+  .stack-section[data-deck] .stack__card {
+    padding: 1.9rem 2.25rem 2.1rem;
+  }
+
   .stack-section[data-deck] .stack__title {
     font-size: 1.85rem;
+  }
+
+  .stack-section[data-deck] .stack__text {
+    margin-top: 0.7rem;
+    font-size: 1.15rem;
+    line-height: 1.55;
   }
 }
 

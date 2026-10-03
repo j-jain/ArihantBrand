@@ -353,18 +353,16 @@ export default async function HomePage() {
         />
       </section>
 
-      {/* 5 — Brand marquee (paper) ----------------------------------------- */}
+      {/* 5 — Brand marquee (paper). Heading and link on the page's left axis
+          like every other section (change round 8; they were the one centred
+          block on the page). */}
       <section className="bg-paper">
         <div className="container-site section-pad m-flow flex flex-col gap-10">
           <Reveal variant="fade">
-            <SectionHeading
-              heading={sections.brands.heading}
-              lead={sections.brands.lead}
-              align="center"
-            />
+            <SectionHeading heading={sections.brands.heading} lead={sections.brands.lead} />
           </Reveal>
           <LogoMarquee partners={marqueePartners} />
-          <p className="text-center">
+          <p>
             <Link
               href="/brands"
               className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
