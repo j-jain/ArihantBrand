@@ -29,4 +29,11 @@ Requested 4 October 2026, home page.
 
 ## Publishing
 
-Not done. When asked: commit (without `src/app/(site)/proto/`), push, dry-run three-way seed check, seed (the "Why us?" copy), signed revalidate, check live.
+Done 4 October 2026:
+
+- Commit 3fa39a8 pushed to `main` (without `src/app/(site)/proto/`, which stays local); Vercel production deploy succeeded.
+- Three-way check before seeding: no Studio edits to port, no conflicts, no photo slot holding an upload. The seed changed exactly five documents: `page-home` (the "Why us?" lead) and `pillar-0..3` (the four cards).
+- `npm run seed` (200 documents) and a signed revalidate (`revalidated: true`).
+- Checked live on arihant-brand.vercel.app: the stacked deck with the new lead and cards, the swing tags with a tag turned over, the old business rows gone, `/proto/businesses` answering 404.
+
+Still in the Studio for the client to delete (unchanged from round 7): `photoslot-marketingCorridor`, `photoslot-marketingWarehouse`, `groupstat-warehouse`, `store-4`, `store-5`, and the old draft `drafts.page-apparels`.
