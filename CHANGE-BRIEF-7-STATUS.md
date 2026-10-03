@@ -45,4 +45,11 @@ Requested 4 October 2026. Code only: nothing in this round needs a seed.
 
 ## Publishing
 
-Not done: needs a go-ahead. Round 6 (two sessions' work) is still uncommitted in the same tree, so rounds 6 and 7 go out together: commit, push, then the round 6 seed steps in `CHANGE-BRIEF-6-STATUS.md` (this round adds nothing to seed).
+Done 4 October 2026, together with round 6:
+
+- Commit e416fe7 pushed to `main`; Vercel production deploy succeeded.
+- Three-way check before seeding (last published seed vs this seed vs live Sanity): no Studio edits to port, no conflicts, no photo slot holding an uploaded image. The only content changes were the round 6 Marketing and Apparels hero copy.
+- `npm run seed`: 200 documents upserted. Signed revalidate on the live site: `revalidated: true`.
+- Checked live on arihant-brand.vercel.app: both new hero headlines, the trophy inset, the rail pinned at 1366x657, the footer map on Marketing and Recognition, the three removed Marketing sections and the Recognition milestones gone, the /brands index and the Apparels street.
+
+Still in the Studio for the client to delete (the seed never deletes): `photoslot-marketingCorridor`, `photoslot-marketingWarehouse`, and from earlier rounds `groupstat-warehouse`, `store-4`, `store-5` and the old unpublished draft `drafts.page-apparels` (publishing that draft would put the old Apparels headline back).

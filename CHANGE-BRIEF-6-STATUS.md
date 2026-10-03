@@ -40,4 +40,4 @@ session's work) belong in their own section below.
 
 ## Publishing
 
-Not done: needs a go-ahead, and both sessions' work sits uncommitted in the same tree. Then: commit, push, dry-run the seed against live Sanity (photo slot documents are re-created without an image, so check none holds a Studio upload first), seed (copy, the four photo slots, the new settings field), signed revalidate, check live.
+Done 4 October 2026 with round 7 (commit e416fe7, seeded, revalidated, checked live); see CHANGE-BRIEF-7-STATUS.md. The original plan, kept for reference: both sessions' work sat uncommitted in the same tree. Then: commit, push, dry-run the seed against live Sanity (photo slot documents are re-created without an image, so check none holds a Studio upload first), seed (copy, the four photo slots, the new settings field), signed revalidate, check live.
