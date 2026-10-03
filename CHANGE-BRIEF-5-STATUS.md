@@ -35,11 +35,11 @@ a lean footer, and logo walls without tiles.
 - With JavaScript off the production build renders the hero photographs and the map. The dev server does not load the hero images with JS off; that is a dev-only quirk.
 - Seed dry run diffed against live Sanity: it matches the committed seed apart from this round's 11 intended changes, so there are no Studio edits to port.
 
-## Publishing (not done; needs a go-ahead)
+## Publishing (done, 3 October 2026)
 
-1. Commit and push to `main` (a Vercel production deploy).
-2. `npm run seed`: publishes the copy above and uploads the three transparent logos (until then production keeps the old wording and the white-boxed logos from Sanity). Then the signed revalidate.
-3. Check every touched page on arihant-brand.vercel.app.
+1. Committed as b28d459 (the untracked `proto/` folder left out) and pushed to `main`; the Vercel production deploy went live about two minutes later.
+2. Re-diffed the seed against live Sanity right before seeding: still only this round's 11 changes. `npm run seed` upserted all 199 documents and uploaded the transparent logos (the retail logo now serves as the 396×228 cutout). Signed revalidate: `{"revalidated":true}`.
+3. Checked on arihant-brand.vercel.app: the new retail copy, the drawn shopfront card on hover, the model band at 836px with its heading on one line (61px), the three menu lines, the transparent logos and the lean footer.
 4. Still open from earlier rounds: delete the **Tura** and **Next door** fit-out stores in the Studio; store photographs from the client will replace the drawn shopfronts.
 
 ## Notes for the client
