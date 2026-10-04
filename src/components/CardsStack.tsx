@@ -71,6 +71,7 @@ export function CardsStack({ items, heading }: CardsStackProps) {
       const probe = root.querySelector<HTMLElement>(".stack-probe");
       if (!rail || !col || !deck || !probe) return;
       const cards = Array.from(deck.querySelectorAll<HTMLElement>(".stack__card"));
+      const indexRows = Array.from(root.querySelectorAll<HTMLElement>(".stack-index__row"));
       const n = cards.length;
       if (n < 2) return;
       const parts = cards.map((card) => ({
@@ -100,6 +101,7 @@ export function CardsStack({ items, heading }: CardsStackProps) {
         };
         let tl: gsap.core.Timeline | null = null;
         let raf = 0;
+        let onTop = -1;
         let flipTimer = 0;
 
         /** Card geometry from the cards' own boxes (card width is the same in
@@ -122,15 +124,18 @@ export function CardsStack({ items, heading }: CardsStackProps) {
             nat[i] = Math.ceil(bt + textTop + textH + pb + bb);
           });
 
-          // Coverage rule: each card is at least tall enough to hide the part
-          // of the card beneath it that its strip does not show.
-          g.H[0] = nat[0];
+          // Every card the same size (change round 8): as tall as the tallest,
+          // which also keeps the coverage rule (each card hides all of the one
+          // beneath it but the strip it leaves showing).
+          const tallest = Math.max(...nat);
           g.slot[0] = 0;
           g.ov[0] = 0;
-          for (let k = 1; k < n; k++) {
-            g.H[k] = Math.max(nat[k], g.H[k - 1] - strips[k - 1]);
-            g.slot[k] = g.slot[k - 1] + strips[k - 1];
-            g.ov[k] = g.H[k - 1] - strips[k - 1];
+          for (let k = 0; k < n; k++) {
+            g.H[k] = tallest;
+            if (k) {
+              g.slot[k] = g.slot[k - 1] + strips[k - 1];
+              g.ov[k] = tallest - strips[k - 1];
+            }
           }
           const deckH = g.slot[n - 1] + g.H[n - 1];
           const rowH = mobile ? deckH : Math.max(rail.offsetHeight, deckH);
@@ -162,6 +167,14 @@ export function CardsStack({ items, heading }: CardsStackProps) {
          *  until revert, so set() here grew memory with every pass. */
         const render = () => {
           if (!tl) return;
+          // The rail's index marks the card on top: the last one to have
+          // (mostly) landed.
+          let top = 0;
+          for (let i = 1; i < n; i++) if (state[i].p >= 0.6) top = i;
+          if (top !== onTop) {
+            onTop = top;
+            indexRows.forEach((row, i) => row.toggleAttribute("data-on", i === top));
+          }
           let above = 0;
           for (let i = n - 1; i >= 0; i--) {
             const { p, o } = state[i];
@@ -225,6 +238,8 @@ export function CardsStack({ items, heading }: CardsStackProps) {
             card.style.removeProperty("--stack-depth");
           });
           root.removeAttribute("data-deck");
+          indexRows.forEach((row) => row.removeAttribute("data-on"));
+          onTop = -1;
           state.forEach((s, i) => {
             s.p = i ? 0 : 1;
             s.o = i ? 0 : 1;
@@ -290,7 +305,22 @@ export function CardsStack({ items, heading }: CardsStackProps) {
     <div ref={rootRef} className="stack-section section-pad">
       <div className="container-site">
         <div className="stack-stage m-flow grid gap-x-12 gap-y-10 md:grid-cols-12">
-          <div className="stack-rail md:col-span-5">{heading}</div>
+          <div className="stack-rail md:col-span-5">
+            <div className="stack-rail__head">{heading}</div>
+            {/* The reasons as an index (change round 8). Shown in deck mode
+                only, where the cards cover each other: it keeps all four in
+                view and marks the one on top. Decorative, since the cards
+                carry the same titles. Laid out (but invisible) outside deck
+                mode too, so the fit guard measures one rail height. */}
+            <ol className="stack-index" aria-hidden="true">
+              {items.map((item) => (
+                <li key={item.title} className="stack-index__row">
+                  <span className="stack-index__mark" />
+                  {item.title}
+                </li>
+              ))}
+            </ol>
+          </div>
           <div className="stack-col md:col-span-7">
             <div className="stack">
               {items.map((item, i) => (

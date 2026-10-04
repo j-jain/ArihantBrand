@@ -393,7 +393,8 @@ export const retailModel: RetailModel = {
 /* ------------------------------------------------------------------ */
 
 /* The four "Why us?" cards: the range, the team, the brands, and the visit
-   cycle. Change round 8 cut them down at the client's request, meaning kept:
+   cycle. Change round 8 cut them down at the client's request, then gave
+   each card back its closing clause so the stacked cards fill out, meaning kept:
    one partner for every category (the client's "one point of truth"), an
    experienced team with the authority to decide (their "single point of
    clearance"), only category leaders, and the visit that does not slip. The
@@ -404,19 +405,19 @@ export const retailModel: RetailModel = {
 export const pillars = [
   {
     title: "Every category, one partner",
-    text: `Men, women, kids, denim, ethnic, footwear. ${phrase.groupLabels} labels, one set of terms, one indent, one visit.`,
+    text: `Men, women, kids, denim, ethnic, footwear: ${phrase.groupLabels} labels on one set of terms, one indent, one visit, one partner.`,
   },
   {
     title: "A seasoned team that decides",
-    text: "Years on these routes. They know your counter, your customer and last season's sellers.",
+    text: "Years on these routes. They know your counter and what sold there, and can say yes on the spot.",
   },
   {
     title: "Only category leaders",
-    text: "No fillers. Every label leads its category, or is being built to.",
+    text: "No fillers. Every label leads its category, or is being built to, so the space on your racks goes to stock that sells.",
   },
   {
     title: `In your store every ${phrase.visitCycle}`,
-    text: "Orders, claims and feedback, face to face. The cycle never slips.",
+    text: "Orders, claims and feedback, face to face. The cycle never slips, because service is what we compete on.",
   },
 ];
 

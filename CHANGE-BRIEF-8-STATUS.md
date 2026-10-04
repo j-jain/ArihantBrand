@@ -34,6 +34,14 @@ Live 4 October 2026: commit e179b5a, code only (no seed), Vercel deploy succeede
 | One left axis | Done | "The brands we carry" was the only centred heading on the home page; its heading and "See all" link now sit on the same left edge as every other section. |
 | Rest of the page | Checked | Section padding (about 140px top and bottom at 1536x864) and heading-to-content gaps (about 40px) are consistent across hero, awards, "Why us?", businesses, brands, Trade Notes and the closing band; nothing else changed. |
 
+## Follow-up 2: "Why us?" fuller
+
+| Item | Status | Evidence |
+|---|---|---|
+| Cards back to their earlier size, all identical | Done | Every deck card is the tallest card's height (228px each at 1536x864, 217 at 1366x657), set a size up with more air inside rather than stretched, so the heading and its line stay one block. Phone cards set a size up too (205px each at 390x844; still fits a 360x640 screen). |
+| The screen was too empty | Done | The rail under "Why us?" now holds an index of the four reasons, marking the card on top as the deck builds (desktop and tablet). |
+| Copy back up a little | Done in the seed | Each card got back the clause the first cut took, meaning as before: "...77 labels on one set of terms, one indent, one visit, one partner." / "Years on these routes. They know your counter and what sold there, and can say yes on the spot." / "...or is being built to, so the space on your racks goes to stock that sells." / "...The cycle never slips, because service is what we compete on." Needs a seed after the deploy (`pillar-0..3`). |
+
 ## Checks
 
 - `tsc --noEmit`, `eslint src scripts`: clean. `next build`: passes, all routes static.

@@ -546,6 +546,27 @@
   .stack__text {
     margin-top: 0.8rem;
   }
+
+  /* Deck mode on a phone: the pinned deck has the screen to itself, so its
+     cards are set a size up, as on desktop (change round 8). */
+  .stack-section[data-deck] .stack__card {
+    padding: 1.6rem 1.4rem 1.7rem;
+  }
+
+  .stack-section[data-deck] .stack__title {
+    font-size: 1.4rem;
+  }
+
+  .stack-section[data-deck] .stack__text {
+    font-size: 1.06rem;
+    line-height: 1.6;
+  }
+
+  /* The rail's index is a desktop idea: on a phone the heading scrolls away
+     and only the deck holds. */
+  .stack-index {
+    display: none;
+  }
 }
 
 /* ------------------------------------------------------------------ */
