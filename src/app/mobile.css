@@ -22,62 +22,85 @@
 
 /* ------------------------------------------------------------------ */
 /* 1 — Tokens                                                          */
-/* The desktop scale bottoms out on its clamp floor at phone widths,    */
-/* which leaves display (2.6rem) barely above h2 (2.0rem) — the         */
-/* hierarchy step the whole design rests on collapses. These sizes      */
-/* scale with the handset instead of freezing, and deliberately widen   */
-/* the display-to-h2 gap rather than shrinking everything uniformly.    */
+/* Mobile revamp: the scale grows with the handset from 360 to 430px    */
+/* (it sat on its clamp floors before, so every phone got the same flat */
+/* sizes) and keeps a real step between levels: display/h2 1.29,        */
+/* h2/h3 1.28. Nothing is set below 13px, bar two 11px marks: the       */
+/* wordmark's tracked GROUP and the map card's photo tag (section 18).  */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
   :root {
-    --text-display: clamp(2.35rem, 9.6vw, 3.05rem);
-    --text-h2: clamp(1.72rem, 6.4vw, 2.05rem);
-    --text-h3: clamp(1.28rem, 4.6vw, 1.5rem);
-    --text-h4: 1.14rem;
-    --text-lead: clamp(1.04rem, 3.5vw, 1.14rem);
+    /* values at 360 / 390 / 430 */
+    --text-display: clamp(2.25rem, 0.3rem + 8.4vw, 2.625rem); /* 35 / 37.6 / 41 */
+    --text-h2: clamp(1.75rem, 0.55rem + 5.2vw, 2rem); /* 28 / 29.1 / 31 */
+    --text-h3: clamp(1.375rem, 0.73rem + 2.86vw, 1.5rem); /* 22 / 22.8 / 24 */
+    --text-h4: 1.125rem;
+    --text-lead: clamp(1.0625rem, 0.87rem + 0.86vw, 1.125rem);
     --text-body: 1rem;
-    --text-small: 0.9rem;
-    --text-label: 0.75rem;
-    --text-stat: clamp(2.2rem, 8.6vw, 2.9rem);
+    --text-small: 0.9375rem;
+    --text-label: 0.8125rem; /* 13px: the floor for any text on a phone */
+    --text-stat: clamp(2.5rem, 0.9rem + 7.2vw, 3rem);
 
-    /* Mirrors the .container-site gutter so bleeds and rails can cancel
-       it exactly. Kept as one source of truth. */
-    --m-gutter: clamp(1.25rem, 4vw, 2.5rem);
+    /* Gutter. One source of truth: the containers read --gutter (defined
+       only from 768px up on desktop), bleeds and rails cancel --m-gutter. */
+    --m-gutter: clamp(1.25rem, 0.35rem + 4vw, 1.5rem);
+    --gutter: var(--m-gutter);
 
-    /* Sticky offsets. The header bar is 4rem tall; sticky things clear it
-       with a little air. */
-    /* Bar height plus the 3px vermillion rule above it. */
-    --m-header-h: calc(4rem + 3px);
+    /* Section rhythm. */
+    --m-section: 3.25rem;
+    --m-section-tight: 2.25rem;
+
+    /* Chrome. The bar is 3.5rem under the 3px vermillion rule. Sticky
+       things follow the header as it slides away and back: SiteHeader
+       publishes --m-header-offset (the part of it on screen) every frame. */
+    --header-h: 3.5rem;
+    --m-header-h: calc(var(--header-h) + 3px);
+    --m-sticky-top: var(--m-header-offset, calc(var(--m-header-h) + 1px));
+
+    /* The floating action dock and the room everything leaves for it. */
+    --m-dock-h: 3.5rem;
+    --m-dock-inset: 0.625rem;
+    --m-dock-clear: calc(var(--m-dock-h) + var(--m-dock-inset) + env(safe-area-inset-bottom, 0px));
+
+    /* Surfaces: plates (tapped whole), photos, controls, the dock. */
+    --m-r-card: 10px;
+    --m-r-photo: 6px;
+    --m-r-dock: 6px;
+    --m-shadow-float:
+      0 1px 2px oklch(0.18 0.01 30 / 0.12), 0 16px 36px -14px oklch(0.18 0.01 30 / 0.45);
+    --m-press-tint: color-mix(in oklch, var(--ink) 6%, transparent);
 
     /* Retargeted inline sizes (see the var(--m-x, …) fallbacks in JSX). */
-    --m-unit-stat: 1.85rem;
-    --m-exh-figure: clamp(4.5rem, 26vw, 7rem);
-    --m-ticket-name: 1.05rem;
-    --m-hero-compact-pad: 2rem;
-    --m-award-year: clamp(3.25rem, 17vw, 4.5rem);
-    --m-wordmark: 1.15rem;
-    --m-wordmark-sub: 0.6rem;
+    --m-hero-compact-pad: 2.25rem;
+    --m-wordmark: 1.3rem;
+    --m-wordmark-sub: 0.6875rem;
+    --m-wordmark-sub-ls: 0.32em;
     --m-partner-stat: 1.85rem;
     --m-blogcard-title: 1.2rem;
   }
 
   .t-display {
-    line-height: 1.04;
-    letter-spacing: -0.022em;
+    line-height: 1.02;
+    letter-spacing: -0.024em;
   }
 
   .t-h2 {
-    line-height: 1.14;
-    letter-spacing: -0.014em;
+    line-height: 1.1;
+    letter-spacing: -0.016em;
   }
 
   .t-h3 {
-    line-height: 1.24;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
   }
 
   .t-lead {
     line-height: 1.5;
+  }
+
+  .t-label {
+    letter-spacing: 0.08em;
   }
 
   .t-body,
@@ -93,9 +116,9 @@
     line-height: 1.68;
   }
 
-  /* Native anchor jumps clear the shorter mobile header. */
+  /* Native anchor jumps clear the header. */
   html {
-    scroll-padding-top: calc(4.75rem + 3px);
+    scroll-padding-top: calc(var(--m-header-h) + 1.25rem);
   }
 }
 
@@ -111,18 +134,18 @@
   /* The Marketing page runs on its own tighter desktop step so each band fits
      one screen; on a phone it wants exactly the rhythm every other band gets. */
   .am-band {
-    padding-block: clamp(2.5rem, 8vw, 3.25rem);
+    padding-block: var(--m-section);
   }
 
   .hero-pad {
-    padding-top: 1.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: 1.75rem;
+    padding-bottom: 2.75rem;
   }
 
   /* Section-internal grouping. One class replaces the desktop
      gap-8/10/12/14 wherever a section wrapper needs phone rhythm. */
   .m-flow {
-    gap: 1.5rem;
+    gap: 1.75rem;
   }
 
   .m-flow-tight {
@@ -130,7 +153,7 @@
   }
 
   .m-flow-loose {
-    gap: 2rem;
+    gap: 2.5rem;
   }
 }
 
@@ -245,13 +268,12 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* 6 — Shell: menu sheet, action bar, footer                           */
+/* 6 — Shell: header, menu sheet, action dock, footer                  */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
-  /* --- Hero figure row ---------------------------------------------- */
-  /* Three numbers have to cost one band of the fold, not two, or the CTAs
-     they are meant to support get pushed off the first screen. */
+  /* --- Unit hero figure row ---------------------------------------- */
+  /* Three numbers have to cost one band of the fold, not two. */
 
   .stat-band--compact .stat-item {
     padding: 0.6rem 0.55rem;
@@ -261,28 +283,59 @@
     padding-left: 0;
   }
 
-  /* --- Header direct-contact pair ----------------------------------- */
-  /* Call and WhatsApp sit in the bar itself, not two taps deep inside the
-     sheet. Both are 44px targets; the pair is pushed right so the wordmark
-     keeps the left edge and the hamburger keeps the far right. */
-
-  .header-actions {
-    gap: 0;
-    margin-right: 0;
+  .stat-suffix,
+  .stat-band--compact .stat-suffix {
+    font-size: max(0.45em, 0.8125rem);
   }
 
-  /* The bar has to hold the wordmark, the contact pair and the menu button
-     on a 360px handset. At its desktop size the wordmark left no room and the
-     menu button was squeezed to zero width, so a phone visitor had no way to
-     open the menu (found in change round 2). The wordmark steps down a size
-     here and the bar's gaps tighten; every target stays 44px. */
+  /* --- Header bar -------------------------------------------------- */
+  /* A 3.5rem bar under the 3px rule (--header-h). The wordmark stacks:
+     ARIHANT over a tracked GROUP, which frees the bar's width for the
+     contact pair and lifts GROUP to a readable 11px. */
+
   .site-header__bar {
-    gap: 0.25rem;
+    gap: 0;
   }
 
   .wordmark {
     min-width: 0;
     flex: 0 1 auto;
+    gap: 0.55rem;
+  }
+
+  .wordmark__type {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.28rem;
+  }
+
+  .wordmark__type > span {
+    line-height: 0.9;
+  }
+
+  .wordmark__chevron {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  /* Call and WhatsApp sit in the bar itself, as 44px targets, then a
+     hairline, then the menu button at the far right. */
+  .header-actions {
+    position: relative;
+    gap: 0;
+    margin-right: 0;
+    padding-right: 0.3rem;
+  }
+
+  .header-actions::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 1px;
+    height: 1.5rem;
+    translate: 0 -50%;
+    background: var(--line);
   }
 
   .header-action {
@@ -298,47 +351,82 @@
     color: var(--whatsapp-deep);
   }
 
-  /* --- Mobile menu sheet ------------------------------------------- */
+  /* --- Menu sheet --------------------------------------------------- */
+  /* Full screen, paper, the brand rule across its top edge like the bar.
+     The three businesses are ruled rows with their logos; the pages run
+     large in Besley; the ask and the two direct lines sit under the
+     thumb. */
 
   .menu-sheet__panel {
-    padding: 1.15rem var(--m-gutter)
-      calc(1.15rem + env(safe-area-inset-bottom, 0px));
-    padding-top: calc(1.15rem + env(safe-area-inset-top, 0px));
+    padding: calc(0.6rem + env(safe-area-inset-top, 0px)) var(--m-gutter)
+      calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    box-shadow: inset 0 3px 0 var(--vermillion-deep);
+    animation: m-sheet-in 260ms var(--ease) both;
+  }
+
+  @keyframes m-sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.4rem);
+    }
   }
 
   .menu-sheet__nav {
-    margin-top: 1.75rem;
+    margin-top: 1.5rem;
     gap: 0;
   }
 
   .menu-sheet__eyebrow {
-    margin-bottom: 0.4rem;
+    margin-bottom: 0;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
   }
 
   .menu-sublink {
-    min-height: 44px;
-    padding-block: 0.45rem;
-    font-size: 1.12rem;
+    gap: 0.85rem;
+    min-height: 3.5rem;
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 1.15rem;
+  }
+
+  .menu-sublink::after {
+    content: "\2192" / "";
+    margin-left: auto;
+    color: var(--vermillion-deep);
+    font-family: var(--font-archivo), system-ui, sans-serif;
+    font-weight: 600;
+  }
+
+  .menu-sublink[data-active="true"] {
+    color: var(--vermillion-deep);
+  }
+
+  .menu-sublink__logo {
+    width: 2.5rem;
+    height: 1.75rem;
   }
 
   .menu-sheet__gap {
-    margin-top: 1.15rem;
+    margin-top: 1.25rem;
   }
 
   .menu-link {
-    font-size: 1.65rem;
-    padding-block: 0.34rem;
+    display: flex;
+    align-items: center;
+    min-height: 3.25rem;
+    padding-block: 0.2rem;
+    font-size: 1.75rem;
   }
 
   .menu-sheet__foot {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
   }
 
-  /* The two things a trade visitor actually reaches for, sitting under the
-     thumb rather than back up the sheet. */
   .menu-sheet__contact {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -350,7 +438,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-    min-height: 46px;
+    min-height: 48px;
     border: 1px solid var(--line);
     border-radius: 2px;
     font-family: var(--font-archivo), system-ui, sans-serif;
@@ -364,66 +452,211 @@
     border-color: color-mix(in oklch, var(--whatsapp-deep), transparent 72%);
   }
 
-  /* --- Sticky action bar ------------------------------------------- */
+  /* --- Action dock -------------------------------------------------- */
+  /* The bar becomes a dock floating clear of the screen edges, in the
+     charcoal of the brand's contact panel: Call, WhatsApp, and the one
+     vermillion ask. It rises in past the hero and stands down over the
+     page's own CTA band (useCtaYield). */
 
   .action-bar {
-    box-shadow: 0 -10px 26px -20px oklch(0.215 0.01 30 / 0.55);
+    left: var(--m-dock-inset);
+    right: var(--m-dock-inset);
+    bottom: calc(var(--m-dock-inset) + env(safe-area-inset-bottom, 0px));
+    grid-template-columns: 1fr 1fr 1.25fr;
+    gap: 4px;
+    height: var(--m-dock-h);
+    padding: 4px;
+    border: 0;
+    border-radius: var(--m-r-dock);
+    background: var(--charcoal);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklch, var(--on-charcoal) 14%, transparent),
+      var(--m-shadow-float);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(100% + var(--m-dock-inset) + env(safe-area-inset-bottom, 0px)));
+    transition:
+      transform 380ms var(--ease),
+      opacity 220ms var(--ease);
+  }
+
+  .action-bar[data-visible="true"] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
   }
 
   .action-bar__btn {
-    min-height: 52px;
+    gap: 0.45rem;
+    min-height: 0;
+    height: 100%;
+    border-radius: 2px;
+    color: var(--on-charcoal);
+    font-size: 0.9375rem;
+    transition: background-color 120ms var(--ease);
   }
 
-  /* --- Footer ------------------------------------------------------ */
+  .action-bar__btn + .action-bar__btn {
+    border-left: 0;
+  }
+
+  .action-bar__btn--whatsapp {
+    color: var(--on-charcoal);
+  }
+
+  .action-bar__btn--whatsapp svg {
+    color: var(--whatsapp);
+  }
+
+  .action-bar__btn--primary {
+    background: var(--vermillion-deep);
+    color: #fff;
+  }
+
+  .action-bar__btn:active {
+    background: color-mix(in oklch, var(--on-charcoal) 10%, transparent);
+  }
+
+  .action-bar__btn--primary:active {
+    background: color-mix(in oklch, var(--vermillion-deep), black 16%);
+  }
+
+  .action-bar :focus-visible {
+    outline: 2px solid var(--on-charcoal);
+    outline-offset: -2px;
+  }
+
+  /* --- Footer -------------------------------------------------------- */
+  /* From 1692px to under 900: the reach line sits beside the map, the
+     three units fold into one exclusive accordion (ContactAccordion), the
+     office map runs edge to edge at a shorter height. Same words. */
+
+  .site-footer__inner {
+    padding-top: 2.75rem;
+    padding-bottom: 0;
+  }
+
+  .footer-top {
+    position: relative;
+    display: block;
+  }
+
+  .footer-top__copy {
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-top__copy > h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  /* The dotted map sits behind the reach line, off to the right, as the
+     footer's ground rather than a block of its own. */
+  .footer-map {
+    position: absolute;
+    top: -1.75rem;
+    right: calc(var(--m-gutter) * -0.5);
+    width: 62%;
+    margin-top: 0;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* The hub label is about 4px at this width: the map reads as texture
+     here, and the svg keeps its own label for assistive tech. */
+  .footer-map .nm-label {
+    display: none;
+  }
 
   .footer-channels {
-    margin-top: 1.5rem;
+    display: none;
   }
 
-  /* Three units of contact rows stack into a very tall column at phone
-     width; below 480px that is unavoidable, but a landscape handset has
-     room for two. */
-  .channels {
-    gap: 1.5rem 1.25rem;
-  }
-
-  .footer-map {
+  .footer-units {
     margin-top: 2rem;
   }
 
-  .footer-map .nm-svg {
-    max-height: 240px;
+  .footer-unit__head {
+    gap: 0.75rem;
+    min-height: 3.5rem;
+    padding-block: 0.8rem;
   }
 
-  /* The office map (round 7): a shorter frame, and the card set under the
-     map as a paper strip rather than over it, where it would hide the pin. */
+  .footer-unit__name {
+    font-family: var(--font-besley), Georgia, serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--on-charcoal);
+  }
+
+  .footer-unit__floor {
+    margin-left: auto;
+    font-size: var(--text-small);
+    font-weight: 400;
+    color: var(--on-charcoal-soft);
+  }
+
+  .footer-unit__links {
+    padding-bottom: 0.6rem;
+  }
+
+  .footer-unit .channel-link {
+    display: flex;
+    width: 100%;
+  }
+
+  /* On charcoal the plus mark takes the large-mark red, which holds
+     contrast there (the deep red is for paper). Also serves the dark FAQ
+     on /partner. */
+  .on-dark .faq-summary::after {
+    background:
+      linear-gradient(var(--vermillion), var(--vermillion)) center / 0.95rem 2px no-repeat,
+      linear-gradient(var(--vermillion), var(--vermillion)) center / 2px 0.95rem no-repeat;
+  }
+
+  .on-dark .faq-item[open] .faq-summary::after {
+    background: linear-gradient(var(--vermillion), var(--vermillion)) center / 0.95rem 2px
+      no-repeat;
+  }
+
   .footer-office {
-    margin-top: 2.25rem;
+    margin: 2.25rem calc(var(--m-gutter) * -1) 0;
+    border-radius: 0;
+    box-shadow:
+      0 -1px 0 var(--line-dark),
+      0 1px 0 var(--line-dark);
   }
 
   .footer-office__map {
-    height: 13rem;
+    height: 9.5rem;
   }
 
+  /* The card is a paper strip under the map rather than over it, where it
+     would hide the pin. */
   .footer-office__card {
     position: static;
     max-width: none;
-    padding: 0.9rem 1rem 1rem;
+    padding: 0.9rem var(--m-gutter) 1rem;
     border-radius: 0;
-    box-shadow: inset 0 1px 0 var(--line);
+    box-shadow: none;
   }
 
   .footer-office__card:hover {
     translate: none;
   }
 
-  /* The one bottom line (change round 5) stacks: copyright, then the address,
-     which is the Google Maps link (round 6), at a full tap height. */
+  .footer-office__name {
+    font-size: 1.0625rem;
+  }
+
+  /* The one bottom line stacks: copyright, then the address, which is the
+     Google Maps link, at a full tap height. */
   .footer-base {
     flex-direction: column;
     align-items: flex-start;
-    margin-top: 2.25rem;
-    padding-top: 1.25rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
   }
 
   .footer-nap {
@@ -431,11 +664,20 @@
     min-height: 44px;
     padding-block: 0.35rem;
   }
+
+  /* Room under the bottom line for the dock. */
+  .m-dock-spacer {
+    height: calc(var(--m-dock-clear) + 1rem);
+  }
 }
 
-@media (min-width: 480px) and (max-width: 767px) {
-  .channels {
-    grid-template-columns: 1fr 1fr;
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .menu-sheet__panel {
+    animation: none;
+  }
+
+  .action-bar {
+    transition: none;
   }
 }
 
@@ -463,24 +705,44 @@
   }
 
   .marquee {
-    --marquee-gap: 1.5rem;
+    --marquee-gap: 1.75rem;
   }
 
-  /* Inside the column on a phone: the 20px gutter cannot take half of it. */
+  /* The pause control leaves the track (where it sat over the last logo)
+     and becomes a round 44px button on the row under it. */
   .marquee__toggle {
-    translate: 0 -50%;
+    position: static;
+    translate: none;
+    border-radius: 50%;
   }
 
-  /* FAQ: the summary is a tap target, so it keeps its height, but the type
-     comes down to the mobile body scale. */
+  /* Contact channels (contact, partner): each unit a ruled block, its
+     lines full-width 44px rows. */
+  .channels {
+    gap: 0 1.25rem;
+  }
+
+  .channels__unit {
+    gap: 0.5rem;
+    padding-block: 1.25rem 0.75rem;
+    border-top: 1px solid var(--_line);
+  }
+
+  .channels__unit .channel-link {
+    display: flex;
+    width: 100%;
+  }
+
+  /* FAQ: each question is a ruled row a thumb can hit without aiming. */
   .faq-summary {
-    font-size: 1rem;
+    min-height: 3.5rem;
     padding: 0.95rem 0;
-    gap: 0.75rem;
+    gap: 0.9rem;
+    font-size: 1.0625rem;
   }
 
   .faq-answer {
-    padding-bottom: 1rem;
+    padding-bottom: 1.1rem;
   }
 
   /* Testimonials: the short mobile list becomes a snap rail (the .m-rail class
@@ -490,32 +752,28 @@
   }
 
   .tcol__card {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    padding: 1.15rem;
+    padding: 1.35rem 1.25rem 1.2rem;
   }
 
   .tcol__quote {
-    font-size: 1rem;
-    margin-bottom: 1rem;
+    flex: 1;
+    margin-bottom: 1.15rem;
+    font-size: 1.0625rem;
     line-height: 1.55;
   }
 
   /* Recognition cabinet: the 2-up grid becomes a rail of taller plates, so a
-     certificate is actually readable instead of thumbnail-sized. */
-  .fan__stage {
-    --m-rail-w: 56%;
-  }
-
+     certificate is actually readable instead of thumbnail-sized (width and
+     captions in section 16). */
   .fan__card {
     gap: 0.6rem;
   }
 
   .fan__img {
     padding: 0.5rem;
-  }
-
-  .fan__cap {
-    font-size: 0.85rem;
   }
 
   /* Timeline: the spine sits closer in, and entries pack tighter. */
@@ -532,9 +790,8 @@
   }
 
   /* Pillar cards. The tighter padding is what lets the gathered deck fit a
-     360x640 screen under the header and above the action bar (deck 491px
-     against 503px available); it applies in both modes, so the deck's
-     measurements do not depend on which mode is live. */
+     360x640 screen under the header and above the dock; it applies in both
+     modes, so the deck's measurements do not depend on which mode is live. */
   .stack__card {
     padding: 1.1rem 1.25rem;
   }
@@ -571,9 +828,49 @@
 
 /* ------------------------------------------------------------------ */
 /* 8 — Shared phone idioms                                             */
+/* One surface language: plates (things tapped whole: white, a hairline, */
+/* a 10px radius, no shadow at rest), ledgers (hairline rows at least   */
+/* 44px tall, for facts and links), bleeds (photos and dark bands edge  */
+/* to edge). Buttons stay sharp at 2px; only floating things cast a     */
+/* shadow.                                                              */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
+  /* The heading signature: a short vermillion rule over every section
+     heading, the trade-poster accent the header's top rule already sets.
+     A rule, not a label: nothing is printed above the heading. */
+  .section-head::before {
+    content: "";
+    display: block;
+    width: 2rem;
+    height: 3px;
+    margin-bottom: 0.35rem;
+    background: var(--vermillion-deep);
+  }
+
+  .on-dark .section-head::before {
+    background: var(--vermillion);
+  }
+
+  .drench-band .section-head::before {
+    background: #fff;
+  }
+
+  .section-head.items-center::before {
+    align-self: center;
+  }
+
+  .m-plate {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--m-r-card);
+  }
+
+  .on-dark .m-plate {
+    background: var(--charcoal-raise);
+    border-color: var(--line-dark);
+  }
+
   /* Frame ratios. Applied as a class rather than a prop so the desktop
      `aspect-ratio` inline value is never touched — ParallaxImage writes it
      as var(--m-frame-ratio, <desktop>). */
@@ -581,8 +878,59 @@
     --m-frame-ratio: 4 / 3;
   }
 
-  .m-ar-16-9 {
-    --m-frame-ratio: 16 / 9;
+  .m-ar-3-2 {
+    --m-frame-ratio: 3 / 2;
+  }
+
+  .m-ar-1-1 {
+    --m-frame-ratio: 1 / 1;
+  }
+
+  /* Buttons: a size up for the thumb, with a pressed state, since a phone
+     has no hover. */
+  .btn {
+    min-height: 48px;
+    padding-inline: 1.4rem;
+    font-size: 1rem;
+  }
+
+  .btn-lg {
+    min-height: 52px;
+    padding-inline: 1.1rem;
+    font-size: 1rem;
+  }
+
+  /* A label too long for one line wraps in balanced lines, not a ragged
+     last word. */
+  .btn {
+    text-wrap: balance;
+  }
+
+  /* Long page headlines step down so they set in four or five lines, not
+     six or seven (the retail hero line runs to 71 characters). */
+  .t-display--long,
+  .t-display--feature-long,
+  .unit-hero--fit .t-display {
+    font-size: clamp(1.95rem, 0.3rem + 7.6vw, 2.3rem);
+    line-height: 1.08;
+  }
+
+  /* Closing bands: their asks span the column, like every phone CTA. */
+  .drench-band .btn {
+    align-self: stretch;
+    width: 100%;
+  }
+
+  .btn-primary:active {
+    background: color-mix(in oklch, var(--vermillion-deep), black 16%);
+  }
+
+  .btn-secondary:active {
+    background: var(--paper-shade);
+  }
+
+  .btn-ondark:active {
+    background: color-mix(in oklch, #fff, var(--ink) 10%);
   }
 
   /* Call-to-action rows: a thumb wants one full-width target, not two
@@ -590,7 +938,8 @@
   .m-cta {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.7rem;
+    align-self: stretch;
+    gap: 0.75rem;
   }
 
   .m-cta .btn {
@@ -601,6 +950,34 @@
   .m-tap {
     display: inline-flex;
     align-items: center;
+    min-height: 44px;
+  }
+
+  /* The phone text link: always underlined (there is no hover to reveal
+     it), a 44px row, the arrow kept out of the underline. */
+  .m-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 44px;
+    font-weight: 650;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.32em;
+    text-decoration-color: color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  .m-link > [aria-hidden] {
+    display: inline-block;
+    text-decoration: none;
+  }
+
+  .m-link:active {
+    text-decoration-color: currentColor;
+  }
+
+  /* The wordmark is the way home: a full tap height. */
+  .wordmark {
     min-height: 44px;
   }
 }
@@ -621,109 +998,136 @@
     );
   }
 
-  /* Business tickets: the framed 3-up grid becomes a peeking rail. The
-     wrapper gives up its border and clipping so the rail can bleed. */
-  .ticket-nav {
-    overflow: visible;
-    margin-top: 1.75rem;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
+  /* --- Funnels: both asks on screen together ------------------------ */
+  /* Two cards stacked in one rounded plate, a hairline between them (the
+     grid's own 1px gap on its line colour). Each ends on a full-width ruled
+     row carrying its ask. */
+  .funnels {
+    padding-block: var(--m-section-tight);
   }
 
-  .ticket-nav__grid {
-    --m-rail-w: 74%;
-    gap: 0.7rem;
-    background: transparent;
+  .funnel-grid {
+    border-radius: var(--m-r-card);
   }
 
-  .ticket {
+  .funnel-card {
     gap: 0.6rem;
-    padding: 0.95rem 1rem;
-    border: 1px solid var(--line);
+    padding: 1.4rem 1.25rem 0.35rem;
+  }
+
+  .funnel-card__cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-height: 3.25rem;
+    margin-top: 0.75rem;
+    padding-top: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .funnel-card:active {
+    background: var(--paper);
+  }
+
+  /* --- Awards and testimonials -------------------------------------- */
+  /* One column that never grows past the screen: the testimonial rail's
+     intrinsic width used to widen it, cutting the heading off at 360px. */
+  .awards-band .m-flow.grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .award-list--compact .award-row {
+    padding-block: 1rem;
+  }
+
+  .award-list--compact .award-row--lead {
+    padding-block: 1.25rem;
+  }
+
+  .award-list--compact .award-row::before {
+    top: 1rem;
+  }
+
+  .award-list--compact .award-row--lead::before {
+    top: 1.25rem;
+  }
+
+  /* --- Brands: the track edge to edge, link and pause on one row ------ */
+  .brands-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1rem;
+  }
+
+  .brands-band > * {
+    grid-column: 1 / -1;
+  }
+
+  .brands-band > .marquee-wrap {
+    display: contents;
+  }
+
+  .brands-band .marquee {
+    grid-column: 1 / -1;
+    margin-inline: calc(var(--m-gutter) * -1);
+  }
+
+  .brands-band .marquee__toggle {
+    grid-row: 3;
+    grid-column: 2;
+    align-self: center;
+  }
+
+  .brands-band > p {
+    grid-row: 3;
+    grid-column: 1;
+    align-self: center;
+  }
+
+  /* --- Trade Notes ------------------------------------------------- */
+  .notes-rail {
+    --m-rail-w: 84%;
+  }
+
+  .notes-rail .t-label {
+    margin-top: 0.95rem;
+  }
+
+  .notes-rail .t-h4 {
+    font-size: 1.1875rem;
+    line-height: 1.3;
+  }
+
+  /* --- Closing drench ---------------------------------------------- */
+  /* The ask a step larger, the phone number as a second full-width
+     button under the first rather than a stray line of text. */
+  #cta .t-h2 {
+    font-size: calc(var(--text-h2) * 1.12);
+  }
+
+  .drench-band .m-cta .m-tap {
+    justify-content: center;
+    min-height: 52px;
+    border: 1px solid color-mix(in oklch, #fff 55%, transparent);
     border-radius: 2px;
+  }
+
+  .drench-band .m-cta .m-tap:active {
+    background: color-mix(in oklch, #fff 10%, transparent);
   }
 }
 
 /* ------------------------------------------------------------------ */
 /* 10 — Unit pages (marketing / apparels / retail)                     */
+/* (The old unit-hero plate, roadmap and duo rules went with the        */
+/* markup they styled; the mobile revamp removed them.)                 */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
-  /* --m-band-scrim used to live here, retargeting the award band's left-to-right
-     gradient to a top-down one once the copy ran full width. The award band no
-     longer stands on a dimmed photograph, so it has no scrim to retarget and
-     nothing else consumed the token. */
-
-  /* Hero identity block: a full-width 5:3 white box is a 200px empty plate on
-     a phone. It becomes a short logo strip over a tight stat ledger. */
-  .unit-hero__aside {
-    gap: 0.85rem;
-  }
-
-  .unit-hero__plate {
-    padding: 0.9rem 1rem;
-  }
-
-  .unit-hero__logo {
-    aspect-ratio: auto;
-    height: 2.75rem;
-  }
-
-  .unit-hero__stat {
-    padding-block: 0.6rem;
-    border-top: 1px solid var(--line);
-  }
-
-  .unit-hero__stat-label {
-    max-width: 11rem;
-  }
-
-  /* Numbered sequences and hairline ledgers. */
-  .m-step {
-    column-gap: 1rem;
-    padding-block: 1rem;
-  }
-
+  /* Hairline ledgers. */
   .m-ledger-row {
     padding-block: 0.85rem;
-  }
-
-  /* Retail: the desktop image duo overlaps; stacked full-bleed it just needs
-     to sit tight enough to read as one pair rather than two lone photos. */
-  .m-duo > * + * {
-    margin-top: 0.5rem;
-  }
-
-  /* Retail roadmap: stand the connecting rule up and hang the nodes off it. */
-  .roadmap {
-    padding-top: 0.25rem;
-  }
-
-  .roadmap__spine {
-    --m-spine-top: 0.4rem;
-    --m-spine-height: auto;
-    bottom: 0.4rem;
-    left: 7px;
-    right: auto;
-    width: 1px;
-  }
-
-  .roadmap__list {
-    grid-template-columns: 1fr;
-    gap: 1.15rem;
-  }
-
-  .roadmap__node {
-    position: relative;
-    gap: 0.25rem;
-    padding-left: 1.9rem;
-  }
-
-  .roadmap__dot {
-    position: absolute;
-    left: 0;
-    top: 0.3rem;
   }
 }
 
@@ -733,20 +1137,41 @@
 
 @media (max-width: 767px) {
   .about-house {
-    padding-block: 0.85rem;
+    min-height: 3.5rem;
+    padding-block: 0.9rem;
     gap: 0.4rem;
   }
 
-  /* Leaders: one 4:5 portrait per row is four screens of monogram plates.
-     Two up halves it and still reads. */
+  /* Leaders as a ruled ledger (mobile revamp): a small square plate (the
+     monogram, or the portrait once one exists) beside the name and role.
+     Four mostly empty 4:5 plates cost two screens; this costs one band. */
   .leaders {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .leader {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    overflow: visible;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+  }
+
+  .leader__plate {
+    flex: none;
+    width: 4.75rem;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--m-r-photo);
   }
 
   .leader__cap {
-    padding: 0.85rem 0.9rem;
-    gap: 0.5rem;
+    padding: 0;
+    gap: 0.35rem;
   }
 
   /* Values band: the photographic panels run edge to edge and lose a chunk
@@ -769,7 +1194,7 @@
   }
 
   .vp__face {
-    min-height: 13.5rem;
+    min-height: 12rem;
     border-inline: 0;
     border-radius: 0;
   }
@@ -794,18 +1219,49 @@
     padding-block: 0.6rem;
   }
 
-  /* Promise pairs and the four franchise steps both read as ruled entries. */
-  .promise-list {
-    gap: 0.85rem;
-  }
-
-  .promise {
-    padding-top: 0.85rem;
+  /* How it works: the four steps hang off one spine, the number in its
+     own column (a true sequence, so numbers are allowed). */
+  ol:has(> .m-step-card) {
+    row-gap: 0;
   }
 
   .m-step-card {
-    gap: 0.4rem;
-    padding-top: 0.85rem;
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+    row-gap: 0.35rem;
+    padding: 0 0 1.75rem;
+    border-top: 0;
+  }
+
+  .m-step-card > span {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    font-size: 1.375rem;
+    line-height: 1.15;
+  }
+
+  .m-step-card > :not(span) {
+    grid-column: 2;
+  }
+
+  .m-step-card::before {
+    content: "";
+    position: absolute;
+    top: 2.1rem;
+    bottom: 0.45rem;
+    left: 0.85rem;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .m-step-card:last-child {
+    padding-bottom: 0;
+  }
+
+  .m-step-card:last-child::before {
+    display: none;
   }
 
   /* Form: full-width targets, and enough room under the last control that
@@ -815,11 +1271,27 @@
   }
 
   .intent-card {
-    padding: 0.9rem 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: var(--m-r-card);
   }
 
   .intent-card__title {
     font-size: 1rem;
+  }
+
+  /* Fields a size up for the thumb, with a clear focus state. */
+  .field-input {
+    min-height: 52px;
+    padding: 0.8rem 0.95rem;
+  }
+
+  .field-input:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--vermillion-deep), transparent 82%);
+  }
+
+  .field-label {
+    font-size: 0.9375rem;
   }
 
   .inquiry-form .btn-lg {
@@ -836,53 +1308,28 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* 13 — Brands                                                         */
-/* ------------------------------------------------------------------ */
-
-@media (max-width: 767px) {
-  /* The filter pills follow the reader down the 77-tile wall instead of
-     scrolling away after the first row. */
-  .brand-filters {
-    position: sticky;
-    top: var(--m-header-h);
-    z-index: 1;
-    gap: 0.5rem;
-    margin-inline: calc(var(--m-gutter) * -1);
-    padding: 0.6rem var(--m-gutter);
-    background: var(--paper-shade);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .brand-filters__row {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    gap: 0.4rem;
-    padding-block: 2px;
-  }
-
-  .brand-filters__row::-webkit-scrollbar {
-    display: none;
-  }
-
-  .brand-filters__row button {
-    flex: none;
-    min-height: 40px;
-  }
-
-  .brand-filters__count {
-    margin: 0;
-  }
-}
-
-/* ------------------------------------------------------------------ */
 /* 14 — Trade Notes index + article                                    */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
+  /* The index: the newest note as a lead card with its photograph edge to
+     edge, then the rest as compact ruled rows (thumbnail beside the words),
+     the idiom the article's own "More notes" list uses. */
   .post-grid {
-    margin-top: 2rem;
-    gap: 1.75rem;
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 1.75rem;
+    gap: 0;
+  }
+
+  .post-item:first-child {
+    --m-blogcard-title: 1.5rem;
+    padding-bottom: 1.75rem;
+  }
+
+  .post-item:first-child .post-card__thumb {
+    margin-inline: calc(var(--m-gutter) * -1);
+    border: 0;
+    border-radius: 0;
   }
 
   .post-card__kicker {
@@ -892,6 +1339,44 @@
   .post-card__meta {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
+  }
+
+  .post-item:not(:first-child) {
+    --m-blogcard-title: 1.0625rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .post-item:not(:first-child) .post-card {
+    display: grid;
+    grid-template-columns: 6.25rem minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    column-gap: 1rem;
+    padding-block: 1.1rem;
+  }
+
+  .post-item:not(:first-child) .post-card__thumb {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    align-self: start;
+    aspect-ratio: 1 / 1;
+  }
+
+  .post-item:not(:first-child) .post-card > :not(.post-card__thumb) {
+    grid-column: 2;
+  }
+
+  .post-item:not(:first-child) .post-card__kicker {
+    margin-top: 0;
+  }
+
+  .post-item:not(:first-child) .post-card h2 {
+    margin-top: 0.35rem;
+  }
+
+  .post-item:not(:first-child) .post-card__meta {
+    margin-top: 0.5rem;
+    padding-top: 0;
+    border-top: 0;
   }
 
   /* The article is the one page whose job is sustained reading, so its body
@@ -904,8 +1389,13 @@
 
   .article__cta {
     margin-top: 2.25rem;
-    padding: 1.25rem;
+    padding: 1.35rem 1.25rem;
     gap: 1rem;
+    border-radius: var(--m-r-card);
+  }
+
+  .article__more a {
+    min-height: 44px;
   }
 
   .article__more {
@@ -939,45 +1429,68 @@
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
+  /* The office address as a plate, its directions link a full row. */
   .contact-address {
-    padding-top: 1.25rem;
+    gap: 0.5rem;
+    padding: 1.1rem 1.15rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: var(--m-r-card);
+    background: #fff;
+  }
+
+  .contact-address .channel-link {
+    display: flex;
   }
 }
 
 /* ------------------------------------------------------------------ */
 /* 16 — Recognition                                                    */
+/* (The old award-card and milestone rules went with their markup.)    */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
-  .award-lead {
-    gap: 0.6rem;
+  /* The cabinet: a certificate a little wider, so it reads. */
+  .fan__stage {
+    --m-rail-w: 64%;
   }
 
-  .award-cards {
-    gap: 0.75rem;
+  .fan__cap {
+    font-size: 0.9375rem;
   }
 
-  .award-card {
-    padding: 1.1rem 1.15rem;
-    gap: 0.35rem;
+  /* The trophy case keeps its ruled rows, tighter on a phone. */
+  .award-list:not(.award-list--compact) .award-row {
+    padding-block: 1.35rem;
   }
 
-  .milestone {
-    padding: 0.85rem 0.9rem;
+  .award-list:not(.award-list--compact) .award-row::before {
+    top: 1.35rem;
+  }
+
+  .award-list:not(.award-list--compact) .award-row--lead {
+    padding-block: 1.75rem;
+  }
+
+  .award-list:not(.award-list--compact) .award-row--lead::before {
+    top: 1.75rem;
   }
 }
 
 /* The "Why us?" deck. On a phone only the deck pins; the heading scrolls away.
-   The deck column is the stage, pinned by its bottom edge, so a returning
-   header never covers the top card and the action bar never covers the last.
+   Mobile revamp: the stage is the deck plus room for the incoming cards to
+   rise through (52svh at least), pinned by its TOP just under the header
+   (CardsStack reads the clearance from scroll-margin-top). The gathered deck
+   sits right under the heading as the page arrives and the next section
+   follows it closely on release; the stage used to be a full screen pinned
+   by its bottom with the deck centred, which opened a screen-high gap.
    [data-deck] is set only by JS and never under reduced motion. */
 @media (max-width: 767px) {
   .stack-section {
     /* bar + rule + border + air */
     --deck-clear: calc(var(--m-header-h) + 1px + 0.5rem);
-    /* the action bar's row and rule, plus air */
-    --deck-foot: calc(53px + env(safe-area-inset-bottom, 0px) + 0.5rem);
-    --deck-avail: calc(100svh - var(--deck-clear) - var(--deck-foot));
+    /* the floating dock and its inset, plus air */
+    --deck-foot: calc(var(--m-dock-clear) + 0.5rem);
+    --deck-avail: calc(100svh - var(--deck-clear) - var(--deck-foot) - 0.75rem);
   }
 
   .stack-section[data-deck] {
@@ -985,13 +1498,9 @@
   }
 
   .stack-section[data-deck] .stack-col {
-    height: calc(100svh - var(--deck-clear));
-    padding-bottom: var(--deck-foot);
-    /* Since change round 8 the gathered deck is a card and three edges, far
-       shorter than the screen: hold it in the middle, not at the top. */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    min-height: 52svh;
+    padding-top: 0.75rem;
+    scroll-margin-top: var(--deck-clear);
   }
 }
 
@@ -1059,7 +1568,7 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Change round 2: the fitted home hero and the awards band             */
+/* Change round 2: the fitted home hero (mobile revamp: the stat pair)  */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
@@ -1070,8 +1579,8 @@
   .hero--fit {
     display: flex;
     flex-direction: column;
-    min-height: calc(100svh - var(--m-header-h));
-    padding-top: 1.25rem;
+    min-height: calc(100svh - var(--m-header-h) - 1px);
+    padding-top: 1.5rem;
     padding-bottom: 0;
   }
 
@@ -1082,17 +1591,25 @@
     /* The desktop grid centres its cells; a phone column must stretch them,
        or the photo (which has no intrinsic width) collapses to a sliver. */
     align-items: stretch;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .hero--fit .hero-copy {
-    gap: 0.9rem;
+    gap: 1rem;
+  }
+
+  /* The home headline sets in three lines at every phone width ("The
+     leading / garment house of / Northeast India"): sized from the column,
+     with room to spare, so its longest line never meets the edge. */
+  .hero--fit .t-display {
+    font-size: clamp(2.05rem, 9.7vw - 0.15rem, 2.6rem);
+    line-height: 1.06;
   }
 
   .hero--fit .hero-fit__media {
     display: flex;
     flex: 1 1 0;
-    min-height: 8.5rem;
+    min-height: 10rem;
   }
 
   .hero--fit .hero-frame {
@@ -1101,27 +1618,43 @@
     height: auto;
   }
 
+  /* The two figures side by side, a hairline between them, each figure in
+     the condensed stat cut over its label: one band, read in one glance. */
   .hero-points {
-    column-gap: 0.7rem;
+    grid-template-columns: 1fr 1fr;
+    max-width: none;
+    border-block: 1px solid var(--line);
   }
 
   .hero-points__row {
-    padding-block: 0.5rem;
-    font-size: 1.02rem;
+    grid-column: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 0.85rem 0 0.9rem;
+    border-bottom: 0;
+    font-size: var(--text-small);
+    line-height: 1.3;
   }
 
-  .hero-points__fig {
-    font-size: 1.7em;
+  .hero-points__row + .hero-points__row {
+    padding-left: 1.1rem;
+    border-left: 1px solid var(--line);
   }
 
-  /* Awards band: the ruled list stays a list; the voices become the same
-     snap rail every other testimonial block uses on a phone. */
-  .award-list--compact .award-row {
-    padding-block: 0.95rem;
+  /* A line that does not open on a figure (stale CMS wording) keeps the
+     whole width. */
+  .hero-points__row:has(> .hero-points__inline) {
+    grid-column: 1 / -1;
   }
 
-  .award-list--compact .award-row::before {
-    top: 0.95rem;
+  .hero-points__row > .hero-points__fig {
+    min-width: 0;
+    justify-self: auto;
+    text-align: start;
+    font-size: var(--text-stat);
+    line-height: 0.9;
   }
 }
 
@@ -1299,8 +1832,8 @@
   .atlas-card__soon {
     left: 0.3rem;
     top: 0.3rem;
-    padding: 0.12rem 0.3rem;
-    font-size: 0.5rem;
+    padding: 0.14rem 0.35rem;
+    font-size: 0.6875rem;
     letter-spacing: 0.05em;
     white-space: nowrap;
   }
@@ -1315,12 +1848,14 @@
     top: calc(var(--py) * 1%);
   }
 
+  /* Anchored in proportion to the pin's place across the map, so a pin
+     near either edge keeps its chip on screen (Kohima's ran off at 360px). */
   .atlas-tags__item[data-phone-side="above"] {
-    transform: translate(-50%, calc(-100% - var(--cell) * 0.75 - 6px));
+    transform: translate(calc(var(--px) * -1%), calc(-100% - var(--cell) * 0.75 - 6px));
   }
 
   .atlas-tags__item[data-phone-side="below"] {
-    transform: translate(-50%, calc(var(--cell) * 0.75 + 6px));
+    transform: translate(calc(var(--px) * -1%), calc(var(--cell) * 0.75 + 6px));
   }
 
   .atlas-tag {
@@ -1361,7 +1896,7 @@
   }
 
   .atlas-tag__town {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     line-height: 1.2;
   }
 
@@ -1431,7 +1966,7 @@
    "Franchisee-owned" stop breaking at the hyphen. */
 @media (max-width: 359px) {
   .atlas-tags__item:has(> .atlas-tag[data-store^="itanagar"]) {
-    transform: translate(-50%, calc(-100% - var(--cell) * 0.75 - 6px));
+    transform: translate(calc(var(--px) * -1%), calc(-100% - var(--cell) * 0.75 - 6px));
   }
 
   .atlas-tags__item:has(> .atlas-tag[data-store^="itanagar"]) .atlas-tag::before {
@@ -1460,6 +1995,11 @@
 
   .rail-step__text {
     padding-left: 2.85rem;
+  }
+
+  .rail-step__head {
+    align-items: center;
+    min-height: 44px;
   }
 
   /* The heading left the copy column in round 7 (desktop sets it across the
@@ -1497,10 +2037,10 @@
   .rail[data-rail-sticky] .rail__figure {
     order: 2;
     position: sticky;
-    top: var(--m-header-h, 4rem);
+    top: var(--m-sticky-top);
     z-index: 2;
-    margin-inline: calc(-1 * var(--gutter, 1rem));
-    padding: 0.5rem var(--gutter, 1rem) 0.75rem;
+    margin-inline: calc(-1 * var(--m-gutter));
+    padding: 0.5rem var(--m-gutter) 0.75rem;
     background: var(--paper-shade);
   }
 
@@ -1534,11 +2074,11 @@
   }
 
   .ga__sticky {
-    margin-inline: calc(-1 * var(--gutter, 1rem));
+    margin-inline: calc(-1 * var(--m-gutter));
   }
 
   .ga__key {
-    padding-inline: var(--gutter, 1rem);
+    padding-inline: var(--m-gutter);
   }
 
   .ga-key {
@@ -1562,7 +2102,7 @@
 
   .ga[data-ga] .ga__mapcol {
     position: sticky;
-    top: var(--m-header-h, 4rem);
+    top: var(--m-sticky-top);
     z-index: 2;
     padding-bottom: 0.75rem;
     background: var(--paper);
@@ -1681,9 +2221,9 @@
 
   .bi-seg__btn {
     flex: none;
-    min-height: 2.5rem;
-    padding: 0 0.75rem;
-    font-size: 0.85rem;
+    min-height: 2.75rem;
+    padding: 0 0.85rem;
+    font-size: 0.875rem;
   }
 
   .bi-tools__row--sub {
@@ -1700,8 +2240,9 @@
 
   .bi-az__l {
     flex: none;
-    min-width: 2.25rem;
-    height: 2.25rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    font-size: 0.9375rem;
   }
 
   .bi-group {
@@ -1711,7 +2252,7 @@
   }
 
   .bi-letter {
-    top: calc(var(--m-header-h, 4rem) + 0.5rem);
+    top: calc(var(--m-sticky-top) + 0.5rem);
     font-size: 2.3rem;
   }
 
@@ -1730,6 +2271,7 @@
 
   .bi-name {
     font-size: 1.3rem;
+    min-width: 2.75rem;
     min-height: 2.75rem;
   }
 
@@ -1750,13 +2292,22 @@
     align-items: stretch;
     flex-direction: column;
   }
+
+  /* The brand-list gate: a plate, its buttons the column's width. */
+  .brand-gate {
+    border-radius: var(--m-r-card);
+  }
+
+  .brand-gate .btn {
+    width: 100%;
+  }
 }
 
 /* ------------------------------------------------------------------ */
 /* 24 — Business swing tags (home, change round 8)                     */
-/* The three tags become a sideways row on the rail, one in view with   */
-/* the next peeking, snapping to centre. No pointer sway on touch; a    */
-/* tap still turns a tag over and back.                                 */
+/* The three tags hang on a rail that runs edge to edge; they slide     */
+/* along it, one in view with the next peeking, snapping to centre. No  */
+/* pointer sway on touch; a tap still turns a tag over and back.        */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
@@ -1764,12 +2315,25 @@
     gap: 2rem;
   }
 
+  .btag-rail {
+    margin-inline: calc(-1 * var(--m-gutter));
+    border-radius: 0;
+  }
+
+  .btag-rail__cap {
+    display: none;
+  }
+
+  /* A scroll row clips on both axes, so the row starts above the rail by
+     the room a dropping, swinging tag needs and gives it back with a
+     negative margin: the drop and the swing are no longer cut off. */
   .btag-row {
     display: flex;
     gap: 1rem;
-    margin-inline: calc(-1 * var(--m-gutter));
-    padding: 0 var(--m-gutter) 1.5rem;
+    margin: calc(-0.3rem - 2.75rem) calc(-1 * var(--m-gutter)) 0;
+    padding: 2.75rem var(--m-gutter) 1.75rem;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
   }
@@ -1779,7 +2343,45 @@
   }
 
   .btag-hang {
-    flex: 0 0 80%;
+    flex: 0 0 78%;
     scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  /* The turn buttons stretch over their face already; the visible label
+     still gets a full tap row, and the back's asks are 44px rows. */
+  .btag-turn {
+    min-height: 44px;
+    font-size: 0.8125rem;
+  }
+
+  .btag-back__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .btag-back__asks {
+    gap: 0.1rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 25 — Modal as a bottom sheet (PartnerModal, ReturnsCalculator)       */
+/* Moved here from globals.css in the mobile revamp, so every phone     */
+/* rule lives in this one file.                                        */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal__panel {
+    max-width: 100%;
+    max-height: 92dvh;
+    border-radius: 16px 16px 0 0;
+    border-bottom: 0;
   }
 }

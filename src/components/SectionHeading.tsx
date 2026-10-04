@@ -23,7 +23,7 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3",
+        "section-head flex flex-col gap-3",
         align === "center" && "items-center text-center",
       )}
     >

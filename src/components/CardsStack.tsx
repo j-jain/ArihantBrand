@@ -208,7 +208,14 @@ export function CardsStack({ items, heading }: CardsStackProps) {
               trigger: pinEl,
               pin: pinEl,
               pinSpacing: true,
-              start: () => "bottom bottom",
+              // Phones (mobile revamp): the stage is the deck plus room for
+              // the cards to rise through, pinned by its top just under the
+              // header (its clearance is the column's scroll-margin-top, set
+              // in mobile.css), so the heading, the deck and the next section
+              // read together instead of around a screen-high gap.
+              start: mobile
+                ? () => `top top+=${Math.round(parseFloat(getComputedStyle(pinEl).scrollMarginTop) || 0)}`
+                : () => "bottom bottom",
               end: () =>
                 `+=${Math.round(window.innerHeight * (enter * (n - 1) + dwell))}`,
               anticipatePin: 1,

@@ -32,12 +32,23 @@ export function usePastHero(): boolean {
 
 /** True while any of the page's own CTA sections is in view. Counts
  *  intersections rather than tracking a single element, so it stays correct on
- *  pages carrying several. */
-export function useRivalCtaOnScreen(): boolean {
+ *  pages carrying several.
+ *
+ *  The host lives in the persistent layout, so a client-side navigation does
+ *  not remount it. Pass the route as `routeKey` and the bands are looked up
+ *  again on every page; without it they are looked up once, on mount.
+ *  `selector` widens what counts as a rival (the phone dock adds the footer,
+ *  which carries every contact line itself). */
+export function useRivalCtaOnScreen(routeKey?: string, selector: string = RIVAL_CTA): boolean {
   const [onScreen, setOnScreen] = useState(false);
+  const [seenKey, setSeenKey] = useState(routeKey);
+  if (routeKey !== seenKey) {
+    setSeenKey(routeKey);
+    setOnScreen(false);
+  }
 
   useEffect(() => {
-    const targets = document.querySelectorAll(RIVAL_CTA);
+    const targets = document.querySelectorAll(selector);
     if (targets.length === 0) return;
 
     const visible = new Set<Element>();
@@ -53,7 +64,7 @@ export function useRivalCtaOnScreen(): boolean {
     );
     targets.forEach((target) => io.observe(target));
     return () => io.disconnect();
-  }, []);
+  }, [routeKey, selector]);
 
   return onScreen;
 }

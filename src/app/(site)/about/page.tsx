@@ -220,7 +220,7 @@ export default async function AboutPage() {
                   {/* Portrait frame. Until a real photograph is dropped in, the
                       monogram plate holds the space deliberately rather than
                       leaving the card a bare nameplate. */}
-                  <div className="relative aspect-[4/5] w-full overflow-hidden bg-paper-shade">
+                  <div className="leader__plate relative aspect-[4/5] w-full overflow-hidden bg-paper-shade">
                     {portrait ? (
                       <Image
                         src={portrait.src}

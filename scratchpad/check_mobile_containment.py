@@ -1,79 +1,163 @@
-"""Prove the mobile layer stays contained.
+"""Prove the mobile layer stays contained (v2, mobile revamp).
 
-The binding rule in CLAUDE.md/DESIGN.md is that every rule in src/app/mobile.css
-sits inside an `@media (max-width: 767px)` block, so stripping those blocks from
-the compiled CSS leaves desktop rendering untouched.
+The binding rule in CLAUDE.md/DESIGN.md: every phone rule lives in
+src/app/mobile.css, inside a media block that can never match a 768px or wider
+viewport, so desktop rendering is frozen by construction.
 
-The original check diffed compiled CSS before/after a mobile-only edit. That
-only works when nothing else changed; this brief deliberately changes desktop
-too, so the byte-diff cannot run. This checks the invariant that the byte-diff
-was standing in for, directly on the source: no rule outside a max-width:767px
-media block, and no media block in the file that is not max-width-bounded.
+v1 only checked that each top-level @media in mobile.css contained the text
+"max-width", so `max-width: 1023px` would have passed. v2 checks:
 
-Usage: python check_mobile_containment.py [path/to/mobile.css]
+  1. mobile.css: every top-level block is an @media whose EVERY comma-separated
+     query carries an upper width bound below 768px; nothing sits outside one;
+     nested blocks are only style rules, @keyframes, @supports, or @media
+     bounded the same way.
+  2. every other src/**/*.css: no phone-bounded @media at all (phone rules
+     belong in mobile.css).
+  3. optional, `--diff <git-ref>`: the TSX/TS lines added since <ref> carry no
+     new `sm:`/`max-*:` Tailwind variants and no `mm.add(` whose condition
+     lacks `max-width: 767px` (flagged for review, not failed).
+
+Usage: python scratchpad/check_mobile_containment.py [--diff <ref>]
 Exit code 0 = contained, 1 = a rule escaped.
 """
 
+import glob
 import re
+import subprocess
 import sys
 
-path = sys.argv[1] if len(sys.argv) > 1 else "src/app/mobile.css"
-src = open(path, encoding="utf-8").read()
+ROOT_CSS = "src/app/mobile.css"
 
-# Strip comments so braces inside them never count.
-src = re.sub(r"/\*.*?\*/", "", src, flags=re.S)
 
-depth = 0
-media_depth = None          # brace depth at which the current @media opened
-line = 1
-i = 0
-escaped = []                # (line, snippet) for anything outside a media block
-bad_media = []              # @media blocks that are not max-width bounded
-pending = ""                # text since the last brace / semicolon
+def to_px(value, unit):
+    return float(value) * (1 if unit == "px" else 16)
 
-while i < len(src):
-    ch = src[i]
-    if ch == "\n":
-        line += 1
-    if ch == "{":
-        selector = pending.strip()
-        if selector.startswith("@media"):
-            if media_depth is None:
-                if "max-width" not in selector:
-                    bad_media.append((line, selector))
-                media_depth = depth
-        elif media_depth is None and selector:
-            # A selector opening a block while no media block is active.
-            escaped.append((line, selector.splitlines()[-1].strip()[:70]))
-        depth += 1
-        pending = ""
-    elif ch == "}":
-        depth -= 1
-        if media_depth is not None and depth == media_depth:
-            media_depth = None
-        pending = ""
-    elif ch == ";":
-        decl = pending.strip()
-        # Top-level at-rules without a block (@import, @charset) are fine.
-        if media_depth is None and depth == 0 and decl and not decl.startswith("@"):
-            escaped.append((line, decl[:70]))
-        pending = ""
-    else:
-        pending += ch
-    i += 1
 
-if escaped:
-    print(f"FAIL: {len(escaped)} rule(s) outside @media (max-width: 767px) in {path}")
-    for ln, sel in escaped:
-        print(f"  line {ln}: {sel}")
-if bad_media:
-    print(f"FAIL: {len(bad_media)} @media block(s) not bounded by max-width in {path}")
-    for ln, sel in bad_media:
-        print(f"  line {ln}: {sel}")
+def split_queries(prelude):
+    q = re.sub(r"^@media\s*", "", prelude.strip(), flags=re.I)
+    parts, depth, cur = [], 0, ""
+    for ch in q:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        if ch == "," and depth == 0:
+            parts.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    parts.append(cur)
+    return parts
 
-if not escaped and not bad_media:
-    blocks = len(re.findall(r"@media[^{]*max-width", src))
-    print(f"PASS: every rule in {path} is inside a max-width media block ({blocks} blocks).")
-    sys.exit(0)
 
-sys.exit(1)
+def phone_only(prelude):
+    """True when every query has an upper width bound below 768px."""
+    def bounded(query):
+        for m in re.finditer(r"max-width\s*:\s*([\d.]+)(px|rem|em)", query, re.I):
+            if to_px(m.group(1), m.group(2)) < 768:
+                return True
+        for m in re.finditer(r"width\s*(<=?)\s*([\d.]+)(px|rem|em)", query, re.I):
+            px = to_px(m.group(2), m.group(3))
+            if (m.group(1) == "<" and px <= 768) or (m.group(1) == "<=" and px < 768):
+                return True
+        return False
+
+    return all(bounded(q) for q in split_queries(prelude))
+
+
+def strip_comments(src):
+    return re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"), src, flags=re.S)
+
+
+def blocks(src):
+    """Yield (line, depth, prelude, parent_preludes) for every block opening."""
+    depth, line, pending, stack = 0, 1, "", []
+    for ch in src:
+        if ch == "\n":
+            line += 1
+        if ch == "{":
+            prelude = " ".join(pending.split())
+            yield line, depth, prelude, list(stack), "open"
+            stack.append(prelude)
+            depth += 1
+            pending = ""
+        elif ch == "}":
+            depth -= 1
+            if stack:
+                stack.pop()
+            pending = ""
+        elif ch == ";":
+            decl = " ".join(pending.split())
+            if depth == 0 and decl:
+                yield line, depth, decl, [], "stmt"
+            pending = ""
+        else:
+            pending += ch
+
+
+failures = []
+
+# 1 -- mobile.css
+src = strip_comments(open(ROOT_CSS, encoding="utf-8").read())
+media_blocks = 0
+for line, depth, prelude, parents, kind in blocks(src):
+    if kind == "stmt":
+        failures.append(f"{ROOT_CSS}:{line}: top-level statement outside a media block: {prelude[:70]}")
+        continue
+    if depth == 0:
+        if not prelude.lower().startswith("@media"):
+            failures.append(f"{ROOT_CSS}:{line}: block outside a media block: {prelude[:70]}")
+        elif not phone_only(prelude):
+            failures.append(f"{ROOT_CSS}:{line}: media block can match >=768px: {prelude[:90]}")
+        else:
+            media_blocks += 1
+        continue
+    if prelude.startswith("@"):
+        name = prelude.split()[0].lower()
+        if name == "@media" and not phone_only(prelude):
+            failures.append(f"{ROOT_CSS}:{line}: nested media block can match >=768px: {prelude[:90]}")
+        elif name not in ("@media", "@keyframes", "@supports", "@container"):
+            failures.append(f"{ROOT_CSS}:{line}: unexpected nested at-rule: {prelude[:70]}")
+
+# 2 -- every other stylesheet carries no phone-only media block
+for path in sorted(glob.glob("src/**/*.css", recursive=True)):
+    path = path.replace("\\", "/")
+    if path == ROOT_CSS:
+        continue
+    other = strip_comments(open(path, encoding="utf-8").read())
+    for line, depth, prelude, parents, kind in blocks(other):
+        if kind == "open" and prelude.lower().startswith("@media") and phone_only(prelude):
+            failures.append(f"{path}:{line}: phone-only media block outside mobile.css: {prelude[:80]}")
+
+# 3 -- optional review of added TSX lines
+warnings = []
+if "--diff" in sys.argv:
+    ref = sys.argv[sys.argv.index("--diff") + 1]
+    diff = subprocess.run(
+        ["git", "diff", "-U0", ref, "--", "src/**/*.tsx", "src/**/*.ts", "src/*.tsx", "src/*.ts"],
+        capture_output=True, text=True, encoding="utf-8",
+    ).stdout
+    current = None
+    for raw in diff.splitlines():
+        if raw.startswith("+++ "):
+            current = raw[6:]
+            continue
+        if not raw.startswith("+") or raw.startswith("+++"):
+            continue
+        added = raw[1:]
+        if re.search(r"(?<![\w-])(max-)?(sm|md|lg|xl|2xl):[\w\[]", added) and re.search(r"(?<![\w-])(max-\w+|sm):", added):
+            warnings.append(f"{current}: new responsive variant: {added.strip()[:100]}")
+        if "mm.add(" in added and "767" not in added and "reduce" not in added:
+            warnings.append(f"{current}: matchMedia context without max-width: 767px: {added.strip()[:100]}")
+
+if failures:
+    print(f"FAIL: {len(failures)} containment problem(s)")
+    for f in failures:
+        print("  " + f)
+else:
+    print(f"PASS: {ROOT_CSS} holds {media_blocks} phone-only media blocks and nothing else; "
+          f"no phone-only media block in any other stylesheet.")
+for w in warnings:
+    print("  REVIEW " + w)
+
+sys.exit(1 if failures else 0)

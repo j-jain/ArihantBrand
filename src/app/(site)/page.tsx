@@ -210,7 +210,7 @@ export default async function HomePage() {
               as="ul"
               from="up"
               stagger={0.1}
-              className="funnel-grid m-rail grid gap-px bg-line sm:grid-cols-2"
+              className="funnel-grid grid gap-px bg-line sm:grid-cols-2"
             >
               {funnels.map((funnel) => (
                 <li key={funnel.id} className="flex">
@@ -305,7 +305,7 @@ export default async function HomePage() {
                   <p>
                     <Link
                       href="/recognition"
-                      className="m-tap inline-flex items-center gap-1.5 font-sans font-semibold text-on-charcoal underline-offset-4 hover:underline"
+                      className="m-link inline-flex items-center gap-1.5 font-sans font-semibold text-on-charcoal underline-offset-4 hover:underline"
                     >
                       Awards &amp; testimonials
                       <span aria-hidden="true" style={{ color: "var(--vermillion)" }}>
@@ -357,7 +357,7 @@ export default async function HomePage() {
           like every other section (change round 8; they were the one centred
           block on the page). */}
       <section className="bg-paper">
-        <div className="container-site section-pad m-flow flex flex-col gap-10">
+        <div className="brands-band container-site section-pad m-flow flex flex-col gap-10">
           <Reveal variant="fade">
             <SectionHeading heading={sections.brands.heading} lead={sections.brands.lead} />
           </Reveal>
@@ -365,7 +365,7 @@ export default async function HomePage() {
           <p>
             <Link
               href="/brands"
-              className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
+              className="m-link inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
             >
               See all {partners.length} labels
               <span aria-hidden="true">→</span>
@@ -390,7 +390,7 @@ export default async function HomePage() {
               as="ul"
               from="up"
               stagger={0.1}
-              className="m-rail grid gap-x-6 gap-y-10 sm:grid-cols-3"
+              className="notes-rail m-rail grid gap-x-6 gap-y-10 sm:grid-cols-3"
             >
               {latestPosts.map((post) => (
                 <li key={post.slug} className="flex">
@@ -435,7 +435,7 @@ export default async function HomePage() {
             <p>
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
+                className="m-link inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
               >
                 All Trade Notes
                 <span aria-hidden="true">→</span>

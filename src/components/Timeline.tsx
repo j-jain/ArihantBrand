@@ -86,8 +86,19 @@ export function Timeline({ entries, items }: TimelineProps) {
 
               const dot = entry.querySelector<HTMLElement>(".tl__dot");
               const rule = entry.querySelector<HTMLElement>(".tl__rule");
-              const tl = gsap.timeline({
-                scrollTrigger: { trigger: entry, start: "top 88%", once: true },
+              // A paused timeline played by a standalone trigger, not a
+              // timeline-owned scrollTrigger: the latter measures itself only
+              // a tick later, and a trigger created meanwhile (the drench band
+              // below) re-measures it inside its own refresh. After a
+              // client-side navigation from a scrolled page, an entry that is
+              // already past its start then fires, kills itself mid-loop and
+              // the refresh throws, blanking the page (mobile revamp).
+              const tl = gsap.timeline({ paused: true });
+              ScrollTrigger.create({
+                trigger: entry,
+                start: "top 88%",
+                once: true,
+                onEnter: () => tl.play(),
               });
               tl.from(entry, {
                 autoAlpha: 0,

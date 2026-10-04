@@ -3,8 +3,10 @@
 import { usePathname } from "next/navigation";
 import { trackClass } from "./Analytics";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
-import { usePastHero, useRivalCtaOnScreen } from "./useCtaYield";
+import { RIVAL_CTA, usePastHero, useRivalCtaOnScreen } from "./useCtaYield";
 import { whatsappFor } from "@/lib/whatsapp";
+
+const DOCK_RIVALS = `${RIVAL_CTA}, footer`;
 
 interface StickyActionBarProps {
   /** Full tel: target, e.g. "+919435045528". */
@@ -26,7 +28,9 @@ export function StickyActionBar({
 }: StickyActionBarProps) {
   const pathname = usePathname();
   const pastHero = usePastHero();
-  const rivalOnScreen = useRivalCtaOnScreen();
+  // Keyed by route: the bar outlives page navigations, the CTA bands do not.
+  // The footer counts as a rival here: it carries every contact line.
+  const rivalOnScreen = useRivalCtaOnScreen(pathname, DOCK_RIVALS);
 
   const visible = pastHero && !rivalOnScreen;
   const routed = whatsappFor(pathname, whatsapp);

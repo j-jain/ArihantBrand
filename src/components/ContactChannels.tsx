@@ -49,54 +49,90 @@ export function ContactChannels({
             </p>
           </div>
 
-          <ul className="flex flex-col">
-            {contact.phones.map((person) => (
-              <li key={person.phone}>
-                <a className="channel-link" href={`tel:+91${person.phone}`}>
-                  <span className="channel-icon">
-                    <PhoneIcon />
-                  </span>
-                  <span>
-                    <span style={{ fontWeight: 650 }}>{person.name}</span>
-                    {" · "}
-                    {formatPhone(person.phone)}
-                  </span>
-                </a>
-              </li>
-            ))}
-            <li>
-              <a
-                className="channel-link"
-                href={`https://wa.me/${contact.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="channel-icon">
-                  <WhatsAppIcon />
-                </span>
-                <span>WhatsApp</span>
-              </a>
-            </li>
-            <li>
-              <a className="channel-link" href={`mailto:${contact.email}`}>
-                <span className="channel-icon">
-                  <MailIcon />
-                </span>
-                {/* Break only before the "@" and the dots after it, never
-                    mid-word: "accounts@arihantmar / keting.net" read as two
-                    addresses. */}
-                <span>
-                  {contact.email.split(/(?=[@.])/).map((part, i) => (
-                    <Fragment key={i}>
-                      {i > 0 ? <wbr /> : null}
-                      {part}
-                    </Fragment>
-                  ))}
-                </span>
-              </a>
-            </li>
-          </ul>
+          <UnitLinks contact={contact} />
         </div>
+      ))}
+    </div>
+  );
+}
+
+/** One unit's call, WhatsApp and email rows. */
+function UnitLinks({ contact, className }: { contact: UnitContact; className?: string }) {
+  return (
+    <ul className={cn("flex flex-col", className)}>
+      {contact.phones.map((person) => (
+        <li key={person.phone}>
+          <a className="channel-link" href={`tel:+91${person.phone}`}>
+            <span className="channel-icon">
+              <PhoneIcon />
+            </span>
+            <span>
+              <span style={{ fontWeight: 650 }}>{person.name}</span>
+              {" · "}
+              {formatPhone(person.phone)}
+            </span>
+          </a>
+        </li>
+      ))}
+      <li>
+        <a
+          className="channel-link"
+          href={`https://wa.me/${contact.whatsapp}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="channel-icon">
+            <WhatsAppIcon />
+          </span>
+          <span>WhatsApp</span>
+        </a>
+      </li>
+      <li>
+        <a className="channel-link" href={`mailto:${contact.email}`}>
+          <span className="channel-icon">
+            <MailIcon />
+          </span>
+          {/* Break only before the "@" and the dots after it, never
+              mid-word: "accounts@arihantmar / keting.net" read as two
+              addresses. */}
+          <span>
+            {contact.email.split(/(?=[@.])/).map((part, i) => (
+              <Fragment key={i}>
+                {i > 0 ? <wbr /> : null}
+                {part}
+              </Fragment>
+            ))}
+          </span>
+        </a>
+      </li>
+    </ul>
+  );
+}
+
+/** Phone footer: the same rows per unit, folded under the unit's name so the
+ *  three units cost three lines until one is opened. A native exclusive
+ *  accordion (`details` sharing a `name`), so it works without JS. Rendered
+ *  beside ContactChannels and shown only on a phone (the caller hides it from
+ *  768px up, and the mobile layer hides the open list on a phone). */
+export function ContactAccordion({
+  contacts,
+  name,
+  className,
+}: {
+  contacts: UnitContact[];
+  name: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn("footer-units", className)}>
+      {contacts.map((contact) => (
+        <details key={contact.unit} name={name} className="faq-item footer-unit">
+          <summary className="faq-summary footer-unit__head">
+            <span className="footer-unit__name">{contact.businessName}</span>
+            <span className="footer-unit__floor">{contact.floor}</span>
+          </summary>
+          <UnitLinks contact={contact} className="footer-unit__links" />
+        </details>
       ))}
     </div>
   );

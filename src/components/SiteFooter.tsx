@@ -1,6 +1,6 @@
 import type { SiteSettings } from "@/content/types";
 import { mapsEmbedUrl, mapsUrl } from "@/lib/seo";
-import { ContactChannels } from "./ContactChannels";
+import { ContactAccordion, ContactChannels } from "./ContactChannels";
 import { MapPinIcon } from "./icons";
 import { NetworkMap } from "./motion/NetworkMap";
 
@@ -33,17 +33,23 @@ export function SiteFooter({ settings }: SiteFooterProps) {
 
   return (
     <footer className="on-dark relative overflow-hidden">
-      <div className="container-site section-pad relative">
-        {/* Top row: reach line + contact channels (left), map (right). On
-            mobile the columns stack, so the map falls after the channels. */}
+      <div className="site-footer__inner container-site section-pad relative">
+        {/* Top row: reach line + contact channels (left), map (right). On a
+            phone the reach line sits beside the map and the three units fold
+            into an accordion (mobile.css section 6). */}
         <div className="footer-top grid items-start md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-7">
+          <div className="footer-top__copy md:col-span-7">
             <h2 className="t-h3 text-on-charcoal">
               From Guwahati to counters across the Northeast.
             </h2>
             <div className="footer-channels mt-8">
               <ContactChannels contacts={settings.contacts} compact />
             </div>
+            <ContactAccordion
+              contacts={settings.contacts}
+              name="footer-units"
+              className="md:hidden"
+            />
           </div>
           <div className="footer-map mt-12 md:col-span-5 md:mt-0">
             <NetworkMap />
@@ -121,7 +127,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
         </div>
 
         {/* Clears the mobile StickyActionBar so the bottom line stays reachable. */}
-        <div aria-hidden="true" className="h-20 md:hidden" />
+        <div aria-hidden="true" className="m-dock-spacer h-20 md:hidden" />
       </div>
     </footer>
   );

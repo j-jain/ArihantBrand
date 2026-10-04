@@ -74,7 +74,7 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
       aria-label="Arihant Group home"
     >
       <ChevronMark />
-      <span className="flex items-baseline gap-1.5">
+      <span className="wordmark__type flex items-baseline gap-1.5">
         <span
           className="font-display text-ink"
           style={{ fontWeight: 800, fontSize: "var(--m-wordmark, 1.4rem)", letterSpacing: "-0.01em" }}
@@ -83,7 +83,11 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
         </span>
         <span
           className="font-sans text-ink-soft"
-          style={{ fontWeight: 650, fontSize: "var(--m-wordmark-sub, 0.7rem)", letterSpacing: "0.18em" }}
+          style={{
+            fontWeight: 650,
+            fontSize: "var(--m-wordmark-sub, 0.7rem)",
+            letterSpacing: "var(--m-wordmark-sub-ls, 0.18em)",
+          }}
         >
           GROUP
         </span>
@@ -379,6 +383,35 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
         return () => {
           st.kill();
           gsap.set(header, { yPercent: 0 });
+        };
+      });
+      // Phones only: publish how much of the header is on screen right now,
+      // so sticky elements (mobile.css --m-sticky-top) sit flush under it as
+      // it slides away and back, instead of leaving a header-sized gap. Reads
+      // GSAP's cached yPercent, so it never forces layout; writes only on
+      // change.
+      mm.add("(max-width: 767px)", () => {
+        const root = document.documentElement;
+        let height = header.offsetHeight;
+        let last = -1;
+        const ro = new ResizeObserver(() => {
+          height = header.offsetHeight;
+        });
+        ro.observe(header);
+        const tick = () => {
+          const y = Number(gsap.getProperty(header, "yPercent")) || 0;
+          const px = Math.max(0, Math.round(height * (1 + y / 100)));
+          if (px !== last) {
+            last = px;
+            root.style.setProperty("--m-header-offset", `${px}px`);
+          }
+        };
+        gsap.ticker.add(tick);
+        tick();
+        return () => {
+          gsap.ticker.remove(tick);
+          ro.disconnect();
+          root.style.removeProperty("--m-header-offset");
         };
       });
       return () => mm.revert();
