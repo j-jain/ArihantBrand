@@ -36,11 +36,13 @@ Live 4 October 2026: commit e179b5a, code only (no seed), Vercel deploy succeede
 
 ## Follow-up 2: "Why us?" fuller
 
+Live 4 October 2026: commit 63a8f6d, Vercel deploy succeeded, then seeded. Dry-run diff against live Sanity first showed exactly the four intended `pillar-0..3` text changes and no Studio drift (no photo slot uploads); `npm run seed` upserted 200 docs, a re-diff showed 0 differences, a signed revalidate returned 200, and the live home page serves the new copy and the rail index.
+
 | Item | Status | Evidence |
 |---|---|---|
 | Cards back to their earlier size, all identical | Done | Every deck card is the tallest card's height (228px each at 1536x864, 217 at 1366x657), set a size up with more air inside rather than stretched, so the heading and its line stay one block. Phone cards set a size up too (205px each at 390x844; still fits a 360x640 screen). |
 | The screen was too empty | Done | The rail under "Why us?" now holds an index of the four reasons, marking the card on top as the deck builds (desktop and tablet). |
-| Copy back up a little | Done in the seed | Each card got back the clause the first cut took, meaning as before: "...77 labels on one set of terms, one indent, one visit, one partner." / "Years on these routes. They know your counter and what sold there, and can say yes on the spot." / "...or is being built to, so the space on your racks goes to stock that sells." / "...The cycle never slips, because service is what we compete on." Needs a seed after the deploy (`pillar-0..3`). |
+| Copy back up a little | Done in the seed | Each card got back the clause the first cut took, meaning as before: "...77 labels on one set of terms, one indent, one visit, one partner." / "Years on these routes. They know your counter and what sold there, and can say yes on the spot." / "...or is being built to, so the space on your racks goes to stock that sells." / "...The cycle never slips, because service is what we compete on." Seeded 4 October 2026 (`pillar-0..3`). |
 
 ## Checks
 
