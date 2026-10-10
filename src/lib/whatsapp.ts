@@ -39,8 +39,10 @@ export const DEFAULT_WA_ROUTES: WhatsAppRoute[] = [
       "नमस्ते Arihant Marketing, मुझे आपके ब्रांड और टर्म्स की जानकारी चाहिए. (Hello, I would like to know about your brands and terms.)",
   },
   {
+    // Change round 9: the Apparels desk's own line (Ajay Sancheti), the same
+    // number the page prints beside his name. It used to land on Marketing.
     prefix: "/arihant-apparels",
-    whatsapp: "919435045528",
+    whatsapp: "919954010361",
     prefill:
       "नमस्ते Arihant Apparels, मुझे आपके ब्रांड और टर्म्स की जानकारी चाहिए. (Hello, I would like to know about your brands and terms.)",
   },

@@ -396,6 +396,9 @@ async function main() {
         ...(copy.hero.points?.length ? { points: copy.hero.points } : {}),
         primaryCta: cta(copy.hero.primaryCta),
         ...(copy.hero.secondaryCta ? { secondaryCta: cta(copy.hero.secondaryCta) } : {}),
+        ...(copy.hero.audienceLinks?.length
+          ? { audienceLinks: copy.hero.audienceLinks.map(ctaKeyed) }
+          : {}),
       },
       sections: Object.entries(copy.sections).map(([key, s], si) => ({
         _type: "section",

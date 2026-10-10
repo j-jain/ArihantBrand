@@ -52,6 +52,9 @@ export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIn
       );
       // Every path ends by lifting the pre-paint gate.
       const release = () => html.removeAttribute("data-intro");
+      // Tells the hero's own listeners (the counting figures, change round 9)
+      // that the intro is starting now, or that there will be none.
+      const announce = () => root.dispatchEvent(new CustomEvent("heroIntroPlay"));
 
       const probe = title ?? reveals[0];
       if (
@@ -60,6 +63,7 @@ export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIn
         getComputedStyle(probe).visibility === "visible"
       ) {
         release(); // the failsafe already showed it: leave it be
+        announce();
         return;
       }
 
@@ -79,6 +83,7 @@ export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIn
           };
           if (reduced) {
             release();
+            announce();
             return;
           }
 
@@ -226,7 +231,10 @@ export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIn
             }
             // One frame on, so the first tick does not land inside the
             // hydration commit.
-            raf = requestAnimationFrame(() => tl.play());
+            raf = requestAnimationFrame(() => {
+              announce();
+              tl.play();
+            });
           }) as () => void;
 
           if (document.fonts?.status === "loaded") start();

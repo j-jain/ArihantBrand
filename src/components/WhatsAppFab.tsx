@@ -24,7 +24,10 @@ interface WhatsAppFabProps {
 export function WhatsAppFab({ fallback, routes = DEFAULT_WA_ROUTES }: WhatsAppFabProps) {
   const pathname = usePathname();
   const pastHero = usePastHero();
-  const rivalOnScreen = useRivalCtaOnScreen();
+  // Keyed by route (change round 9): the button outlives client-side
+  // navigations, so without the key it kept watching the previous page's
+  // CTA bands and sat over the next page's own ask.
+  const rivalOnScreen = useRivalCtaOnScreen(pathname);
 
   const { href } = whatsappFor(pathname, fallback, routes);
   const visible = pastHero && !rivalOnScreen;

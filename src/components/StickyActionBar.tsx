@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import type { UnitContact } from "@/content/types";
 import { trackClass } from "./Analytics";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
 import { RIVAL_CTA, usePastHero, useRivalCtaOnScreen } from "./useCtaYield";
@@ -9,10 +10,15 @@ import { whatsappFor } from "@/lib/whatsapp";
 const DOCK_RIVALS = `${RIVAL_CTA}, footer`;
 
 interface StickyActionBarProps {
-  /** Full tel: target, e.g. "+919435045528". */
+  /** Full tel: target, e.g. "+919435045528". The fallback when no unit's
+   *  printed phone matches the page's WhatsApp desk. */
   tel: string;
   /** WhatsApp digits with country code, e.g. "919435045528". */
   whatsapp: string;
+  /** The unit contacts (change round 9): Call dials the desk the page's
+   *  WhatsApp already reaches, so a reader on the retail pages rings Arihant
+   *  Retail, not the distribution line. */
+  contacts?: UnitContact[];
   inquiryHref?: string;
 }
 
@@ -24,6 +30,7 @@ interface StickyActionBarProps {
 export function StickyActionBar({
   tel,
   whatsapp,
+  contacts,
   inquiryHref = "/contact#inquiry",
 }: StickyActionBarProps) {
   const pathname = usePathname();
@@ -34,6 +41,9 @@ export function StickyActionBar({
 
   const visible = pastHero && !rivalOnScreen;
   const routed = whatsappFor(pathname, whatsapp);
+  // The desk's printed phone, where one is printed; else the site default.
+  const desk = contacts?.find((c) => c.whatsapp === routed.whatsapp)?.phones[0]?.phone;
+  const callHref = desk ? `tel:+91${desk}` : `tel:${tel}`;
 
   return (
     <div
@@ -43,7 +53,7 @@ export function StickyActionBar({
     >
       <a
         className={`action-bar__btn ${trackClass("CTA call bar")}`}
-        href={`tel:${tel}`}
+        href={callHref}
         aria-label="Call Arihant"
         tabIndex={visible ? undefined : -1}
       >

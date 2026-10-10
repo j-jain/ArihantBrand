@@ -418,10 +418,43 @@ svg {
   color: var(--ink-soft);
 }
 
+/* A counting figure (HeroFigure, change round 9): the final figure laid
+   invisibly under the live one reserves the width, so the column never moves
+   while the count runs. */
+.hero-figure {
+  display: inline-grid;
+}
+
+.hero-figure > span {
+  grid-area: 1 / 1;
+}
+
+.hero-figure__ghost {
+  visibility: hidden;
+}
+
+.hero-figure__live {
+  justify-self: end;
+}
+
 /* A line that does not open on a figure (stale CMS wording) spans both
    columns and keeps the old inline figure. */
 .hero-points__inline {
   grid-column: 1 / -1;
+}
+
+/* The audience rail under the figures (change round 9): one short link per
+   reader, in the words they would use, so the first screen routes a
+   retailer, a brand and an investor itself. Set in the unit heroes' quiet
+   ask idiom (.hero-ask, feature-hero.css); one row where it fits, wrapping
+   at the narrow end of the scale. Phones stack the three rows (mobile.css). */
+.hero-asks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .hero-points__inline .hero-points__fig {

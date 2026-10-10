@@ -46,9 +46,7 @@ import {
   faqs as seedFaqs,
   featuredTestimonialIndex as seedFeaturedTestimonialIndex,
   funnels as seedFunnels,
-  groupStats as seedGroupStats,
   leaderPortraits as seedLeaderPortraits,
-  marketingReasons as seedMarketingReasons,
   marketingSteps as seedMarketingSteps,
   marketingStrengths as seedMarketingStrengths,
   byPopularity,
@@ -310,6 +308,7 @@ interface RawHero {
   points?: string[] | null;
   primaryCta?: RawCta | null;
   secondaryCta?: RawCta | null;
+  audienceLinks?: (RawCta | null)[] | null;
 }
 interface RawPageSection {
   key: string;
@@ -486,6 +485,12 @@ function mapHero(h: RawHero): Hero {
     ...(h.points?.length ? { points: h.points } : {}),
     primaryCta: h.primaryCta ? mapCta(h.primaryCta) : { label: "", href: "#" },
     ...(h.secondaryCta ? { secondaryCta: mapCta(h.secondaryCta) } : {}),
+    ...(() => {
+      const links = (h.audienceLinks ?? [])
+        .filter((c): c is RawCta => Boolean(c?.label && c?.href))
+        .map(mapCta);
+      return links.length ? { audienceLinks: links } : {};
+    })(),
   };
 }
 
@@ -571,11 +576,11 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]${POST_PROJECT
 const PAGE_QUERY = `*[_type == "page" && pageId == $pageId][0]{
   metaTitle, metaDescription,
   hero{ heading, headingEmphasis, lead, points,
-    primaryCta{ label, href }, secondaryCta{ label, href } },
+    primaryCta{ label, href }, secondaryCta{ label, href },
+    audienceLinks[]{ label, href } },
   sections[]{ key, heading, lead, body, ctaLabel }
 }`;
 
-const GROUP_STATS_QUERY = `*[_type == "groupStat"] | order(order asc){ id, value, suffix, label }`;
 const FUNNELS_QUERY = `*[_type == "funnelCard"] | order(order asc){
   id, title, text, cta{ label, href }
 }`;
@@ -586,7 +591,6 @@ const STEPS_QUERY = `*[_type == "processStep"] | order(order asc){ title, text }
 const AWARDS_QUERY = `*[_type == "award"] | order(order asc){ year, title, issuer, detail }`;
 const MARKETING_STRENGTHS_QUERY = `*[_type == "marketingStrength"] | order(order asc){ title, text }`;
 const MARKETING_STEPS_QUERY = `*[_type == "marketingStep"] | order(order asc){ title, text }`;
-const MARKETING_REASONS_QUERY = `*[_type == "marketingReason"] | order(order asc){ title, text }`;
 
 /* ------------------------------------------------------------------ */
 /* Selectors                                                            */
@@ -769,21 +773,16 @@ export function getPageCopy(pageId: string): Promise<PageCopy | undefined> {
         const label = seed.sections[key]?.ctaLabel;
         if (!s.ctaLabel && label) sections[key] = { ...s, ctaLabel: label };
       }
-      return { ...page, sections };
+      // The hero's audience links are newer than the Studio documents (change
+      // round 9): a document that carries none keeps the seed's, so the home
+      // hero never loses its routing between a deploy and the re-seed.
+      const hero =
+        !page.hero.audienceLinks?.length && seed.hero.audienceLinks?.length
+          ? { ...page.hero, audienceLinks: seed.hero.audienceLinks }
+          : page.hero;
+      return { ...page, hero, sections };
     },
     seed,
-  );
-}
-
-export function getGroupStats(): Promise<Stat[]> {
-  return fromSanity<RawStat[], Stat[]>(
-    "getGroupStats",
-    GROUP_STATS_QUERY,
-    {},
-    ["groupStat"],
-    isEmptyArray,
-    (rows) => rows.map(mapStat),
-    seedGroupStats,
   );
 }
 
@@ -1067,19 +1066,5 @@ export function getMarketingSteps(): Promise<Pillar[]> {
     isEmptyArray,
     (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
     seedMarketingSteps,
-  );
-}
-
-/** Why the region needs its own distributor (marketing page). Four parallel
- *  arguments, not a sequence, so the page renders them without numerals. */
-export function getMarketingReasons(): Promise<Pillar[]> {
-  return fromSanity<RawPillar[], Pillar[]>(
-    "getMarketingReasons",
-    MARKETING_REASONS_QUERY,
-    {},
-    ["marketingReason"],
-    isEmptyArray,
-    (rows) => rows.map((p) => ({ title: p.title, text: p.text })),
-    seedMarketingReasons,
   );
 }

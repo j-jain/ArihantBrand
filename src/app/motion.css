@@ -53,30 +53,6 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* VapourText                                                           */
-/* ------------------------------------------------------------------ */
-
-.vapour {
-  position: relative;
-}
-
-/* Block, not inline: the particle sampler measures this element's box, and a
-   wrapped inline span reports the union of its line boxes (narrower than the
-   real content width), which made the cloud wrap to a different line count than
-   the settled heading. */
-.vapour__text {
-  display: block;
-}
-
-.vapour__canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  opacity: 0;
-}
-
-/* ------------------------------------------------------------------ */
 /* CardsStack                                                           */
 /* ------------------------------------------------------------------ */
 
@@ -373,8 +349,39 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
 }
 
 .tcols__grid:hover .tcol__track,
-.tcols__grid:focus-within .tcol__track {
+.tcols__grid:focus-within .tcol__track,
+.tcols[data-paused] .tcol__track {
   animation-play-state: paused;
+}
+
+/* The pause control (change round 9): the marquee's hairline square, set
+   under the wall rather than beside it. Hidden on phones (mobile.css) and
+   under reduced motion, where the columns do not move. */
+.tcols__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-top: 1rem;
+  border: 1px solid var(--_line, var(--line));
+  border-radius: 2px;
+  background: transparent;
+  color: var(--_text-soft, var(--ink-soft));
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.tcols__toggle:hover {
+  color: var(--_text, var(--ink));
+  border-color: var(--_text-soft, var(--ink-soft));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tcols__toggle {
+    display: none;
+  }
 }
 
 @keyframes vert-marquee {
@@ -1080,6 +1087,15 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
 
 .model-board__media {
   margin-top: 0.5rem;
+}
+
+/* The photograph beside the rail is a real store front (change round 9), a
+   file about 400px wide, so the frame keeps the site's cap for small real
+   photographs and never renders it soft. Phones run their own bleed. */
+@media (min-width: 768px) {
+  .model-board__media {
+    max-width: 15.5rem;
+  }
 }
 
 /* One screen (change round 5, the retail band). From 768px up the band is

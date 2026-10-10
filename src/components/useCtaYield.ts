@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 /** Sections that already put the same ask in front of the reader. While one of
  *  these is on screen the floating affordances stand down, so a visitor never
  *  sees the page's own CTA and a floating duplicate of it at the same time. */
-export const RIVAL_CTA = ".drench-band, #inquiry, .action-bar-yield";
+export const RIVAL_CTA = ".drench-band, #inquiry";
 
 /** True once the reader is past the hero (~90vh). */
 export function usePastHero(): boolean {

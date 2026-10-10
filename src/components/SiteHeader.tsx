@@ -504,9 +504,10 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
               ref={triggerRef}
               type="button"
               className="nav-link gap-1"
-              aria-haspopup="true"
+              // A disclosure, not a menu: aria-expanded alone says what it
+              // does, and aria-controls only while the panel is in the DOM.
               aria-expanded={businessesOpen}
-              aria-controls={disclosureId}
+              aria-controls={panelVisible ? disclosureId : undefined}
               data-active={businessesActive || undefined}
               onClick={toggleBusinesses}
               onMouseEnter={onTriggerEnter}
@@ -529,9 +530,13 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
             ))}
           </nav>
 
+          {/* One ask for everyone (change round 9): the intent chooser on
+              /contact routes a retailer, a brand or an investor to the right
+              desk. It used to carry /partner, which sent nine readers in ten
+              to the franchise page. */}
           <div className="hidden lg:block">
-            <Button href="/partner" variant="primary">
-              Partner with us
+            <Button href="/contact" variant="primary">
+              Talk to us
             </Button>
           </div>
 
@@ -747,12 +752,12 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
                 never has to travel back up. */}
             <div className="menu-sheet__foot mt-6" data-sheet-item>
               <Button
-                href="/partner"
+                href="/contact"
                 variant="primary"
                 size="lg"
                 className="w-full press"
               >
-                Partner with us
+                Talk to us
               </Button>
 
               {/* Phone-only: `md:hidden` keeps the 768-1023px sheet exactly as

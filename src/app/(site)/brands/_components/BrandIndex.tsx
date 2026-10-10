@@ -181,9 +181,13 @@ export function BrandIndex({ partners, whatsapp }: BrandIndexProps) {
   /* ------------------------------------------ toolbar follows the header */
   useEffect(() => {
     // Set on the root, so the sticky letters below read the same offset.
+    // From 768px up only (change round 9): on a phone the toolbar scrolls
+    // with the page and the sticky offset comes from --m-sticky-top, so the
+    // per-frame header read was a cost with no effect there.
     const tools = rootRef.current;
     const header = document.querySelector("header");
     if (!tools || !header) return;
+    const wide = window.matchMedia("(min-width: 768px)");
     let last = -1;
     const tick = () => {
       const top = Math.max(0, Math.round(header.getBoundingClientRect().bottom));
@@ -192,9 +196,20 @@ export function BrandIndex({ partners, whatsapp }: BrandIndexProps) {
         tools.style.setProperty("--bi-top", `${top}px`);
       }
     };
-    tick();
-    gsap.ticker.add(tick);
-    return () => gsap.ticker.remove(tick);
+    const start = () => {
+      tick();
+      gsap.ticker.add(tick);
+    };
+    const stop = () => {
+      gsap.ticker.remove(tick);
+    };
+    const onChange = () => (wide.matches ? start() : stop());
+    onChange();
+    wide.addEventListener("change", onChange);
+    return () => {
+      wide.removeEventListener("change", onChange);
+      stop();
+    };
   }, []);
 
   /* --------------------------------------------- scroll-spy for the A-Z */

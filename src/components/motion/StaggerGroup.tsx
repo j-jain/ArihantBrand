@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ElementType, type ReactNode } from "react";
-import { gsap, useGSAP, DUR, EASE } from "@/lib/gsap";
+import { gsap, useGSAP, DUR, EASE, REVEAL, RISE, STAGGER, onScreenAtMount } from "@/lib/gsap";
 
 type GroupTag = "div" | "ul" | "ol" | "section";
 type FromDir = "up" | "left" | "right" | "scale";
@@ -31,7 +31,7 @@ function directionVars(from: FromDir) {
     case "scale":
       return { autoAlpha: 0, scale: 0.94, y: 14 };
     default:
-      return { autoAlpha: 0, y: 30 };
+      return { autoAlpha: 0, y: RISE };
   }
 }
 
@@ -66,8 +66,8 @@ export function StaggerGroup({
   className,
   as = "div",
   from = "up",
-  stagger = 0.1,
-  start = "top 82%",
+  stagger = STAGGER,
+  start = REVEAL.start,
   mLedger = false,
 }: StaggerGroupProps) {
   const ref = useRef<HTMLElement>(null);
@@ -95,8 +95,7 @@ export function StaggerGroup({
           };
           if (reduced) return;
 
-          const rect = root.getBoundingClientRect();
-          if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) return;
+          if (onScreenAtMount(root)) return;
 
           // `.m-rail` only becomes a scroll container inside the mobile media
           // query, so the class is inert on desktop and this branch is too.
@@ -113,8 +112,8 @@ export function StaggerGroup({
                 autoAlpha: 1,
                 duration: 0.5,
                 ease: EASE,
-                stagger: 0.08,
-                scrollTrigger: { trigger: root, start: "top 90%", once: true },
+                stagger: STAGGER,
+                scrollTrigger: { trigger: root, start: REVEAL.startMobile, once: true },
                 // A resting inset(0) still clips to the border box and would
                 // slice focus rings off any control flush with a row edge.
                 onComplete: () =>
@@ -130,12 +129,12 @@ export function StaggerGroup({
               : mobile
                 ? mobileDirectionVars(from)
                 : directionVars(from)),
-            duration: mobile ? 0.46 : DUR,
+            duration: mobile ? REVEAL.durMobile : DUR,
             ease: EASE,
-            stagger: mobile ? 0.07 : stagger,
+            stagger: mobile ? REVEAL.staggerMobile : stagger,
             scrollTrigger: {
               trigger: root,
-              start: mobile ? "top 90%" : start,
+              start: mobile ? REVEAL.startMobile : start,
               once: true,
             },
           });

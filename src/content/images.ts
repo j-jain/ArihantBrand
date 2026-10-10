@@ -282,22 +282,21 @@ export type StockImageKey = keyof typeof stockImages;
 export const photoSlots = {
   /* ---- Home ---------------------------------------------------- HP3 */
   homeHero: {
-    // A clothing floor rather than a fabric swatch: the first photograph on the
-    // site should show the business the group is actually in. Native portrait,
-    // so the 4/5 frame takes it without a hard crop.
-    src: stockImages.retailInterior2.src,
-    alt: stockImages.retailInterior2.alt,
+    // The group's own racked stock, not a stock boutique (change round 9): the
+    // first photograph on the site shows the business the house is in, from a
+    // godown it runs. Native portrait, so the 4/5 frame takes it whole.
+    src: "/images/photos/apparels-warehouse-2.jpg",
+    alt: "Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati",
     ratio: "4 / 5",
-    real: false,
-    wanted:
-      "Portrait of the Guwahati godown mid-dispatch: stacked indents, staff working, shot in daylight.",
+    real: true,
   },
   homeProofGround: {
-    src: stockImages.marketingWarehouse2.src,
+    // The Apparels dispatch floor, open cartons mid-indent, at low opacity
+    // behind the awards band (change round 9: it stood on stock racking).
+    src: "/images/photos/apparels-warehouse-1.jpg",
     alt: "",
     ratio: "16 / 9",
-    real: false,
-    wanted: "Wide shot of the racking in either godown, used at low opacity behind the award band.",
+    real: true,
   },
 
   /* ---- Arihant Marketing --------------------------------------- AM4 */
@@ -313,17 +312,6 @@ export const photoSlots = {
     wanted:
       "The Arihant Marketing godown, landscape: racking loaded with the season's cartons, staff at work.",
   },
-  /* This and marketingCorridor render nowhere since change round 7 (the
-     promise fold and the specialist band went); kept as positions a future
-     layout can use, like retailShopfront and officeMap. */
-  marketingWarehouse: {
-    src: stockImages.marketingWarehouse1.src,
-    alt: stockImages.marketingWarehouse1.alt,
-    ratio: "4 / 5",
-    real: false,
-    wanted:
-      "Portrait of the 15,000 sq ft Marketing godown: binned stock, a picker mid-indent.",
-  },
   /* The trophy itself, a real object we hold, photographed as it sits. It
      stood beside the award band until change round 7; it is now the small
      photograph on the corner of the hero's wide one, in a 3/4 frame whose
@@ -335,14 +323,6 @@ export const photoSlots = {
     alt: "The Golden Star Seller Distributor of the Year trophy awarded to Arihant Marketing",
     ratio: "3 / 4",
     real: true,
-  },
-  marketingCorridor: {
-    src: stockImages.blog2.src,
-    alt: stockImages.blog2.alt,
-    ratio: "16 / 9",
-    real: false,
-    wanted:
-      "A loaded Arihant vehicle on the Guwahati corridor, shot from the roadside.",
   },
   /* ---- Arihant Apparels ---------------------------------------- AA6 */
   /* The feature hero (change round 6): the team working the warehouse floor,
@@ -361,8 +341,10 @@ export const photoSlots = {
     caption: "Spring Summer Garment Fair, January 2024",
   },
   apparelsWarehouse: {
-    src: "/images/photos/apparels-warehouse-2.jpg",
-    alt: "Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati",
+    // The dispatch floor (change round 9): the racked denim moved to the home
+    // hero, so the Apparels page does not print the same photograph twice.
+    src: "/images/photos/apparels-warehouse-1.jpg",
+    alt: "Open cartons of the season's indents on the Arihant Apparels dispatch floor in Guwahati",
     ratio: "4 / 5",
     real: true,
   },
@@ -402,57 +384,44 @@ export const photoSlots = {
   },
 
   /* ---- Partner / About ------------------------------------------ I8 */
+  /* The real store front beside the managed-store model (change round 9; it
+     stood on a stock shopfront with arched windows). The same ~400px file as
+     retailStorefront, so the frame keeps the small-file cap. */
   partnerStorefront: {
-    src: stockImages.partnerStorefront.src,
-    alt: stockImages.partnerStorefront.alt,
-    ratio: "4 / 5",
-    real: false,
-    wanted: "An Arihant Retail store lit at night, shot from the street.",
+    src: "/images/photos/store-urban-closet.jpg",
+    alt: "An Arihant Retail multi-brand store front, lit for the evening trade",
+    ratio: "6 / 7",
+    real: true,
   },
+  /* The people, not a stock tailor (change round 9). A 16:9 group photograph,
+     so the frame is 3:2 to keep every face. */
   aboutCraft: {
-    src: stockImages.aboutCraft1.src,
-    alt: stockImages.aboutCraft1.alt,
-    ratio: "4 / 5",
-    real: false,
+    src: "/images/photos/apparels-team.jpg",
+    alt: "The Arihant Apparels team at their Guwahati office",
+    ratio: "3 / 2",
+    real: true,
     wanted: "The family on the Arihant Tower floor, or the original counter if a photograph exists.",
   },
-  /* The three expanding panels in the About values section. They read the
-   * stock register directly until these slots existed; routing them through
-   * slots is what makes them replaceable from the Studio. */
+  /* The three expanding panels in the About values section, on the house's
+     own photographs since change round 9: the team at the fair, the team at
+     work on the floor, the dispatch floor. */
   aboutValue1: {
-    src: stockImages.aboutCraft2.src,
-    alt: stockImages.aboutCraft2.alt,
+    src: "/images/photos/apparels-fair-2024.jpg",
+    alt: "The Arihant Apparels team outside the Spring Summer Garment Fair, January 2024",
     ratio: "3 / 4",
-    real: false,
-    wanted: "Whichever of the three values panels the client most wants to show as their own work.",
+    real: true,
   },
   aboutValue2: {
-    src: stockImages.apparelsRacks1.src,
-    alt: stockImages.apparelsRacks1.alt,
+    src: "/images/photos/apparels-warehouse-3.jpg",
+    alt: "The Arihant Apparels team at work on the warehouse floor in Guwahati, cartons and bales around them",
     ratio: "3 / 4",
-    real: false,
-    wanted: "A working Arihant rack or floor, shot portrait for the values panel.",
+    real: true,
   },
   aboutValue3: {
-    src: stockImages.systemsWarehouse1.src,
-    alt: stockImages.systemsWarehouse1.alt,
+    src: "/images/photos/apparels-warehouse-1.jpg",
+    alt: "Open cartons of the season's indents on the Arihant Apparels dispatch floor in Guwahati",
     ratio: "3 / 4",
-    real: false,
-    wanted: "The dispatch desk or godown aisle, shot portrait for the values panel.",
-  },
-
-  /* ---- Contact --------------------------------------------------- X4 */
-  officeMap: {
-    // AWAITING ASSET: a committed static map image of Arihant Tower,
-    // Jyotikuchi. Not a third-party embed — DESIGN.md forbids external
-    // scripts and CDN calls, so this must be a file in the repo. Until it
-    // exists the address block renders its directions link and no image.
-    src: "",
-    alt: "Map showing Arihant Tower, Jyotikuchi, Guwahati",
-    ratio: "3 / 2",
-    real: false,
-    wanted:
-      "A static map export (PNG/WebP, ~1200x800) centred on Arihant Tower, committed under public/images/photos/.",
+    real: true,
   },
 } as const satisfies Record<string, PhotoSlot>;
 

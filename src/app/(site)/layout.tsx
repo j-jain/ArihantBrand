@@ -23,7 +23,10 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
     <>
       <SmoothScroll />
       <SiteHeader whatsapp={settings.defaultWhatsapp} menuLines={menuLines} />
-      <main id="main" className="flex-1">
+      {/* tabIndex -1 so the skip link can land focus here, not only scroll
+          (change round 9: under Lenis the click was intercepted and focus
+          never moved). */}
+      <main id="main" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
       <SiteFooter settings={settings} />
@@ -33,6 +36,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
       <StickyActionBar
         tel={`+${settings.defaultWhatsapp}`}
         whatsapp={settings.defaultWhatsapp}
+        contacts={settings.contacts}
       />
       <WhatsAppFab fallback={settings.defaultWhatsapp} />
     </>

@@ -747,6 +747,12 @@
 
   /* Testimonials: the short mobile list becomes a snap rail (the .m-rail class
      is added in TestimonialColumns.tsx; these are the card-level tweaks). */
+  /* The pause button belongs to the self-scrolling columns, which a phone
+     does not show (change round 9). */
+  .tcols__toggle {
+    display: none;
+  }
+
   .tcols__mobile > li {
     display: flex;
   }
@@ -1655,6 +1661,24 @@
     text-align: start;
     font-size: var(--text-stat);
     line-height: 0.9;
+  }
+
+  /* The audience rail (change round 9): three ruled rows, each a full-width
+     44px tap, under the figures. */
+  .hero-asks {
+    flex-direction: column;
+    gap: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-asks > li {
+    border-top: 1px solid var(--line);
+  }
+
+  .hero-asks .hero-ask {
+    width: 100%;
+    min-height: 2.75rem;
+    justify-content: space-between;
   }
 }
 

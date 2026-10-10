@@ -7,9 +7,8 @@ import {
   FaqAccordion,
   JsonLd,
   LogoWall,
-  Reveal,
   SectionHeading,
-  StaggerGroup,
+  SectionReveal,
   VideoFeature,
 } from "@/components";
 import {
@@ -127,10 +126,14 @@ export default async function ArihantMarketingPage() {
       {film ? (
         <section className="am-band bg-paper-shade" style={unitScope(UNIT)}>
           <div className="container-site">
-            <div className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-12 md:items-center">
+            {/* One entrance for the band (change round 9): the heading's
+                words, then the lead, while the film opens out of its mask. */}
+            <SectionReveal className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-12 md:items-center">
               <div className="m-flow-tight flex flex-col gap-5 md:col-span-5">
                 <div>
-                  <h2 className="t-h2 text-ink">{film.heading}</h2>
+                  <h2 data-sr="heading" className="t-h2 text-ink">
+                    {film.heading}
+                  </h2>
                   <div
                     aria-hidden="true"
                     className="mt-5"
@@ -142,18 +145,20 @@ export default async function ArihantMarketingPage() {
                   />
                 </div>
                 {film.lead ? (
-                  <p className="t-lead measure text-ink-soft">{film.lead}</p>
+                  <p data-sr="lead" className="t-lead measure text-ink-soft">
+                    {film.lead}
+                  </p>
                 ) : null}
               </div>
-              <Reveal variant="clip" className="md:col-span-7">
+              <div data-sr="media" className="md:col-span-7">
                 <VideoFeature
                   mp4="/videos/apparels-promo.mp4"
                   poster="/images/photos/apparels-promo-poster.jpg"
                   label="Play the Arihant Marketing film"
                   className="m-bleed"
                 />
-              </Reveal>
-            </div>
+              </div>
+            </SectionReveal>
           </div>
         </section>
       ) : null}
@@ -166,20 +171,18 @@ export default async function ArihantMarketingPage() {
       {strengths.length && strengthsSection ? (
         <section className="am-band bg-paper" style={unitScope(UNIT)}>
           <div className="container-site">
-            <div className="m-flow grid gap-x-12 gap-y-8 md:grid-cols-12">
-              <Reveal variant="fade" className="md:col-span-4">
+            <SectionReveal
+              className="m-flow grid gap-x-12 gap-y-8 md:grid-cols-12"
+              mobileRows="wipe"
+            >
+              <div className="md:col-span-4">
                 <SectionHeading
                   heading={strengthsSection.heading}
                   lead={strengthsSection.lead}
+                  sr
                 />
-              </Reveal>
-              <StaggerGroup
-                as="ul"
-                from="up"
-                className="am-plate md:col-span-7 md:col-start-6"
-                stagger={0.08}
-                mLedger
-              >
+              </div>
+              <ul data-sr="rows" className="am-plate md:col-span-7 md:col-start-6">
                 {strengths.map((row) => (
                   <li
                     key={row.title}
@@ -191,8 +194,8 @@ export default async function ArihantMarketingPage() {
                     </p>
                   </li>
                 ))}
-              </StaggerGroup>
-            </div>
+              </ul>
+            </SectionReveal>
           </div>
         </section>
       ) : null}
@@ -222,13 +225,17 @@ export default async function ArihantMarketingPage() {
       {brandsSection ? (
         <section className="am-band bg-paper" style={unitScope(UNIT)}>
           <div className="container-wide">
-            <Reveal className="m-flow flex flex-col gap-8">
+            {/* The heading and link belong to the band's entrance; the wall's
+                tiles keep their own batch reveal (a whole-block fade over the
+                batching tiles used to run both at once). */}
+            <SectionReveal className="m-flow flex flex-col gap-8">
               <SectionHeading
                 heading={brandsSection.heading}
                 lead={brandsSection.lead}
+                sr
               />
               <LogoWall partners={marketingPartners} limit={18} />
-              <p>
+              <p data-sr="item">
                 <Link
                   href="/brands"
                   className="t-small font-semibold text-ink underline decoration-[var(--unit-accent)] decoration-2 underline-offset-4 hover:decoration-ink"
@@ -236,7 +243,7 @@ export default async function ArihantMarketingPage() {
                   See the full group portfolio &rarr;
                 </Link>
               </p>
-            </Reveal>
+            </SectionReveal>
           </div>
         </section>
       ) : null}
@@ -245,12 +252,12 @@ export default async function ArihantMarketingPage() {
       {faqs.length ? (
         <section className="am-band bg-paper-shade">
           <div className="container-site">
-            <div className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
-              <Reveal variant="fade">
-                <SectionHeading heading={faqSection?.heading ?? "Straight answers"} />
-              </Reveal>
-              <FaqAccordion faqs={faqs} />
-            </div>
+            <SectionReveal className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
+              <div>
+                <SectionHeading heading={faqSection?.heading ?? "Straight answers"} sr />
+              </div>
+              <FaqAccordion faqs={faqs} rows />
+            </SectionReveal>
           </div>
           <JsonLd data={faqJsonLd(faqs)} />
         </section>
@@ -276,29 +283,33 @@ export default async function ArihantMarketingPage() {
               </p>
             ) : null}
           </div>
-          {/* Both funnels, each with its own destination. The loose phone
-              number that used to sit here routed brand enquiries to a
-              distribution desk by hand; the form tags the intent instead
-              (AM12). */}
+          {/* Both funnels, each with its own destination, in the hero's own
+              words (change round 9: the labels used to be typed here, so a
+              Studio edit to the hero left the foot of the page saying
+              something else). The loose phone number that used to sit here
+              routed brand enquiries to a distribution desk by hand; the form
+              tags the intent instead (AM12). */}
           <div
             data-drench-reveal
             className="m-cta flex shrink-0 flex-col items-start gap-4"
           >
             <Button
-              href="/contact?intent=retailer"
+              href={hero.primaryCta.href}
               variant="onDark"
               size="lg"
               className="press"
             >
-              Become a retail partner
+              {hero.primaryCta.label}
             </Button>
-            <a
-              href="/contact?intent=brand"
-              className="m-tap t-small underline-offset-4 hover:underline"
-              style={{ color: "var(--_text-soft)" }}
-            >
-              Distribute your brand &rarr;
-            </a>
+            {hero.secondaryCta ? (
+              <a
+                href={hero.secondaryCta.href}
+                className="m-tap t-small underline-offset-4 hover:underline"
+                style={{ color: "var(--_text-soft)" }}
+              >
+                {hero.secondaryCta.label}{" "}&rarr;
+              </a>
+            ) : null}
           </div>
         </div>
       </DrenchBand>

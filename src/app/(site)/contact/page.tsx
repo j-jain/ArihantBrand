@@ -10,8 +10,8 @@ import {
   HeroIntro,
   JsonLd,
   MapPinIcon,
-  Reveal,
   SectionHeading,
+  SectionReveal,
 } from "@/components";
 import { ContactForm } from "./_components/ContactForm";
 
@@ -64,6 +64,20 @@ export default async function ContactPage() {
             <p data-hero-reveal className="t-lead measure text-ink-soft">
               {hero.lead}
             </p>
+            {/* The hero's one ask as a quiet jump to the form (change round
+                9; the field existed and nothing rendered it). */}
+            {hero.primaryCta?.label ? (
+              <div data-hero-reveal>
+                <a href={hero.primaryCta.href} className="hero-jump group press">
+                  <span className="underline decoration-line decoration-2 underline-offset-4 transition-colors group-hover:decoration-vermillion-deep">
+                    {hero.primaryCta.label}
+                  </span>
+                  <span aria-hidden="true" className="hero-jump__chev">
+                    ▾
+                  </span>
+                </a>
+              </div>
+            ) : null}
           </div>
         </HeroIntro>
       </section>
@@ -71,10 +85,13 @@ export default async function ContactPage() {
       {/* 2 — Form + direct channels split */}
       <section id="inquiry" className="section-pad bg-paper-shade">
         <div className="container-site">
-          <div className="m-flow-loose grid gap-x-12 gap-y-14 md:grid-cols-12">
-            <Reveal variant="clip" className="md:col-span-7">
+          {/* One entrance for the split (change round 9): both headings'
+              words rise together, the channels rule in as rows. The form is
+              never hidden, so a reader arriving on #inquiry finds it ready. */}
+          <SectionReveal className="m-flow-loose grid gap-x-12 gap-y-14 md:grid-cols-12">
+            <div className="md:col-span-7">
               <div className="m-flow flex flex-col gap-8">
-                <SectionHeading heading={sections.form.heading} />
+                <SectionHeading heading={sections.form.heading} sr />
                 <Suspense fallback={null}>
                   <ContactForm
                     whatsapp={settings.defaultWhatsapp}
@@ -82,17 +99,17 @@ export default async function ContactPage() {
                   />
                 </Suspense>
               </div>
-            </Reveal>
+            </div>
 
-            <Reveal variant="fade" delay={0.08} className="md:col-span-5">
+            <div className="md:col-span-5">
               <aside className="m-flow flex flex-col gap-8">
-                <SectionHeading heading={sections.direct.heading} lead={sections.direct.lead} />
+                <SectionHeading heading={sections.direct.heading} lead={sections.direct.lead} sr />
 
-                <div className="[&>div]:!grid-cols-1">
+                <div data-sr="rows" className="[&>div]:!grid-cols-1">
                   <ContactChannels contacts={settings.contacts} />
                 </div>
 
-                <div className="contact-address flex flex-col gap-2 border-t border-line pt-6">
+                <div data-sr="item" className="contact-address flex flex-col gap-2 border-t border-line pt-6">
                   <p className="flex items-start gap-2 t-body text-ink">
                     <span className="mt-0.5 flex-none text-ink-soft">
                       <MapPinIcon />
@@ -116,8 +133,8 @@ export default async function ContactPage() {
                   </a>
                 </div>
               </aside>
-            </Reveal>
-          </div>
+            </div>
+          </SectionReveal>
         </div>
       </section>
 

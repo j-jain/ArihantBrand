@@ -40,9 +40,19 @@ export default function SmoothScroll() {
       if (!anchor) return;
       const hash = anchor.getAttribute("href");
       if (!hash || hash === "#") return;
-      if (!document.querySelector(hash)) return;
+      const target = document.querySelector<HTMLElement>(hash);
+      if (!target) return;
       event.preventDefault();
-      lenis.scrollTo(hash, { offset: -88 });
+      // Keep the focus move a native jump would have made (change round 9):
+      // the skip link to #main was scrolling the page but leaving focus on
+      // the link, so a keyboard reader tabbed through the header again.
+      lenis.scrollTo(hash, {
+        offset: -88,
+        onComplete: () => {
+          if (target.tabIndex < 0 && !target.hasAttribute("tabindex")) return;
+          target.focus({ preventScroll: true });
+        },
+      });
     };
     document.addEventListener("click", onAnchorClick);
 

@@ -27,7 +27,7 @@ function altForImage(src?: string): string {
 
 /** End-matter call to action, keyed on who the note was written for. */
 const CTA_BY_AUDIENCE: Record<Post["audience"], { label: string; href: string }> = {
-  Retailers: { label: "Become a retail partner", href: "/contact?intent=retailer" },
+  Retailers: { label: "Stock our brands", href: "/contact?intent=retailer" },
   Brands: { label: "Distribute your brand", href: "/contact?intent=brand" },
   Investors: { label: "See the partnership model", href: "/partner" },
 };
@@ -49,6 +49,10 @@ export async function generateMetadata({
     title: post.title,
     description: post.metaDescription,
     path: `/blog/${slug}`,
+    type: "article",
+    // A Studio upload is already an absolute cdn.sanity.io URL; the seed's
+    // header image is a site-root path that pageMetadata completes.
+    ...(post.image && !post.image.startsWith("http") ? { image: post.image } : {}),
   });
 }
 

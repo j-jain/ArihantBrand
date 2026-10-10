@@ -9,18 +9,17 @@ import {
   HeroIntro,
   JsonLd,
   ParallaxImage,
-  Reveal,
   SectionHeading,
-  StaggerGroup,
+  SectionReveal,
   Timeline,
   ValuePanels,
-  cn,
 } from "@/components";
 import {
   getBusinesses,
   getLeaderPortraits,
   getPageCopy,
   getPhotoSlots,
+  getSiteSettings,
   getTimeline,
   getValues,
 } from "@/lib/content";
@@ -51,13 +50,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [copy, businesses, values, timeline, portraits, photos] = await Promise.all([
+  const [copy, businesses, values, timeline, portraits, photos, settings] = await Promise.all([
     getPageCopy("about"),
     getBusinesses(),
     getValues(),
     getTimeline(),
     getLeaderPortraits(),
     getPhotoSlots(),
+    getSiteSettings(),
   ]);
 
   if (!copy) notFound();
@@ -65,12 +65,14 @@ export default async function AboutPage() {
   const { hero, sections } = copy;
   const storyBody = sections.story.body ?? [];
 
-  // One nameplate per named leader, tagged with their business + unit accent.
+  // One row per named leader, tagged with their business, its floor of
+  // Arihant Tower (from the contact settings) and the unit accent.
   const leaders = businesses.flatMap((business) =>
     business.leaders.map((name) => ({
       name,
       role: business.name,
       unit: business.unit,
+      floor: settings.contacts.find((c) => c.unit === business.unit)?.floor,
     })),
   );
 
@@ -139,29 +141,32 @@ export default async function AboutPage() {
         </HeroIntro>
       </section>
 
-      {/* 2 — Story (paper) -------------------------------------------------- */}
+      {/* 2 — Story (paper): one entrance for the band (change round 9), the
+          heading's words first, the paragraphs after, the photograph opening
+          out of its mask beside them. The h2 used to just appear. */}
       <section className="border-t border-line bg-paper">
         <div className="container-site section-pad">
-          <div className="m-flow grid gap-x-14 gap-y-10 md:grid-cols-12">
+          <SectionReveal className="m-flow grid gap-x-14 gap-y-10 md:grid-cols-12">
             <div className="prose md:col-span-7">
-              <h2 className="t-h2 text-ink">{sections.story.heading}</h2>
-              {storyBody.map((paragraph, i) => (
-                <p
-                  key={i}
-                  className={cn(
-                    "mt-6 text-ink",
-                    i === 0 ? "t-lead" : "t-body text-ink-soft",
-                  )}
-                >
-                  {paragraph}
-                </p>
-              ))}
+              <h2 data-sr="heading" className="t-h2 text-ink">
+                {sections.story.heading}
+              </h2>
+              <div data-sr="rows">
+                {storyBody.map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className={i === 0 ? "mt-6 t-lead text-ink" : "mt-6 t-body text-ink-soft"}
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             </div>
 
-            {/* Standing aside: the values headline over an editorial craft photo. */}
+            {/* Standing aside: the values headline over the people. */}
             <aside className="md:col-span-5">
               <div className="m-flow flex flex-col gap-8 md:sticky md:top-28">
-                <div>
+                <div data-sr="lead">
                   <span
                     aria-hidden="true"
                     className="mb-5 block h-[3px] w-16 rounded-full bg-vermillion-deep"
@@ -173,18 +178,20 @@ export default async function AboutPage() {
                     {sections.story.lead}
                   </p>
                 </div>
-                <ParallaxImage
-                  src={photos.aboutCraft.src}
-                  alt={photos.aboutCraft.alt}
-                  ratio={photos.aboutCraft.ratio}
-                  sizes="(max-width: 767px) 100vw, 40vw"
-                  tilt
-                  mBleed
-                  className="m-ar-4-3"
-                />
+                <div data-sr="media">
+                  <ParallaxImage
+                    src={photos.aboutCraft.src}
+                    alt={photos.aboutCraft.alt}
+                    ratio={photos.aboutCraft.ratio}
+                    sizes="(max-width: 767px) 100vw, 40vw"
+                    tilt
+                    mBleed
+                    className="m-ar-4-3"
+                  />
+                </div>
               </div>
             </aside>
-          </div>
+          </SectionReveal>
         </div>
       </section>
 
@@ -196,37 +203,37 @@ export default async function AboutPage() {
         images={[photos.aboutValue1, photos.aboutValue2, photos.aboutValue3]}
       />
 
-      {/* 4 — Leadership (paper) -------------------------------------------- */}
+      {/* 4 — Leadership (paper), as a ruled ledger (change round 9). Four
+          4:5 plates stood here with nothing but a monogram in each, because
+          no portrait exists yet; a ledger says who, which house and which
+          floor in one band, and takes a portrait beside the name the day one
+          lands. The phone layer already set these hooks as a ledger
+          (mobile.css, About), so the two now agree. */}
       <section className="bg-paper">
-        <div className="container-site section-pad m-flow flex flex-col gap-12">
-          <Reveal variant="fade">
-            <SectionHeading
-              heading={sections.leadership.heading}
-              lead={sections.leadership.lead}
-            />
-          </Reveal>
-          <StaggerGroup
-            className="leaders grid gap-5 sm:grid-cols-2 md:grid-cols-4"
-            from="scale"
-            stagger={0.08}
-          >
+        <SectionReveal
+          className="container-site section-pad m-flow flex flex-col gap-12"
+          mobileRows="wipe"
+        >
+          <SectionHeading
+            heading={sections.leadership.heading}
+            lead={sections.leadership.lead}
+            sr
+          />
+          <ul data-sr="rows" className="leaders flex flex-col border-t border-line">
             {leaders.map((leader) => {
               const portrait = portraits[leader.name];
               return (
-                <figure
+                <li
                   key={leader.name}
-                  className="leader press-soft flex flex-col overflow-hidden rounded-[2px] border border-line"
+                  className="leader press-soft flex items-center gap-6 border-b border-line py-5"
                 >
-                  {/* Portrait frame. Until a real photograph is dropped in, the
-                      monogram plate holds the space deliberately rather than
-                      leaving the card a bare nameplate. */}
-                  <div className="leader__plate relative aspect-[4/5] w-full overflow-hidden bg-paper-shade">
+                  <span className="leader__plate relative aspect-square w-16 shrink-0 overflow-hidden rounded-[2px] bg-paper-shade">
                     {portrait ? (
                       <Image
                         src={portrait.src}
                         alt={portrait.alt}
                         fill
-                        sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, 22vw"
+                        sizes="(max-width: 767px) 76px, 64px"
                         className="object-cover"
                       />
                     ) : (
@@ -235,35 +242,42 @@ export default async function AboutPage() {
                         className="absolute inset-0 flex items-center justify-center font-display"
                         style={{
                           fontWeight: 700,
-                          fontSize: "clamp(3rem, 6vw, 4.25rem)",
+                          fontSize: "1.3rem",
                           lineHeight: 1,
                           letterSpacing: "0.02em",
-                          color: "var(--line)",
+                          color: "var(--ink-soft)",
                         }}
                       >
                         {leader.name.slice(0, 2).toUpperCase()}
                       </span>
                     )}
-                  </div>
-                  <figcaption className="leader__cap flex flex-col gap-3 p-6">
-                    <span
-                      aria-hidden="true"
-                      className="block h-[3px] w-10 rounded-full"
-                      style={{ background: UNIT_ACCENT[leader.unit].token }}
-                    />
+                  </span>
+                  <span className="leader__cap flex flex-1 flex-wrap items-baseline gap-x-6 gap-y-1">
                     <span
                       className="font-display text-ink"
                       style={{ fontWeight: 700, fontSize: "var(--text-h4)", lineHeight: 1.25 }}
                     >
                       {leader.name}
                     </span>
-                    <span className="t-small text-ink-soft">{leader.role}</span>
-                  </figcaption>
-                </figure>
+                    <span className="t-small inline-flex items-center gap-2 text-ink-soft">
+                      <span
+                        aria-hidden="true"
+                        className="block h-[3px] w-6 rounded-full"
+                        style={{ background: UNIT_ACCENT[leader.unit].token }}
+                      />
+                      {leader.role}
+                    </span>
+                    {leader.floor ? (
+                      <span className="t-small text-ink-soft md:ml-auto">
+                        {leader.floor}, Arihant Tower
+                      </span>
+                    ) : null}
+                  </span>
+                </li>
               );
             })}
-          </StaggerGroup>
-        </div>
+          </ul>
+        </SectionReveal>
       </section>
 
       {/* 5 — Timeline (paper-shade): full-width so its ghost-year column breathes */}

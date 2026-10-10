@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ElementType } from "react";
-import { gsap, SplitText, useGSAP, EASE } from "@/lib/gsap";
+import { gsap, SplitText, useGSAP, EASE, REVEAL, onScreenAtMount } from "@/lib/gsap";
 import { EmphasisHeading } from "@/app/(site)/_components/EmphasisHeading";
 
 interface SplitHeadingProps {
@@ -33,6 +33,9 @@ export function SplitHeading({
       if (!root) return;
       const heading = root.firstElementChild as HTMLElement | null;
       if (!heading) return;
+      // Inside a SectionReveal the section's one timeline owns the heading
+      // (change round 9); a second trigger here would animate it twice.
+      if (root.closest("[data-section-reveal]")) return;
 
       const mm = gsap.matchMedia(ref);
       mm.add(
@@ -50,8 +53,7 @@ export function SplitHeading({
           };
           if (reduced) return;
 
-          const rect = heading.getBoundingClientRect();
-          if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) return;
+          if (onScreenAtMount(heading)) return;
 
           if (mobile) {
             gsap.from(heading, {
@@ -59,7 +61,7 @@ export function SplitHeading({
               y: 12,
               duration: 0.5,
               ease: EASE,
-              scrollTrigger: { trigger: heading, start: "top 85%", once: true },
+              scrollTrigger: { trigger: heading, start: REVEAL.startMobile, once: true },
             });
             return;
           }
@@ -76,12 +78,12 @@ export function SplitHeading({
               });
               gsap.from(split.words, {
                 yPercent: 105,
-                duration: 0.7,
-                stagger: 0.045,
+                duration: REVEAL.words,
+                stagger: REVEAL.wordStagger,
                 ease: EASE,
                 scrollTrigger: {
                   trigger: heading,
-                  start: "top 85%",
+                  start: REVEAL.start,
                   once: true,
                 },
                 onComplete: () => {

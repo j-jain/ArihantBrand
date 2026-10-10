@@ -23,9 +23,8 @@ import {
   JsonLd,
   ModelBoard,
   ParallaxImage,
-  Reveal,
   SectionHeading,
-  StaggerGroup,
+  SectionReveal,
   cn,
 } from "@/components";
 import { submitLeadAction } from "@/app/actions/lead";
@@ -162,8 +161,13 @@ export default async function PartnerPage() {
             src={photos.partnerStorefront.src}
             alt={photos.partnerStorefront.alt}
             ratio={photos.partnerStorefront.ratio}
-            sizes="(max-width: 767px) 100vw, 34vw"
-            className="m-ar-4-3 border border-line"
+            // A real store front since change round 9, a ~400px file, so the
+            // frame is capped at 15.5rem (motion.css .model-board__media), the
+            // picture is not overscanned, and the phone keeps its 6:7 (a 4:3
+            // crop would cut the sign).
+            sizes="(max-width: 767px) 100vw, 15.5rem"
+            className="border border-line"
+            parallax={false}
             mBleed
           />
         }
@@ -172,31 +176,24 @@ export default async function PartnerPage() {
       {/* 3 — Proof: real stores, already trading */}
       <section className="section-pad bg-paper-shade">
         <div className="container-site">
-          <div className="m-flow flex flex-col gap-10">
-            <Reveal variant="fade">
-              <SectionHeading heading={sections.proof.heading} lead={sections.proof.lead} />
-            </Reveal>
+          <SectionReveal className="m-flow flex flex-col gap-10">
+            <SectionHeading heading={sections.proof.heading} lead={sections.proof.lead} sr />
             {/* Store photographs when a store record carries one; until then
-                the one storefront shot we hold, uncaptioned (it names no town). */}
-            <ProofStrip stores={stores} fallback={photos.retailStorefront} />
-          </div>
+                the real store floor, uncaptioned (change round 9: the
+                storefront now stands beside the model above, so the two real
+                store photographs appear once each). The strip keeps its own
+                stagger. */}
+            <ProofStrip stores={stores} fallback={photos.retailInterior} />
+          </SectionReveal>
         </div>
       </section>
 
       {/* 4 — How it works: the four franchise steps, sequenced in */}
       <section id="how-it-works" className="section-pad bg-paper">
         <div className="container-site">
-          <div className="m-flow flex flex-col gap-12">
-            <Reveal variant="fade">
-              <SectionHeading heading={sections.how.heading} lead={sections.how.lead} />
-            </Reveal>
-            <StaggerGroup
-              as="ol"
-              from="up"
-              className="grid gap-x-6 gap-y-10 md:grid-cols-4"
-              stagger={0.12}
-              mLedger
-            >
+          <SectionReveal className="m-flow flex flex-col gap-12" mobileRows="wipe">
+            <SectionHeading heading={sections.how.heading} lead={sections.how.lead} sr />
+            <ol data-sr="rows" className="grid gap-x-6 gap-y-10 md:grid-cols-4">
               {steps.map((step, index) => (
                 <li
                   key={step.title}
@@ -213,26 +210,31 @@ export default async function PartnerPage() {
                   <p className="t-body text-ink-soft">{step.text}</p>
                 </li>
               ))}
-            </StaggerGroup>
-          </div>
+            </ol>
+          </SectionReveal>
         </div>
       </section>
 
-      {/* 5 — FAQ: on charcoal, the questions serious investors ask */}
+      {/* 5 — FAQ: on charcoal, the questions serious investors ask (its
+          entrance arrived in change round 9; it was the one band that just
+          appeared). */}
       <section className="section-pad on-dark">
         <div className="container-site">
-          <div className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
-            <SectionHeading heading={sections.faq.heading} onDark />
-            <FaqAccordion faqs={faqs} />
-          </div>
+          <SectionReveal className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
+            <div>
+              <SectionHeading heading={sections.faq.heading} onDark sr />
+            </div>
+            <FaqAccordion faqs={faqs} rows />
+          </SectionReveal>
         </div>
       </section>
 
-      {/* 6 — Inquiry */}
+      {/* 6 — Inquiry. The form itself is never hidden: a reader landing on
+          #inquiry from a link must find it ready. */}
       <section id="inquiry" className="section-pad bg-paper">
         <div className="container-site">
-          <div className="m-flow flex flex-col gap-10">
-            <SectionHeading heading={sections.inquiry.heading} lead={sections.inquiry.lead} />
+          <SectionReveal className="m-flow flex flex-col gap-10">
+            <SectionHeading heading={sections.inquiry.heading} lead={sections.inquiry.lead} sr />
             <div className="m-flow grid gap-x-12 gap-y-12 md:grid-cols-12">
               <div className="md:col-span-7">
                 <InquiryForm
@@ -243,7 +245,7 @@ export default async function PartnerPage() {
                 />
               </div>
               {retailContact ? (
-                <aside className="m-flow-tight flex flex-col gap-5 md:col-span-5">
+                <aside data-sr="item" className="m-flow-tight flex flex-col gap-5 md:col-span-5">
                   <p className="t-h4 text-ink">Prefer to talk first?</p>
                   <p className="t-body text-ink-soft measure">
                     Skip the form. Call or WhatsApp the Arihant Retail desk directly.
@@ -252,7 +254,7 @@ export default async function PartnerPage() {
                 </aside>
               ) : null}
             </div>
-          </div>
+          </SectionReveal>
         </div>
       </section>
     </>

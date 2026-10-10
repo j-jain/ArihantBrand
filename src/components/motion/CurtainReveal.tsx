@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP, EASE } from "@/lib/gsap";
+import { gsap, useGSAP, EASE, REVEAL, onScreenAtMount } from "@/lib/gsap";
 
 interface CurtainRevealProps {
   children: ReactNode;
@@ -38,16 +38,15 @@ export function CurtainReveal({ children, className }: CurtainRevealProps) {
 
           // Skip anything already on screen at mount so it neither flashes nor
           // hides after the server paint.
-          const rect = el.getBoundingClientRect();
-          if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) return;
+          if (onScreenAtMount(el)) return;
 
           if (mobile) {
             gsap.from(el, {
               autoAlpha: 0,
               y: 14,
-              duration: 0.45,
+              duration: REVEAL.durMobile,
               ease: EASE,
-              scrollTrigger: { trigger: el, start: "top 80%", once: true },
+              scrollTrigger: { trigger: el, start: REVEAL.band, once: true },
             });
             return;
           }
@@ -59,7 +58,7 @@ export function CurtainReveal({ children, className }: CurtainRevealProps) {
               clipPath: "inset(0 0 0% 0)",
               duration: 0.9,
               ease: EASE,
-              scrollTrigger: { trigger: el, start: "top 75%", once: true },
+              scrollTrigger: { trigger: el, start: REVEAL.band, once: true },
               // `inset(0)` still clips to the border box: left in place it would
               // slice the focus rings off any control flush with the band edge.
               onComplete: () => gsap.set(el, { clearProps: "clipPath" }),

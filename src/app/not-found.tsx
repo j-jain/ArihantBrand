@@ -4,7 +4,11 @@ import { Button } from "@/components";
  *  shell). Small, on-brand, and routes the reader straight back to trade. */
 export default function NotFound() {
   return (
-    <main className="on-dark flex min-h-dvh flex-col items-center justify-center gap-6 px-6 text-center">
+    <main
+      id="main"
+      tabIndex={-1}
+      className="on-dark flex min-h-dvh flex-col items-center justify-center gap-6 px-6 text-center"
+    >
       <p className="t-label text-on-charcoal-soft">Error 404</p>
       <h1 className="t-display text-on-charcoal">This rack is empty.</h1>
       <p className="t-lead measure text-on-charcoal-soft">

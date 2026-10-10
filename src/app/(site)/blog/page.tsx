@@ -93,7 +93,7 @@ export default async function BlogPage() {
                         fill
                         priority={i === 0}
                         sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] will-change-transform group-hover:scale-[1.045]"
+                        className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] group-hover:scale-[1.045]"
                       />
                     ) : null}
                   </div>

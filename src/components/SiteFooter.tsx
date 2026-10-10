@@ -37,8 +37,11 @@ export function SiteFooter({ settings }: SiteFooterProps) {
         {/* Top row: reach line + contact channels (left), map (right). On a
             phone the reach line sits beside the map and the three units fold
             into an accordion (mobile.css section 6). */}
-        <div className="footer-top grid items-start md:grid-cols-12 md:gap-16">
-          <div className="footer-top__copy md:col-span-7">
+        {/* 8/4 since change round 9 (was 7/5 and a 16-unit gap): the three
+            unit columns need the width for an address like
+            accounts@arihantmarketing.net to break once at the "@", not twice. */}
+        <div className="footer-top grid items-start md:grid-cols-12 md:gap-12">
+          <div className="footer-top__copy md:col-span-8">
             <h2 className="t-h3 text-on-charcoal">
               From Guwahati to counters across the Northeast.
             </h2>
@@ -51,7 +54,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
               className="md:hidden"
             />
           </div>
-          <div className="footer-map mt-12 md:col-span-5 md:mt-0">
+          <div className="footer-map mt-12 md:col-span-4 md:mt-0">
             <NetworkMap />
           </div>
         </div>

@@ -8,9 +8,8 @@ import {
   JsonLd,
   LogoWall,
   ParallaxImage,
-  Reveal,
   SectionHeading,
-  StaggerGroup,
+  SectionReveal,
 } from "@/components";
 import {
   getBusinesses,
@@ -112,19 +111,27 @@ export default async function ArihantApparelsPage() {
         }}
       >
         <div className="container-site">
-          <Reveal variant="fade" className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-12 md:items-start">
-            <ParallaxImage
-              src={photos.apparelsWarehouse.src}
-              alt={photos.apparelsWarehouse.alt}
-              ratio={photos.apparelsWarehouse.ratio}
-              sizes="(max-width: 767px) 100vw, 40vw"
-              className="m-ar-4-3 border border-line md:col-span-5"
-              tilt
-              mBleed
-            />
+          {/* One entrance (change round 9): the photograph opens out of its
+              mask while the heading's words rise, then the line and the copy.
+              The mask sits on a wrapper, never on the parallax frame, which
+              owns its own transforms. */}
+          <SectionReveal className="m-flow grid gap-y-8 gap-x-16 md:grid-cols-12 md:items-start">
+            <div data-sr="media" className="md:col-span-5">
+              <ParallaxImage
+                src={photos.apparelsWarehouse.src}
+                alt={photos.apparelsWarehouse.alt}
+                ratio={photos.apparelsWarehouse.ratio}
+                sizes="(max-width: 767px) 100vw, 40vw"
+                className="m-ar-4-3 border border-line"
+                tilt
+                mBleed
+              />
+            </div>
             <div className="m-flow flex flex-col gap-6 md:col-span-7">
               <div>
-                <h2 className="t-h2 text-ink">{mission.heading}</h2>
+                <h2 data-sr="heading" className="t-h2 text-ink">
+                  {mission.heading}
+                </h2>
                 <div
                   aria-hidden="true"
                   className="mt-5"
@@ -133,24 +140,36 @@ export default async function ArihantApparelsPage() {
               </div>
               {mission.lead ? (
                 <p
+                  data-sr="lead"
                   className="font-display measure text-ink"
                   style={{ fontStyle: "italic", fontSize: "var(--text-h3)", lineHeight: 1.3 }}
                 >
                   {mission.lead}
                 </p>
               ) : null}
-              {business ? (
-                <p className="t-lead measure text-ink-soft">{business.summary}</p>
+              {/* The section's own paragraph (change round 9); a Studio
+                  document without one prints the business summary, as the
+                  page always did. */}
+              {mission.body?.length ? (
+                mission.body.map((paragraph) => (
+                  <p key={paragraph} data-sr="item" className="t-lead measure text-ink-soft">
+                    {paragraph}
+                  </p>
+                ))
+              ) : business ? (
+                <p data-sr="item" className="t-lead measure text-ink-soft">
+                  {business.summary}
+                </p>
               ) : null}
               {/* The retailer ask, inline where the mission has just been made
                   (AA4). */}
-              <div className="m-cta mt-1">
+              <div data-sr="item" className="m-cta mt-1">
                 <Button href={hero.primaryCta.href} variant="primary" size="lg" className="press">
                   {hero.primaryCta.label}
                 </Button>
               </div>
             </div>
-          </Reveal>
+          </SectionReveal>
         </div>
       </section>
 
@@ -168,27 +187,25 @@ export default async function ArihantApparelsPage() {
             borderBlock: "1px solid var(--unit-accent-line)",
           }}
         >
-          <div className="container-site m-flow flex flex-col gap-12">
-            <Reveal variant="fade">
-              <SectionHeading heading={teamSection.heading} lead={teamSection.lead} />
-            </Reveal>
+          <SectionReveal
+            className="container-site m-flow flex flex-col gap-12"
+            from="left"
+            mobileRows="wipe"
+          >
+            <SectionHeading heading={teamSection.heading} lead={teamSection.lead} sr />
             <div className="m-flow grid gap-y-10 gap-x-16 md:grid-cols-12 md:items-start">
-              <ParallaxImage
-                src={photos.apparelsTeam.src}
-                alt={photos.apparelsTeam.alt}
-                ratio={photos.apparelsTeam.ratio}
-                sizes="(max-width: 767px) 100vw, 46vw"
-                className="border border-line md:col-span-6"
-                tilt
-                mBleed
-              />
-              <StaggerGroup
-                as="ul"
-                from="up"
-                className="flex flex-col border-t border-line md:col-span-6"
-                stagger={0.08}
-                mLedger
-              >
+              <div data-sr="media" className="md:col-span-6">
+                <ParallaxImage
+                  src={photos.apparelsTeam.src}
+                  alt={photos.apparelsTeam.alt}
+                  ratio={photos.apparelsTeam.ratio}
+                  sizes="(max-width: 767px) 100vw, 46vw"
+                  className="border border-line"
+                  tilt
+                  mBleed
+                />
+              </div>
+              <ul data-sr="rows" className="flex flex-col border-t border-line md:col-span-6">
                 {team.map((member) => (
                   <li
                     key={member.name}
@@ -205,9 +222,9 @@ export default async function ArihantApparelsPage() {
                     </span>
                   </li>
                 ))}
-              </StaggerGroup>
+              </ul>
             </div>
-          </div>
+          </SectionReveal>
         </section>
       ) : null}
 
@@ -222,10 +239,10 @@ export default async function ArihantApparelsPage() {
       {/* 5 — Brand wall (paper-shade) */}
       <section className="section-pad bg-paper-shade" style={unitScope(UNIT)}>
         <div className="container-wide">
-          <Reveal className="m-flow flex flex-col gap-8">
-            <SectionHeading heading={brandsSection.heading} lead={brandsSection.lead} />
+          <SectionReveal className="m-flow flex flex-col gap-8">
+            <SectionHeading heading={brandsSection.heading} lead={brandsSection.lead} sr />
             <LogoWall partners={apparelsPartners} />
-            <p>
+            <p data-sr="item">
               <Link
                 href="/brands"
                 className="t-small font-semibold text-ink underline decoration-[var(--unit-accent)] decoration-2 underline-offset-4 hover:decoration-ink"
@@ -233,7 +250,7 @@ export default async function ArihantApparelsPage() {
                 See the full group portfolio &rarr;
               </Link>
             </p>
-          </Reveal>
+          </SectionReveal>
         </div>
       </section>
 
@@ -241,12 +258,12 @@ export default async function ArihantApparelsPage() {
       {faqs.length ? (
         <section className="section-pad bg-paper">
           <div className="container-site">
-            <div className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
-              <Reveal variant="fade">
-                <SectionHeading heading={faqSection?.heading ?? ""} />
-              </Reveal>
-              <FaqAccordion faqs={faqs} />
-            </div>
+            <SectionReveal className="m-flow grid gap-10 md:grid-cols-[1fr_1.4fr]">
+              <div>
+                <SectionHeading heading={faqSection?.heading ?? ""} sr />
+              </div>
+              <FaqAccordion faqs={faqs} rows />
+            </SectionReveal>
           </div>
           <JsonLd data={faqJsonLd(faqs)} />
         </section>
@@ -265,17 +282,20 @@ export default async function ArihantApparelsPage() {
               {ctaSection.lead}
             </p>
           ) : null}
+          {/* The hero's two asks, in the hero's own words (change round 9). */}
           <div data-drench-reveal className="m-cta mt-1 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <Button href="/contact?intent=retailer" variant="onDark" size="lg" className="press">
-              Shop fast moving brands
+            <Button href={hero.primaryCta.href} variant="onDark" size="lg" className="press">
+              {hero.primaryCta.label}
             </Button>
-            <a
-              href="/contact?intent=brand"
-              className="m-tap t-small underline-offset-4 hover:underline"
-              style={{ color: "var(--_text-soft)" }}
-            >
-              Partner as a brand &rarr;
-            </a>
+            {hero.secondaryCta ? (
+              <a
+                href={hero.secondaryCta.href}
+                className="m-tap t-small underline-offset-4 hover:underline"
+                style={{ color: "var(--_text-soft)" }}
+              >
+                {hero.secondaryCta.label}{" "}&rarr;
+              </a>
+            ) : null}
           </div>
         </div>
       </DrenchBand>

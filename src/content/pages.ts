@@ -12,16 +12,26 @@ export const pages: Record<string, PageCopy> = {
     hero: {
       heading: "The leading garment house of Northeast India",
       headingEmphasis: "leading",
-      // The lead is the client's own line, typed in the Studio. The two figures
-      // the trade actually weighs sit under it as `points`: number first, label
-      // capitalised (change round 3, the client's wording).
-      lead: "Let's understand the house of North East India",
+      // Change round 9: the proposition in one line (what the house does, for
+      // whom, from where). The client's earlier line, "Let's understand the
+      // house of North East India", is flagged in the status doc for their
+      // veto. The two figures the trade actually weighs sit under it as
+      // `points`: number first, label capitalised (change round 3, the
+      // client's wording).
+      lead: "Brand distribution and company-run retail across all seven states, from one Guwahati house.",
       points: [
         `${phrase.groupRetailers} Retailers served`,
         `${phrase.groupBrandPartners} Brand partners`,
       ],
-      primaryCta: { label: "Partner with us", href: "/contact" },
+      primaryCta: { label: "Talk to us", href: "/contact" },
       secondaryCta: { label: "The three businesses", href: "#businesses" },
+      // Change round 9: the first screen routes each of the three audiences
+      // itself. One verb per audience, used the same way on every page.
+      audienceLinks: [
+        { label: "I run a store", href: "/contact?intent=retailer" },
+        { label: "I have a brand", href: "/contact?intent=brand" },
+        { label: "I want to own a store", href: "/partner" },
+      ],
     },
     sections: {
       // The heading as the client typed it in the Studio; the lead shortened
@@ -50,7 +60,7 @@ export const pages: Record<string, PageCopy> = {
       },
       cta: {
         heading: "Bring your business to Arihant",
-        lead: "Retailer, brand or investor. Tell us which, and the right person calls you back within one working day.",
+        lead: "Retailer, brand or investor: tell us which, and the right desk calls you back within one working day.",
       },
     },
   },
@@ -60,11 +70,13 @@ export const pages: Record<string, PageCopy> = {
     metaDescription: `Northeast India's pioneer readymade garments distributor: ${atLeast(facts.marketing.years)} years, ${phrase.marketingRetailers} retailers, ${phrase.sisCounters} shop-in-shop counters, a ${phrase.marketingWarehouse} Guwahati warehouse.`,
     hero: {
       // Change round 6: the positioning in five words, then the proof in one
-      // sentence (reach, region, rhythm). Every figure from facts.ts.
+      // sentence (reach, region, rhythm). Every figure from facts.ts. Change
+      // round 9: the cycle is "fixed" here, not a numeral; the number is said
+      // in the FAQ and on the home card only (PRODUCT.md, repetition).
       heading: "The Northeast's pioneer garment distributor",
       headingEmphasis: "pioneer",
-      lead: `Since the 1990s we have carried national brands to ${phrase.marketingRetailers} retailers in all seven states of the Northeast, visiting every counter on a ${facts.marketing.visitCycleDays}-day cycle.`,
-      primaryCta: { label: "Become a retail partner", href: "/contact?intent=retailer" },
+      lead: `Since the 1990s we have carried national brands to ${phrase.marketingRetailers} retailers in all seven states of the Northeast, and we stand in every counter on a fixed cycle.`,
+      primaryCta: { label: "Stock our brands", href: "/contact?intent=retailer" },
       secondaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
     },
     sections: {
@@ -88,10 +100,6 @@ export const pages: Record<string, PageCopy> = {
         heading: "Inside Arihant Marketing",
         lead: "A look at the team, the warehouse and the fairs where the season's winners get picked.",
       },
-      specialist: {
-        heading: "Why the Northeast needs a specialist",
-        lead: "This is not a smaller version of the east zone. Four things make it a separate distribution problem.",
-      },
       brands: {
         heading: "The labels we move",
         lead: "National menswear, womenswear and kidswear, all serviced from our Guwahati warehouse.",
@@ -113,17 +121,26 @@ export const pages: Record<string, PageCopy> = {
       // then who, how many and how it buys. Every figure from facts.ts.
       heading: "We turn labels into the Northeast's category leaders",
       headingEmphasis: "category leaders",
-      lead: `Founded in ${facts.apparels.established} by Ajay Sancheti, Arihant Apparels carries ${phrase.apparelsBrands} labels, led by the region's leading ladies' ethnic wear, and buys on sell-through data so retailers stock what sells.`,
+      // Change round 9: what the portfolio is and how it is bought. The
+      // founding year, the label count and the warehouse are the figures
+      // under the asks, so the lead no longer repeats them.
+      lead: "The group's second distribution house, with a portfolio of its own: the Northeast's leading ladies' ethnic labels, with westernwear, kidswear and footwear beside them, bought on sell-through data so your racks hold what moved.",
       primaryCta: {
         label: "Shop fast moving brands for your store",
         href: "/contact?intent=retailer",
       },
-      secondaryCta: { label: "Partner as a brand", href: "/contact?intent=brand" },
+      secondaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
     },
     sections: {
       mission: {
         heading: "Built to grow retailers",
         lead: "Our job is to grow the counters we sell to. When your store grows, our portfolio grows with it.",
+        // Change round 9: its own paragraph. The page used to print the
+        // business summary here, which repeated the hero lead almost word for
+        // word (the year, the founder, the label count, the warehouse).
+        body: [
+          `Ajay Sancheti founded the house in ${facts.apparels.established} as the group's second distribution arm. Buying runs on sell-through, counter by counter: the sizes and colours that moved in your town last season are what we indent, so a growing store gets its next bestselling label before the competition does.`,
+        ],
       },
       team: {
         heading: "The people who run it",
@@ -189,11 +206,15 @@ export const pages: Record<string, PageCopy> = {
         heading: "What “fully managed” actually means",
         lead: "Every operating risk that sinks first-time store owners is carried by our team instead.",
       },
+      // Change round 9: "ROIC" and "FOCO" spelled out (change brief, G4).
       proof: {
         heading: "Tried, tested, already trading",
-        lead: `${facts.retail.storesOpen} stores already trade on this model, backed by a proven ROIC record and by the house that supplies the region's retailers.`,
+        lead: `${facts.retail.storesOpen} stores already trade on this model, under both ownership structures, backed by a proven return on capital and by the house that supplies the region's retailers.`,
       },
-      how: { heading: "How it works", lead: "Four steps from inquiry to a trading store. FOCO, done properly." },
+      how: {
+        heading: "How it works",
+        lead: "Four steps from inquiry to a trading store. Franchise-owned, company-operated, done properly.",
+      },
       faq: { heading: "The questions serious investors ask" },
       inquiry: {
         heading: "Request the franchise details",
@@ -245,7 +266,7 @@ export const pages: Record<string, PageCopy> = {
       },
       leadership: {
         heading: "The people on the door",
-        lead: "Sagar, Anand, Ajay and Shreyansh Sancheti each run an arm of the house.",
+        lead: "Sagar, Anand, Ajay and Shreyansh Sancheti each run an arm of the house, from the floor its name is on.",
       },
       timeline: { heading: "The years that built the house" },
     },
@@ -266,10 +287,6 @@ export const pages: Record<string, PageCopy> = {
       gallery: {
         heading: "In the cabinet",
         lead: "Certificates and trophies from national brands and trade fairs, photographed as they sit on the shelf.",
-      },
-      milestones: {
-        heading: "When each of these happened",
-        lead: "The same years the About page tells as a story, set out here as dates you can check an award against.",
       },
       voices: {
         heading: "What the trade says",

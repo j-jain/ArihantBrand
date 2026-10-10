@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { Testimonial } from "@/content/types";
 
 interface TestimonialColumnsProps {
@@ -47,12 +50,15 @@ function TestimonialCard({
  *  re-flows; mobile shows the first four as a snap rail. The
  *  duplicated marquee copy is `aria-hidden`, and reduced motion / the global
  *  motion reset leave every column static. All motion is CSS keyframe based —
- *  no JS is required for it to be legible. */
+ *  no JS is required for it to be legible. Since change round 9 a pause
+ *  button under the wall stops it for a keyboard or a touch screen (WCAG
+ *  2.2.2), the way the brand marquee's does; hover was the only pause before. */
 export function TestimonialColumns({
   testimonials,
   columns: count = 3,
   tone = "paper",
 }: TestimonialColumnsProps) {
+  const [paused, setPaused] = useState(false);
   if (testimonials.length === 0) return null;
 
   const columns: Testimonial[][] = Array.from({ length: count }, () => []);
@@ -66,6 +72,7 @@ export function TestimonialColumns({
     <div
       className={tone === "dark" ? "tcols tcols--dark" : "tcols"}
       style={{ ["--tcols" as string]: count }}
+      data-paused={paused ? "" : undefined}
     >
       {/* Mobile: the first four as a horizontal snap rail (see .tcols__mobile
           in mobile.css). `display: none` above 767px keeps this out of the
@@ -108,6 +115,25 @@ export function TestimonialColumns({
           </div>
         ))}
       </div>
+
+      {/* The stop for a keyboard and for touch (hidden on phones, where the
+          rail does not move, and under reduced motion, where nothing does). */}
+      <button
+        type="button"
+        className="tcols__toggle press"
+        aria-pressed={paused}
+        aria-label="Pause the testimonials"
+        title="Pause the testimonials"
+        onClick={() => setPaused((p) => !p)}
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false">
+          {paused ? (
+            <path d="M3 1.5v11l9-5.5z" fill="currentColor" />
+          ) : (
+            <path d="M3 1.5h3v11H3zM8 1.5h3v11H8z" fill="currentColor" />
+          )}
+        </svg>
+      </button>
     </div>
   );
 }

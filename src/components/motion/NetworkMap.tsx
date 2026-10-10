@@ -12,8 +12,11 @@ const round = (n: number) => Math.round(n * 10) / 10;
 
 const HUB = { name: "Guwahati", lon: 91.75, lat: 26.14 };
 
+/* The seven states the copy names, one reach arc each (Assam gets two: the
+   hub itself and Dibrugarh up the valley). Gangtok came out in change round
+   9: every sentence on the site says "seven states", and Sikkim is not one
+   of them. */
 const SPOKES = [
-  { name: "Gangtok", lon: 88.61, lat: 27.33 },
   { name: "Itanagar", lon: 93.6, lat: 27.1 },
   { name: "Dibrugarh", lon: 94.9, lat: 27.47 },
   { name: "Kohima", lon: 94.1, lat: 25.67 },

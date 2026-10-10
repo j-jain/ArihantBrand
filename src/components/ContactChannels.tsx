@@ -92,11 +92,11 @@ function UnitLinks({ contact, className }: { contact: UnitContact; className?: s
           <span className="channel-icon">
             <MailIcon />
           </span>
-          {/* Break only before the "@" and the dots after it, never
-              mid-word: "accounts@arihantmar / keting.net" read as two
-              addresses. */}
+          {/* Break only before the "@", never mid-word: "accounts@arihantmar /
+              keting.net" read as two addresses, and a break at every dot put
+              the domain's ".net" on a line of its own. */}
           <span>
-            {contact.email.split(/(?=[@.])/).map((part, i) => (
+            {contact.email.split(/(?=@)/).map((part, i) => (
               <Fragment key={i}>
                 {i > 0 ? <wbr /> : null}
                 {part}

@@ -6,7 +6,7 @@ import {
   type ElementType,
   type ReactNode,
 } from "react";
-import { gsap, useGSAP, DUR, EASE } from "@/lib/gsap";
+import { gsap, useGSAP, DUR, EASE, REVEAL, RISE, onScreenAtMount } from "@/lib/gsap";
 
 type RevealTag =
   | "div"
@@ -39,7 +39,7 @@ interface RevealProps {
 export function Reveal({
   children,
   delay = 0,
-  y = 18,
+  y = RISE,
   as = "div",
   className,
   style,
@@ -70,14 +70,13 @@ export function Reveal({
 
           // Skip anything already on screen at mount so it neither flashes nor
           // hides after the server paint; only below-fold elements animate in.
-          const rect = el.getBoundingClientRect();
-          if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) return;
+          if (onScreenAtMount(el)) return;
 
-          // Mobile triggers a touch later: a phone viewport is short, so
-          // "top 88%" fires while the block is still well below the thumb.
+          // One trigger line for every reveal (change round 9), a touch
+          // later on a phone, whose viewport is short.
           const st = {
             trigger: el,
-            start: mobile ? "top 92%" : "top 88%",
+            start: mobile ? REVEAL.startMobile : REVEAL.start,
             once: true,
           } as const;
 

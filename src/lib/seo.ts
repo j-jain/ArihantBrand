@@ -58,8 +58,20 @@ export function pageMetadata(opts: {
   title: string;
   description: string;
   path: string; // e.g. "/arihant-marketing"
+  /** "article" for a Trade Note (change round 9); pages stay "website". */
+  type?: "website" | "article";
+  /** An article's own header image, as a site-root path. */
+  image?: string;
 }): Metadata {
   const url = `${siteUrl()}${opts.path === "/" ? "" : opts.path}`;
+  const image = opts.image
+    ? { url: `${siteUrl()}${opts.image}`, alt: opts.title }
+    : {
+        url: `${siteUrl()}/og.png`,
+        width: 1200,
+        height: 630,
+        alt: "Arihant Group, Northeast India's leading readymade garments distribution house",
+      };
   return {
     title: opts.title,
     description: opts.description,
@@ -70,8 +82,8 @@ export function pageMetadata(opts: {
       url,
       siteName: "Arihant Group",
       locale: "en_IN",
-      type: "website",
-      images: [{ url: `${siteUrl()}/og.png`, width: 1200, height: 630, alt: "Arihant Group, Northeast India's leading readymade garments distribution house" }],
+      type: opts.type ?? "website",
+      images: [image],
     },
     twitter: { card: "summary_large_image", title: opts.title, description: opts.description },
   };
@@ -174,6 +186,9 @@ export function articleJsonLd(post: Post) {
     datePublished: post.date,
     dateModified: post.date,
     url: `${siteUrl()}/blog/${post.slug}`,
+    ...(post.image
+      ? { image: post.image.startsWith("http") ? post.image : `${siteUrl()}${post.image}` }
+      : {}),
     author: post.author
       ? {
           "@type": "Person",

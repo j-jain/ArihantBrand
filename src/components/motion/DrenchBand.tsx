@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP, DUR, EASE } from "@/lib/gsap";
+import { gsap, useGSAP, DUR, EASE, REVEAL, RISE, STAGGER, onScreenAtMount } from "@/lib/gsap";
 import { cn } from "../cn";
 
 interface DrenchBandProps {
@@ -42,14 +42,17 @@ export function DrenchBand({ children, className, id }: DrenchBandProps) {
             desktop: boolean;
           };
           if (reduced) return;
+          // A reload at the foot of a page used to hide the band and replay
+          // it (change round 9): the same guard every other reveal has.
+          if (onScreenAtMount(root)) return;
 
           gsap.from(reveals, {
             autoAlpha: 0,
-            y: mobile ? 14 : 26,
-            duration: mobile ? 0.45 : DUR,
+            y: mobile ? RISE / 2 : RISE,
+            duration: mobile ? REVEAL.durMobile : DUR,
             ease: EASE,
-            stagger: 0.1,
-            scrollTrigger: { trigger: root, start: "top 80%", once: true },
+            stagger: STAGGER,
+            scrollTrigger: { trigger: root, start: REVEAL.band, once: true },
           });
         },
       );

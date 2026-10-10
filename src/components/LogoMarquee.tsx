@@ -87,12 +87,22 @@ export function LogoMarquee({ partners }: LogoMarqueeProps) {
             duration: 0.5,
             ease: "power3",
           });
+          // onUpdate only fires while the page moves, so without a settle call
+          // a scroll that stops dead (a touch tablet, no Lenis) left the row
+          // leaning (change round 9). Each update re-arms the return to flat.
+          let settle: gsap.core.Tween | null = null;
           const trigger = ScrollTrigger.create({
             trigger: root,
-            onUpdate: (self) =>
-              skewTo(gsap.utils.clamp(-4, 4, self.getVelocity() / -300)),
+            onUpdate: (self) => {
+              skewTo(gsap.utils.clamp(-4, 4, self.getVelocity() / -300));
+              settle?.kill();
+              settle = gsap.delayedCall(0.12, () => skewTo(0));
+            },
           });
-          return () => trigger.kill();
+          return () => {
+            settle?.kill();
+            trigger.kill();
+          };
         },
       );
 

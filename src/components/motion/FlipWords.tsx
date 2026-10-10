@@ -48,8 +48,36 @@ export function FlipWords({ words, interval = 2600, className }: FlipWordsProps)
           };
           if (reduced) return; // first word stays, no timer
 
+          // The slot widths are measured once, so they must be measured in
+          // the real typeface (change round 9): a measurement taken before
+          // Archivo swapped in sized the slot to the fallback font, and the
+          // sentence jumped on the first swap. Wait for fonts, capped like
+          // HeroIntro so a slow network never leaves the lead static.
+          let alive = true;
+          let cleanup: (() => void) | null = null;
+          let fontTimer = 0;
+          let started = false;
+
+          const start = () => {
+            if (!alive || started) return;
+            started = true;
+            window.clearTimeout(fontTimer);
+            cleanup = run();
+          };
+          if (document.fonts?.status === "loaded") start();
+          else {
+            document.fonts?.ready.then(start);
+            fontTimer = window.setTimeout(start, 800);
+          }
+          return () => {
+            alive = false;
+            window.clearTimeout(fontTimer);
+            cleanup?.();
+          };
+
+          function run(): () => void {
           const widths = measures.map((m) => m.getBoundingClientRect().width);
-          if (widths[0]) gsap.set(slot, { width: widths[0] });
+          if (widths[0]) gsap.set(slot!, { width: widths[0] });
 
           let index = 0;
           let paused = false;
@@ -76,12 +104,12 @@ export function FlipWords({ words, interval = 2600, className }: FlipWordsProps)
 
             if (mobile) {
               const tl = gsap.timeline({ onComplete: schedule });
-              tl.to(word, { autoAlpha: 0, duration: 0.3, ease: EASE });
+              tl.to(word!, { autoAlpha: 0, duration: 0.3, ease: EASE });
               tl.to(slot, { width: targetWidth, duration: 0.3, ease: EASE }, 0);
               tl.add(() => {
-                word.textContent = words[next];
+                word!.textContent = words[next];
               });
-              tl.to(word, { autoAlpha: 1, duration: 0.3, ease: EASE });
+              tl.to(word!, { autoAlpha: 1, duration: 0.3, ease: EASE });
               index = next;
               return;
             }
@@ -89,9 +117,9 @@ export function FlipWords({ words, interval = 2600, className }: FlipWordsProps)
             clearIn();
             let outSplit: SplitText;
             try {
-              outSplit = SplitText.create(word, { type: "chars" });
+              outSplit = SplitText.create(word!, { type: "chars" });
             } catch {
-              word.textContent = words[next];
+              word!.textContent = words[next];
               index = next;
               schedule();
               return;
@@ -107,9 +135,9 @@ export function FlipWords({ words, interval = 2600, className }: FlipWordsProps)
             tl.to(slot, { width: targetWidth, duration: dur, ease: EASE }, 0);
             tl.add(() => {
               outSplit.revert();
-              word.textContent = words[next];
+              word!.textContent = words[next];
               try {
-                inSplit = SplitText.create(word, { type: "chars" });
+                inSplit = SplitText.create(word!, { type: "chars" });
                 gsap.from(inSplit.chars, {
                   yPercent: 110,
                   autoAlpha: 0,
@@ -146,8 +174,9 @@ export function FlipWords({ words, interval = 2600, className }: FlipWordsProps)
             clearIn();
             trigger.kill();
             document.removeEventListener("visibilitychange", onVisibility);
-            gsap.set(slot, { clearProps: "width" });
+            gsap.set(slot!, { clearProps: "width" });
           };
+          }
         },
       );
 

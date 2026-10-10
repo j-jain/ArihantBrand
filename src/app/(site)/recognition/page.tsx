@@ -8,6 +8,7 @@ import {
   HeroIntro,
   JsonLd,
   SectionHeading,
+  SectionReveal,
   TestimonialColumns,
 } from "@/components";
 import {
@@ -17,6 +18,7 @@ import {
   getTestimonials,
 } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { EmphasisHeading } from "../_components/EmphasisHeading";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("recognition");
@@ -43,10 +45,9 @@ export default async function RecognitionPage() {
   if (!copy) notFound();
 
   const { hero, sections } = copy;
-  // The home page has already printed one of these voices; show the rest here
-  // so a reader never meets the same quote twice (HP12).
-  const featured = testimonials.find((t) => t.featured) ?? testimonials[0];
-  const columnVoices = testimonials.filter((t) => t !== featured);
+  // The whole record (change round 9). The home wall prints the first eight
+  // voices; this page is where every one of them can be read.
+  const columnVoices = testimonials;
   // Render only the awards the data actually carries (honesty rail): the CMAI
   // award leads the list; the rest follow at a smaller size.
   const [headlineAward, ...otherAwards] = awards;
@@ -64,9 +65,13 @@ export default async function RecognitionPage() {
       <section className="bg-paper">
         <HeroIntro className="container-site section-pad">
           <div className="m-flow flex max-w-3xl flex-col items-start gap-6">
-            <h1 data-hero-title className="t-display text-ink">
-              {hero.heading}
-            </h1>
+            <EmphasisHeading
+              as="h1"
+              className="t-display text-ink"
+              text={hero.heading}
+              emphasis={hero.headingEmphasis}
+              rest={{ "data-hero-title": "" }}
+            />
             <p data-hero-reveal className="t-lead measure text-ink-soft">
               {hero.lead}
             </p>
@@ -141,13 +146,15 @@ export default async function RecognitionPage() {
       {/* 2b — Cabinet gallery (paper): real certificate & trophy photos ----- */}
       {photos.length ? (
         <section className="bg-paper">
-          <div className="container-site section-pad m-flow flex flex-col gap-10">
+          <SectionReveal className="container-site section-pad m-flow flex flex-col gap-10">
             <SectionHeading
               heading={sections.gallery.heading}
               lead={sections.gallery.lead}
+              sr
             />
+            {/* The fan deals itself out; only the heading joins the entrance. */}
             <CardFan photos={photos} label={sections.gallery.heading} />
-          </div>
+          </SectionReveal>
         </section>
       ) : null}
 
@@ -157,13 +164,16 @@ export default async function RecognitionPage() {
           the same years as its timeline. Paper-shade now, so the cabinet and
           the voices do not run together on one paper ground. */}
       <section className="bg-paper-shade">
-        <div className="container-site section-pad m-flow flex flex-col gap-12">
+        <SectionReveal className="container-site section-pad m-flow flex flex-col gap-12">
           <SectionHeading
             heading={sections.voices.heading}
             lead={sections.voices.lead}
+            sr
           />
-          <TestimonialColumns testimonials={columnVoices} />
-        </div>
+          <div data-sr="item">
+            <TestimonialColumns testimonials={columnVoices} />
+          </div>
+        </SectionReveal>
       </section>
 
       {/* 4 — Closing CTA (single vermillion drench) ------------------------- */}

@@ -13,6 +13,7 @@ import {
   ParallaxImage,
   Reveal,
   SectionHeading,
+  SectionReveal,
   StaggerGroup,
   TestimonialColumns,
   cn,
@@ -31,8 +32,11 @@ import {
   getTestimonials,
 } from "@/lib/content";
 import { localBusinessJsonLd, organizationJsonLd, pageMetadata } from "@/lib/seo";
+import { whatsappFor } from "@/lib/whatsapp";
+import { WhatsAppIcon } from "@/components/icons";
 import { BusinessTags } from "./_components/BusinessTags";
 import { EmphasisHeading } from "./_components/EmphasisHeading";
+import { HeroFigure } from "./_components/HeroFigure";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("home");
@@ -42,13 +46,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description: copy.metaDescription,
     path: "/",
   });
-}
-
-/** Group the WhatsApp/phone digits into the spoken "+91 94350 45528" form. */
-function formatTel(digits: string): string {
-  const local = digits.replace(/^91/, "");
-  const grouped = local.replace(/(\d{5})(\d{5})/, "$1 $2");
-  return `+91 ${grouped}`;
 }
 
 /** One hero figure line (change round 3): the figure first, set in the stat
@@ -62,7 +59,9 @@ function HeroPoint({ text }: { text: string }) {
   if (lead) {
     return (
       <>
-        <span className="hero-points__fig">{lead[1]}</span>{" "}
+        <span className="hero-points__fig">
+          <HeroFigure text={lead[1]} />
+        </span>{" "}
         <span className="hero-points__label">{lead[2]}</span>
       </>
     );
@@ -74,7 +73,9 @@ function HeroPoint({ text }: { text: string }) {
   return (
     <span className="hero-points__inline">
       {text.slice(0, fig.index)}
-      <span className="hero-points__fig">{fig[0]}</span>
+      <span className="hero-points__fig">
+        <HeroFigure text={fig[0]} />
+      </span>
       {text.slice(fig.index + fig[0].length)}
     </span>
   );
@@ -156,22 +157,40 @@ export default async function HomePage() {
                   ))}
                 </ul>
               ) : null}
-              {/* The one thing the header cannot do in a line: send a reader to
-                  whichever of the three businesses is theirs. The "Partner with
-                  us" ask lives in the header and closes the page. */}
-              {hero.secondaryCta ? (
+              {/* The first screen routes each audience itself (change round 9):
+                  one short link per reader, in the words they would use. The
+                  funnel cards under the fold explain each ask; the header's
+                  "Talk to us" and the closing band carry the open ask. A page
+                  whose Studio document carries no links falls back to the one
+                  jump link it used to have. */}
+              {hero.audienceLinks?.length ? (
+                <ul data-hero-reveal className="hero-asks" aria-label="Who are you?">
+                  {hero.audienceLinks.map((ask) => (
+                    <li key={ask.href}>
+                      <Link
+                        href={ask.href}
+                        className={cn(
+                          "hero-ask group press",
+                          trackClass(`CTA hero ${ask.href.includes("intent=") ? ask.href.split("intent=")[1] : "partner"}`),
+                        )}
+                      >
+                        <span className="underline decoration-line decoration-2 underline-offset-4 transition-colors group-hover:decoration-vermillion-deep">
+                          {ask.label}
+                        </span>
+                        <span aria-hidden="true" className="hero-ask__chev">
+                          ▸
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : hero.secondaryCta ? (
                 <div data-hero-reveal>
-                  <Link
-                    href={hero.secondaryCta.href}
-                    className="group inline-flex min-h-11 items-center gap-1.5 font-sans font-semibold text-ink transition-colors hover:text-vermillion-deep"
-                  >
+                  <Link href={hero.secondaryCta.href} className="hero-ask group press">
                     <span className="underline decoration-line decoration-2 underline-offset-4 transition-colors group-hover:decoration-vermillion-deep">
                       {hero.secondaryCta.label}
                     </span>
-                    <span
-                      aria-hidden="true"
-                      className="text-vermillion-deep transition-transform group-hover:translate-x-0.5"
-                    >
+                    <span aria-hidden="true" className="hero-ask__chev">
                       ▸
                     </span>
                   </Link>
@@ -316,7 +335,15 @@ export default async function HomePage() {
                 </div>
 
                 <div className="md:col-span-7">
-                  <TestimonialColumns testimonials={testimonials} columns={2} tone="dark" />
+                  {/* The first eight voices in Studio order (change round 9).
+                      The wall used to print all sixteen, which made every one
+                      of them repeat on /recognition; eight is enough to loop
+                      two columns and leaves the full record to that page. */}
+                  <TestimonialColumns
+                    testimonials={testimonials.slice(0, 8)}
+                    columns={2}
+                    tone="dark"
+                  />
                 </div>
               </div>
             </div>
@@ -357,12 +384,12 @@ export default async function HomePage() {
           like every other section (change round 8; they were the one centred
           block on the page). */}
       <section className="bg-paper">
-        <div className="brands-band container-site section-pad m-flow flex flex-col gap-10">
-          <Reveal variant="fade">
-            <SectionHeading heading={sections.brands.heading} lead={sections.brands.lead} />
-          </Reveal>
-          <LogoMarquee partners={marqueePartners} />
-          <p>
+        <SectionReveal className="brands-band container-site section-pad m-flow flex flex-col gap-10">
+          <SectionHeading heading={sections.brands.heading} lead={sections.brands.lead} sr />
+          <div data-sr="item">
+            <LogoMarquee partners={marqueePartners} />
+          </div>
+          <p data-sr="item">
             <Link
               href="/brands"
               className="m-link inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
@@ -371,25 +398,22 @@ export default async function HomePage() {
               <span aria-hidden="true">→</span>
             </Link>
           </p>
-        </div>
+        </SectionReveal>
       </section>
 
       {/* 6 — Trade Notes teaser (paper-shade) ------------------------------ */}
       {latestPosts.length > 0 ? (
         <section className="bg-paper-shade">
-          <div className="container-site section-pad m-flow flex flex-col gap-10">
-            <Reveal variant="fade">
-              <SectionHeading
-                heading={sections.notes.heading}
-                lead={sections.notes.lead}
-              />
-            </Reveal>
+          <SectionReveal className="container-site section-pad m-flow flex flex-col gap-10">
+            <SectionHeading
+              heading={sections.notes.heading}
+              lead={sections.notes.lead}
+              sr
+            />
             {/* Three stacked cards is three screens of scroll on a phone; as a
                 rail the whole teaser reads in one band. */}
-            <StaggerGroup
-              as="ul"
-              from="up"
-              stagger={0.1}
+            <ul
+              data-sr="rows"
               className="notes-rail m-rail grid gap-x-6 gap-y-10 sm:grid-cols-3"
             >
               {latestPosts.map((post) => (
@@ -405,7 +429,7 @@ export default async function HomePage() {
                           alt=""
                           fill
                           sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, 30vw"
-                          className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] will-change-transform group-hover:scale-[1.045]"
+                          className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] group-hover:scale-[1.045]"
                         />
                       ) : null}
                     </div>
@@ -431,8 +455,8 @@ export default async function HomePage() {
                   </Link>
                 </li>
               ))}
-            </StaggerGroup>
-            <p>
+            </ul>
+            <p data-sr="item">
               <Link
                 href="/blog"
                 className="m-link inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
@@ -441,7 +465,7 @@ export default async function HomePage() {
                 <span aria-hidden="true">→</span>
               </Link>
             </p>
-          </div>
+          </SectionReveal>
         </section>
       ) : null}
 
@@ -465,11 +489,17 @@ export default async function HomePage() {
             <Button variant="onDark" href={hero.primaryCta.href} className="press">
               {hero.primaryCta.label}
             </Button>
+            {/* WhatsApp, routed like the floating button, instead of a printed
+                number: the line this band used to print was taken off public
+                display at the client's request (change brief, F1). */}
             <a
-              href={`tel:+${settings.defaultWhatsapp}`}
-              className="m-tap font-sans font-semibold text-white underline-offset-4 hover:underline"
+              href={whatsappFor("/", settings.defaultWhatsapp).href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="m-tap inline-flex items-center gap-2 font-sans font-semibold text-white underline-offset-4 hover:underline"
             >
-              Call {formatTel(settings.defaultWhatsapp)}
+              <WhatsAppIcon />
+              <span>WhatsApp us</span>
             </a>
           </div>
         </div>

@@ -160,7 +160,7 @@ export const businesses: Business[] = [
       },
     ],
     audienceCtas: [
-      { label: "Become a retail partner", href: "/contact?intent=retailer" },
+      { label: "Stock our brands", href: "/contact?intent=retailer" },
       { label: "Distribute your brand", href: "/contact?intent=brand" },
     ],
   },
@@ -218,7 +218,7 @@ export const businesses: Business[] = [
     ],
     audienceCtas: [
       { label: "Shop fast moving brands", href: "/contact?intent=retailer" },
-      { label: "Partner as a brand", href: "/contact?intent=brand" },
+      { label: "Distribute your brand", href: "/contact?intent=brand" },
     ],
   },
   {
@@ -296,13 +296,13 @@ export const funnels: Funnel[] = [
   {
     id: "retailer",
     title: "Shop fast moving brands for your store",
-    text: "You run a store. We put the national labels that actually move onto your racks, and keep them moving.",
-    cta: { label: "Partner with us", href: "/contact?intent=retailer" },
+    text: "You run a counter. We put the national labels that move onto your racks, keep the size sets whole, and settle claims on the date we name.",
+    cta: { label: "Stock our brands", href: "/contact?intent=retailer" },
   },
   {
     id: "franchise",
     title: "Own a retail store",
-    text: "You have the capital and the property. We hire the staff, buy the stock, run the marketing and carry the deadstock. You own the asset.",
+    text: "You bring the capital and the property. We hire, buy, merchandise and market, and the deadstock stays off your books.",
     cta: { label: "Tap the North East with us", href: "/partner" },
   },
 ];
