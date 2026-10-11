@@ -5,7 +5,7 @@ Requested 11 October 2026, after a review of round 9 on the local build: fix the
 - **Done**: implemented and verified locally (evidence column).
 - **Flagged**: a judgement call for you or the client.
 
-Built and verified locally. **Not committed, not pushed, not seeded**: publishing waits for your word (push first, seed after the deploy is live, then the signed revalidate).
+**Published 11 October 2026**: committed as `8eb7ec3` (with round 9's `f36b7fc` ahead of it), pushed to `main`, Vercel deploy green, then `npm run seed` (201 documents upserted, 96 images linked; the dry-run diffed against the live dataset first showed exactly round 9's 17 documents plus the one new photo-slot document and no Studio drift), then the signed revalidate (`200 {"revalidated":true}`). Verified on arihant-brand.vercel.app: the home prints "Stock our brands" and the new lead, Apparels its new lead and mission paragraph, Recognition its placeholders and caption; a post-seed diff against the dataset shows 0 documents differing.
 
 ## Sections and rhythm
 
@@ -71,12 +71,12 @@ Built and verified locally. **Not committed, not pushed, not seeded**: publishin
 
 Method: headless Chrome over the DevTools protocol (`audit.mjs`, `motionproof.mjs`, `shoot.mjs`, `cssident.py` in the session scratchpad) against this round's production build on port 3100; the other chat's dev server on 3000 served a stale stylesheet for one late edit, so nothing above was read from it.
 
-## Publish steps (after your word)
+## Publish steps (done, in this order)
 
-1. `git add -A -- . ':!src/app/(site)/proto'` then commit (never the untracked prototype), `git push` (main deploys on Vercel).
-2. When the deploy is live: `node scripts/seed.mjs --dry-run --out=<file outside the repo>`, re-diff against the dataset, then `npm run seed` (the seed now patches photo positions and awards rather than replacing them).
-3. Signed POST to `/api/revalidate` (`_type: "sanity"`).
-4. Studio housekeeping for the client: the round-9 orphans still stand (`marketingReason`, `groupStat`, `photoslot-marketingCorridor`, `photoslot-marketingWarehouse`, `groupstat-warehouse`, `store-4`, `store-5`, `drafts.page-apparels`).
+1. `git add -A -- . ':!src/app/(site)/proto'`, commit, `git push` (main deploys on Vercel; watched through the commit status until green).
+2. `node scripts/seed.mjs --dry-run --out=<file outside the repo>`, diffed field by field against the live dataset over raw GROQ (key order and asset references normalised), then `npm run seed` (the seed now patches photo positions and awards rather than replacing them).
+3. Signed POST to `/api/revalidate` (`_type: "sanity"`). Note for next time: `@sanity/webhook` 4.x's `encodeSignatureHeader` is async; an un-awaited call sends a Promise as the header and the route answers "Invalid signature".
+4. Studio housekeeping for the client, still open: the orphans the seed never deletes (`groupstat-warehouse`, `photoslot-marketingCorridor`, `photoslot-marketingWarehouse`, `store-4`, `store-5`, plus the `marketingReason` and `groupStat` documents the code no longer reads).
 
 ## Flagged for you and the client
 
