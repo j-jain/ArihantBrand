@@ -161,13 +161,6 @@ export default async function ArihantApparelsPage() {
                   {business.summary}
                 </p>
               ) : null}
-              {/* The retailer ask, inline where the mission has just been made
-                  (AA4). */}
-              <div data-sr="item" className="m-cta mt-1">
-                <Button href={hero.primaryCta.href} variant="primary" size="lg" className="press">
-                  {hero.primaryCta.label}
-                </Button>
-              </div>
             </div>
           </SectionReveal>
         </div>

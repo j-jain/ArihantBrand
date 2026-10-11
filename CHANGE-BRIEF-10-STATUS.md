@@ -81,7 +81,7 @@ Method: headless Chrome over the DevTools protocol (`audit.mjs`, `motionproof.mj
 ## Flagged for you and the client
 
 - The home hero's audience rail from round 9 is gone (your choice); the brand audience now reaches `/contact?intent=brand` through the header's "Talk to us" chooser and the swing-tag backs.
-- The Apparels mission band keeps the button that repeats the hero's "Shop fast moving brands for your store" one screen later (your choice: both bands stay as they were apart from the ground). It is the pattern you flagged on the home page; one deletion if you want it gone.
+- The Apparels mission band's button, which repeated the hero's "Shop fast moving brands for your store" one screen later, was removed on your word after the publish (a code-only follow-up commit, no seed needed): the hero's button and the closing band carry the ask.
 - The CMAI row ships with a drawn placeholder, not the existing "Distributor of the Year" trophy file: that file's own caption names a different award, so it would claim more in the row than it does in the cabinet. One line (`awards[0].image`) when the client confirms which trophy it is.
 - When the photographs arrive: drop each file under `public/images/photos/awards/` and point the slot or the award at it, or upload in the Studio (the upload wins at once and now survives a re-seed).
 - The seed script's new patch semantics for `photoSlot` and `award` documents (it still never deletes).
