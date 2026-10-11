@@ -399,9 +399,17 @@
 }
 
 /* The head springs up a size on hover, focus or a pinned store (round 5).
-   CSS owns this element; the entry build only ever moves .atlas-pin__drop. */
+   CSS owns this element; the entry build only ever moves .atlas-pin__drop.
+   On the house spring since change round 10 (the same physics as the drop). */
 .atlas-pin__head {
-  transition: scale 420ms cubic-bezier(0.34, 1.5, 0.64, 1);
+  transition: scale var(--dur-spring) var(--ease-spring);
+}
+
+/* The needle that leads each route's stitches during the entry build
+   (AtlasBehaviour makes and removes it; it is never in the served markup). */
+.atlas-needle {
+  fill: var(--ink);
+  pointer-events: none;
 }
 
 .atlas-pin[data-on] .atlas-pin__head {
@@ -633,9 +641,10 @@
   --card-dx: 1.5rem;
   --card-dy: 0.9rem;
   /* How far the card travels as it opens: it rises out of the pin's side,
-     settling into place with a slight spring (change round 5). */
+     settling into place on the house spring (change round 5; the spring
+     itself since change round 10). */
   --card-rise: 0.7rem;
-  --card-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --card-spring: var(--ease-spring);
   position: absolute;
   left: calc(var(--px) * 1%);
   top: calc(var(--py) * 1%);
@@ -689,8 +698,8 @@
   scale: 1;
   transition:
     opacity 200ms var(--ease),
-    scale 460ms var(--card-spring),
-    translate 460ms var(--card-spring),
+    scale var(--dur-spring) var(--card-spring),
+    translate var(--dur-spring) var(--card-spring),
     visibility 0s;
 }
 

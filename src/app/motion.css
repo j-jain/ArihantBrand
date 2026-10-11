@@ -76,6 +76,8 @@
 .stack__card {
   /* 0 = on top, 1 = resting under at least one card. Written by JS. */
   --stack-depth: 0;
+  /* 1 = in the air, 0 = landed (change round 10). Written by JS. */
+  --stack-lift: 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -88,10 +90,13 @@
   border: 1px solid var(--line);
   border-radius: 10px;
   /* A flat hairline plus a soft upward shadow separates a card from the one
-     it rests on, which shares its ground. */
+     it rests on, which shares its ground; a third shadow, under the card,
+     exists only while it is in the air (--stack-lift) and dies as it lands. */
   box-shadow:
     0 -1px 0 var(--line),
-    0 -20px 32px -26px rgb(0 0 0 / 0.22);
+    0 -20px 32px -26px rgb(0 0 0 / 0.22),
+    0 calc(var(--stack-lift) * 1.5rem) calc(var(--stack-lift) * 2.4rem)
+      calc(var(--stack-lift) * -0.9rem - 0.1rem) rgb(0 0 0 / 0.24);
 }
 
 /* The mark sits inline with the heading's first line. Since change round 8
@@ -341,6 +346,12 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
   flex-direction: column;
   animation: vert-marquee var(--tcol-dur, 42s) linear infinite;
   will-change: transform;
+}
+
+/* JS-driven loop, as the brand marquee's (change round 10; TestimonialColumns
+   sets data-loop once its tween owns the transform, so a pause decelerates). */
+.tcol__track[data-loop="js"] {
+  animation: none;
 }
 
 /* Even inter-card spacing that tiles cleanly for the -50% loop. */
@@ -639,7 +650,9 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
   .vp-band--on .vp__panel {
     flex-basis: 0%;
     min-width: 0;
-    transition: flex-grow var(--dur-slow) var(--ease);
+    /* The panel grows on the soft spring (change round 10): it settles
+       into its width instead of merely slowing down. */
+    transition: flex-grow var(--dur-spring-soft) var(--ease-spring-soft);
   }
   .vp-band--on .vp__panel[data-active="true"] {
     flex-grow: 2.2;
@@ -785,6 +798,13 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
   cursor: pointer;
   pointer-events: auto;
   will-change: transform;
+  /* A lift shadow scaled by --fan-lift (CardFan.tsx: 1 for the active card,
+     0.5 hovered, 0 resting; tweened on the soft spring with each move,
+     change round 10), over the frame's own resting shadow below. */
+  border-radius: 6px;
+  box-shadow:
+    0 calc(var(--fan-lift, 0) * 1.25rem + 0.5rem) calc(var(--fan-lift, 0) * 2rem + 1rem) -1rem
+      oklch(0.215 0.01 30 / 0.28);
 }
 
 .fan--on .fan__frame {

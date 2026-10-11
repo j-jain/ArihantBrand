@@ -3,7 +3,17 @@
 import { useRef, type ReactNode } from "react";
 
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { ANCHOR_ORDER, STORE, STORES, cartonRoute, slipArc, storeTop, storeX } from "./streetModel";
+import {
+  ANCHOR_ORDER,
+  STORE,
+  STORES,
+  cartonPath,
+  cartonRoute,
+  slipArc,
+  storeTop,
+  storeX,
+  type MoverPath,
+} from "./streetModel";
 
 const RM = "(prefers-reduced-motion: reduce)";
 const MOB = "(prefers-reduced-motion: no-preference) and (max-width: 767px)";
@@ -25,7 +35,7 @@ const SHORT_PHONE = 600;
 /**
  * Motion for the storefront street (change round 6). Nothing pins: the
  * drawing holds (CSS sticky) beside the three stage texts, and ONE timeline
- * is scrubbed by the scroll across them (`scrub: 0.5`), so the street fills,
+ * is scrubbed by the scroll across them (`scrub: 0.35`, change round 10), so the street fills,
  * holds and empties again exactly with the reader.
  *
  * Reduced motion and no-JS: nothing runs; the finished street and all three
@@ -89,7 +99,7 @@ export function StreetBehaviour({
           start: mobile ? "top 92%" : "top 95%",
           endTrigger: items[2],
           end: mobile ? "bottom 72%" : "bottom 65%",
-          scrub: 0.5,
+          scrub: 0.35,
           animation: tl,
         });
         sync(tl.time());
@@ -130,6 +140,8 @@ function buildTimeline(svg: SVGSVGElement, onUpdate: () => void) {
   const tl = gsap.timeline({ paused: true, onUpdate });
   const OUT = "power3.out";
   const IN_OUT = "power2.inOut";
+  /** A carton's roll: one soft start and stop over its whole route. */
+  const ROLL = "power1.inOut";
 
   const draw = (targets: Element | Element[] | null, at: number, duration: number, stagger = 0) => {
     if (!targets || (Array.isArray(targets) && !targets.length)) return;
@@ -154,7 +166,12 @@ function buildTimeline(svg: SVGSVGElement, onUpdate: () => void) {
     tl.from(lit, { opacity: 0, duration: 0.02 }, at);
     draw(all(".ga-store__lit > .ga-ink", el), at, 0.06);
     tl.from(one(".ga-fascia", el), { scaleX: 0, transformOrigin: "0% 50%", duration: 0.05, ease: OUT }, at + 0.02);
-    tl.from(all(".ga-stripe", el), { scaleY: 0, transformOrigin: "50% 0%", duration: 0.04, ease: OUT, stagger: 0.008 }, at + 0.04);
+    // The awning lights from its middle stripe out to both edges.
+    tl.from(
+      all(".ga-stripe", el),
+      { scaleY: 0, transformOrigin: "50% 0%", duration: 0.04, ease: OUT, stagger: { each: 0.008, from: "center" } },
+      at + 0.04,
+    );
     appear(one(".ga-awning > .ga-ink", el), at + 0.05, 0.03);
     draw(all(".ga-window .ga-ink, .ga-door", el), at + 0.05, 0.05);
     appear(all(".ga-window .ga-garment", el), at + 0.08, 0.04, { y: -4, stagger: 0.008 });
@@ -198,16 +215,13 @@ function buildTimeline(svg: SVGSVGElement, onUpdate: () => void) {
     const at = t + 0.02 + j * 0.09;
     const travel = 0.16;
     if (carton) {
-      tl.set(carton, { x: route[0][0], y: route[0][1], opacity: 1 }, at);
-      // Along the road, up the lane, along the row: segment times by length.
-      const legs = route.slice(1).map((p, i) => Math.hypot(p[0] - route[i][0], p[1] - route[i][1]));
-      const sum = legs.reduce((a, b) => a + b, 0) || 1;
-      let at2 = at;
-      route.slice(1).forEach((p, i) => {
-        const d = (legs[i] / sum) * travel;
-        tl.to(carton, { x: p[0], y: p[1], duration: d, ease: i === legs.length - 1 ? OUT : "none" }, at2);
-        at2 += d;
-      });
+      const path = cartonPath(route);
+      // The box rocks on its base through the bends, so it turns about it.
+      tl.set(carton, { x: route[0][0], y: route[0][1], opacity: 1, rotation: 0, transformOrigin: "50% 100%" }, at);
+      // Along the road, up the lane, along the row as ONE roll: a single path
+      // with rounded bends, one pace along it, a soft start and stop.
+      tl.to(carton, { motionPath: { path: path.d }, duration: travel, ease: ROLL }, at);
+      if (path.bends.length) tl.to(carton, { keyframes: bankKeyframes(path), duration: travel, ease: ROLL }, at);
       tl.to(carton, { opacity: 0, y: route[route.length - 1][1] - 6, duration: 0.03 }, at + travel);
     }
     light(store(id), at + travel - 0.01);
@@ -243,7 +257,10 @@ function buildTimeline(svg: SVGSVGElement, onUpdate: () => void) {
         ys.push(v * v * a.y0 + 2 * v * u * a.cy + u * u * a.y1);
       }
       tl.set(slip, { x: xs[0], y: ys[0], opacity: 1, rotation: -10 }, at);
-      tl.to(slip, { keyframes: { x: xs, y: ys, easeEach: "none" }, rotation: 8, duration: fly, ease: IN_OUT }, at);
+      tl.to(slip, { keyframes: { x: xs, y: ys, easeEach: "none" }, duration: fly, ease: IN_OUT }, at);
+      // The slip flutters as it flies: a paper swing that settles as it lands,
+      // keyed along the same flight so the turns sit where the slip is.
+      tl.to(slip, { keyframes: { rotation: [-10, 6, -3, 2, 0], easeEach: "sine.inOut" }, duration: fly, ease: IN_OUT }, at);
       tl.to(slip, { opacity: 0, scale: 0.6, duration: 0.025 }, at + fly);
     }
     light(store(s.id), at + fly - 0.01);
@@ -261,12 +278,15 @@ function buildTimeline(svg: SVGSVGElement, onUpdate: () => void) {
   draw(one(".ga-zoom__line"), t + 0.08, 0.08);
   const inset = one(".ga-inset");
   if (inset) {
+    // The zoom anticipates: the inset gathers at the store (0.14 -> 0.1) for
+    // a beat, then grows to full, the whole move 0.12 as before.
     tl.fromTo(
       inset,
       { scale: 0.14, opacity: 0, svgOrigin: `${ocx} ${ocy}` },
-      { scale: 1, opacity: 1, duration: 0.12, ease: OUT },
+      { scale: 0.1, opacity: 1, duration: 0.02, ease: "sine.inOut" },
       t + 0.1,
     );
+    tl.to(inset, { scale: 1, duration: 0.1, ease: "power3.inOut" }, t + 0.12);
   }
   appear(one(".ga-inset__caption"), t + 0.18, 0.05, { y: 4 });
   draw(one(".ga-inset__room"), t + 0.2, 0.06);
@@ -284,4 +304,41 @@ function buildTimeline(svg: SVGSVGElement, onUpdate: () => void) {
   appear(one(".ga-bay__plinth"), t + 0.38, 0.04, { scaleX: 0, transformOrigin: "50% 50%" });
   tl.set({}, {}, TOTAL);
   return tl;
+}
+
+/* ------------------------------------------------------------------ */
+/* The carton's lean through its bends                                  */
+/* ------------------------------------------------------------------ */
+
+/** How far a carton leans through a bend, in degrees. */
+const BANK = 6;
+/** Over how much route (two carton lengths) the lean builds before a bend's
+ *  apex, and settles after it. */
+const BANK_RUN = 48;
+
+/** Rotation keyframes for a carton's route: level on the straights, a small
+ *  lean through each bend, its top lagging to the outside of the turn as
+ *  the base is steered round. A clamped autoRotate, in effect: following
+ *  the path's tangent in full would stand a side-on box on its end up the
+ *  lane. The keys are shares of the route, so run with the path tween's
+ *  ease they land where the box actually is. */
+function bankKeyframes(path: MoverPath): Record<string, gsap.TweenVars | string> {
+  const w = Math.min(BANK_RUN / (path.length || 1), 0.25);
+  const keys = new Map<number, number>([
+    [0, 0],
+    [100, 0],
+  ]);
+  const put = (share: number, deg: number) => {
+    if (share > 0 && share < 1) keys.set(Math.round(share * 1000) / 10, deg);
+  };
+  path.bends.forEach(({ at, turn }) => {
+    put(at - w, 0);
+    put(at, -turn * BANK);
+    put(at + w, 0);
+  });
+  const frames: Record<string, gsap.TweenVars | string> = { easeEach: "sine.inOut" };
+  keys.forEach((deg, pct) => {
+    frames[`${pct}%`] = { rotation: deg };
+  });
+  return frames;
 }

@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 
-import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
+import { gsap, useGSAP, ScrollTrigger, onScreenAtMount } from "@/lib/gsap";
 import type { Cta, RetailModel } from "@/content/types";
 import { Button } from "./Button";
 import { ModelFigure } from "./ModelFigures";
@@ -94,13 +94,24 @@ export function ModelBoard({
 
           // One screen: the four rows are in view together, so four per-row
           // triggers would fire at once. Their figures draw as one sequence
-          // instead, each a beat after the one above, as the rows land.
+          // instead, each a beat after the one above, as the rows land. Its
+          // trigger is the rows container: already on screen at mount (a
+          // navigation back to a scrolled page), the sequence is skipped
+          // and every figure stays as served, the guard every primitive
+          // applies.
+          const rowsEl = root.querySelector<HTMLElement>(".model-rows") ?? root;
+          const fitSeen = fit && conditions.desktop && onScreenAtMount(rowsEl);
           const master =
-            fit && conditions.desktop ? gsap.timeline({ paused: true }) : null;
+            fit && conditions.desktop && !fitSeen
+              ? gsap.timeline({ paused: true })
+              : null;
 
           rows.forEach((row, index) => {
             const figure = row.querySelector<SVGSVGElement>(".model-fig");
             if (!figure) return;
+            // A row already on screen at mount keeps its served figure: no
+            // from-state is written and nothing replays.
+            if (fitSeen || onScreenAtMount(row)) return;
 
             // A handset gets one short settle per figure and pays for no dash
             // measurement: getTotalLength() four times is not worth it there.
@@ -206,7 +217,7 @@ export function ModelBoard({
 
           if (master && master.totalDuration()) {
             ScrollTrigger.create({
-              trigger: root.querySelector(".model-rows") ?? root,
+              trigger: rowsEl,
               start: "top 80%",
               once: true,
               onEnter: () => master.play(0),

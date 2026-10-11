@@ -19,9 +19,6 @@ export interface Hero {
   points?: string[];
   primaryCta: Cta;
   secondaryCta?: Cta;
-  /** Short "I am a ..." links that route each audience from the first screen
-   *  (change round 9, the home hero). Optional: most heroes carry none. */
-  audienceLinks?: Cta[];
 }
 
 export interface Stat {
@@ -130,6 +127,14 @@ export interface Award {
   title: string;
   issuer: string;
   detail: string;
+  /** A photograph of this award (its trophy, certificate or presentation).
+   *  Absent until the client supplies one: the trophy case draws a
+   *  PhotoPlaceholder in the row's frame (change round 10). Same shape as
+   *  Post.image. */
+  image?: string;
+  /** Alt text for `image`; set explicitly, as on Post, because an upload
+   *  resolves to a cdn.sanity.io URL nothing can match a manifest against. */
+  imageAlt?: string;
 }
 
 /** A photograph of a real certificate, trophy, or recognition moment. Rendered

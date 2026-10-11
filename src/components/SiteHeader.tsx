@@ -8,6 +8,7 @@ import { phrase } from "@/content/facts";
 import { businesses } from "@/content/seed";
 import type { UnitKey } from "@/content/types";
 import { DUR, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { holdScroll, releaseScroll } from "@/lib/lenis";
 import { Button } from "./Button";
 import { PhoneIcon, WhatsAppIcon } from "./icons";
 import { primaryNav } from "./nav";
@@ -33,6 +34,11 @@ function useActive() {
     [pathname],
   );
 }
+
+/** Hide-on-scroll (change round 10): the bar leaves only below this scroll
+ *  position, and only for a downward scroll faster than this, in px/s. */
+const HIDE_AFTER = 240;
+const HIDE_VELOCITY = 400;
 
 /** The chevron from the group's own logo, drawn rather than loaded so it takes
  *  the header's colour and stays crisp at any scale.
@@ -298,6 +304,10 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
             clipPath: "inset(0 0 0% 0)",
             duration: 0.34,
             ease: EASE,
+            // A resting inset(0) still clips to the border box (focus rings
+            // on the edge-flush links lose their outer edge), so the open
+            // panel drops the clip once it has drawn.
+            onComplete: () => gsap.set(panel, { clearProps: "clipPath" }),
           }).to(
             items,
             { y: 0, autoAlpha: 1, stagger: 0.05, duration: 0.34, ease: EASE },
@@ -334,6 +344,13 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
   // Hide-on-scroll-down / show-on-scroll-up. Applies to every non-reduced
   // context (mobile included); reduced-motion leaves the header untouched
   // (always visible, never transformed).
+  //
+  // Velocity-aware (change round 10): the bar leaves only for a committed
+  // downward scroll (faster than HIDE_VELOCITY px/s, and past HIDE_AFTER px),
+  // so a slow read down the page keeps it; it comes back on ANY upward
+  // movement, however slight, and is always shown near the top. The return
+  // is the slower of the two tweens: what reappears should settle, what
+  // leaves should get out of the way.
   useGSAP(
     () => {
       const header = headerRef.current;
@@ -346,8 +363,8 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
           hidden = false;
           gsap.to(header, {
             yPercent: 0,
-            duration: 0.32,
-            ease: "power2.out",
+            duration: 0.36,
+            ease: EASE,
             overwrite: true,
           });
         };
@@ -356,8 +373,8 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
           hidden = true;
           gsap.to(header, {
             yPercent: -100,
-            duration: 0.32,
-            ease: "power2.out",
+            duration: 0.24,
+            ease: EASE,
             overwrite: true,
           });
         };
@@ -376,8 +393,14 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
               show();
               return;
             }
-            if (self.direction === 1 && self.scroll() > 240) hide();
-            else show();
+            const velocity = self.getVelocity(); // px/s, positive = down
+            if (self.scroll() <= HIDE_AFTER || self.direction === -1 || velocity < 0) {
+              show();
+            } else if (self.direction === 1 && velocity > HIDE_VELOCITY) {
+              hide();
+            }
+            // A slow downward drift past the line changes nothing: the bar
+            // keeps whichever state it is in.
           },
         });
         return () => {
@@ -424,6 +447,7 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
     if (!menuOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    holdScroll();
 
     const panel = sheetPanelRef.current;
     const focusables = panel?.querySelectorAll<HTMLElement>(
@@ -452,6 +476,7 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
     const trigger = menuButtonRef.current;
     return () => {
       document.body.style.overflow = previousOverflow;
+      releaseScroll();
       document.removeEventListener("keydown", onKey);
       trigger?.focus();
     };
@@ -673,6 +698,7 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
           />
           <div
             ref={sheetPanelRef}
+            data-lenis-prevent=""
             className="menu-sheet__panel"
             role="dialog"
             aria-modal="true"

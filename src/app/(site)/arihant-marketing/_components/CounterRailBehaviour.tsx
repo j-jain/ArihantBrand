@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { scrollToY } from "@/lib/lenis";
 import {
   BOARDS,
   COIN,
@@ -18,6 +19,7 @@ import {
   portfolioTags,
   slotCx,
   statusY,
+  toss,
 } from "./railModel";
 
 const RM = "(prefers-reduced-motion: reduce)";
@@ -43,7 +45,7 @@ const SCRUB = 0.7;
  *  MAX_RATE timeline units a second. A hard flick of the wheel still moves
  *  the page at once; the drawing then plays every step's motion through, at
  *  about a second a step, instead of jumping to the end of it. */
-const FOLLOW = 0.22;
+const FOLLOW = 0.26;
 const MAX_RATE = 0.9;
 
 /** Each step: [start, end of its motion, end of its hold]. */
@@ -59,6 +61,13 @@ const LAND = [0.98, 2.1, 3.25, 4.06];
 const SUMMARY = 4.12;
 /** Opacity of the parts that belong to the steps already told. */
 const DIM = 0.3;
+/** The most a tossed tag or slip tilts in flight, in degrees (change round
+ *  10): the nose lifts as it rises and dips as it lands. */
+const TILT = 8;
+/** The capital ring runs this far past its mark, in degrees, and swings
+ *  back to it over the last RING_SETTLE share of its turn. */
+const RING_OVER = 6;
+const RING_SETTLE = 0.12;
 
 /** Hysteresis round a step boundary, in timeline units. */
 const EDGE = 0.03;
@@ -264,7 +273,7 @@ export function CounterRailBehaviour({
         const onGo = (i: number) => () => {
           if (!scrub) return;
           const top = scrub.start + (LAND[i] / TOTAL) * (scrub.end - scrub.start);
-          window.scrollTo({ top: Math.round(top), behavior: "smooth" });
+          scrollToY(Math.round(top));
         };
         const handlers = buttons.map((b, i) => {
           const h = onGo(i);
@@ -336,6 +345,28 @@ function buildTimeline(svg: SVGSVGElement, mobile: boolean, onUpdate: () => void
     if (!targets || (Array.isArray(targets) && !targets.length)) return;
     tl.from(targets, { opacity: 0, duration, ease: OUT, ...vars }, at);
   };
+  // What is tossed (change round 10) rides a quadratic arc, railModel's
+  // toss(), and tilts with it: nose up as it rises, down as it lands. The
+  // tilt is read off the arc's own tangent, kept within TILT (the raw tangent
+  // would swing a tag through twenty or thirty degrees, and MotionPath's
+  // autoRotate has no limit) and keyframed in step with the flight, so it
+  // plays and reverses with the scroll like everything else. A `from` makes
+  // the flight a fromTo, for a part that stands in the finished drawing.
+  const tilts = (arc: ReturnType<typeof toss>) =>
+    [0, 0.25, 0.5, 0.75, 1].map((s) => Math.max(-TILT, Math.min(TILT, arc.tilt(s))));
+  const fly = (
+    el: Element,
+    arc: ReturnType<typeof toss>,
+    at: number,
+    duration: number,
+    vars: gsap.TweenVars = {},
+    from?: gsap.TweenVars,
+  ) => {
+    const to: gsap.TweenVars = { motionPath: { path: arc.path }, duration, ease: IN_OUT, ...vars };
+    if (from) tl.fromTo(el, from, to, at);
+    else tl.to(el, to, at);
+    tl.to(el, { keyframes: { rotation: tilts(arc), easeEach: "none", ease: IN_OUT }, duration }, at);
+  };
 
   /* ================= 01 Map the counter ================= */
   tl.addLabel("s1", 0);
@@ -349,8 +380,9 @@ function buildTimeline(svg: SVGSVGElement, mobile: boolean, onUpdate: () => void
   appear(one(".rail-label--strong"), 0.04, 0.12, { x: -8 });
   appear(all(".rail-tag"), 0.06, 0.14, { x: -10, stagger: 0.012 });
 
-  // A tag flies from the portfolio to each slot it was chosen for, then
-  // that slot's stack rises under it.
+  // A tag is tossed from the portfolio to each slot it was chosen for (an
+  // arc, nose up then down), lands flat with a drop, and that slot's stack
+  // rises under it.
   const sources = portfolioTags();
   const flights = all(".rail-flight");
   const shirts = all(".rail-shirt");
@@ -361,9 +393,9 @@ function buildTimeline(svg: SVGSVGElement, mobile: boolean, onUpdate: () => void
     const at = 0.3 + j * 0.034;
     const tx = slotCx(slot) - TAG.w / 2;
     const ty = BOARDS[shelf] - DEPTH[shelf][slot] * SHIRT.step - TAG.h - 12;
-    tl.set(flight, { x: src.x, y: src.y, opacity: 1 }, at);
-    tl.to(flight, { x: tx, y: ty, duration: 0.12, ease: IN_OUT }, at);
-    tl.to(flight, { opacity: 0, y: ty + 10, duration: 0.05, ease: "power1.in" }, at + 0.12);
+    tl.set(flight, { x: src.x, y: src.y, rotation: 0, transformOrigin: "50% 50%", opacity: 1 }, at);
+    fly(flight, toss(src.x, src.y, tx, ty), at, 0.12);
+    tl.to(flight, { opacity: 0, y: ty + 10, rotation: 0, duration: 0.05, ease: "power1.in" }, at + 0.12);
     const stack = shirts
       .filter((s) => num(s, "shelf") === shelf && num(s, "slot") === slot)
       .sort((a, b) => num(a, "k") - num(b, "k"));
@@ -375,12 +407,16 @@ function buildTimeline(svg: SVGSVGElement, mobile: boolean, onUpdate: () => void
   const struck = one(".rail-struck");
   if (struck) {
     const src = sources[3];
-    tl.fromTo(
+    fly(
       struck,
-      { x: src.x, y: src.y, opacity: 0 },
-      { x: STRUCK.x, y: STRUCK.y, opacity: 1, duration: 0.14, ease: IN_OUT },
+      toss(src.x, src.y, STRUCK.x, STRUCK.y),
       0.62,
+      0.14,
+      { opacity: 1 },
+      { x: src.x, y: src.y, rotation: 0, transformOrigin: "50% 50%", opacity: 0 },
     );
+    // It comes to rest flat before the strike goes through it.
+    tl.to(struck, { rotation: 0, duration: 0.04, ease: OUT }, 0.76);
     draw(one(".rail-tag__strike"), 0.77, 0.06);
   }
   appear(one(".rail-callout--deep .rail-label"), 0.7, 0.1, { y: 6 });
@@ -433,10 +469,21 @@ function buildTimeline(svg: SVGSVGElement, mobile: boolean, onUpdate: () => void
   const cx = slotCx(THIN.slot) - 22;
   const cy = BOARDS[THIN.shelf] - THIN.keep * SHIRT.step - 44;
   if (carton) {
-    tl.set(carton, { x: VB_W + 30, y: cy, opacity: 1 }, t + 0.02);
-    tl.to(carton, { x: cx, duration: 0.24, ease: OUT }, t + 0.02);
+    tl.set(carton, { x: VB_W + 30, y: cy, scaleY: 1, transformOrigin: "50% 100%", opacity: 1 }, t + 0.02);
+    tl.to(carton, { x: cx, duration: 0.24, ease: IN_OUT }, t + 0.02);
+    // It lands with weight (change round 10): it lifts through the last of
+    // the slide and settles onto its base as it stops.
+    tl.to(carton, { scaleY: 1.03, duration: 0.02, ease: "power1.in" }, t + 0.24);
+    tl.to(carton, { scaleY: 1, duration: 0.03, ease: OUT }, t + 0.26);
     tl.to(carton, { opacity: 0, y: cy + 8, duration: 0.05, ease: "power1.in" }, t + 0.3);
   }
+  // The stack takes the load: pressed down on its board as the carton lands,
+  // it comes back to height over the beat the shirts return in. A set and a
+  // to, not a fromTo: a fromTo would leave it pressed whenever the scroll
+  // reverses past this point.
+  const thinStack = shirts.filter((s) => num(s, "shelf") === THIN.shelf && num(s, "slot") === THIN.slot);
+  tl.set(thinStack, { scaleY: 0.94, svgOrigin: `${slotCx(THIN.slot)} ${BOARDS[THIN.shelf]}` }, t + 0.28);
+  tl.to(thinStack, { scaleY: 1, duration: 0.1, ease: OUT }, t + 0.28);
   tl.fromTo(
     sells.slice().reverse(),
     { y: -14, opacity: 0 },
@@ -456,9 +503,11 @@ function buildTimeline(svg: SVGSVGElement, mobile: boolean, onUpdate: () => void
   // The credit note leaves the rep's clipboard and files itself.
   const slip = one(".rail-slip");
   if (slip) {
-    tl.set(slip, { x: REP.x - 42, y: REP.head + 46, opacity: 1, scale: 1 }, t + 0.36);
-    tl.to(slip, { x: STATUS.x0 + 2, y: statusY(1) + 1, scale: 0.85, duration: 0.18, ease: IN_OUT }, t + 0.36);
-    tl.to(slip, { opacity: 0, duration: 0.03 }, t + 0.54);
+    const from = { x: REP.x - 42, y: REP.head + 46 };
+    const to = { x: STATUS.x0 + 2, y: statusY(1) + 1 };
+    tl.set(slip, { ...from, rotation: 0, scale: 1, transformOrigin: "50% 50%", opacity: 1 }, t + 0.36);
+    fly(slip, toss(from.x, from.y, to.x, to.y), t + 0.36, 0.18, { scale: 0.85 });
+    tl.to(slip, { opacity: 0, rotation: 0, duration: 0.03 }, t + 0.54);
   }
   row(1, t + 0.52);
 
@@ -502,12 +551,17 @@ function buildTimeline(svg: SVGSVGElement, mobile: boolean, onUpdate: () => void
   appear(one(".rail-capital .rail-label"), t + 0.34, 0.08, { y: 6 });
   const ring = one(".rail-ring");
   if (ring) {
+    // It turns with an ease (change round 10), runs RING_OVER past its mark
+    // and swings back to it over the last RING_SETTLE of the same span.
+    const at = t + 0.28;
+    const settle = (TOTAL - at) * RING_SETTLE;
     tl.fromTo(
       ring,
       { rotation: -150, svgOrigin: `${COIN.cx} ${COIN.cy}` },
-      { rotation: 210, ease: "none", duration: TOTAL - (t + 0.28) },
-      t + 0.28,
+      { rotation: 210 + RING_OVER, ease: "power1.inOut", duration: TOTAL - at - settle },
+      at,
     );
+    tl.to(ring, { rotation: 210, ease: "power1.inOut", duration: settle }, TOTAL - settle);
   }
 
   /* ================= summary: the whole counter at once ================= */

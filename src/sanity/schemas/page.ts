@@ -52,14 +52,6 @@ export const page = defineType({
         }),
         defineField({ name: "primaryCta", title: "Primary CTA", type: "cta" }),
         defineField({ name: "secondaryCta", title: "Secondary CTA", type: "cta" }),
-        defineField({
-          name: "audienceLinks",
-          title: "Audience links (home hero)",
-          description:
-            'Short "I am a ..." links under the figures, one per audience, such as "I run a store". Leave empty on pages other than Home.',
-          type: "array",
-          of: [{ type: "cta" }],
-        }),
       ],
     }),
     defineField({

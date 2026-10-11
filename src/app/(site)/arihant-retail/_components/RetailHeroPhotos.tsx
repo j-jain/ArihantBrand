@@ -53,7 +53,7 @@ export function RetailHeroPhotos({ interior, storefront }: RetailHeroPhotosProps
               trigger: root,
               start: "top 30%",
               end: "bottom top",
-              scrub: 0.6,
+              scrub: 0.3,
             },
           });
         },

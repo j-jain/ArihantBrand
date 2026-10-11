@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 /** Format a stat's numeric body en-IN. Four-digit bare numbers in a plausible
  *  year range are left ungrouped ("2013", not "2,013"); everything else groups
@@ -14,7 +14,9 @@ export function formatBody(n: number, hasSuffix: boolean): string {
  *  quart, requestAnimationFrame). The final value is what the server renders
  *  and what it settles back to, so the figure is always right with no JS and
  *  under reduced motion (the caller simply never sets `run`). Shared by the
- *  stat bands and, since change round 9, the home hero's figures. */
+ *  stat bands and, since change round 9, the home hero's figures. The count
+ *  writes the text node directly (change round 10): a React render per frame
+ *  was the one thing on the page re-rendering sixty times a second. */
 export function CountUp({
   value,
   hasSuffix,
@@ -24,30 +26,30 @@ export function CountUp({
   hasSuffix: boolean;
   run: boolean;
 }) {
-  // null → render the final value (SSR + no-JS + reduced motion are safe).
-  const [n, setN] = useState<number | null>(null);
+  const ref = useRef<HTMLSpanElement>(null);
   const startedRef = useRef(false);
 
   useEffect(() => {
-    if (!run || startedRef.current) return;
+    const el = ref.current;
+    if (!run || startedRef.current || !el) return;
     startedRef.current = true;
-    setN(0);
     const start = performance.now();
     const duration = 900;
     let raf = 0;
+    el.textContent = formatBody(0, hasSuffix);
     const tick = (now: number) => {
       const t = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - t, 4); // ease-out-quart
-      if (t < 1) {
-        setN(Math.round(value * eased));
-        raf = requestAnimationFrame(tick);
-      } else {
-        setN(null); // settle back to the canonical formatted final
-      }
+      // Settle back to the canonical formatted final on the last frame.
+      el.textContent = formatBody(t < 1 ? Math.round(value * eased) : value, hasSuffix);
+      if (t < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [run, value]);
+    return () => {
+      cancelAnimationFrame(raf);
+      el.textContent = formatBody(value, hasSuffix);
+    };
+  }, [run, value, hasSuffix]);
 
-  return <>{formatBody(n ?? value, hasSuffix)}</>;
+  return <span ref={ref}>{formatBody(value, hasSuffix)}</span>;
 }

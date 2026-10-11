@@ -92,17 +92,40 @@ export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIn
           //    at once. The title stays hidden until it is split.
           const tl = gsap.timeline({ paused: true });
           if (reveals.length) {
-            tl.from(
-              reveals,
-              {
-                autoAlpha: 0,
-                y: mobile ? 12 : 22,
-                duration: mobile ? 0.5 : 0.7,
-                ease: EASE,
-                stagger: mobile ? 0.08 : 0.1,
-              },
-              mobile ? 0.05 : 0.15,
-            );
+            // Copy (the lead, the figures, the asks) rises AND pulls into
+            // focus from a soft blur (change round 10); a photograph or a
+            // clipped frame keeps the plain rise, a blur on a large bitmap
+            // costs more than it reads.
+            const isMedia = (el: HTMLElement) =>
+              el.matches("[data-hero-clip], .hero-fit__media, .retail-stack, .feature-media") ||
+              Boolean(el.querySelector("img, picture, video, [data-hero-clip]"));
+            const copy = reveals.filter((el) => !isMedia(el));
+            const media = reveals.filter(isMedia);
+            const at = mobile ? 0.05 : 0.15;
+            const dur = mobile ? 0.5 : 0.7;
+            const gap = mobile ? 0.08 : 0.1;
+            if (copy.length) {
+              tl.from(
+                copy,
+                {
+                  autoAlpha: 0,
+                  y: mobile ? 12 : 22,
+                  filter: "blur(6px)",
+                  duration: dur,
+                  ease: EASE,
+                  stagger: gap,
+                  clearProps: "filter",
+                },
+                at,
+              );
+            }
+            if (media.length) {
+              tl.from(
+                media,
+                { autoAlpha: 0, y: mobile ? 12 : 22, duration: dur, ease: EASE, stagger: gap },
+                at + gap * copy.length,
+              );
+            }
           }
           // Photographs that opt in with [data-hero-clip] (the retail hero's
           // photo stack, change round 5) open out of a mask from the bottom
@@ -132,11 +155,14 @@ export function HeroIntro({ children, className, pixelEmphasis = false }: HeroIn
               .map((c) => c.querySelector<HTMLElement>("img"))
               .filter((img): img is HTMLElement => Boolean(img));
             if (pictures.length) {
+              // The picture keeps settling after its mask has opened (change
+              // round 10: a longer tail, a slighter push), so the frame reads
+              // as a camera coming to rest rather than a slide finishing.
               tl.from(
                 pictures,
                 {
-                  scale: 1.12,
-                  duration: dur + 0.35,
+                  scale: 1.1,
+                  duration: dur + 0.45,
                   ease: "expo.out",
                   stagger: gap,
                   clearProps: "transform",

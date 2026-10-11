@@ -19,6 +19,8 @@
  *    so re-runs reuse existing assets rather than duplicating them.
  *  - Upserts every seed document with a STABLE _id via createOrReplace, so the
  *    script is idempotent (re-running updates in place; never duplicates).
+ *    Photo positions and awards are patched field by field instead, so a
+ *    photograph the client uploaded in the Studio survives a re-seed.
  *  - Leads are never seeded. Testimonials carry each seed entry's own
  *    `published` flag (the seed ships role-attributed, published trade voices).
  *  - Prints a summary table.
@@ -181,6 +183,7 @@ async function main() {
   for (const s of seed.stores) if (s.image) imageJobs.set(s.image, publicPath(s.image));
   for (const p of seed.posts) if (p.image) imageJobs.set(p.image, publicPath(p.image));
   for (const r of seed.recognitionPhotos) if (r.src) imageJobs.set(r.src, publicPath(r.src));
+  for (const a of seed.awards) if (a.image) imageJobs.set(a.image, publicPath(a.image));
 
   const jobList = [...imageJobs.entries()];
   const assetByWebPath = new Map();
@@ -396,9 +399,6 @@ async function main() {
         ...(copy.hero.points?.length ? { points: copy.hero.points } : {}),
         primaryCta: cta(copy.hero.primaryCta),
         ...(copy.hero.secondaryCta ? { secondaryCta: cta(copy.hero.secondaryCta) } : {}),
-        ...(copy.hero.audienceLinks?.length
-          ? { audienceLinks: copy.hero.audienceLinks.map(ctaKeyed) }
-          : {}),
       },
       sections: Object.entries(copy.sections).map(([key, s], si) => ({
         _type: "section",
@@ -449,6 +449,9 @@ async function main() {
     docs.push({ _id: `step-${i}`, _type: "processStep", title: s.title, text: s.text, order: i });
   });
   seed.awards.forEach((a, i) => {
+    // A seeded photograph is optional (change round 10); the row draws a
+    // placeholder without one, and a Studio upload wins over the seed.
+    const image = imageRef(a.image ? assetByWebPath.get(a.image) : undefined);
     docs.push({
       _id: `award-${i}`,
       _type: "award",
@@ -456,6 +459,9 @@ async function main() {
       title: a.title,
       issuer: a.issuer,
       detail: a.detail,
+      ...(image ? { image } : {}),
+      ...(a.image ? { imagePath: a.image } : {}),
+      ...(a.imageAlt ? { imageAlt: a.imageAlt } : {}),
       order: i,
     });
   });
@@ -511,6 +517,7 @@ async function main() {
     "apparelsWarehouse", "apparelsTeam",
     "retailInterior", "retailStorefront", "partnerStorefront",
     "aboutCraft", "aboutValue1", "aboutValue2", "aboutValue3",
+    "recognitionHero",
   ];
   for (const key of EDITABLE_SLOTS) {
     const slot = photoSlots[key];
@@ -544,9 +551,22 @@ async function main() {
     return;
   }
 
-  /* 3) Commit as one transaction (createOrReplace = idempotent upsert). */
+  /* 3) Commit as one transaction (createOrReplace = idempotent upsert).
+   * Documents the client fills with photographs in the Studio (the photo
+   * positions and the awards, change round 10) are patched field by field
+   * instead: a createOrReplace would drop an uploaded image, since the seed
+   * never carries one. The seed still never deletes. */
+  const KEEPS_UPLOADS = new Set(["photoSlot", "award"]);
   const tx = client.transaction();
-  for (const doc of docs) tx.createOrReplace(doc);
+  for (const doc of docs) {
+    if (KEEPS_UPLOADS.has(doc._type)) {
+      const { _id, _type, ...fields } = doc;
+      tx.createIfNotExists({ _id, _type });
+      tx.patch(_id, (p) => p.set(fields));
+    } else {
+      tx.createOrReplace(doc);
+    }
+  }
   await tx.commit({ visibility: "async" });
 
   /* 4) Summary table. */

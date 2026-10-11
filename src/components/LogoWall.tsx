@@ -99,13 +99,15 @@ export function LogoWall({
           ScrollTrigger.batch(below, {
             start: "top 92%",
             once: true,
+            // Each row of marks arrives as one wave from its left end
+            // (change round 10), a little quicker per mark than before.
             onEnter: (batch) =>
               gsap.to(batch, {
                 autoAlpha: 1,
                 y: 0,
                 duration: 0.5,
                 ease: EASE,
-                stagger: 0.05,
+                stagger: { each: 0.04, from: "start" },
                 overwrite: true,
               }),
           });

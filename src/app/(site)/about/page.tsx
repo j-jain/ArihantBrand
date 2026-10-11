@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
+import type { UnitKey } from "@/content/types";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Button,
@@ -25,19 +24,7 @@ import {
 } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { UNIT_ACCENT } from "@/lib/units";
-
-/* Founding date-stamp on the hero ledger: Archivo condensed with tabular
-   figures, matching the stat treatment on the unit pages but held quiet — it
-   is a date, not a headline number. */
-const foundedStyle: CSSProperties = {
-  fontFamily: "var(--font-archivo), system-ui, sans-serif",
-  fontWeight: 700,
-  fontStretch: "85%",
-  fontVariantNumeric: "tabular-nums",
-  fontSize: "1rem",
-  lineHeight: 1.1,
-  color: "var(--ink)",
-};
+import { TowerLedger } from "./_components/TowerLedger";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("about");
@@ -75,6 +62,9 @@ export default async function AboutPage() {
       floor: settings.contacts.find((c) => c.unit === business.unit)?.floor,
     })),
   );
+  // The same floors drive the hero's drawn elevation (change round 10).
+  const floors: Partial<Record<UnitKey, string>> = {};
+  for (const c of settings.contacts) if (c.floor) floors[c.unit] = c.floor;
 
   return (
     <>
@@ -98,53 +88,24 @@ export default async function AboutPage() {
               </p>
             </div>
 
-            {/* The three houses as a hairline ledger: one row per business,
-                stretched to stand level with the headline column rather than
-                floating as a short card. Each row opens that unit's page. */}
-            <div
-              data-hero-reveal
-              className="flex flex-col border-t border-line md:col-span-5"
-            >
-              {businesses.map((business) => (
-                <Link
-                  key={business.slug}
-                  href={`/${business.slug}`}
-                  className="about-house press group flex flex-1 flex-col justify-center gap-2.5 border-b border-line py-5 transition-colors hover:bg-paper-shade"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="block h-[3px] w-8 rounded-full"
-                    style={{ background: UNIT_ACCENT[business.unit].token }}
-                  />
-                  <span className="flex items-end justify-between gap-4">
-                    <span className="relative block h-8 w-28 shrink-0">
-                      <Image
-                        src={business.logo}
-                        alt={business.name}
-                        fill
-                        sizes="112px"
-                        className="object-contain object-left"
-                      />
-                    </span>
-                    <span style={foundedStyle}>{business.founded}</span>
-                  </span>
-                  {/* Who runs it, not what it sells. The home page already
-                      carries each unit's positioning line; repeating it here
-                      told the reader nothing new (G2). */}
-                  <span className="t-small text-ink-soft">
-                    {business.leaders.join(" and ")}
-                  </span>
-                </Link>
-              ))}
-            </div>
+            {/* The three houses as a hairline ledger beside the building they
+                share, drawn (change round 10): one row per business, level
+                with its storey of Arihant Tower, stretched to stand level with
+                the headline column. Each row opens that unit's page. */}
+            <TowerLedger
+              businesses={businesses}
+              floors={floors}
+              className="md:col-span-5"
+            />
           </div>
         </HeroIntro>
       </section>
 
-      {/* 2 — Story (paper): one entrance for the band (change round 9), the
-          heading's words first, the paragraphs after, the photograph opening
-          out of its mask beside them. The h2 used to just appear. */}
-      <section className="border-t border-line bg-paper">
+      {/* 2 — Story (paper-shade since change round 10: it stood on the same
+          paper as the hero, a hairline between): one entrance for the band
+          (change round 9), the heading's words first, the paragraphs after,
+          the photograph opening out of its mask beside them. */}
+      <section className="bg-paper-shade">
         <div className="container-site section-pad">
           <SectionReveal className="m-flow grid gap-x-14 gap-y-10 md:grid-cols-12">
             <div className="prose md:col-span-7">
@@ -179,15 +140,20 @@ export default async function AboutPage() {
                   </p>
                 </div>
                 <div data-sr="media">
-                  <ParallaxImage
-                    src={photos.aboutCraft.src}
-                    alt={photos.aboutCraft.alt}
-                    ratio={photos.aboutCraft.ratio}
-                    sizes="(max-width: 767px) 100vw, 40vw"
-                    tilt
-                    mBleed
-                    className="m-ar-4-3"
-                  />
+                  {/* A paper keyline round the frame, so the photograph reads
+                      as an object on the shade (the feature heroes' inset
+                      idiom); the mask stays on the wrapper above it. */}
+                  <div className="photo-keyline">
+                    <ParallaxImage
+                      src={photos.aboutCraft.src}
+                      alt={photos.aboutCraft.alt}
+                      ratio={photos.aboutCraft.ratio}
+                      sizes="(max-width: 767px) 100vw, 40vw"
+                      tilt
+                      mBleed
+                      className="m-ar-4-3"
+                    />
+                  </div>
                 </div>
               </div>
             </aside>

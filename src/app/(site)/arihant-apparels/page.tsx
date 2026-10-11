@@ -177,22 +177,18 @@ export default async function ArihantApparelsPage() {
           not Apparels', so it moved to /arihant-marketing. The asset keeps its
           original filename. */}
 
-      {/* 3b — Team (accent-wash): the real people who run it */}
+      {/* 3b — Team (charcoal, change round 10): the real people who run it.
+          It stood on the same accent wash as the mission above it, two gray
+          bands back to back once the film left; the page's dark band now
+          sits here, the home cadence (paper, shade, charcoal) on this page. */}
       {team.length ? (
-        <section
-          className="section-pad"
-          style={{
-            ...unitScope(UNIT),
-            background: "var(--unit-accent-wash)",
-            borderBlock: "1px solid var(--unit-accent-line)",
-          }}
-        >
+        <section className="section-pad on-dark">
           <SectionReveal
             className="container-site m-flow flex flex-col gap-12"
             from="left"
             mobileRows="wipe"
           >
-            <SectionHeading heading={teamSection.heading} lead={teamSection.lead} sr />
+            <SectionHeading heading={teamSection.heading} lead={teamSection.lead} sr onDark />
             <div className="m-flow grid gap-y-10 gap-x-16 md:grid-cols-12 md:items-start">
               <div data-sr="media" className="md:col-span-6">
                 <ParallaxImage
@@ -200,24 +196,24 @@ export default async function ArihantApparelsPage() {
                   alt={photos.apparelsTeam.alt}
                   ratio={photos.apparelsTeam.ratio}
                   sizes="(max-width: 767px) 100vw, 46vw"
-                  className="border border-line"
+                  className="border border-line-dark"
                   tilt
                   mBleed
                 />
               </div>
-              <ul data-sr="rows" className="flex flex-col border-t border-line md:col-span-6">
+              <ul data-sr="rows" className="flex flex-col border-t border-line-dark md:col-span-6">
                 {team.map((member) => (
                   <li
                     key={member.name}
-                    className="m-ledger-row flex items-baseline justify-between gap-4 border-b border-line py-4"
+                    className="m-ledger-row flex items-baseline justify-between gap-4 border-b border-line-dark py-4"
                   >
                     <span
-                      className="font-sans text-ink"
+                      className="font-sans text-on-charcoal"
                       style={{ fontWeight: 650, fontSize: "1.02rem", lineHeight: 1.3 }}
                     >
                       {member.name}
                     </span>
-                    <span className="t-small max-w-[13rem] text-right text-ink-soft">
+                    <span className="t-small max-w-[13rem] text-right text-on-charcoal-soft">
                       {member.title}
                     </span>
                   </li>

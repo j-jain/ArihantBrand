@@ -65,7 +65,9 @@ export function FeatureHeroMedia({
             trigger: root,
             start: "top top",
             end: "bottom top",
-            scrub: 0.6,
+            // 0.3 (change round 10): Lenis already smooths the scroll under
+            // this, so a heavier scrub only added lag.
+            scrub: 0.3,
           };
           if (pan) gsap.fromTo(pan, { yPercent: 0 }, { yPercent: 7, ease: "none", scrollTrigger: scroll });
           if (card) gsap.to(card, { yPercent: -16, ease: "none", scrollTrigger: { ...scroll } });

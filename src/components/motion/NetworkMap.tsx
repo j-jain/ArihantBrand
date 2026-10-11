@@ -77,7 +77,15 @@ export function NetworkMap() {
           const nodes = gsap.utils.toArray<SVGRectElement>(
             svg.querySelectorAll(".nm-node"),
           );
+          const sparks = gsap.utils.toArray<SVGCircleElement>(
+            svg.querySelectorAll(".nm-spark"),
+          );
           if (!arcs.length) return;
+
+          // The spark is lit for the first 10% of the 1.5s draw and put out
+          // over the last 15%, so it is gone before the node pulses.
+          const SPARK_IN = 0.15;
+          const SPARK_OUT = 0.225;
 
           const tl = gsap.timeline({ repeat: -1, paused: true });
 
@@ -104,6 +112,34 @@ export function NetworkMap() {
               },
               start,
             );
+
+            // A spark leads the draw (change round 10): a point of the arc's
+            // own red rides the path from the hub to the city on the same
+            // clock and ease as the dash. It rests at opacity 0 in the served
+            // markup, so without scripts there is no spark at all.
+            const spark = sparks[i];
+            if (spark) {
+              tl.to(
+                spark,
+                {
+                  motionPath: { path: arc, align: arc, alignOrigin: [0.5, 0.5] },
+                  duration: 1.5,
+                  ease: "power2.inOut",
+                },
+                start,
+              )
+                .fromTo(
+                  spark,
+                  { opacity: 0 },
+                  { opacity: 1, duration: SPARK_IN, ease: "none" },
+                  start,
+                )
+                .to(
+                  spark,
+                  { opacity: 0, duration: SPARK_OUT, ease: "none" },
+                  start + 1.5 - SPARK_OUT,
+                );
+            }
 
             // The destination node pulses once as its arc completes.
             const node = nodes[i];
@@ -232,6 +268,22 @@ export function NetworkMap() {
       <g className="nm-arcs">
         {ARCS.map((arc) => (
           <path key={arc.name} className="nm-arc" d={arc.d} />
+        ))}
+      </g>
+
+      {/* One spark per arc, parked on the hub at opacity 0: plain SVG in the
+          served markup, moved and lit only by the desktop loop above. */}
+      <g className="nm-sparks">
+        {ARCS.map((arc) => (
+          <circle
+            key={`spark-${arc.name}`}
+            className="nm-spark"
+            cx={round(HX)}
+            cy={round(HY)}
+            r={2.5}
+            opacity={0}
+            style={{ fill: "var(--vermillion)" }}
+          />
         ))}
       </g>
 

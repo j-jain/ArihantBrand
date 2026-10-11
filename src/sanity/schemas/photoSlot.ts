@@ -36,6 +36,7 @@ export const photoSlot = defineType({
           { title: "About: values panel 1", value: "aboutValue1" },
           { title: "About: values panel 2", value: "aboutValue2" },
           { title: "About: values panel 3", value: "aboutValue3" },
+          { title: "Recognition: hero (the award moment)", value: "recognitionHero" },
         ],
       },
       validation: (r) => r.required(),

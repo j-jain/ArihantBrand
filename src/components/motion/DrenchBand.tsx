@@ -52,7 +52,7 @@ export function DrenchBand({ children, className, id }: DrenchBandProps) {
             duration: mobile ? REVEAL.durMobile : DUR,
             ease: EASE,
             stagger: STAGGER,
-            scrollTrigger: { trigger: root, start: REVEAL.band, once: true },
+            scrollTrigger: { trigger: root, start: REVEAL.band, once: true, fastScrollEnd: true },
           });
         },
       );

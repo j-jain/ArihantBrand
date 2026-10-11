@@ -24,14 +24,9 @@ export const pages: Record<string, PageCopy> = {
         `${phrase.groupBrandPartners} Brand partners`,
       ],
       primaryCta: { label: "Talk to us", href: "/contact" },
+      // Kept for the Studio; the home hero prints no link since change
+      // round 10 (the two funnel cards under it are the page's router).
       secondaryCta: { label: "The three businesses", href: "#businesses" },
-      // Change round 9: the first screen routes each of the three audiences
-      // itself. One verb per audience, used the same way on every page.
-      audienceLinks: [
-        { label: "I run a store", href: "/contact?intent=retailer" },
-        { label: "I have a brand", href: "/contact?intent=brand" },
-        { label: "I want to own a store", href: "/partner" },
-      ],
     },
     sections: {
       // The heading as the client typed it in the Studio; the lead shortened

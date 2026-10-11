@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP, EASE, SPRING } from "@/lib/gsap";
 
 interface TimelineEntry {
   year: string;
@@ -107,12 +107,7 @@ export function Timeline({ entries, items }: TimelineProps) {
                 ease: EASE,
               });
               if (dot) {
-                tl.fromTo(
-                  dot,
-                  { scale: 0.4 },
-                  { scale: 1, duration: 0.42, ease: "back.out(2)" },
-                  "<0.05",
-                );
+                tl.fromTo(dot, { scale: 0.4 }, { scale: 1, ...SPRING }, "<0.05");
               }
               if (rule) {
                 // The hairline draws from the spine outward — the same gesture
@@ -182,10 +177,18 @@ export function Timeline({ entries, items }: TimelineProps) {
             const onScreen =
               rect.top < window.innerHeight * 0.9 && rect.bottom > 0;
 
-            // First-in reveal (skip if already visible at mount).
+            // First-in reveal (skip if already visible at mount). A paused
+            // timeline played by a standalone trigger, for the reason the
+            // phone branch gives above: a timeline-owned scrollTrigger
+            // measures itself a tick late and can throw inside a later
+            // trigger's refresh.
             if (!onScreen) {
-              const tl = gsap.timeline({
-                scrollTrigger: { trigger: entry, start: "top 82%", once: true },
+              const tl = gsap.timeline({ paused: true });
+              ScrollTrigger.create({
+                trigger: entry,
+                start: "top 82%",
+                once: true,
+                onEnter: () => tl.play(),
               });
               if (title) {
                 tl.from(title, {
@@ -196,12 +199,9 @@ export function Timeline({ entries, items }: TimelineProps) {
                 });
               }
               if (dot) {
-                tl.fromTo(
-                  dot,
-                  { scale: 1 },
-                  { scale: 1.35, duration: 0.28, ease: EASE, yoyo: true, repeat: 1 },
-                  "<",
-                );
+                // The dot pops in on the spring as the title lands (it used
+                // to pulse 1 -> 1.35 and back).
+                tl.fromTo(dot, { scale: 0.4 }, { scale: 1, ...SPRING }, "<");
               }
               if (rule) {
                 tl.fromTo(

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP, SPRING, SPRING_SOFT } from "@/lib/gsap";
 import type { RecognitionPhoto } from "@/content/types";
 
 interface CardFanProps {
@@ -19,7 +19,7 @@ const SPREAD_STEP = 8.5;
 const PIVOT = "50% 260%";
 
 /** A cabinet of photographs dealt out like a hand of cards: they arc around a
- *  pivot below the stage, settle in with an elastic entrance the first time the
+ *  pivot below the stage, settle in on the house spring the first time the
  *  section is scrolled to, open wider under the pointer, and rotate one card at
  *  a time through a circular pager that always brings the active card upright
  *  and to the front.
@@ -103,9 +103,15 @@ export function CardFan({ photos, label }: CardFanProps) {
                 y: isActive ? -20 : isHovered ? -12 : 0,
                 scale: isActive ? 1 : isHovered ? 0.96 : 0.92,
                 opacity: isActive ? 1 : restingOpacity(d),
+                // How far the card sits off the stage, read by the CSS
+                // shadow (`.fan--on .fan__card` scales its box-shadow by
+                // it). Tweened with the move, so the shadow grows and
+                // settles on the same spring as the lift.
+                "--fan-lift": isActive ? 1 : isHovered ? 0.5 : 0,
               };
               if (animate) {
-                gsap.to(card, { ...to, duration: 0.55, ease: EASE, overwrite: "auto" });
+                // A card following the pointer or the pager: the soft spring.
+                gsap.to(card, { ...to, ...SPRING_SOFT, overwrite: "auto" });
               } else {
                 gsap.set(card, to);
               }
@@ -141,8 +147,9 @@ export function CardFan({ photos, label }: CardFanProps) {
                       y: d === 0 ? -20 : 0,
                       scale: d === 0 ? 1 : 0.92,
                       opacity: d === 0 ? 1 : restingOpacity(d),
-                      duration: 1.15,
-                      ease: "elastic.out(1, 0.62)",
+                      // Dealt onto the stage: each card lands on the spring,
+                      // the middle first and the ends a beat behind.
+                      ...SPRING,
                       delay: Math.abs(i - middle) * 0.05,
                       immediateRender: false,
                     },

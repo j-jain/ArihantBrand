@@ -88,6 +88,79 @@ export function cartonRoute(row: number, col: number): [number, number][] {
   ];
 }
 
+/** How wide a carton's bend is rounded (SVG units). */
+export const BEND_R = 14;
+
+export interface MoverPath {
+  /** SVG path data, in the drawing's own units. */
+  d: string;
+  /** The path's length, by the same units. */
+  length: number;
+  /** Each bend: how far along the path its apex sits (0..1, by length) and
+   *  which way it turns on screen (1 clockwise, -1 anticlockwise). */
+  bends: { at: number; turn: 1 | -1 }[];
+}
+
+/** The carton's route as ONE path (change round 10): the road, the lane and
+ *  the row as straight legs joined by rounded bends, so the box runs it in a
+ *  single movement and can lean through each turn. The bends are true
+ *  fillets (a quadratic through the corner, `BEND_R` wide or half the shorter
+ *  leg): a spline through the same points would weave off the lane and lift
+ *  over the row line. */
+export function cartonPath(route: [number, number][]): MoverPath {
+  const last = route.length - 1;
+  if (last < 1) return { d: last === 0 ? `M${fmt(route[0])}` : "", length: 0, bends: [] };
+  const leg = (i: number) => Math.hypot(route[i + 1][0] - route[i][0], route[i + 1][1] - route[i][1]);
+  /** The point `dist` along leg i's direction from `from` (negative = back). */
+  const along = (i: number, from: [number, number], dist: number): [number, number] => {
+    const l = leg(i) || 1;
+    return [
+      from[0] + ((route[i + 1][0] - route[i][0]) / l) * dist,
+      from[1] + ((route[i + 1][1] - route[i][1]) / l) * dist,
+    ];
+  };
+  let d = `M${fmt(route[0])}`;
+  let run = 0;
+  let cut = 0; // of the current leg's start, already taken by the last bend
+  const bends: MoverPath["bends"] = [];
+  for (let k = 1; k < last; k++) {
+    const r = Math.min(BEND_R, leg(k - 1) / 2, leg(k) / 2);
+    const a = along(k - 1, route[k], -r);
+    const b = along(k, route[k], r);
+    const arc = quadLength(a, route[k], b);
+    run += leg(k - 1) - cut - r;
+    d += ` L${fmt(a)} Q${fmt(route[k])} ${fmt(b)}`;
+    const cross =
+      (route[k][0] - route[k - 1][0]) * (route[k + 1][1] - route[k][1]) -
+      (route[k][1] - route[k - 1][1]) * (route[k + 1][0] - route[k][0]);
+    bends.push({ at: run + arc / 2, turn: cross >= 0 ? 1 : -1 });
+    run += arc;
+    cut = r;
+  }
+  run += leg(last - 1) - cut;
+  d += ` L${fmt(route[last])}`;
+  return { d, length: run, bends: bends.map((b) => ({ at: b.at / run, turn: b.turn })) };
+}
+
+const fmt = (p: [number, number]) => `${round2(p[0])},${round2(p[1])}`;
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+/** The length of the quadratic a -> b through control point c, by chords. */
+function quadLength(a: [number, number], c: [number, number], b: [number, number], steps = 8) {
+  let len = 0;
+  let [px, py] = a;
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const u = 1 - t;
+    const x = u * u * a[0] + 2 * u * t * c[0] + t * t * b[0];
+    const y = u * u * a[1] + 2 * u * t * c[1] + t * t * b[1];
+    len += Math.hypot(x - px, y - py);
+    px = x;
+    py = y;
+  }
+  return len;
+}
+
 /** The order slip's arc from the fair stall's counter to a store's fascia. */
 export function slipArc(row: number, col: number) {
   const x0 = FAIR.x + FAIR.w / 2;

@@ -70,13 +70,15 @@ export default async function BlogPage() {
 
       {/* 2 — Posts index: the full card grid, scannable and crawlable on
           every device */}
-      <section className="section-pad bg-paper" style={{ paddingTop: 0 }}>
+      {/* On the shade since change round 10 (it stood on the hero's paper);
+          its top air matches the hero's own bottom padding (.notes-index). */}
+      <section className="notes-index section-pad bg-paper-shade">
         <div className="container-site">
           <StaggerGroup
             as="ul"
             from="up"
             stagger={0.09}
-            className="post-grid mt-12 grid gap-x-6 gap-y-11 sm:grid-cols-2 md:grid-cols-3"
+            className="post-grid grid gap-x-6 gap-y-11 md:grid-cols-3"
           >
             {posts.map((post, i) => (
               <li key={post.slug} className="post-item flex">
@@ -85,7 +87,7 @@ export default async function BlogPage() {
                   className="post-card press group flex h-full w-full flex-col"
                 >
                   {/* Thumbnail — decorative (title is adjacent), so alt="" */}
-                  <div className="post-card__thumb relative aspect-[3/2] overflow-hidden rounded-[6px] border border-line bg-paper-shade">
+                  <div className="post-card__thumb relative aspect-[3/2] overflow-hidden rounded-[6px] border border-line bg-paper">
                     {post.image ? (
                       <Image
                         src={post.image}

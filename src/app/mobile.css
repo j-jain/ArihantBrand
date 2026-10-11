@@ -476,7 +476,7 @@
     pointer-events: none;
     transform: translateY(calc(100% + var(--m-dock-inset) + env(safe-area-inset-bottom, 0px)));
     transition:
-      transform 380ms var(--ease),
+      transform var(--dur-spring-soft) var(--ease-spring-soft),
       opacity 220ms var(--ease);
   }
 
@@ -1036,6 +1036,11 @@
     background: var(--paper);
   }
 
+  .funnel-card__mark {
+    width: 5rem;
+    height: 1.5rem;
+  }
+
   /* --- Awards and testimonials -------------------------------------- */
   /* One column that never grows past the screen: the testimonial rail's
      intrinsic width used to widen it, cutting the heading off at 360px. */
@@ -1180,6 +1185,20 @@
     gap: 0.35rem;
   }
 
+  /* The story photograph bleeds edge to edge, so its paper keyline goes. */
+  .photo-keyline {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* The tower beside the house ledger: a narrower column, the rows as before. */
+  .tower--drawn {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    column-gap: 0.9rem;
+  }
+
   /* Values band: the photographic panels run edge to edge and lose a chunk
      of their desktop height, so all three fit in a comfortable scroll. */
   .vp-band__inner {
@@ -1321,9 +1340,13 @@
   /* The index: the newest note as a lead card with its photograph edge to
      edge, then the rest as compact ruled rows (thumbnail beside the words),
      the idiom the article's own "More notes" list uses. */
+  .notes-index {
+    padding-top: var(--m-section-tight);
+  }
+
   .post-grid {
     grid-template-columns: minmax(0, 1fr);
-    margin-top: 1.75rem;
+    margin-top: 0;
     gap: 0;
   }
 
@@ -1479,6 +1502,42 @@
 
   .award-list:not(.award-list--compact) .award-row--lead::before {
     top: 1.75rem;
+  }
+
+  /* The hero's frame under the copy runs edge to edge; its caption keeps
+     the gutter (change round 10). */
+  .photo-ph.m-bleed .photo-ph__frame {
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  .photo-ph.m-bleed .photo-ph__cap {
+    padding-inline: var(--m-gutter);
+  }
+
+  .photo-ph__tag {
+    font-size: 0.8125rem;
+  }
+
+  /* Trophy rows: the frame beside the text at thumb size, the ledger
+     rhythm kept; no chip fits a 5.5rem thumb, the sr-only line still says. */
+  .award-row--media {
+    grid-template-columns: minmax(0, 1fr) 5.5rem;
+    column-gap: 1rem;
+  }
+
+  .award-row--lead.award-row--media {
+    grid-template-columns: minmax(0, 1fr) 7rem;
+  }
+
+  .award-row__media .photo-ph__tag {
+    display: none;
+  }
+
+  .award-row__media .photo-ph__art {
+    inset: 9%;
+    width: 82%;
+    height: 82%;
   }
 }
 
@@ -1663,23 +1722,6 @@
     line-height: 0.9;
   }
 
-  /* The audience rail (change round 9): three ruled rows, each a full-width
-     44px tap, under the figures. */
-  .hero-asks {
-    flex-direction: column;
-    gap: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .hero-asks > li {
-    border-top: 1px solid var(--line);
-  }
-
-  .hero-asks .hero-ask {
-    width: 100%;
-    min-height: 2.75rem;
-    justify-content: space-between;
-  }
 }
 
 /* ------------------------------------------------------------------ */

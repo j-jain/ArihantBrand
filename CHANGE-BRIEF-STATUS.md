@@ -145,7 +145,7 @@ And one that was close but not exact:
 | R7 | Rename to "Timeline" and reuse `Timeline.tsx` | **Done** | The 6-cell year grid is replaced by the same Timeline the About page uses, so each year carries its account. |
 | R8 | Real testimonials with consent | **Blocked** | Need 3–5 with name, shop name, town and **written consent**. Until then the composite trade voices stand, attributed by role and town, as the honesty policy requires. |
 | R9 | Lengthen the quote pool | **Done** | 10 → 16 quotes, so the columns travel further before repeating. |
-| R10 | Recognition photography | **Blocked** | Part of the shoot. |
+| R10 | Recognition photography | **Slots built** (change round 10) | The hero carries a `recognitionHero` photo slot and every award row a frame for its own photograph (`Award.image`); drawn placeholders stand in them until the files land, and a Studio upload or a file drop replaces each. The photographs themselves are still part of the shoot. |
 | — | 3× DOM copies of the quote columns | **Query** | Correct technique, not a bug: one copy is visible per breakpoint, the others are `display:none`. Leaving as is. |
 
 ## AB — About

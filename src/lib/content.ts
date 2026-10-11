@@ -308,7 +308,6 @@ interface RawHero {
   points?: string[] | null;
   primaryCta?: RawCta | null;
   secondaryCta?: RawCta | null;
-  audienceLinks?: (RawCta | null)[] | null;
 }
 interface RawPageSection {
   key: string;
@@ -347,6 +346,9 @@ interface RawAward {
   title: string;
   issuer: string;
   detail?: string | null;
+  image?: SanityImage;
+  imagePath?: string | null;
+  imageAlt?: string | null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -485,12 +487,6 @@ function mapHero(h: RawHero): Hero {
     ...(h.points?.length ? { points: h.points } : {}),
     primaryCta: h.primaryCta ? mapCta(h.primaryCta) : { label: "", href: "#" },
     ...(h.secondaryCta ? { secondaryCta: mapCta(h.secondaryCta) } : {}),
-    ...(() => {
-      const links = (h.audienceLinks ?? [])
-        .filter((c): c is RawCta => Boolean(c?.label && c?.href))
-        .map(mapCta);
-      return links.length ? { audienceLinks: links } : {};
-    })(),
   };
 }
 
@@ -576,8 +572,7 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]${POST_PROJECT
 const PAGE_QUERY = `*[_type == "page" && pageId == $pageId][0]{
   metaTitle, metaDescription,
   hero{ heading, headingEmphasis, lead, points,
-    primaryCta{ label, href }, secondaryCta{ label, href },
-    audienceLinks[]{ label, href } },
+    primaryCta{ label, href }, secondaryCta{ label, href } },
   sections[]{ key, heading, lead, body, ctaLabel }
 }`;
 
@@ -588,7 +583,7 @@ const PILLARS_QUERY = `*[_type == "pillar"] | order(order asc){ title, text }`;
 const VALUES_QUERY = `*[_type == "valuePanel"] | order(order asc){ title, text }`;
 const TIMELINE_QUERY = `*[_type == "timelineEntry"] | order(order asc){ year, title, text }`;
 const STEPS_QUERY = `*[_type == "processStep"] | order(order asc){ title, text }`;
-const AWARDS_QUERY = `*[_type == "award"] | order(order asc){ year, title, issuer, detail }`;
+const AWARDS_QUERY = `*[_type == "award"] | order(order asc){ year, title, issuer, detail, image, imagePath, imageAlt }`;
 const MARKETING_STRENGTHS_QUERY = `*[_type == "marketingStrength"] | order(order asc){ title, text }`;
 const MARKETING_STEPS_QUERY = `*[_type == "marketingStep"] | order(order asc){ title, text }`;
 
@@ -773,14 +768,7 @@ export function getPageCopy(pageId: string): Promise<PageCopy | undefined> {
         const label = seed.sections[key]?.ctaLabel;
         if (!s.ctaLabel && label) sections[key] = { ...s, ctaLabel: label };
       }
-      // The hero's audience links are newer than the Studio documents (change
-      // round 9): a document that carries none keeps the seed's, so the home
-      // hero never loses its routing between a deploy and the re-seed.
-      const hero =
-        !page.hero.audienceLinks?.length && seed.hero.audienceLinks?.length
-          ? { ...page.hero, audienceLinks: seed.hero.audienceLinks }
-          : page.hero;
-      return { ...page, hero, sections };
+      return { ...page, sections };
     },
     seed,
   );
@@ -935,7 +923,19 @@ export function getAwards(): Promise<Award[]> {
     ["award"],
     isEmptyArray,
     (rows) =>
-      rows.map((a) => ({ year: a.year, title: a.title, issuer: a.issuer, detail: a.detail ?? "" })),
+      rows.map((a) => {
+        // A photograph on the award document (change round 10): an upload
+        // first, else the seeded path, else nothing (the row draws a
+        // placeholder).
+        const image = resolveImage(a.image, a.imagePath);
+        return {
+          year: a.year,
+          title: a.title,
+          issuer: a.issuer,
+          detail: a.detail ?? "",
+          ...(image ? { image, imageAlt: a.imageAlt ?? "" } : {}),
+        };
+      }),
     seedAwards,
   );
 }

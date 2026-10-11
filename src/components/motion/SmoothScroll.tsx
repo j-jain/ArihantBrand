@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { gsap, ScrollTrigger, setBaseLagSmoothing } from "@/lib/gsap";
+import { setLenis } from "@/lib/lenis";
 import Lenis from "lenis";
 
 /** Site-wide smooth scroll, driven by Lenis and synced to the GSAP ticker so
@@ -19,7 +20,17 @@ export default function SmoothScroll() {
     const finePointer = window.matchMedia("(pointer: fine)").matches;
     if (prefersReduced || !finePointer || window.innerWidth < 768) return;
 
-    const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+    // A lerp, not a duration (change round 10): a duration restarted a 1.05s
+    // expo-out on every wheel tick, so each notch began from rest; the lerp
+    // carries the velocity from one tick into the next, one continuous
+    // movement that eases out when the hand stops.
+    const lenis = new Lenis({
+      lerp: 0.085,
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      syncTouch: false,
+    });
+    setLenis(lenis);
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -60,6 +71,7 @@ export default function SmoothScroll() {
       document.removeEventListener("click", onAnchorClick);
       gsap.ticker.remove(raf);
       setBaseLagSmoothing(500);
+      setLenis(null);
       lenis.destroy();
     };
   }, []);

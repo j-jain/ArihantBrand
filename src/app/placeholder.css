@@ -1,0 +1,110 @@
+/* ------------------------------------------------------------------ */
+/* PhotoPlaceholder (change round 10)                                  */
+/* ------------------------------------------------------------------ */
+
+/* The drawn stand-in for a photograph the house has not supplied yet (the
+   /recognition hero and award rows first): ink line work on a flat ground,
+   a chip that says so, the eventual picture named under it. Never mistakable
+   for a photograph: no gradient, no blur, no texture, no tilt. Paper ground
+   by default; .on-dark swaps the tokens. Phone rules: mobile.css section 16. */
+
+.photo-ph {
+  --ph-ground: var(--paper-shade);
+  --ph-ink: var(--ink);
+  --ph-ink-soft: var(--ink-soft);
+  --ph-line: var(--line);
+  --ph-chip: var(--paper);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.on-dark .photo-ph {
+  --ph-ground: var(--charcoal-raise);
+  --ph-ink: var(--on-charcoal);
+  --ph-ink-soft: var(--on-charcoal-soft);
+  --ph-line: var(--line-dark);
+  --ph-chip: var(--charcoal);
+}
+
+.photo-ph__frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--ph-line);
+  border-radius: 6px;
+  background: var(--ph-ground);
+}
+
+/* The vignette sits in the frame's middle at a fixed share of its width, so
+   the same drawing reads in a 28rem hero frame and a 9.5rem row frame. */
+.photo-ph__art {
+  position: absolute;
+  inset: 12%;
+  width: 76%;
+  height: 76%;
+}
+
+.photo-ph__line {
+  fill: none;
+  stroke: var(--ph-ink);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.photo-ph__line--soft {
+  stroke: var(--ph-ink-soft);
+  stroke-width: 1.2;
+}
+
+.photo-ph__fill {
+  fill: var(--ph-chip);
+}
+
+.photo-ph__seal {
+  fill: color-mix(in oklch, var(--vermillion) 70%, transparent);
+  stroke: var(--ph-ink);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Mounting corners for a large frame: four right angles at the edges. */
+.photo-ph__corner {
+  position: absolute;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 0 solid var(--ph-ink-soft);
+}
+
+.photo-ph__corner--tl { top: 0.75rem; left: 0.75rem; border-top-width: 1.5px; border-left-width: 1.5px; }
+.photo-ph__corner--tr { top: 0.75rem; right: 0.75rem; border-top-width: 1.5px; border-right-width: 1.5px; }
+.photo-ph__corner--bl { bottom: 0.75rem; left: 0.75rem; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.photo-ph__corner--br { bottom: 0.75rem; right: 0.75rem; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* The chip, the feature heroes' caption idiom. */
+.photo-ph__tag {
+  position: absolute;
+  left: 0.6rem;
+  top: 0.55rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 2px;
+  background: var(--ph-chip);
+  box-shadow: inset 0 0 0 1px var(--ph-line);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 700;
+  font-stretch: 87%;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ph-ink-soft);
+}
+
+.photo-ph__cap {
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--ph-ink-soft);
+}

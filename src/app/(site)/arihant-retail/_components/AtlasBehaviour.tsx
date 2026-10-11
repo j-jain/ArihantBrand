@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-import { EASE, ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+import { EASE, SPRING, SPRING_HANG, ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
 
 interface AtlasBehaviourProps {
   children: ReactNode;
@@ -32,11 +32,17 @@ interface AtlasBehaviourProps {
  * Motion-safety: GSAP here only ever animates `a.atlas-tag`, the relief
  * image, the borders, rivers and labels, `.atlas-pin__drop`,
  * `.atlas-pin__ripple`, `.atlas-stitch`, the key, the stage (phones, and the
- * pointer tilt) and the thread's stroke-opacity attribute. CSS owns the
- * active states (`.atlas-tag__body`, `.atlas-pin`, `.atlas-pin__frame`,
- * `.atlas-route`, `.atlas-card`, the thread's opacity), so the two never
- * fight over one property. Every build tween is a `from`, so the served
- * markup is the end state.
+ * pointer tilt), the thread's stroke-opacity attribute, and (change round
+ * 10) a needle it makes itself for the length of each route's sewing and
+ * removes again. CSS owns the active states (`.atlas-tag__body`,
+ * `.atlas-pin`, `.atlas-pin__frame`, `.atlas-route`, `.atlas-card`, the
+ * thread's opacity), so the two never fight over one property. Every build
+ * tween is a `from`, so the served markup is the end state.
+ *
+ * Change round 10: the pins land and the tags hang on the house springs
+ * (SPRING, SPRING_HANG: one bounce, three decaying swings) instead of
+ * back.out and elastic.out; a needle leads each route's stitches; the
+ * rivers draw on a rounder curve.
  */
 export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -318,7 +324,7 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
               {
                 strokeDashoffset: 0,
                 duration,
-                ease: "power1.inOut",
+                ease: "power2.inOut",
                 stagger: 0.03,
                 clearProps: "strokeDasharray,strokeDashoffset",
               },
@@ -326,21 +332,17 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
             );
           };
 
-          // A pin drops onto the map and settles; a single ring spreads out
-          // from where it lands. The ring rests invisible (atlas.css), so it
-          // only ever exists inside this build.
+          // A pin drops onto the map and lands on the spring (one small
+          // bounce as it seats); a single ring spreads out from where it
+          // lands. The ring rests invisible (atlas.css), so it only ever
+          // exists inside this build.
           const drop = (pin: Element, at: number) => {
             const head = pin.querySelector(".atlas-pin__drop");
             if (head) {
+              tl.from(head, { y: mobile ? -16 : -28, ...SPRING, clearProps: "transform" }, at);
               tl.from(
                 head,
-                {
-                  y: mobile ? -16 : -28,
-                  opacity: 0,
-                  duration: mobile ? 0.35 : 0.45,
-                  ease: "back.out(1.7)",
-                  clearProps: "transform,opacity",
-                },
+                { opacity: 0, duration: 0.3, ease: "power1.out", clearProps: "opacity" },
                 at,
               );
             }
@@ -429,21 +431,43 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
             const tag = root.querySelector<HTMLElement>(`a.atlas-tag[data-store="${id}"]`);
             if (tag) {
               tl.from(tag, { opacity: 0, duration: 0.2, ease: "power1.out", clearProps: "opacity" }, at);
-              // A calmer swing than round 4's (1.3s at 0.36 wobbled): it
-              // settles in under a second, like a tag on a short string.
+              // A hung tag: it swings about its eyelet three times, each
+              // swing smaller, and hangs still (SPRING_HANG, a damped
+              // pendulum, change round 10).
               tl.from(
                 tag,
                 {
                   rotation: -9,
                   y: -6,
                   transformOrigin: `50% ${0.55 * rootPx}px`,
-                  duration: 0.9,
-                  ease: "elastic.out(1, 0.55)",
+                  ...SPRING_HANG,
                   clearProps: "transform,transformOrigin",
                 },
                 at,
               );
             }
+          };
+
+          // A needle leads each route's stitches (change round 10): a small
+          // ink dot made for the sewing and removed when the pin lands,
+          // riding the route's own geometry a hair ahead of the stitches.
+          const needleFor = (id: string, stitches: NodeListOf<SVGLineElement>) => {
+            const route = stitches[0]?.parentElement;
+            if (!route || !stitches.length) return null;
+            const pts: { x: number; y: number }[] = [];
+            stitches.forEach((s) => {
+              pts.push({ x: s.x1.baseVal.value, y: s.y1.baseVal.value });
+            });
+            const last = stitches[stitches.length - 1];
+            pts.push({ x: last.x2.baseVal.value, y: last.y2.baseVal.value });
+            const stroke = parseFloat(getComputedStyle(stitches[0]).strokeWidth) || 2;
+            const needle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            needle.setAttribute("class", "atlas-needle");
+            needle.setAttribute("r", String(Math.max(1.2, stroke * 0.9)));
+            needle.setAttribute("aria-hidden", "true");
+            needle.setAttribute("data-store", id);
+            route.appendChild(needle);
+            return { needle, pts };
           };
 
           // Pins are rendered in build order: the hub (the Guwahati
@@ -467,6 +491,23 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
               const each = 0.012;
               tl.from(stitches, { opacity: 0, duration: 0.07, ease: "none", stagger: each }, start);
               end = start + (stitches.length - 1) * each + 0.07;
+              const sewing = needleFor(id, stitches);
+              if (sewing) {
+                const { needle, pts } = sewing;
+                const run = Math.max(0.1, (stitches.length - 1) * each);
+                tl.set(needle, { opacity: 0, x: pts[0].x, y: pts[0].y }, start - 0.03);
+                tl.to(needle, { opacity: 1, duration: 0.06, ease: "none" }, start - 0.03);
+                tl.to(
+                  needle,
+                  { motionPath: { path: pts, curviness: 0 }, duration: run, ease: "none" },
+                  start - 0.03,
+                );
+                tl.to(
+                  needle,
+                  { opacity: 0, duration: 0.12, ease: "power1.in", onComplete: () => needle.remove() },
+                  start - 0.03 + run,
+                );
+              }
             }
             drop(pin, end);
             hang(id, end + 0.08);
@@ -482,6 +523,7 @@ export function AtlasBehaviour({ children, className, hubId }: AtlasBehaviourPro
           return () => {
             untilt?.();
             buildRef.current = null;
+            figure.querySelectorAll(".atlas-needle").forEach((n) => n.remove());
           };
         },
       );

@@ -186,6 +186,9 @@ export function CardsStack({ items, heading }: CardsStackProps) {
             style.transform = `translate3d(0, ${lift.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
             style.opacity = String(o);
             style.setProperty("--stack-depth", Math.min(depth, 1).toFixed(3));
+            // How far the card is still in the air (change round 10): its
+            // shadow grows while it travels and dies as it lands.
+            style.setProperty("--stack-lift", i ? ((1 - p) * o).toFixed(3) : "0");
             // How far card i has covered card i-1: zero until its top edge
             // crosses card i-1's bottom, so nothing settles back early.
             if (i) {
@@ -221,11 +224,20 @@ export function CardsStack({ items, heading }: CardsStackProps) {
               anticipatePin: 1,
               invalidateOnRefresh: false,
               scrub: smooth ? true : 0.3,
+              // The cards sit on their own layers only while the deck is
+              // pinned and moving (change round 10).
+              onToggle: (self) =>
+                cards.forEach((card) => {
+                  if (self.isActive) card.style.willChange = "transform, opacity";
+                  else card.style.removeProperty("will-change");
+                }),
             },
           });
           for (let k = 1; k < n; k++) {
             const at = (k - 1) * enter;
-            tl.fromTo(state[k], { p: 0 }, { p: 1, duration: enter, ease: "power2.out" }, at);
+            // A heavier landing (change round 10): the card covers most of
+            // its travel early and spends the rest settling onto the deck.
+            tl.fromTo(state[k], { p: 0 }, { p: 1, duration: enter, ease: "power3.out" }, at);
             tl.fromTo(state[k], { o: 0 }, { o: 1, duration: enter * FADE }, at);
           }
           tl.to({}, { duration: dwell }, (n - 1) * enter);

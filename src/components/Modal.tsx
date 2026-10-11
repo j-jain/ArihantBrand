@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import { gsap } from "@/lib/gsap";
+import { holdScroll, releaseScroll } from "@/lib/lenis";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { cn } from "./cn";
 
@@ -56,6 +57,9 @@ export function Modal({
       if (scrollbar > 0) document.body.style.paddingRight = `${scrollbar}px`;
       dialog.dataset.prevOverflow = previousOverflow;
       dialog.dataset.prevPad = previousPad;
+      // Lenis keeps listening to the wheel under an overflow lock (change
+      // round 10): hold it, so the page does not drift behind the dialog.
+      holdScroll();
 
       dialog.showModal();
       gsap.killTweensOf([dialog, panel]);
@@ -88,6 +92,7 @@ export function Modal({
         dialog.close();
         document.body.style.overflow = dialog.dataset.prevOverflow ?? "";
         document.body.style.paddingRight = dialog.dataset.prevPad ?? "";
+        releaseScroll();
       };
       gsap.killTweensOf([dialog, panel]);
       if (reduce) {
@@ -135,6 +140,7 @@ export function Modal({
     () => () => {
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
+      releaseScroll();
     },
     [],
   );
@@ -146,7 +152,7 @@ export function Modal({
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
     >
-      <div ref={panelRef} className="modal__panel">
+      <div ref={panelRef} data-lenis-prevent="" className="modal__panel">
         <button
           type="button"
           className="modal__close"

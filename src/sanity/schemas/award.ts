@@ -13,10 +13,31 @@ export const award = defineType({
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
     defineField({ name: "issuer", title: "Issuer", type: "string", validation: (r) => r.required() }),
     defineField({ name: "detail", title: "Detail", type: "text", rows: 3 }),
+    defineField({
+      name: "image",
+      title: "Photograph (the trophy, certificate or presentation)",
+      description:
+        "Leave empty to keep the drawn stand-in. Any orientation: the frame never crops it.",
+      type: "image",
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: "imageAlt",
+      title: "Alt text for the photograph",
+      description:
+        "Say what is actually visible: the engraving, the certificate's wording, who is in the picture.",
+      type: "text",
+      rows: 2,
+    }),
+    defineField({
+      name: "imagePath",
+      title: "Photograph path (fallback, set by the seed)",
+      type: "string",
+    }),
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
   ],
   orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
-  preview: { select: { title: "title", subtitle: "year" } },
+  preview: { select: { title: "title", subtitle: "year", media: "image" } },
 });
 
 /** One of the four strengths the Marketing page argues to a brand audience.

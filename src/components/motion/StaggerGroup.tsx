@@ -113,7 +113,12 @@ export function StaggerGroup({
                 duration: 0.5,
                 ease: EASE,
                 stagger: STAGGER,
-                scrollTrigger: { trigger: root, start: REVEAL.startMobile, once: true },
+                scrollTrigger: {
+                  trigger: root,
+                  start: REVEAL.startMobile,
+                  once: true,
+                  fastScrollEnd: true,
+                },
                 // A resting inset(0) still clips to the border box and would
                 // slice focus rings off any control flush with a row edge.
                 onComplete: () =>
@@ -136,6 +141,7 @@ export function StaggerGroup({
               trigger: root,
               start: mobile ? REVEAL.startMobile : start,
               once: true,
+              fastScrollEnd: true,
             },
           });
         },

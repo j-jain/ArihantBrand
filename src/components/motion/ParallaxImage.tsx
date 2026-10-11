@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, useGSAP, SPRING_SOFT } from "@/lib/gsap";
 import { cn } from "../cn";
 
 interface ParallaxImageProps {
@@ -137,21 +137,24 @@ export function ParallaxImage({
             // these same props spams GSAP's "not eligible for reset" warning and
             // desyncs the follow on re-entry — so the release routes back
             // through these same setters, settling to 0.)
+            // A heavier follow than before (change round 10): 0.6s on a
+            // cubic, so the frame trails the pointer like a mounted print
+            // rather than a cursor.
             const rotX = gsap.quickTo(frame, "rotationX", {
-              duration: 0.45,
-              ease: "power2.out",
+              duration: 0.6,
+              ease: "power3.out",
             });
             const rotY = gsap.quickTo(frame, "rotationY", {
-              duration: 0.45,
-              ease: "power2.out",
+              duration: 0.6,
+              ease: "power3.out",
             });
             const shiftX = gsap.quickTo(frame, "x", {
-              duration: 0.45,
-              ease: "power2.out",
+              duration: 0.6,
+              ease: "power3.out",
             });
             const shiftY = gsap.quickTo(frame, "y", {
-              duration: 0.45,
-              ease: "power2.out",
+              duration: 0.6,
+              ease: "power3.out",
             });
 
             const onMove = (event: PointerEvent) => {
@@ -179,7 +182,9 @@ export function ParallaxImage({
               rotY(0);
               shiftX(0);
               shiftY(0);
-              gsap.to(frame, { scale: 1, duration: 0.6, ease: "power3.out" });
+              // Home on the soft spring: the frame settles back, it does not
+              // just slow down.
+              gsap.to(frame, { scale: 1, ...SPRING_SOFT });
             };
 
             frame.addEventListener("pointerenter", onEnter);

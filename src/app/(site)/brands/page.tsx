@@ -5,7 +5,6 @@ import {
   DrenchBand,
   HeroIntro,
   JsonLd,
-  Reveal,
   SectionHeading,
 } from "@/components";
 import { getPageCopy, getPartners, getSiteSettings } from "@/lib/content";
@@ -105,9 +104,7 @@ export default async function BrandsPage() {
           business filter and a logo view. Every name opens the modal. */}
       <section className="section-pad bg-paper-shade">
         <div className="container-wide m-flow flex flex-col gap-8">
-          <Reveal variant="fade">
-            <SectionHeading heading={sections.wall?.heading ?? "The portfolio"} />
-          </Reveal>
+          <SectionHeading heading={sections.wall?.heading ?? "The portfolio"} />
           <BrandIndex
             partners={partners}
             whatsapp={whatsappFor(PATH, settings.defaultWhatsapp).whatsapp}

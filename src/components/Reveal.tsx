@@ -74,10 +74,13 @@ export function Reveal({
 
           // One trigger line for every reveal (change round 9), a touch
           // later on a phone, whose viewport is short.
+          // fastScrollEnd (change round 10): a flick past the band leaves it
+          // finished, never half-risen.
           const st = {
             trigger: el,
             start: mobile ? REVEAL.startMobile : REVEAL.start,
             once: true,
+            fastScrollEnd: true,
           } as const;
 
           // On a phone the three variants used to collapse into one identical

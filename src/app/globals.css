@@ -7,6 +7,7 @@
 @import "./rail.css";
 @import "./street.css";
 @import "./tags.css";
+@import "./placeholder.css";
 
 /* The mobile layer is imported at the FOOT of this file, not here.
  *
@@ -78,6 +79,15 @@
   --dur: 320ms;
   --dur-slow: 560ms;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The house springs (change round 10): the same damped oscillators
+     src/lib/gsap.ts registers for GSAP (zeta 0.62 / 0.8, ~0.93s / ~0.64s),
+     sampled into linear() so a CSS transition can land or follow with the
+     same physics. Generated from src/lib/spring.ts; do not hand-edit. Use
+     with a matching duration: 930ms for --ease-spring, 640ms for -soft. */
+  --ease-spring: linear(0, 0.056 3.1%, 0.189 6.2%, 0.359 9.4%, 0.533 12.5%, 0.693 15.6%, 0.828 18.8%, 0.931 21.9%, 1.005 25.0%, 1.051 28.1%, 1.076 31.2%, 1.083 34.4%, 1.080 37.5%, 1.069 40.6%, 1.055 43.8%, 1.041 46.9%, 1.027 50.0%, 1.016 53.1%, 1.007 56.2%, 1.000 59.4%, 0.996 62.5%, 0.994 65.6%, 0.993 68.8%, 0.993 71.9%, 0.994 75.0%, 0.995 78.1%, 0.996 81.2%, 0.998 84.4%, 0.999 87.5%, 0.999 90.6%, 1.000 93.8%, 1.000 96.9%, 1);
+  --ease-spring-soft: linear(0, 0.036 3.1%, 0.123 6.2%, 0.236 9.4%, 0.358 12.5%, 0.478 15.6%, 0.588 18.8%, 0.685 21.9%, 0.767 25.0%, 0.834 28.1%, 0.887 31.2%, 0.928 34.4%, 0.959 37.5%, 0.981 40.6%, 0.996 43.8%, 1.006 46.9%, 1.011 50.0%, 1.014 53.1%, 1.015 56.2%, 1.015 59.4%, 1.013 62.5%, 1.012 65.6%, 1.010 68.8%, 1.008 71.9%, 1.006 75.0%, 1.005 78.1%, 1.004 81.2%, 1.003 84.4%, 1.002 87.5%, 1.001 90.6%, 1.001 93.8%, 1.000 96.9%, 1);
+  --dur-spring: 930ms;
+  --dur-spring-soft: 640ms;
 
   /* Dark-scope indirection — defaults to the paper (light) palette. */
   --_text: var(--ink);
@@ -171,6 +181,15 @@ html {
   }
 }
 
+/* A browser without linear() easing (older Safari) falls back to the site
+   curve; the overshoot goes, the motion stays. */
+@supports not (transition-timing-function: linear(0, 1)) {
+  :root {
+    --ease-spring: var(--ease);
+    --ease-spring-soft: var(--ease);
+  }
+}
+
 /* Lenis smooth-scroll reset (only active when the provider adds .lenis). */
 html.lenis,
 html.lenis body {
@@ -179,6 +198,22 @@ html.lenis body {
 
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
+}
+
+/* The rest of Lenis's own stylesheet (change round 10; it was never
+   imported): a frame does not swallow the wheel while the page smooths (the
+   footer's Google Map), a stopped page clips, a panel that scrolls inside
+   itself keeps its wheel. */
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+[data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 body {
@@ -308,6 +343,66 @@ svg {
    the top runs much tighter than a mid-page band. The bottom runs shorter than
    a mid-page band too, so a hero closes near the fold instead of trailing a
    wide band of unexplained paper below the last CTA. */
+/* The Trade Notes index (change round 10) on the shade under its compact
+   hero: its top air matches the hero's own bottom padding (blog/page.tsx),
+   not a full section step. */
+.notes-index {
+  padding-top: clamp(3rem, 6vw, 5.5rem);
+}
+
+/* Arihant Tower drawn beside the About hero's ledger (change round 10,
+   about/_components/TowerLedger): a narrow elevation column that stretches
+   to the rows' height, one storey per row. Line work in ink on paper; the
+   windows carry each business's accent as a wash. */
+.tower {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.tower--drawn {
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  column-gap: 1.25rem;
+}
+
+.tower__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tower__wall,
+.tower__cap,
+.tower__line,
+.tower__window {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tower__wall {
+  fill: var(--paper);
+}
+
+.tower__cap {
+  fill: var(--ink);
+}
+
+.tower__line {
+  fill: none;
+}
+
+.tower__window {
+  fill-opacity: 0.14;
+}
+
+.tower__stamp {
+  flex: none;
+}
+
 .hero-pad {
   padding-top: clamp(2rem, 3.2vw, 3.25rem);
   padding-bottom: clamp(3.5rem, 7vw, 6rem);
@@ -441,20 +536,6 @@ svg {
    columns and keeps the old inline figure. */
 .hero-points__inline {
   grid-column: 1 / -1;
-}
-
-/* The audience rail under the figures (change round 9): one short link per
-   reader, in the words they would use, so the first screen routes a
-   retailer, a brand and an investor itself. Set in the unit heroes' quiet
-   ask idiom (.hero-ask, feature-hero.css); one row where it fits, wrapping
-   at the narrow end of the scale. Phones stack the three rows (mobile.css). */
-.hero-asks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 1.75rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
 .hero-points__inline .hero-points__fig {
@@ -620,7 +701,14 @@ svg {
   transition:
     background-color var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease),
-    color var(--dur-fast) var(--ease);
+    color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+/* Pressed (change round 10): a hair smaller under the pointer, the feedback
+   the phone layer's .press already gives a thumb. */
+.btn:active {
+  transform: scale(0.985);
 }
 
 .btn-lg {
@@ -776,6 +864,24 @@ svg {
   outline-offset: -2px;
 }
 
+/* Which arm keeps the promise (change round 10): the mark(s) of every
+   business whose own asks carry the card's destination, set between the body
+   and the ask. Marks, not links: the card itself is the link. */
+.funnel-card__marks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.funnel-card__mark {
+  position: relative;
+  display: block;
+  width: 6rem;
+  height: 1.75rem;
+}
+
 /* ------------------------------------------------------------------ */
 /* Logo marquee                                                        */
 /* ------------------------------------------------------------------ */
@@ -815,6 +921,16 @@ svg {
   display: flex;
   width: max-content;
   animation: arihant-marquee var(--marquee-duration, 48s) linear infinite;
+}
+
+/* JS-driven loop (change round 10): LogoMarquee sets data-loop once a GSAP
+   tween owns the transform, so the keyframe steps aside and a pause can
+   decelerate instead of snapping (the tween's timeScale ramps). Set only
+   from JS: without it the keyframe above still runs. With no animation
+   name there is nothing for the hover / focus-within / [data-paused]
+   play-state rules to pause, so they are inert here. */
+.marquee__track[data-loop="js"] {
+  animation: none;
 }
 
 /* Two identical groups sit flush; each carries the inter-item gap AS its own
@@ -1339,6 +1455,43 @@ svg {
   top: 1.5rem;
 }
 
+/* /recognition (change round 10): every award row carries a frame for the
+   photograph of that award at the row's end, the cabinet's plate idiom on
+   charcoal; PhotoPlaceholder stands in it until the file lands. Scoped to
+   the modifier: the home band's compact list never takes it. */
+.award-row--media {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 9.5rem;
+  gap: 0 clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+
+.award-row--lead.award-row--media {
+  grid-template-columns: minmax(0, 1fr) 13rem;
+}
+
+.award-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.award-row__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--line-dark);
+  border-radius: 6px;
+  background: var(--charcoal-raise);
+}
+
+.award-row__img {
+  object-fit: contain;
+  padding: 0.6rem;
+}
+
 .nav-link {
   position: relative;
   display: inline-flex;
@@ -1571,7 +1724,7 @@ svg {
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom, 0);
   transform: translateY(110%);
-  transition: transform var(--dur) var(--ease);
+  transition: transform var(--dur-spring-soft) var(--ease-spring-soft);
 }
 
 .action-bar[data-visible="true"] {
@@ -1629,8 +1782,9 @@ svg {
      leave a 56px hit target sitting over the hero's own CTA. */
   transform: translateY(140%);
   opacity: 0;
+  /* Settles into place on the soft spring (change round 10). */
   transition:
-    transform var(--dur) var(--ease),
+    transform var(--dur-spring-soft) var(--ease-spring-soft),
     opacity var(--dur) var(--ease),
     background-color var(--dur-fast) var(--ease);
 }
@@ -1798,6 +1952,26 @@ textarea.field-input {
   overflow: hidden;
   border-radius: 4px;
   background: var(--paper-shade);
+}
+
+/* On charcoal the frame's ground before the picture lands is the raised
+   surface, not the shade (the Apparels team band, change round 10). */
+.on-dark .parallax-frame {
+  background: var(--charcoal-raise);
+}
+
+/* A photograph on a paper keyline for a frame that stands on the shade
+   (change round 10, the About story): the feature heroes' inset idiom
+   without its lift shadow. */
+.photo-keyline {
+  padding: 0.4rem;
+  border-radius: 0.6rem;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.photo-keyline > .parallax-frame {
+  border-radius: 0.375rem;
 }
 
 .parallax-img {

@@ -136,3 +136,30 @@ export function arrowHead(cx: number, cy: number, r: number, a: number, size = 5
   const by = y - ty * size;
   return `M ${(bx + nx * size * 0.8).toFixed(1)} ${(by + ny * size * 0.8).toFixed(1)} L ${x.toFixed(1)} ${y.toFixed(1)} L ${(bx - nx * size * 0.8).toFixed(1)} ${(by - ny * size * 0.8).toFixed(1)}`;
 }
+
+/* ---------------- flights: the toss (change round 10) ---------------- */
+
+/** How far above the straight line of a flight its arc's control point
+ *  sits, in plate units (the arc itself crests half that above the chord). */
+export const TOSS_LIFT = 40;
+
+/** A toss from (x0, y0) to (x1, y1): one quadratic arc whose control point
+ *  sits `lift` above the chord's midpoint, so what is thrown rises, then
+ *  lands. `path` is SVG path data, for a motion path. `tilt(s)` is the angle
+ *  of the arc's tangent at parameter s (0 to 1), in degrees, measured from
+ *  the direction of travel: negative is nose up, positive nose down,
+ *  whichever way the thing flies. */
+export function toss(x0: number, y0: number, x1: number, y1: number, lift = TOSS_LIFT) {
+  const cx = (x0 + x1) / 2;
+  const cy = (y0 + y1) / 2 - lift;
+  const n = (v: number) => v.toFixed(1);
+  return {
+    path: `M ${n(x0)} ${n(y0)} Q ${n(cx)} ${n(cy)} ${n(x1)} ${n(y1)}`,
+    tilt(s: number) {
+      // The derivative of the quadratic, less a factor of two that cancels.
+      const dx = (1 - s) * (cx - x0) + s * (x1 - cx);
+      const dy = (1 - s) * (cy - y0) + s * (y1 - cy);
+      return (Math.atan2(dy * Math.sign(dx), Math.abs(dx)) * 180) / Math.PI;
+    },
+  };
+}

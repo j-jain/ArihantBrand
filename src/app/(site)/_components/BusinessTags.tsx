@@ -7,7 +7,7 @@ import { useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
 import { Button } from "@/components/Button";
 import { SectionHeading } from "@/components/SectionHeading";
 import type { Business, Stat, UnitKey } from "@/content/types";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP, SPRING, onScreenAtMount, withWillChange } from "@/lib/gsap";
 import { UNIT_ACCENT, unitScope } from "@/lib/units";
 
 interface BusinessTagsProps {
@@ -28,12 +28,18 @@ const BASE = 1.5;
 const TWIST = 2.5;
 const CORD_STEPS = 48;
 
-/* Sway: a damped spring per tag, kicked by the pointer and by each turn. */
+/* Sway: a damped spring per tag, kicked by the pointer and by each turn.
+   Change round 10: damping 3.4 → 4.2 (a damping ratio near 0.36), so a tag
+   swings about three times and hangs still, instead of five. */
 const STIFF = 34;
-const DAMP = 3.4;
+const DAMP = 4.2;
 const KICK = 0.55;
 const TURN_KICK = 24;
 const MAX_ANGLE = 12;
+/* The cord winds AFTER the face has begun to turn and unwinds after it has
+   begun to turn back: its twist trails the turn by this share of the travel
+   (change round 10), the way a real string takes up a tag's rotation late. */
+const CORD_LAG = 0.08;
 
 const RM = "(prefers-reduced-motion: reduce)";
 
@@ -91,10 +97,12 @@ const subscribeNoop = () => () => {};
  *    pointer passes (a damped spring per tag);
  *  - a tap anywhere on a tag turns it over, a tap anywhere on its back (not
  *    on a link) turns it back. One proxy per tag drives both the tag's
- *    rotateY and the cord: the cord winds as the tag turns, stays wound while
- *    the back shows and unwinds on the way back. `back.out` lets the tag
- *    overshoot and settle like a real one on a string; a tap mid-turn
- *    reverses from wherever it is.
+ *    rotateY and the cord: the cord winds as the tag turns (trailing the face
+ *    by CORD_LAG, change round 10), stays wound while the back shows and
+ *    unwinds on the way back. The turn runs on the house spring (SPRING), so
+ *    the tag overshoots once and settles like a real one on a string; a tap
+ *    mid-turn reverses from wherever it is. The drop onto the rail lands on
+ *    the same spring and is skipped for a section already on screen.
  * Reduced motion: no drop, no sway, an instant turn. No JS: a noscript rule
  * lays each back under its front, so the asks stay reachable.
  */
@@ -103,7 +111,7 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
   const tagEls = useRef<(HTMLDivElement | null)[]>([]);
   const cordFront = useRef<(SVGPathElement | null)[]>([]);
   const cordBack = useRef<(SVGPathElement | null)[]>([]);
-  const turnProxy = useRef(businesses.map(() => ({ p: 0 })));
+  const turnProxy = useRef(businesses.map(() => ({ p: 0, dir: 1 })));
   const targets = useRef(businesses.map(() => 0));
   const tweens = useRef<(gsap.core.Tween | null)[]>([]);
   const sway = useRef(businesses.map(() => ({ a: 0, v: 0 })));
@@ -114,10 +122,17 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
   const rest = cordPaths(0);
 
   const draw = (i: number) => {
-    const p = turnProxy.current[i].p;
+    const { p, dir } = turnProxy.current[i];
     const tag = tagEls.current[i];
     if (tag) tag.style.transform = `perspective(1400px) rotateY(${(p * 180).toFixed(2)}deg)`;
-    const { front, back } = cordPaths(p);
+    // Turning over: the cord stays slack until the face has moved CORD_LAG
+    // of the way; turning back: it stays wound for the first CORD_LAG.
+    const cordP = gsap.utils.clamp(
+      0,
+      1,
+      dir > 0 ? (p - CORD_LAG) / (1 - CORD_LAG) : p / (1 - CORD_LAG),
+    );
+    const { front, back } = cordPaths(cordP);
     cordFront.current[i]?.setAttribute("d", front);
     cordBack.current[i]?.setAttribute("d", back);
   };
@@ -132,28 +147,57 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const state = sway.current;
 
-        gsap.from(hangs, {
-          y: -36,
-          opacity: 0,
-          duration: 0.7,
-          ease: "power3.out",
-          stagger: 0.12,
-          clearProps: "transform,opacity",
-          scrollTrigger: { trigger: root, start: "top 65%", once: true },
-          onStart: () => state.forEach((s, i) => (s.v = [-70, 55, -45][i % 3])),
-        });
+        // The drop onto the rail: each tag falls in and lands on the spring
+        // (one small bounce as the cord takes its weight), fading in over
+        // the first part of the fall. A section already on screen at mount
+        // keeps its tags where they are (change round 10), like every other
+        // reveal on the site.
+        let dropTrigger: ScrollTrigger | null = null;
+        let drop: gsap.core.Timeline | null = null;
+        if (!onScreenAtMount(root)) {
+          drop = gsap.timeline({ paused: true });
+          drop.from(hangs, { y: -36, ...SPRING, stagger: 0.12 }, 0);
+          drop.from(hangs, { opacity: 0, duration: 0.45, ease: "power2.out", stagger: 0.12 }, 0);
+          drop.eventCallback("onStart", () =>
+            state.forEach((s, i) => (s.v = [-70, 55, -45][i % 3])),
+          );
+          drop.eventCallback("onComplete", () =>
+            gsap.set(hangs, { clearProps: "transform,opacity" }),
+          );
+          withWillChange(hangs, drop);
+          const play = () => drop?.play();
+          dropTrigger = ScrollTrigger.create({
+            trigger: root,
+            start: "top 65%",
+            once: true,
+            onEnter: play,
+          });
+        }
 
+        // The tag is on its own layer only while it moves.
+        const live = state.map(() => false);
         const tick = (_time: number, deltaMs: number) => {
           const dt = Math.min(deltaMs / 1000, 0.05);
           state.forEach((s, i) => {
-            if (s.a === 0 && s.v === 0) return;
+            const el = swings[i];
+            if (s.a === 0 && s.v === 0) {
+              if (live[i] && el) {
+                el.style.removeProperty("will-change");
+                live[i] = false;
+              }
+              return;
+            }
+            if (!live[i] && el) {
+              el.style.willChange = "transform";
+              live[i] = true;
+            }
             s.v += (-STIFF * s.a - DAMP * s.v) * dt;
             s.a = gsap.utils.clamp(-MAX_ANGLE, MAX_ANGLE, s.a + s.v * dt);
             if (Math.abs(s.a) < 0.02 && Math.abs(s.v) < 0.05) {
               s.a = 0;
               s.v = 0;
             }
-            if (swings[i]) swings[i].style.transform = `rotate(${s.a.toFixed(3)}deg)`;
+            if (el) el.style.transform = `rotate(${s.a.toFixed(3)}deg)`;
           });
         };
         gsap.ticker.add(tick);
@@ -169,9 +213,14 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
         if (fine) root.addEventListener("pointermove", onMove);
 
         return () => {
+          dropTrigger?.kill();
+          drop?.kill();
           gsap.ticker.remove(tick);
           root.removeEventListener("pointermove", onMove);
-          swings.forEach((el) => el.style.removeProperty("transform"));
+          swings.forEach((el) => {
+            el.style.removeProperty("transform");
+            el.style.removeProperty("will-change");
+          });
           state.forEach((s) => {
             s.a = 0;
             s.v = 0;
@@ -195,17 +244,19 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
     setFlipped((f) => f.map((v, k) => (k === i ? target === 1 : v)));
 
     tweens.current[i]?.kill();
+    turnProxy.current[i].dir = target ? 1 : -1;
     if (window.matchMedia(RM).matches) {
       turnProxy.current[i].p = target;
       draw(i);
     } else {
       sway.current[i].v += target ? TURN_KICK : -TURN_KICK;
-      tweens.current[i] = gsap.to(turnProxy.current[i], {
+      const tag = tagEls.current[i];
+      const tween = gsap.to(turnProxy.current[i], {
         p: target,
-        duration: 1.05,
-        ease: "back.out(1.5)",
+        ...SPRING,
         onUpdate: () => draw(i),
       });
+      tweens.current[i] = tag ? withWillChange(tag, tween) : tween;
     }
 
     // A keyboard press (a click with no pointer detail) follows the turn:

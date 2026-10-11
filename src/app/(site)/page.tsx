@@ -11,7 +11,6 @@ import {
   JsonLd,
   LogoMarquee,
   ParallaxImage,
-  Reveal,
   SectionHeading,
   SectionReveal,
   StaggerGroup,
@@ -157,45 +156,6 @@ export default async function HomePage() {
                   ))}
                 </ul>
               ) : null}
-              {/* The first screen routes each audience itself (change round 9):
-                  one short link per reader, in the words they would use. The
-                  funnel cards under the fold explain each ask; the header's
-                  "Talk to us" and the closing band carry the open ask. A page
-                  whose Studio document carries no links falls back to the one
-                  jump link it used to have. */}
-              {hero.audienceLinks?.length ? (
-                <ul data-hero-reveal className="hero-asks" aria-label="Who are you?">
-                  {hero.audienceLinks.map((ask) => (
-                    <li key={ask.href}>
-                      <Link
-                        href={ask.href}
-                        className={cn(
-                          "hero-ask group press",
-                          trackClass(`CTA hero ${ask.href.includes("intent=") ? ask.href.split("intent=")[1] : "partner"}`),
-                        )}
-                      >
-                        <span className="underline decoration-line decoration-2 underline-offset-4 transition-colors group-hover:decoration-vermillion-deep">
-                          {ask.label}
-                        </span>
-                        <span aria-hidden="true" className="hero-ask__chev">
-                          ▸
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : hero.secondaryCta ? (
-                <div data-hero-reveal>
-                  <Link href={hero.secondaryCta.href} className="hero-ask group press">
-                    <span className="underline decoration-line decoration-2 underline-offset-4 transition-colors group-hover:decoration-vermillion-deep">
-                      {hero.secondaryCta.label}
-                    </span>
-                    <span aria-hidden="true" className="hero-ask__chev">
-                      ▸
-                    </span>
-                  </Link>
-                </div>
-              ) : null}
             </div>
 
             <div data-hero-reveal className="hero-fit__media md:col-span-6">
@@ -219,9 +179,10 @@ export default async function HomePage() {
       {/* 1b — The two funnels, one card and one CTA each ------------------- */}
       {/* A retailer wanting stock and an investor wanting a store were being
           sent down the same button. They are different people, worth different
-          amounts, and each now gets their own card directly below the fold.
-          The three-business ticket nav that used to sit here is redundant with
-          section 4 and with the header's Businesses panel. */}
+          amounts, and each gets their own card directly below the fold. These
+          cards are the page's router (change round 10: the round-9 audience
+          rail that sat above them in the hero doubled every ask and went);
+          each card is signed by the mark of the arm that keeps its promise. */}
       {funnels.length ? (
         <section className="funnels bg-paper-shade">
           <div className="container-site">
@@ -231,29 +192,52 @@ export default async function HomePage() {
               stagger={0.1}
               className="funnel-grid grid gap-px bg-line sm:grid-cols-2"
             >
-              {funnels.map((funnel) => (
-                <li key={funnel.id} className="flex">
-                  <Link
-                    href={funnel.cta.href}
-                    className={cn(
-                      "funnel-card press group flex w-full flex-col gap-3",
-                      trackClass(`CTA funnel ${funnel.id}`),
-                    )}
-                  >
-                    <h2 className="t-h3 text-ink">{funnel.title}</h2>
-                    <p className="t-body measure text-ink-soft">{funnel.text}</p>
-                    <span className="funnel-card__cta t-h4 mt-auto inline-flex items-center gap-2 pt-3 text-vermillion-deep">
-                      {funnel.cta.label}
-                      <span
-                        aria-hidden="true"
-                        className="transition-transform group-hover:translate-x-1"
-                      >
-                        →
+              {funnels.map((funnel) => {
+                // Which arm of the house keeps this promise (change round 10):
+                // every business whose own asks carry the card's destination.
+                // Data, not a hand-written map; marks, not links.
+                const servedBy = businesses.filter((b) =>
+                  b.audienceCtas.some((c) => c.href === funnel.cta.href),
+                );
+                return (
+                  <li key={funnel.id} className="flex">
+                    <Link
+                      href={funnel.cta.href}
+                      className={cn(
+                        "funnel-card press group flex w-full flex-col gap-3",
+                        trackClass(`CTA funnel ${funnel.id}`),
+                      )}
+                    >
+                      <h2 className="t-h3 text-ink">{funnel.title}</h2>
+                      <p className="t-body measure text-ink-soft">{funnel.text}</p>
+                      {servedBy.length ? (
+                        <span className="funnel-card__marks" role="group" aria-label="Served by">
+                          {servedBy.map((b) => (
+                            <span key={b.unit} className="funnel-card__mark">
+                              <Image
+                                src={b.logo}
+                                alt={b.name}
+                                fill
+                                sizes="96px"
+                                className="object-contain object-left"
+                              />
+                            </span>
+                          ))}
+                        </span>
+                      ) : null}
+                      <span className="funnel-card__cta t-h4 mt-auto inline-flex items-center gap-2 pt-3 text-vermillion-deep">
+                        {funnel.cta.label}
+                        <span
+                          aria-hidden="true"
+                          className="transition-transform group-hover:translate-x-1"
+                        >
+                          →
+                        </span>
                       </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
+                    </Link>
+                  </li>
+                );
+              })}
             </StaggerGroup>
           </div>
         </section>
@@ -357,11 +341,7 @@ export default async function HomePage() {
       <section className="bg-paper">
         <CardsStack
           items={pillars.slice(0, 4)}
-          heading={
-            <Reveal variant="fade">
-              <SectionHeading heading={sections.why.heading} lead={sections.why.lead} />
-            </Reveal>
-          }
+          heading={<SectionHeading heading={sections.why.heading} lead={sections.why.lead} />}
         />
       </section>
 

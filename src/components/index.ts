@@ -34,6 +34,7 @@ export {
 export { primaryNav, type NavItem } from "./nav";
 /* Phase 3 additions */
 export { PartnerModal } from "./PartnerModal";
+export { PhotoPlaceholder } from "./PhotoPlaceholder";
 /* Wave B — motion + display components */
 export { FlipWords, FlipLead } from "./motion/FlipWords";
 export { SplitHeading } from "./motion/SplitHeading";

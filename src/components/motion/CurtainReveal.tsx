@@ -46,7 +46,7 @@ export function CurtainReveal({ children, className }: CurtainRevealProps) {
               y: 14,
               duration: REVEAL.durMobile,
               ease: EASE,
-              scrollTrigger: { trigger: el, start: REVEAL.band, once: true },
+              scrollTrigger: { trigger: el, start: REVEAL.band, once: true, fastScrollEnd: true },
             });
             return;
           }
@@ -58,7 +58,7 @@ export function CurtainReveal({ children, className }: CurtainRevealProps) {
               clipPath: "inset(0 0 0% 0)",
               duration: 0.9,
               ease: EASE,
-              scrollTrigger: { trigger: el, start: REVEAL.band, once: true },
+              scrollTrigger: { trigger: el, start: REVEAL.band, once: true, fastScrollEnd: true },
               // `inset(0)` still clips to the border box: left in place it would
               // slice the focus rings off any control flush with the band edge.
               onComplete: () => gsap.set(el, { clearProps: "clipPath" }),

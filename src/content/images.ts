@@ -37,6 +37,9 @@ export interface StockImage {
 
 /** One photographic position on the site. */
 export interface PhotoSlot {
+  /** Site-root path, or "" while the position has no file at all (not even
+   *  stock). A page must draw `PhotoPlaceholder` for an empty src and never
+   *  hand it to next/image; see isPendingSlot(). */
   src: string;
   alt: string;
   /** CSS aspect the layout reserves, e.g. "4 / 5". Reserving it means
@@ -423,6 +426,19 @@ export const photoSlots = {
     ratio: "3 / 4",
     real: true,
   },
+
+  /* ---------------------------------------------------------- recognition */
+  /* No file yet (change round 10): the hero draws a PhotoPlaceholder until
+     one lands. Swap in: drop the file under public/images/photos/awards/,
+     set src and alt, real: true; or upload onto "Recognition: hero" in the
+     Studio, which wins at once. */
+  recognitionHero: {
+    src: "",
+    alt: "",
+    ratio: "3 / 2",
+    real: false,
+    wanted: "The CMAI 2015 award, at the presentation or as it sits today.",
+  },
 } as const satisfies Record<string, PhotoSlot>;
 
 export type PhotoSlotKey = keyof typeof photoSlots;
@@ -433,6 +449,13 @@ export function pendingPhotoSlots(): { key: string; wanted: string }[] {
   return Object.entries(photoSlots)
     .filter(([, slot]) => !slot.real)
     .map(([key, slot]) => ({ key, wanted: (slot as PhotoSlot).wanted ?? "" }));
+}
+
+/** True while a position has no photograph at all (change round 10). The
+ *  page draws `PhotoPlaceholder` for it (src/components/PhotoPlaceholder.tsx);
+ *  a Studio upload (getPhotoSlots) or a committed file here replaces it. */
+export function isPendingSlot(slot: Pick<PhotoSlot, "src">): boolean {
+  return slot.src === "";
 }
 
 /* ------------------------------------------------------------------ */

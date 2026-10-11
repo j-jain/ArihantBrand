@@ -12,6 +12,9 @@ interface SplitHeadingProps {
   id?: string;
 }
 
+/** Longest the heading waits for webfonts before it rises unsplit. */
+const FONT_WAIT_MS = 800;
+
 /** A heading that rises its words out of a mask when it scrolls into view. It
  *  renders through {@link EmphasisHeading} (so a one-word colour accent still
  *  works) and splits on words gated to `document.fonts.ready`, reverting the
@@ -85,6 +88,7 @@ export function SplitHeading({
                   trigger: heading,
                   start: REVEAL.start,
                   once: true,
+                  fastScrollEnd: true,
                 },
                 onComplete: () => {
                   split?.revert();
@@ -95,10 +99,24 @@ export function SplitHeading({
               /* heading stays visible and unsplit */
             }
           };
-          if (document.fonts?.status === "loaded") runSplit();
-          else document.fonts.ready.then(runSplit);
+          // Wait for the webfonts, but not forever (change round 10: the
+          // other primitives already cap the wait at 800ms).
+          let started = false;
+          let timer = 0;
+          const start = () => {
+            if (started) return;
+            started = true;
+            window.clearTimeout(timer);
+            runSplit();
+          };
+          if (document.fonts?.status === "loaded") start();
+          else {
+            document.fonts?.ready.then(start);
+            timer = window.setTimeout(start, FONT_WAIT_MS);
+          }
 
           return () => {
+            window.clearTimeout(timer);
             split?.revert();
             split = null;
           };
