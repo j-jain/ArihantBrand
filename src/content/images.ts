@@ -304,25 +304,25 @@ export const photoSlots = {
 
   /* ---- Arihant Marketing --------------------------------------- AM4 */
   /* The feature hero (change round 6): a wide photograph run to the screen's
-     edge and a smaller inset on it. The wide one stands on stock until the
-     client's own arrives, and its alt claims no Arihant premises. Since
-     change round 7 the inset is the trophy (`marketingAward`, below). */
+     edge and a smaller inset on it. Since change round 11 the wide one is the
+     Marketing godown itself (the client's own photograph; it stood on stock
+     until then). Since change round 7 the inset is the trophy
+     (`marketingAward`, below). */
   marketingHero: {
-    src: stockImages.marketingWarehouse2.src,
-    alt: stockImages.marketingWarehouse2.alt,
+    src: "/images/photos/marketing-godown-1.jpg",
+    alt: "The Arihant Marketing godown in Guwahati, open cartons of the season's indents filling the floor between stacked stock",
     ratio: "4 / 5",
-    real: false,
-    wanted:
-      "The Arihant Marketing godown, landscape: racking loaded with the season's cartons, staff at work.",
+    real: true,
   },
-  /* The trophy itself, a real object we hold, photographed as it sits. It
-     stood beside the award band until change round 7; it is now the small
-     photograph on the corner of the hero's wide one, in a 3/4 frame whose
-     crop (feature-hero.css, the portrait inset) spends the file's spare
-     height on the empty tabletop rather than on the trophy. Uncaptioned:
-     the hero's proof line beside it already names the award. */
+  /* The trophy itself, a real object we hold. It stood beside the award band
+     until change round 7; it is now the small photograph on the corner of the
+     hero's wide one, in a 3/4 frame. Since change round 11 the file is the
+     trophy cut out of its background (scripts/cutout-awards.py), shown whole
+     on a paper-shade plate (feature-hero.css, the portrait inset) rather than
+     cropped out of an office. Uncaptioned: the hero's proof line beside it
+     already names the award. */
   marketingAward: {
-    src: "/images/photos/awards/award-distributor-of-the-year.jpg",
+    src: "/images/photos/awards/cut/award-distributor-of-the-year.webp",
     alt: "The Golden Star Seller Distributor of the Year trophy awarded to Arihant Marketing",
     ratio: "3 / 4",
     real: true,
@@ -359,55 +359,49 @@ export const photoSlots = {
   },
 
   /* ---- Arihant Retail ------------------------------------------ AR4 */
+  /* The retail hero's two frames (change round 11): both from the client's
+     Goalpara shoot (public/images/photos/stores/, scripts/process-store-
+     photos.mjs), so the alt text may name the town. The back frame is the
+     aisle; the front frame is the counter under the store's own lit sign,
+     cut to the frame's 6:7 by the script. The ~400px files these replaced
+     (store-interior.jpg, store-urban-closet.jpg, the town of the second
+     never confirmed) are gone, and with them the small-file caps. */
   retailInterior: {
-    src: "/images/photos/store-interior.jpg",
-    alt: "Inside an Arihant Retail floor: merchandised, staffed and stocked by our own team",
+    src: "/images/photos/stores/store-goalpara-aisle.jpg",
+    alt: "The aisle of Urban Closet, Goalpara, under the track lights, folded stock on the shelves either side",
     ratio: "4 / 5",
     real: true,
   },
-  /* Deliberately unplaced (change round 3): a single-brand outlet with
-     third-party fascias, which contradicts the multi-brand pillar and AR2.
-     Kept in the register so the asset is not lost; do not place it. */
-  retailShopfront: {
-    src: "/images/photos/store-ebo-indian-terrain.jpg",
-    alt: "A national brand partner's outlet run by Arihant Retail",
-    ratio: "3 / 2",
-    real: true,
-  },
-  /* The one storefront photograph we hold. Its sign reads URBAN CLOSET and
-     which town it shows is unconfirmed, so it belongs to no store record and
-     its alt names no town. Rendered uncaptioned on /partner (ProofStrip) while
-     no store record carries a photograph of its own. The file was trimmed of
-     its black border strips in place (401 x 472). */
   retailStorefront: {
-    src: "/images/photos/store-urban-closet.jpg",
-    alt: "An Arihant Retail multi-brand store front, lit for the evening trade",
+    src: "/images/photos/stores/store-goalpara-sign.jpg",
+    alt: "The counter at Urban Closet, Goalpara, under the store's lit sign",
     ratio: "6 / 7",
     real: true,
   },
 
   /* ---- Partner / About ------------------------------------------ I8 */
-  /* The real store front beside the managed-store model (change round 9; it
-     stood on a stock shopfront with arched windows). The same ~400px file as
-     retailStorefront, so the frame keeps the small-file cap. */
+  /* The real store beside the managed-store model (change round 9; it stood
+     on a stock shopfront with arched windows): since change round 11 the
+     Goalpara counter under its sign, the same file as retailStorefront. */
   partnerStorefront: {
-    src: "/images/photos/store-urban-closet.jpg",
-    alt: "An Arihant Retail multi-brand store front, lit for the evening trade",
+    src: "/images/photos/stores/store-goalpara-sign.jpg",
+    alt: "The counter at Urban Closet, Goalpara, under the store's lit sign",
     ratio: "6 / 7",
     real: true,
   },
-  /* The people, not a stock tailor (change round 9). A 16:9 group photograph,
-     so the frame is 3:2 to keep every face. */
+  /* The group's own building (change round 11; the team photograph stood
+     here from change round 9, and still runs on the Apparels page). The
+     client's file is titled the group building; the About copy and the
+     contact settings place all three businesses in Arihant Tower. */
   aboutCraft: {
-    src: "/images/photos/apparels-team.jpg",
-    alt: "The Arihant Apparels team at their Guwahati office",
+    src: "/images/photos/group-building.jpg",
+    alt: "Arihant Tower, the group's building in Guwahati, where all three businesses work",
     ratio: "3 / 2",
     real: true,
-    wanted: "The family on the Arihant Tower floor, or the original counter if a photograph exists.",
   },
-  /* The three expanding panels in the About values section, on the house's
-     own photographs since change round 9: the team at the fair, the team at
-     work on the floor, the dispatch floor. */
+  /* The three expanding panels in the About values section, one business
+     each since change round 11: the Apparels team at the fair, the Marketing
+     godown's racks, a Retail store's aisle. */
   aboutValue1: {
     src: "/images/photos/apparels-fair-2024.jpg",
     alt: "The Arihant Apparels team outside the Spring Summer Garment Fair, January 2024",
@@ -415,14 +409,14 @@ export const photoSlots = {
     real: true,
   },
   aboutValue2: {
-    src: "/images/photos/apparels-warehouse-3.jpg",
-    alt: "The Arihant Apparels team at work on the warehouse floor in Guwahati, cartons and bales around them",
+    src: "/images/photos/marketing-godown-2.jpg",
+    alt: "Racks of packed denim and cartons of the season's indents in the Arihant Marketing godown, Guwahati",
     ratio: "3 / 4",
     real: true,
   },
   aboutValue3: {
-    src: "/images/photos/apparels-warehouse-1.jpg",
-    alt: "Open cartons of the season's indents on the Arihant Apparels dispatch floor in Guwahati",
+    src: "/images/photos/stores/store-goalpara-aisle.jpg",
+    alt: "The aisle of Urban Closet, Goalpara, under the track lights, folded stock on the shelves either side",
     ratio: "3 / 4",
     real: true,
   },

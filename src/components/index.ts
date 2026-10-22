@@ -42,7 +42,7 @@ export { CurtainReveal } from "./motion/CurtainReveal";
 export { SectionReveal } from "./motion/SectionReveal";
 export { CountUp, formatBody } from "./CountUp";
 export { CardsStack } from "./CardsStack";
-export { CardFan } from "./motion/CardFan";
+export { TrophyShelf } from "./TrophyShelf";
 export { TestimonialColumns } from "./TestimonialColumns";
 export { ValuePanels } from "./ValuePanels";
 export { VideoFeature } from "./VideoFeature";

@@ -41,4 +41,8 @@ export const TOWNS: Readonly<Record<string, Town>> = {
   goalpara: { lon: 90.62, lat: 26.17, tag: { dx: -2.2, dy: -2.8 }, phoneSide: "above" },
   kohima: { lon: 94.11, lat: 25.67, tag: { dx: 2.7, dy: 0.4 }, phoneSide: "below" },
   itanagar: { lon: 93.61, lat: 27.08, tag: { dx: 1.9, dy: -2.9 }, phoneSide: "below" },
+  // Change round 11: the fifth store. Near the map's lower-left, so the tag
+  // hangs out to the left, clear of Goalpara's (up-left of its pin) and
+  // Guwahati's (down-right of its own).
+  tura: { lon: 90.2, lat: 25.51, tag: { dx: -2.1, dy: -0.9 }, phoneSide: "below" },
 };

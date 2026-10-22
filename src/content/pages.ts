@@ -171,6 +171,11 @@ export const pages: Record<string, PageCopy> = {
         heading: "On the street today",
         lead: "Every store runs on stock from our Guwahati warehouse. Pick a town to see it.",
       },
+      // Change round 11: the client's store photographs, a band of their own.
+      gallery: {
+        heading: "Inside the stores",
+        lead: "Three of the floors, photographed as they trade: the racks, the counters and the people who run them.",
+      },
       model: {
         heading: "The zero-deadstock model",
         lead: "The store keeps what sells and returns what does not. Buying, rotation and markdowns stay with us.",

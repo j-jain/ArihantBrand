@@ -8,6 +8,7 @@
 @import "./street.css";
 @import "./tags.css";
 @import "./placeholder.css";
+@import "./gallery.css";
 
 /* The mobile layer is imported at the FOOT of this file, not here.
  *

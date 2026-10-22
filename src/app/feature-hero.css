@@ -143,15 +143,19 @@
 }
 
 /* A portrait inset (Marketing's trophy, change round 7) stands narrower so
-   it is no taller than the landscape one is wide. The photograph is 899x1599,
-   so a 3/4 frame trims a quarter of its height: biased high, that comes off
-   the empty tabletop under the plaque rather than off the trophy's wings. */
+   it is no taller than the landscape one is wide. Since change round 11 the
+   file is the trophy cut out of its background, so the 3/4 frame shows it
+   whole on the paper-shade ground, standing on the frame's foot, instead of
+   cropping a photograph of it on an office table. */
 .feature-media__inset--portrait {
   width: min(34%, 11.5rem);
 }
 
 .feature-media__inset--portrait .parallax-img {
-  object-position: center 35%;
+  object-fit: contain;
+  object-position: center bottom;
+  padding: 0.6rem 0.6rem 0.75rem;
+  filter: drop-shadow(0 0.5rem 0.6rem oklch(0.215 0.01 30 / 0.22));
 }
 
 .feature-media__keyline {

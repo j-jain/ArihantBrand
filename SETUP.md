@@ -66,7 +66,7 @@ Open **`/studio`** on the deployed site (e.g. `arihantgroup.in/studio`) and log 
 - **Marketing Strengths / Steps / Reasons** — the three list blocks on the Arihant Marketing page.
 - **Pages** — headings, hero copy and meta titles/descriptions per page.
 - **Site Photographs** — every photograph on the site, one entry per position ("Home: hero", "Marketing: godown", and so on). Upload a file to replace what the site ships with, and write alt text describing what is actually in the picture. Leave the image empty and the position keeps its current photograph, so nothing can end up blank.
-- **Recognition Photos** — the certificates and trophies on `/recognition`. Upload the photograph, write the alt text and the caption.
+- **Recognition Photos** — the certificates and trophies on `/recognition`. Upload the trophy or certificate cut out of its background (a transparent PNG or WebP of the object alone: the cabinet stands each one on a drawn shelf), write the alt text (what the award actually says) and the caption. The first three in display order also stand in the Recognition hero while no photograph has been uploaded for it.
 - **Team Members** — the roster shown on the unit pages. Real people only.
 - **Leadership Portraits** — see below.
 - **Brand Partners** also carry a **Wall rank**. Rank 1 shows first on the brand wall, so the labels a retailer recognises lead. Leave it blank and the brand simply follows in alphabetical order.

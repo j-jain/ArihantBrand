@@ -62,7 +62,14 @@ export const recognitionPhoto = defineType({
       type: "string",
       validation: (r) => r.required(),
     }),
-    defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
+    defineField({
+      name: "order",
+      title: "Display order",
+      description:
+        "Order on the cabinet's shelves. The first three also stand in the Recognition hero while it has no photograph of its own. Upload cut-outs (transparent PNG or WebP of the trophy or certificate alone): the shelf stands each one on a drawn line.",
+      type: "number",
+      initialValue: 0,
+    }),
   ],
   orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
   preview: { select: { title: "caption", subtitle: "alt", media: "image" } },

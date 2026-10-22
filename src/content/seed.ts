@@ -10,10 +10,12 @@ import type {
   SiteSettings,
   Stat,
   Store,
+  StorePhoto,
   TeamMember,
   Testimonial,
   ProcessStep,
 } from "./types";
+import { awardCutoutSizes } from "./award-cutout-sizes";
 import { atLeast, facts, inWords, InWords, phrase } from "./facts";
 
 /** The 77 partner logos live in their own module because facts.ts derives the
@@ -247,7 +249,7 @@ export const businesses: Business[] = [
       },
       {
         id: "ownership",
-        text: `${facts.retail.storesCompanyOwned} owned by the company and ${facts.retail.storesFranchisee} owned by franchisees. All four are run by our team.`,
+        text: `${facts.retail.storesCompanyOwned} owned by the company and ${facts.retail.storesFranchisee} owned by franchisees. All ${inWords(facts.retail.storesOpen)} are run by our team.`,
       },
       {
         id: "zero-deadstock",
@@ -508,16 +510,20 @@ export const marketingReasons = [
 /* ------------------------------------------------------------------ */
 /* Stores                                                               */
 /*                                                                      */
-/* Four trading stores, matching facts.retail: 2 company-owned and 2          */
-/* franchisee-owned, all four run by Arihant. The fit-out entries that used   */
-/* to close this list are gone with the forward-looking store target, so      */
-/* every row here is a door a customer can walk into today.                   */
+/* Five trading stores, matching facts.retail: 2 company-owned and 3          */
+/* franchisee-owned, all five run by Arihant. Tura joined in change round 11  */
+/* on the client's photographs. Every row here is a door a customer can walk  */
+/* into today.                                                                */
 /*                                                                      */
-/* PHOTOGRAPHS: no store carries one (change round 3). The one storefront     */
-/* shot we hold has a sign reading URBAN CLOSET, which contradicted the        */
-/* Itanagar (Tanzee) caption it used to sit under, so it is detached from     */
-/* every store and shown uncaptioned as photoSlots.retailStorefront on        */
-/* /partner. A store gets a photograph again when the client confirms one.    */
+/* PHOTOGRAPHS (change round 11): four stores carry their own storefront,     */
+/* from the client's October 2026 shoot (public/images/photos/stores/,        */
+/* scripts/process-store-photos.mjs). `caption` is the short line under the  */
+/* store in the atlas ledger and the photograph's alt text on /partner's     */
+/* proof strip (which prints the store and town itself), so it says what     */
+/* the picture shows and names neither.                                      */
+/* Itanagar carries none: the photographs supplied for it show a sign that    */
+/* reads URBAN CLOSET, which contradicts the Tanzee name, so they are held    */
+/* back until the client confirms the store's name.                          */
 /* ------------------------------------------------------------------ */
 
 export const stores: Store[] = [
@@ -527,6 +533,8 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Company-owned",
+    image: "/images/photos/stores/store-guwahati-front.jpg",
+    caption: "The front at night, under its Indian Terrain and Spykar fascias",
     mapsQuery: "Urban Closet, Jyotikuchi, Guwahati, Assam 781040",
   },
   {
@@ -535,6 +543,8 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Company-owned",
+    image: "/images/photos/stores/store-goalpara-front.jpg",
+    caption: "The front, its sign in Assamese and English",
   },
   {
     name: "K.A.K",
@@ -542,6 +552,8 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Franchisee-owned",
+    image: "/images/photos/stores/store-kohima-front.jpg",
+    caption: "The front, mannequins in both window floors",
   },
   {
     name: "Tanzee",
@@ -549,10 +561,17 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Franchisee-owned",
-    // No photograph and no caption (change round 3, client decision). The
-    // storefront shot this record used to carry has a sign reading URBAN
-    // CLOSET, so it was detached from Tanzee and now stands on its own as
-    // photoSlots.retailStorefront, uncaptioned, on /partner.
+    // No photograph and no caption (change round 3, client decision; held in
+    // change round 11, see the note above the list).
+  },
+  {
+    name: "Urban Closet",
+    city: "Tura",
+    format: "Multi-brand",
+    status: "Open",
+    ownership: "Franchisee-owned",
+    image: "/images/photos/stores/store-tura-front.jpg",
+    caption: "The two-storey front, with its Puma and Wildcraft fascias",
   },
 ];
 
@@ -1425,7 +1444,7 @@ export const timeline = [
     // The timeline caps on the present, not on a projection. The store target
     // it used to end on came out at the client's request.
     year: "Today",
-    title: "Four stores, two models",
+    title: `${InWords(facts.retail.storesOpen)} stores, two models`,
     text: `${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, every one of them run by the Arihant Retail team.`,
   },
 ];
@@ -1481,48 +1500,133 @@ export const leaderPortraits: Record<string, LeaderPortrait> = {};
 
 /* ------------------------------------------------------------------ */
 /* Recognition photos: real certificates and trophies (brand-partner    */
-/* and trade-fair awards to Arihant Marketing). Captions stay factual.  */
+/* and trade-fair awards to Arihant Marketing), each cut out of its     */
+/* background (change round 11, scripts/cutout-awards.py) and stood on  */
+/* the cabinet's drawn shelf. The first three lead the Recognition hero */
+/* as well. Captions stay factual; the pixel sizes come from the        */
+/* generated table, never by hand.                                      */
 /* ------------------------------------------------------------------ */
+
+function cutout(name: string): Pick<RecognitionPhoto, "src" | "width" | "height"> {
+  const size = awardCutoutSizes[name];
+  if (!size) throw new Error(`No cut-out size for award "${name}": run scripts/cutout-awards.py`);
+  return { src: `/images/photos/awards/cut/${name}.webp`, width: size.w, height: size.h };
+}
 
 export const recognitionPhotos: RecognitionPhoto[] = [
   {
-    src: "/images/photos/awards/award-tadpole-champion-2122.jpg",
-    alt: "Tadpole 'Champion of the Year 2021-22' trophy engraved for Arihant Marketing, Guwahati",
-    caption: "Tadpole: Champion of the Year 2021-22",
-  },
-  {
-    src: "/images/photos/awards/award-indian-terrain-east-india.jpg",
-    alt: "Indian Terrain Certificate of Excellence naming Arihant Marketing Best Channel Partner, East India",
-    caption: "Indian Terrain: Best Channel Partner, East India",
-  },
-  {
-    src: "/images/photos/awards/award-twills-2021.jpg",
-    alt: "Twills Clothing Distributor Excellence Award 2021 honouring Arihant Marketing",
+    ...cutout("award-twills-2021"),
+    alt: "Twills Clothing Distributor Excellence Award 2021 honouring Arihant Marketing: a shield in blue acrylic on a blue base",
     caption: "Twills: Distributor Excellence Award 2021",
   },
   {
-    src: "/images/photos/awards/award-indian-terrain-2023.jpg",
-    alt: "Indian Terrain Valued Channel Partner trophy for Arihant Marketing, Distributors Meet 2023",
-    caption: "Indian Terrain: Valued Channel Partner, 2023",
-  },
-  {
-    src: "/images/photos/awards/award-distributor-of-the-year.jpg",
-    alt: "Golden Distributor of the Year trophy presented to Arihant Marketing",
+    ...cutout("award-distributor-of-the-year"),
+    alt: "The Golden Star Seller Distributor of the Year trophy presented to Arihant Marketing: a gold tick on a gold sphere over a black base",
     caption: "Distributor of the Year trophy",
   },
   {
-    src: "/images/photos/awards/award-octave-excellence-2024.jpg",
-    alt: "Certificate of Excellence in distribution presented to Arihant Marketing, 2024",
+    ...cutout("award-tadpole-launch-2018"),
+    alt: "Tadpole trophy naming Arihant Marketing, Guwahati, the most admired launch of the brand year 2018-19: a gold star in a blue frame",
+    caption: "Tadpole: most admired brand launch, 2018-19",
+  },
+  {
+    ...cutout("award-tadpole-champion-2122"),
+    alt: "Tadpole 'Champion of the Year 2021-22' trophy engraved for Arihant Marketing, Guwahati: the brand's logo in acrylic on a plinth",
+    caption: "Tadpole: Champion of the Year 2021-22",
+  },
+  {
+    ...cutout("award-indian-terrain-east-india"),
+    alt: "Indian Terrain Certificate of Excellence naming Arihant Marketing Best Channel Partner, East India, in a dark wood frame",
+    caption: "Indian Terrain: Best Channel Partner, East India",
+  },
+  {
+    ...cutout("award-indian-terrain-2023"),
+    alt: "Indian Terrain Valued Channel Partner trophy for Arihant Marketing, Distributors Meet 2023: a blue panel in clear acrylic on a black base",
+    caption: "Indian Terrain: Valued Channel Partner, 2023",
+  },
+  {
+    ...cutout("award-octave-excellence-2024"),
+    alt: "Certificate of Excellence in distribution presented to Arihant Marketing by Octave, 2024, in a light wood frame",
     caption: "Certificate of Excellence in distribution, 2024",
   },
   {
-    src: "/images/photos/awards/award-tadpole-assam.jpg",
-    alt: "Tadpole Certificate of Appreciation naming Arihant Marketing authorised distributor for Assam",
+    ...cutout("award-tadpole-assam"),
+    alt: "Tadpole Certificate of Appreciation naming Arihant Marketing authorised distributor for Assam, engraved on a bamboo and acrylic plaque",
     caption: "Tadpole: authorised distributor for Assam",
   },
   {
-    src: "/images/photos/awards/award-cmai-nigf-2024.jpg",
-    alt: "CMAI North India Garment Fair 2024 Certificate of Appreciation for Arihant Marketing",
+    ...cutout("award-cmai-nigf-2024"),
+    alt: "CMAI North India Garment Fair 2024 Certificate of Appreciation for Arihant Marketing, in a dark frame with a gold inner edge",
     caption: "CMAI North India Garment Fair, 2024",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* Inside the stores (change round 11): the client's photographs of the */
+/* retail floors, for /arihant-retail's gallery band. Three stores only: */
+/* the Itanagar set is held back (see `stores`). Order matters: the      */
+/* grid places the portrait files (`tall`) two rows high and packs the  */
+/* rest densely, and this order closes a 4 x 3 grid without a hole.      */
+/* ------------------------------------------------------------------ */
+
+const STORE_PHOTOS = "/images/photos/stores";
+
+export const storeGallery: StorePhoto[] = [
+  {
+    src: `${STORE_PHOTOS}/store-kohima-menswear.jpg`,
+    alt: "The entrance to the men's wear floor at K.A.K, Kohima, bags racked either side of the way in",
+    caption: "K.A.K, Kohima",
+    store: "kohima",
+    tall: true,
+  },
+  {
+    src: `${STORE_PHOTOS}/store-guwahati-floor.jpg`,
+    alt: "The menswear floor of Urban Closet, Guwahati: shirt bays along the wall and a glass display island",
+    caption: "Urban Closet, Guwahati",
+    store: "guwahati",
+  },
+  {
+    src: `${STORE_PHOTOS}/store-goalpara-floor.jpg`,
+    alt: "The main aisle of Urban Closet, Goalpara, looking out to the street",
+    caption: "Urban Closet, Goalpara",
+    store: "goalpara",
+  },
+  {
+    src: `${STORE_PHOTOS}/store-kohima-indian-terrain.jpg`,
+    alt: "The Indian Terrain shelves at K.A.K, Kohima, folded shirts and trousers under the brand's lettering",
+    caption: "K.A.K, Kohima",
+    store: "kohima",
+    tall: true,
+  },
+  {
+    src: `${STORE_PHOTOS}/store-goalpara-shirtwall.jpg`,
+    alt: "The shirt wall at Urban Closet, Goalpara, folded stock below the rail",
+    caption: "Urban Closet, Goalpara",
+    store: "goalpara",
+  },
+  {
+    src: `${STORE_PHOTOS}/store-kohima-kids.jpg`,
+    alt: "The children's racks at K.A.K, Kohima, girls' and boys' sets on red arched rails",
+    caption: "K.A.K, Kohima",
+    store: "kohima",
+    tall: true,
+  },
+  {
+    src: `${STORE_PHOTOS}/store-guwahati-shirts.jpg`,
+    alt: "Shirt bays and a hanging rail at Urban Closet, Guwahati",
+    caption: "Urban Closet, Guwahati",
+    store: "guwahati",
+  },
+  {
+    src: `${STORE_PHOTOS}/store-goalpara-entry.jpg`,
+    alt: "Urban Closet, Goalpara, from the entrance: shirts and denim either side of the centre table",
+    caption: "Urban Closet, Goalpara",
+    store: "goalpara",
+  },
+  {
+    src: `${STORE_PHOTOS}/store-kohima-floor.jpg`,
+    alt: "The menswear aisle at K.A.K, Kohima, brand bays on both sides",
+    caption: "K.A.K, Kohima",
+    store: "kohima",
   },
 ];

@@ -88,14 +88,20 @@ const apparels = {
   brandsOnWall: partnersOf("apparels").length,
 } as const;
 
+/** Owned by the company and run by the company. */
+const storesCompanyOwned = 2;
+/** Owned by a franchisee and run by the company (K.A.K in Kohima, the
+ *  Itanagar store, and Urban Closet in Tura since change round 11). */
+const storesFranchisee = 3;
+
 const retail = {
   established: 2023,
-  /** Stores trading. All four are open; there is no fit-out pipeline stated. */
-  storesOpen: 4,
-  /** Owned by the company and run by the company. */
-  storesCompanyOwned: 2,
-  /** Owned by a franchisee and run by the company. */
-  storesFranchisee: 2,
+  /** Stores trading. Derived from the two ownership counts so the total can
+   *  never disagree with its parts. All are open; no fit-out pipeline is
+   *  stated. */
+  storesOpen: storesCompanyOwned + storesFranchisee,
+  storesCompanyOwned,
+  storesFranchisee,
 } as const;
 
 /* ------------------------------------------------------------------ */

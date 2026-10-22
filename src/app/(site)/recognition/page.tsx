@@ -3,16 +3,15 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   Button,
-  CardFan,
   CurtainReveal,
   DrenchBand,
   HeroIntro,
   JsonLd,
   ParallaxImage,
-  PhotoPlaceholder,
   SectionHeading,
   SectionReveal,
   TestimonialColumns,
+  TrophyShelf,
 } from "@/components";
 import { isPendingSlot } from "@/content/images";
 import type { Award } from "@/content/types";
@@ -26,28 +25,37 @@ import {
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { EmphasisHeading } from "../_components/EmphasisHeading";
 
-/* The photograph beside an award row (change round 10): the award's own
-   image when the Studio or the seed carries one, in a 4:5 plate that never
-   crops it (trophies are portrait, certificates landscape); else the drawn
-   stand-in, which says so. */
+/* The photograph beside an award row: the award's own image when the Studio
+   or the seed carries one, in a 4:5 plate that never crops it (trophies are
+   portrait, certificates landscape). Since change round 11 a row without one
+   simply has no frame (the drawn stand-in of change round 10 is gone): the
+   row runs full width, as on the home band. */
 function AwardMedia({ award, lead }: { award: Award; lead?: boolean }) {
+  if (!award.image) return null;
   return (
     <div className="award-row__media">
-      {award.image ? (
-        <span className="award-row__frame">
-          <Image
-            src={award.image}
-            alt={award.imageAlt ?? ""}
-            fill
-            sizes={lead ? "(max-width: 767px) 7rem, 13rem" : "(max-width: 767px) 5.5rem, 9.5rem"}
-            className="award-row__img"
-          />
-        </span>
-      ) : (
-        <PhotoPlaceholder ratio="4 / 5" srText={`Photograph of ${award.title} coming soon`} />
-      )}
+      <span className="award-row__frame">
+        <Image
+          src={award.image}
+          alt={award.imageAlt ?? ""}
+          fill
+          sizes={lead ? "(max-width: 767px) 7rem, 13rem" : "(max-width: 767px) 5.5rem, 9.5rem"}
+          className="award-row__img"
+        />
+      </span>
     </div>
   );
+}
+
+/** The row's grid only when it has a photograph to end on. */
+function rowClass(award: Award, lead = false): string {
+  return [
+    "award-row",
+    lead ? "award-row--lead" : "",
+    award.image ? "award-row--media" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -82,6 +90,9 @@ export default async function RecognitionPage() {
   // Render only the awards the data actually carries (honesty rail): the CMAI
   // award leads the list; the rest follow at a smaller size.
   const [headlineAward, ...otherAwards] = awards;
+  // The cabinet's first three objects, in Studio order, stand in the hero
+  // while no photograph has been uploaded for it (change round 11).
+  const heroTrio = photos.slice(0, 3);
 
   return (
     <>
@@ -92,11 +103,12 @@ export default async function RecognitionPage() {
         ])}
       />
 
-      {/* 1 — Hero (paper): the copy in seven columns beside the award moment
-          in five (change round 10; it was copy alone on section-pad). The
-          photograph is the `recognitionHero` slot; until a file lands the
-          frame is a drawn stand-in, opening out of the hero's mask like a
-          photograph would. */}
+      {/* 1 — Hero (paper): the copy in seven columns beside the awards in
+          five (change round 10; it was copy alone on section-pad). The frame
+          is the `recognitionHero` slot when the Studio carries a photograph;
+          otherwise (change round 11) it is a plate with the cabinet's first
+          three cut-outs on a shelf, opening out of the hero's mask like a
+          photograph would. The drawn stand-in of change round 10 is gone. */}
       <section className="bg-paper">
         <HeroIntro className="container-site hero-pad">
           <div className="rec-hero m-flow grid gap-x-14 gap-y-10 md:grid-cols-12 md:items-center">
@@ -120,13 +132,15 @@ export default async function RecognitionPage() {
             <div className="rec-hero__media md:col-span-5">
               <div data-hero-clip className="rec-hero__clip">
                 {isPendingSlot(slots.recognitionHero) ? (
-                  <PhotoPlaceholder
-                    ratio={slots.recognitionHero.ratio}
-                    motif="corners"
-                    wanted={slots.recognitionHero.wanted}
-                    mBleed
-                    className="rec-hero__frame"
-                  />
+                  heroTrio.length ? (
+                    <div className="rec-hero__frame shelf-plate m-bleed">
+                      <TrophyShelf
+                        variant="hero"
+                        photos={heroTrio}
+                        label={sections.gallery.heading}
+                      />
+                    </div>
+                  ) : null
                 ) : (
                   <ParallaxImage
                     src={slots.recognitionHero.src}
@@ -161,11 +175,11 @@ export default async function RecognitionPage() {
                 as one row: what it is, who gave it, and the year set small
                 underneath. The CMAI award leads at a larger size because it is
                 the one that needs no explaining in this trade. */}
-            {/* Every row ends on the award's photograph, or the drawn
-                stand-in until one lands (change round 10, award-row--media). */}
+            {/* A row ends on the award's photograph when it has one
+                (award-row--media); otherwise it runs full width. */}
             <ol className="award-list">
               {headlineAward ? (
-                <li className="award-row award-row--lead award-row--media">
+                <li className={rowClass(headlineAward, true)}>
                   <div className="award-row__body">
                     <h3 className="t-h2 max-w-[18ch] text-on-charcoal">
                       {headlineAward.title}
@@ -187,7 +201,7 @@ export default async function RecognitionPage() {
               ) : null}
 
               {otherAwards.map((award) => (
-                <li key={award.title} className="award-row award-row--media">
+                <li key={award.title} className={rowClass(award)}>
                   <div className="award-row__body">
                     <h3 className="t-h3 max-w-[22ch] text-on-charcoal">
                       {award.title}
@@ -212,7 +226,10 @@ export default async function RecognitionPage() {
         </CurtainReveal>
       </section>
 
-      {/* 2b — Cabinet gallery (paper): real certificate & trophy photos ----- */}
+      {/* 2b — Cabinet (paper): every trophy and certificate cut out of its
+          background and stood on a drawn shelf (change round 11, TrophyShelf;
+          it was a fan of snapshot cards). The band's one entrance staggers
+          the objects onto their shelves after the heading. */}
       {photos.length ? (
         <section className="bg-paper">
           <SectionReveal className="container-site section-pad m-flow flex flex-col gap-10">
@@ -221,8 +238,7 @@ export default async function RecognitionPage() {
               lead={sections.gallery.lead}
               sr
             />
-            {/* The fan deals itself out; only the heading joins the entrance. */}
-            <CardFan photos={photos} label={sections.gallery.heading} />
+            <TrophyShelf photos={photos} label={sections.gallery.heading} />
           </SectionReveal>
         </section>
       ) : null}

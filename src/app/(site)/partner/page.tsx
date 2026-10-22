@@ -161,11 +161,11 @@ export default async function PartnerPage() {
             src={photos.partnerStorefront.src}
             alt={photos.partnerStorefront.alt}
             ratio={photos.partnerStorefront.ratio}
-            // A real store front since change round 9, a ~400px file, so the
-            // frame is capped at 15.5rem (motion.css .model-board__media), the
-            // picture is not overscanned, and the phone keeps its 6:7 (a 4:3
-            // crop would cut the sign).
-            sizes="(max-width: 767px) 100vw, 15.5rem"
+            // A real store since change round 9; since change round 11 the
+            // Goalpara counter under its sign, a 1600px file, so the frame's
+            // cap rose to 18rem (motion.css .model-board__media). The phone
+            // keeps its 6:7 (a 4:3 crop would cut the sign).
+            sizes="(max-width: 767px) 100vw, 18rem"
             className="border border-line"
             parallax={false}
             mBleed

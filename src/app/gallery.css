@@ -1,0 +1,75 @@
+/* ------------------------------------------------------------------ */
+/* StoreGallery: "Inside the stores" on /arihant-retail (change round  */
+/* 11). Four columns of 3:2 tiles, the portrait files two rows tall and */
+/* the grid packed densely so it closes without a hole; every tile      */
+/* captioned with its store and town in the feature heroes' chip idiom. */
+/* Desktop rules here; phones in mobile.css section 18 (a snap rail).   */
+/* ------------------------------------------------------------------ */
+
+.store-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.store-gallery__tile {
+  min-width: 0;
+}
+
+.store-gallery__tile--tall {
+  grid-row: span 2;
+}
+
+.store-gallery__fig {
+  position: relative;
+  height: 100%;
+  margin: 0;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper-shade);
+}
+
+/* A tall tile takes its height from the two rows it spans, so the
+   photograph is cropped to the grid rather than the grid to it. */
+.store-gallery__tile--tall .store-gallery__fig {
+  aspect-ratio: auto;
+}
+
+.store-gallery__img {
+  object-fit: cover;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .store-gallery__img {
+    transition: scale var(--dur-spring-soft) var(--ease-spring-soft);
+  }
+
+  .store-gallery__fig:hover .store-gallery__img {
+    scale: 1.03;
+  }
+}
+
+.store-gallery__cap {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 650;
+  font-stretch: 87%;
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}

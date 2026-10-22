@@ -771,17 +771,6 @@
     line-height: 1.55;
   }
 
-  /* Recognition cabinet: the 2-up grid becomes a rail of taller plates, so a
-     certificate is actually readable instead of thumbnail-sized (width and
-     captions in section 16). */
-  .fan__card {
-    gap: 0.6rem;
-  }
-
-  .fan__img {
-    padding: 0.5rem;
-  }
-
   /* Timeline: the spine sits closer in, and entries pack tighter. */
   .tl {
     --tl-pad: 1.35rem;
@@ -1478,13 +1467,43 @@
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
-  /* The cabinet: a certificate a little wider, so it reads. */
-  .fan__stage {
-    --m-rail-w: 64%;
+  /* The cabinet (change round 11): a snap rail of plates, one cut-out per
+     plate standing on its own short shelf, the caption under it. The
+     desktop grid and its repeating shelf lines are switched off. */
+  .shelf {
+    --m-rail-w: 62%;
+    --shelf-obj-h: 11rem;
+    background: none;
   }
 
-  .fan__cap {
+  .shelf__item {
+    padding: 1rem 0.75rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background-color: var(--paper-shade);
+    background-image: linear-gradient(
+      to bottom,
+      transparent calc(1rem + var(--shelf-obj-h)),
+      var(--line) calc(1rem + var(--shelf-obj-h)),
+      var(--line) calc(1rem + var(--shelf-obj-h) + 1px),
+      color-mix(in oklch, var(--ink) 9%, transparent) calc(1rem + var(--shelf-obj-h) + 1px),
+      color-mix(in oklch, var(--ink) 9%, transparent) calc(1rem + var(--shelf-obj-h) + var(--shelf-front)),
+      transparent calc(1rem + var(--shelf-obj-h) + var(--shelf-front))
+    );
+  }
+
+  .shelf__fig {
+    gap: calc(var(--shelf-front) + 0.75rem);
+  }
+
+  .shelf__cap {
     font-size: 0.9375rem;
+  }
+
+  /* The hero's plate runs edge to edge (m-bleed); its three objects keep
+     their one shelf, a little lower so the tallest clears the plate's top. */
+  .shelf--hero {
+    padding: 10% 6% 16%;
   }
 
   /* The trophy case keeps its ruled rows, tighter on a phone. */
@@ -1519,8 +1538,8 @@
     font-size: 0.8125rem;
   }
 
-  /* Trophy rows: the frame beside the text at thumb size, the ledger
-     rhythm kept; no chip fits a 5.5rem thumb, the sr-only line still says. */
+  /* Trophy rows that carry a photograph: the frame beside the text at thumb
+     size, the ledger rhythm kept. */
   .award-row--media {
     grid-template-columns: minmax(0, 1fr) 5.5rem;
     column-gap: 1rem;
@@ -1530,14 +1549,20 @@
     grid-template-columns: minmax(0, 1fr) 7rem;
   }
 
-  .award-row__media .photo-ph__tag {
-    display: none;
+  /* Section 18 (continued): "Inside the stores" is a snap rail of 4:3
+     tiles on a phone; the tall tiles give up their two rows. */
+  .store-gallery {
+    --m-rail-w: 78%;
   }
 
-  .award-row__media .photo-ph__art {
-    inset: 9%;
-    width: 82%;
-    height: 82%;
+  .store-gallery__tile--tall {
+    grid-row: auto;
+  }
+
+  .store-gallery__fig,
+  .store-gallery__tile--tall .store-gallery__fig {
+    aspect-ratio: 4 / 3;
+    height: auto;
   }
 }
 

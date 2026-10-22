@@ -49,11 +49,12 @@
   }
 }
 
-/* The stack. Two real photographs of about 400px each: the frames are capped
-   in rem so a 2x screen upscales them about 1.3x at most. Both sit in one
-   grid cell; the front frame's top margin (a share of the stack's width)
-   sets the overlap and the stack's height. width: 100% on each frame because
-   it has no intrinsic width (the image is absolutely filled). */
+/* The stack. Two real photographs (the Goalpara aisle and counter since
+   change round 11): the frames are capped in rem so the hero fits one
+   screen. Both sit in one grid cell; the front frame's top margin (a share
+   of the stack's width) sets the overlap and the stack's height. width: 100%
+   on each frame because it has no intrinsic width (the image is absolutely
+   filled). */
 .retail-stack {
   display: grid;
   grid-template: 1fr / 1fr;

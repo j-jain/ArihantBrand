@@ -509,7 +509,7 @@ async function main() {
    * current alt text as a starting point, and uploading a file is the only
    * action needed. The code manifest stays the fallback, so an untouched slot
    * keeps shipping the photograph it ships with today. Positions nothing
-   * renders (retailShopfront, officeMap) are deliberately not listed. */
+   * renders (officeMap) are deliberately not listed. */
   const EDITABLE_SLOTS = [
     "homeHero", "homeProofGround",
     "marketingHero", "marketingAward",

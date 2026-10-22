@@ -238,6 +238,8 @@ interface RawRecognitionPhoto {
   srcPath?: string | null;
   alt?: string | null;
   caption?: string | null;
+  /** The upload's pixel size, from the asset metadata (change round 11). */
+  dims?: { width?: number | null; height?: number | null } | null;
 }
 interface RawLeaderPortrait {
   leaderName?: string | null;
@@ -552,7 +554,8 @@ const FAQS_PAGE_QUERY = `*[_type == "faq" && page == $page] | order(order asc){ 
 
 const TEAM_QUERY = `*[_type == "teamMember"] | order(order asc){ name, title, unit, group }`;
 const RECOGNITION_PHOTOS_QUERY = `*[_type == "recognitionPhoto"] | order(order asc){
-  image, srcPath, alt, caption
+  image, srcPath, alt, caption,
+  "dims": image.asset->metadata.dimensions{ width, height }
 }`;
 const LEADER_PORTRAITS_QUERY = `*[_type == "leaderPortrait"]{ leaderName, image, srcPath, alt }`;
 const PHOTO_SLOTS_QUERY = `*[_type == "photoSlot" && defined(slot)]{ slot, image, alt, ratio }`;
@@ -961,9 +964,13 @@ export async function getTeam(unit?: TeamMember["unit"]): Promise<TeamMember[]> 
   return unit ? rows.filter((m) => m.unit === unit) : rows;
 }
 
-/** Real recognition photographs. A row with neither an upload nor a path is
- *  dropped rather than rendered as a broken frame. */
+/** The cabinet's cut-outs. A row with neither an upload nor a path is
+ *  dropped rather than rendered as a broken frame, and so is one whose
+ *  pixel size is unknown (change round 11: the shelf sets each object by
+ *  height, so it needs the ratio): an upload carries its size in the asset
+ *  metadata; a seeded path takes it from the seed entry with that path. */
 export function getRecognitionPhotos(): Promise<RecognitionPhoto[]> {
+  const seedByPath = new Map(seedRecognitionPhotos.map((p) => [p.src, p]));
   return fromSanity<RawRecognitionPhoto[], RecognitionPhoto[]>(
     "getRecognitionPhotos",
     RECOGNITION_PHOTOS_QUERY,
@@ -971,13 +978,15 @@ export function getRecognitionPhotos(): Promise<RecognitionPhoto[]> {
     ["recognitionPhoto"],
     isEmptyArray,
     (rows) =>
-      rows
-        .map((r) => ({
-          src: resolveImage(r.image, r.srcPath),
-          alt: r.alt ?? "",
-          caption: r.caption ?? "",
-        }))
-        .filter((r) => r.src !== ""),
+      rows.flatMap((r) => {
+        const src = resolveImage(r.image, r.srcPath);
+        if (!src) return [];
+        const fromSeed = r.srcPath ? seedByPath.get(r.srcPath) : undefined;
+        const width = r.dims?.width ?? fromSeed?.width;
+        const height = r.dims?.height ?? fromSeed?.height;
+        if (!width || !height) return [];
+        return [{ src, alt: r.alt ?? "", caption: r.caption ?? "", width, height }];
+      }),
     seedRecognitionPhotos,
   );
 }

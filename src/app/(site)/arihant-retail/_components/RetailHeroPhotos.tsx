@@ -11,18 +11,19 @@ interface Photo {
 }
 
 interface RetailHeroPhotosProps {
-  /** The store interior (photoSlots.retailInterior): the back frame. */
+  /** The store aisle (photoSlots.retailInterior): the back frame. */
   interior: Photo;
-  /** The Urban Closet storefront (photoSlots.retailStorefront): the front
-   *  frame, uncaptioned, since which town it shows is unconfirmed. */
+  /** The counter under the store's sign (photoSlots.retailStorefront): the
+   *  front frame. Both from the Goalpara shoot since change round 11. */
   storefront: Photo;
 }
 
 /**
  * The retail hero's two real photographs, set as an offset stack (change
- * round 5): the store interior behind, the storefront in front on a paper
- * keyline. Both files are about 400px wide, so the frames are capped in rem
- * (atlas.css) to keep any 2x upscale near 1.3x.
+ * round 5): the store aisle behind, the counter under the lit sign in front
+ * on a paper keyline. The stack keeps its rem cap (atlas.css) so the hero
+ * still fits one screen; the ~400px files it was sized for are gone since
+ * change round 11.
  *
  * Motion is layered on separate elements so nothing fights:
  *  - HeroIntro owns the entry (each [data-hero-clip] opens out of a mask while

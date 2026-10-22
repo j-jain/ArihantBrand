@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Button, DrenchBand, JsonLd, ModelBoard } from "@/components";
+import {
+  Button,
+  DrenchBand,
+  JsonLd,
+  ModelBoard,
+  SectionHeading,
+  SectionReveal,
+} from "@/components";
+import { storeGallery } from "@/content/seed";
 import {
   getBusinesses,
   getPageCopy,
@@ -19,6 +27,7 @@ import {
 import { UnitHero } from "../_components/UnitHero";
 import { RetailHeroPhotos } from "./_components/RetailHeroPhotos";
 import { StoreAtlas } from "./_components/StoreAtlas";
+import { StoreGallery } from "./_components/StoreGallery";
 
 const UNIT = "retail" as const;
 const PATH = "/arihant-retail";
@@ -43,9 +52,11 @@ export async function generateMetadata(): Promise<Metadata> {
  *     on a terrain map over a ruled list, then the page's first two asks.
  *     Hovering a store opens its card: its photograph, or until there is one
  *     a drawn shopfront with its name on the fascia.
- *  3. ModelBoard (charcoal), fitted to one screen: the worksheet is its only
+ *  3. Inside the stores (paper, change round 11): the client's photographs
+ *     of the floors, a grid of captioned tiles.
+ *  4. ModelBoard (charcoal), fitted to one screen: the worksheet is its only
  *     control.
- *  4. Drench: the franchise ask that follows the model (AR8).
+ *  5. Drench: the franchise ask that follows the model (AR8).
  *
  * Exactly two /partner asks, with the model between them.
  */
@@ -65,6 +76,7 @@ export default async function ArihantRetailPage() {
   const contact = settings.contacts.find((c) => c.unit === UNIT);
   const { hero, sections } = copy;
   const storesSection = sections.stores;
+  const gallery = sections.gallery;
   const model = sections.model;
   const cta = sections.cta;
 
@@ -121,7 +133,21 @@ export default async function ArihantRetailPage() {
         secondaryCta={hero.secondaryCta}
       />
 
-      {/* 3 — Model band (charcoal): four pillars, each with a diagram that
+      {/* 3 — Inside the stores (paper): the floors as they trade, from the
+          client's own shoot (change round 11). One entrance for the band:
+          the heading's words, the lead, then the tiles in a stagger. */}
+      {gallery && storeGallery.length ? (
+        <section className="section-pad bg-paper">
+          <div className="container-site">
+            <SectionReveal className="m-flow flex flex-col gap-10">
+              <SectionHeading heading={gallery.heading} lead={gallery.lead} sr />
+              <StoreGallery photos={storeGallery} />
+            </SectionReveal>
+          </div>
+        </section>
+      ) : null}
+
+      {/* 4 — Model band (charcoal): four pillars, each with a diagram that
           draws itself, plus the returns worksheet, its only control. The
           franchise asks sit either side of it: the atlas foot above, the
           drench below. */}
@@ -134,7 +160,7 @@ export default async function ArihantRetailPage() {
         model={retailModel}
       />
 
-      {/* 4 — Partner cross-sell (single vermillion drench) */}
+      {/* 5 — Partner cross-sell (single vermillion drench) */}
       <DrenchBand className="section-pad">
         <div className="container-site m-flow flex max-w-3xl flex-col gap-6">
           <h2 data-drench-reveal className="t-h2">{cta.heading}</h2>

@@ -137,12 +137,29 @@ export interface Award {
   imageAlt?: string;
 }
 
-/** A photograph of a real certificate, trophy, or recognition moment. Rendered
- *  as an honest, captioned gallery on /recognition. */
+/** A real certificate or trophy, cut out of its background (change round 11:
+ *  scripts/cutout-awards.py) and stood on the drawn shelf of /recognition's
+ *  cabinet; the first three in display order also lead that page's hero.
+ *  `width`/`height` are the file's pixels: the shelf sets each object by
+ *  height, so it needs the intrinsic ratio (Sanity uploads carry theirs in
+ *  the asset metadata; the seed reads the generated size table). */
 export interface RecognitionPhoto {
   src: string;
   alt: string;
   caption: string;
+  width: number;
+  height: number;
+}
+
+/** A photograph inside one of the Arihant Retail stores, for the retail
+ *  page's gallery (change round 11). `store` keys the caption chip; `tall`
+ *  marks a portrait file, set in a 4:5 tile two rows high. */
+export interface StorePhoto {
+  src: string;
+  alt: string;
+  caption: string;
+  store: "guwahati" | "goalpara" | "kohima";
+  tall?: boolean;
 }
 
 /** A real portrait of a named leader, keyed by that leader's exact name. Absent
