@@ -5,7 +5,7 @@ Requested 22 October 2026: place the client's photographs (dropped into the shar
 - **Done**: implemented and verified locally (evidence column).
 - **Flagged**: a judgement call for you or the client.
 
-**Not yet published.** Everything below is in the working tree, uncommitted. Publish order: commit and push to `main` -> Vercel deploy -> `node scripts/seed.mjs --dry-run --out=<file>` and a diff against the live dataset -> `npm run seed` -> the signed revalidate.
+**Published 25 October 2026**: committed as `3fd2632` (63 files), pushed to `main`, Vercel deploy green, then the seed dry run diffed against the live dataset (25 documents differing, all of them this round's: the five stores, the nine recognition photographs, the seven photo-slot alt lines, `page-retail` with its gallery section, and the business, stat, FAQ, post, partner-page and timeline documents that print the store count; no Studio drift), then `npm run seed` (203 documents, 101 images linked), then the signed revalidate (`200 {"revalidated":true}`). Verified on arihant-brand.vercel.app: the Recognition hero plate and the nine-object shelf on the Sanity CDN cut-outs with no placeholder left, "We run all five" and the Tura pin and card on the retail page with the gallery band, the four captioned store fronts on /partner, "Five stores, two models" and the building on /about, the godown and the cut-out inset on /arihant-marketing. Post-seed diff: 0 documents differing. The old Tura fit-out orphan `store-4` was replaced by the real Tura record; `store-5` ("Next door", fit-out, hidden) and the two retired Marketing photo-slot documents remain for the client to delete in the Studio.
 
 ## Decisions taken with you on 22 October
 
