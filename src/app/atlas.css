@@ -47,6 +47,14 @@
     width: 4.75rem;
     height: 2.6rem;
   }
+
+  /* The Retail bag is a narrow mark over a light wordmark, so at the shared
+     height it read smallest of the three; it takes the Apparels mark's height
+     at the client's request. */
+  .unit-hero--fit .unit-lockup[data-unit="retail"] .unit-lockup__logo {
+    width: 7rem;
+    height: 4rem;
+  }
 }
 
 /* The stack. Two real photographs (the Goalpara aisle and counter since

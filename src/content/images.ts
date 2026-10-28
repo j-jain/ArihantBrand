@@ -288,8 +288,8 @@ export const photoSlots = {
     // The group's own racked stock, not a stock boutique (change round 9): the
     // first photograph on the site shows the business the house is in, from a
     // godown it runs. Since change round 12 (client's request) a store's polo
-    // wall; since change round 13 (client's request) the group's building, the
-    // same portrait file as the Marketing hero.
+    // wall; since change round 13 (client's request) the group's building, a
+    // portrait cut of it, and the polo wall moved to the Marketing hero.
     src: "/images/photos/group-building-portrait.jpg",
     alt: "Arihant Tower, the group's building in Guwahati, where all three businesses work",
     ratio: "4 / 5",
@@ -310,11 +310,14 @@ export const photoSlots = {
      Marketing godown itself (the client's own photograph; it stood on stock
      until then). From change round 7 the inset was the trophy; since change
      round 13 Marketing's hero has no inset. */
-  /* Since change round 12 the wide one is the group's building (client's
-     request); the godown still runs in the About values panel. */
+  /* In change round 12 the wide one was the group's building (client's
+     request); the godown still runs in the About values panel. Once the home
+     hero took the building (change round 13), the Marketing hero took the
+     home hero's earlier photograph, the Itanagar polo wall (client's
+     request): landscape, so the tall frame centres on the two polos. */
   marketingHero: {
-    src: "/images/photos/group-building-portrait.jpg",
-    alt: "Arihant Tower, the group's building in Guwahati, home of Arihant Marketing",
+    src: "/images/photos/stores/store-itanagar-polos.jpg",
+    alt: "A wall of polos and folded shirts on timber and steel shelving, two polos hung at its centre",
     ratio: "4 / 5",
     real: true,
   },

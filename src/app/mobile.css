@@ -1768,6 +1768,12 @@
     gap: 1.75rem;
   }
 
+  /* The Retail mark at the Apparels mark's phone height, as on desktop. */
+  .unit-hero--fit .unit-lockup[data-unit="retail"] .unit-lockup__logo {
+    width: 4.9rem;
+    height: 2.75rem;
+  }
+
   .retail-stack {
     width: 100%;
     grid-template: auto / 1fr 1fr;
