@@ -59,12 +59,23 @@ const jobs = [
   ["KAK, Kohima Photos/IMG-20240325-WA0031.jpg", "stores/store-kohima-floor.jpg", 1600],
   ["KAK, Kohima Photos/IMG_4962.jpg", "stores/store-kohima-kids.jpg", 2000],
   ["KAK, Kohima Photos/IMG_4866.jpg", "stores/store-kohima-indian-terrain.jpg", 2000],
+  // Tanzee, Itanagar (interiors only: the front's sign reads Urban Closet).
+  // The floor shot runs as the Apparels hero; the interior on the store card.
+  ["Urban Closet Itanagar Photos/DSCF0401.JPG", "stores/store-itanagar-floor.jpg", 2000],
+  ["Urban Closet Itanagar Photos/DSCF0311.JPG", "stores/store-itanagar-interior.jpg", 2000],
   // Urban Closet, Tura
   ["Urban Closet Tura/Store Front.jpeg", "stores/store-tura-front.jpg", 1600],
   // Arihant Marketing godown, and the group's building
   ["Arihant Marketing Photos/Arihant Marketing Godown Photo 1.jpeg", "marketing-godown-1.jpg", 2000],
   ["Arihant Marketing Photos/Arihant Marketing Godown Photo 4.jpeg", "marketing-godown-2.jpg", 2000],
   ["Arihant Marketing Photos/Arihant Group Building Photo.jpg", "group-building.jpg", 2000],
+  // The building cut to a portrait window for the Marketing hero (change round 12)
+  [
+    "Arihant Marketing Photos/Arihant Group Building Photo.jpg",
+    "group-building-portrait.jpg",
+    2000,
+    { left: 0.38, top: 0, width: 0.6, height: 1 },
+  ],
 ];
 
 await mkdir(path.join(outDir, "stores"), { recursive: true });

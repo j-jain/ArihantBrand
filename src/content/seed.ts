@@ -521,9 +521,8 @@ export const marketingReasons = [
 /* store in the atlas ledger and the photograph's alt text on /partner's     */
 /* proof strip (which prints the store and town itself), so it says what     */
 /* the picture shows and names neither.                                      */
-/* Itanagar carries none: the photographs supplied for it show a sign that    */
-/* reads URBAN CLOSET, which contradicts the Tanzee name, so they are held    */
-/* back until the client confirms the store's name.                          */
+/* Itanagar (change round 12) carries an interior, not its front: the front's */
+/* sign reads URBAN CLOSET, which contradicts the Tanzee name.               */
 /* ------------------------------------------------------------------ */
 
 export const stores: Store[] = [
@@ -561,8 +560,8 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Franchisee-owned",
-    // No photograph and no caption (change round 3, client decision; held in
-    // change round 11, see the note above the list).
+    image: "/images/photos/stores/store-itanagar-interior.jpg",
+    caption: "Inside, the shirt and denim bays under track lights",
   },
   {
     name: "Urban Closet",

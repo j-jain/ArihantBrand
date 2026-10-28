@@ -308,9 +308,11 @@ export const photoSlots = {
      Marketing godown itself (the client's own photograph; it stood on stock
      until then). Since change round 7 the inset is the trophy
      (`marketingAward`, below). */
+  /* Since change round 12 the wide one is the group's building (client's
+     request); the godown still runs in the About values panel. */
   marketingHero: {
-    src: "/images/photos/marketing-godown-1.jpg",
-    alt: "The Arihant Marketing godown in Guwahati, open cartons of the season's indents filling the floor between stacked stock",
+    src: "/images/photos/group-building-portrait.jpg",
+    alt: "Arihant Tower, the group's building in Guwahati, home of Arihant Marketing",
     ratio: "4 / 5",
     real: true,
   },
@@ -330,9 +332,11 @@ export const photoSlots = {
   /* ---- Arihant Apparels ---------------------------------------- AA6 */
   /* The feature hero (change round 6): the team working the warehouse floor,
      and the 2024 spring summer fair (its banner names the event). */
+  /* Since change round 12 the wide one is a store floor stocked by Apparels
+     (the Itanagar shoot's DSCF0401, client's request); the inset is unchanged. */
   apparelsHero: {
-    src: "/images/photos/apparels-warehouse-3.jpg",
-    alt: "The Arihant Apparels team at work on the warehouse floor in Guwahati, cartons and bales around them",
+    src: "/images/photos/stores/store-itanagar-floor.jpg",
+    alt: "A store floor of shirt bays and hanging rails under track lights, stocked with the season's menswear",
     ratio: "4 / 5",
     real: true,
   },

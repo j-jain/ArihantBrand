@@ -4,9 +4,9 @@ import type { PhotoSlot } from "@/content/images";
 import { StaggerGroup } from "@/components";
 
 /** A row of real store photographs — the proof that the managed model
- *  already trades. Only stores that carry an image are shown (four of the
- *  five since change round 11: Guwahati, Goalpara, Kohima and Tura; the
- *  Itanagar store has none), four up from 768px; captions double as
+ *  already trades. Only stores that carry an image are shown (all five
+ *  since change round 12, when Itanagar gained an interior), five up from
+ *  768px; captions double as
  *  descriptive alt text in the brand voice. The figures reveal in a
  *  staggered sequence as the strip scrolls into view.
  *
@@ -45,7 +45,7 @@ export function ProofStrip({
   return (
     <StaggerGroup
       from="up"
-      className="m-rail grid gap-6 sm:grid-cols-2 md:grid-cols-4"
+      className="m-rail grid gap-6 sm:grid-cols-2 md:grid-cols-5"
       stagger={0.12}
     >
       {shots.map((store) => (
