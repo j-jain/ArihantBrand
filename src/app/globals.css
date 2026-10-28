@@ -470,8 +470,8 @@ svg {
 }
 
 /* Two ledger rows under the home lead (change round 3): the figure first in
-   the condensed stat cut, right-aligned in a shared column so both figures
-   align on their last digit, then the label. One line per row, so the band is
+   the condensed stat cut, left-aligned in a shared column so both figures
+   start on one line (change round 12, client's request), then the label. One line per row, so the band is
    no taller than the sentence rows it replaced (the hero is fitted to one
    screen). */
 .hero-points {
@@ -500,7 +500,7 @@ svg {
 }
 
 .hero-points__fig {
-  justify-self: end;
+  justify-self: start;
   font-weight: 800;
   font-stretch: 85%;
   font-size: 1.85em;
@@ -530,7 +530,7 @@ svg {
 }
 
 .hero-figure__live {
-  justify-self: end;
+  justify-self: start;
 }
 
 /* A line that does not open on a figure (stale CMS wording) spans both
@@ -555,7 +555,7 @@ svg {
      padded out, or a gap opens in the middle of the line. */
   .hero-points__row > .hero-points__fig {
     min-width: 2.3em;
-    text-align: end;
+    text-align: start;
   }
 }
 
