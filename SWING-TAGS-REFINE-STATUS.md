@@ -42,4 +42,4 @@ Not verified: Safari and Firefox (Playwright's browser downloads are blocked on 
 
 ## Publishing
 
-Not committed. Another session's change round 13 sits uncommitted in the same tree; commit only this work's files and hunks (`BusinessTags.tsx`, `tagModel.ts`, `tags.css`, `gsap.ts`, mobile.css section 24, the swing-tag passages of DESIGN.md and CLAUDE.md, this note). Never commit `src/app/(site)/proto/`. A push to `main` is a production deploy.
+Live 28 October 2026: commit 4ed3a58 pushed to `main` (on top of change round 13), Vercel deploy succeeded, checked on www.arihant.marketing (the new markup served, the three tags hang visible in their rest pose, a tap turns a tag, no page errors). The commit carried only this work's files and hunks; another session's later edits in the same tree were left out, and `src/app/(site)/proto/` stays uncommitted. No seed was needed.
