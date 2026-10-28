@@ -5,7 +5,21 @@ Requested 28 October 2026. These are the client's edits to the home page and the
 - **Done**: implemented and verified locally.
 - **Flagged**: a judgement call for you or the client.
 
-**Not yet published.** Nothing is committed. Publish order: commit (together with the other sessions' work, once they agree) → push → Vercel green → re-run the seed dry-run diff → `npm run seed` → delete the live `award-2` document (see below) → signed revalidate → verify live.
+**Published 28 October 2026.** Steps, in order:
+1. Committed as `136b32a`, holding only this round's hunks. The other sessions' uncommitted edits to the same files (store addresses in `seed.ts`/`types.ts`/`seed.mjs`, the swing-tag rules in `mobile.css`, a line of `CLAUDE.md`) were left out and stay in the working tree.
+2. Pushed to `main`; the Vercel deploy went green.
+3. Ran the seed dry run from an export of that commit alone, so none of the other sessions' content was seeded. It diffed against live as 15 documents, all this round's, with no Studio drift.
+4. `npm run seed` from the same export (201 documents).
+5. Deleted the orphan `award-2` (it would have repeated the footfall row with "4 fairs").
+6. Signed revalidate on www.arihant.marketing and arihant-brand.vercel.app (both `200`).
+
+Post-seed diff: 0. Verified live on www.arihant.marketing:
+- the building on the home hero, the new funnel lines and two awards rows, with no NEGTA and no "4 fairs";
+- Brand partners on the tags;
+- "Put 35 years…" with no trophy and no proof line on Marketing;
+- the team photo, the larger mark and the new lead on Apparels;
+- the new headline and "Urban Closet, Itanagar" on Retail;
+- the new lead on /recognition.
 
 ## Decisions taken with you on 28 October
 
@@ -44,7 +58,7 @@ Requested 28 October 2026. These are the client's edits to the home page and the
 
 ## For publish, and flagged
 
-- **Delete `award-2` from the live dataset after seeding.** The seed writes awards by index, so the footfall entry moves to `award-1` (the old NEGTA doc), and `award-2` (the old "4 fairs" footfall row) would otherwise stay live as a duplicate. Neither doc has an uploaded image, so nothing needs unsetting.
+- Done at publish: `award-2` was deleted from the live dataset. The seed writes awards by index, so the footfall entry moved onto `award-1` (the old NEGTA doc), and `award-2` held the old "4 fairs" row. Neither doc had an uploaded image.
 - Studio orphan for the client (invisible): `photoslot-marketingAward`, alongside the older `store-5`, `groupstat-warehouse`, `photoslot-marketingCorridor` and `photoslot-marketingWarehouse`.
 - **Flagged**: the Retail headline and its lead now both say "multi-brand stores". The lead could start "Stores our team staffs…" if that reads as a repeat.
 - **Flagged**: Itanagar's atlas card and proof-strip photo is still the interior. With the store now named Urban Closet, its storefront (whose sign reads Urban Closet) could be used instead.
