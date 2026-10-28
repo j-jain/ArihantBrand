@@ -2401,10 +2401,11 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* 24 — Business swing tags (home, change round 8)                     */
-/* The three tags hang on a rail that runs edge to edge; they slide     */
-/* along it, one in view with the next peeking, snapping to centre. No  */
-/* pointer sway on touch; a tap still turns a tag over and back.        */
+/* 24 — Business swing tags (home, change round 8, refined 28 Oct 2026) */
+/* The tube runs edge to edge with no flanges; the tags slide along it, */
+/* one in view with the next peeking, snapping to centre. Sliding the   */
+/* rail swings them and the one in the middle squares up; a tap still   */
+/* turns a tag over and back.                                           */
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 767px) {
@@ -2414,21 +2415,25 @@
 
   .btag-rail {
     margin-inline: calc(-1 * var(--m-gutter));
+  }
+
+  .btag-rail__tube {
+    inset: 0;
     border-radius: 0;
   }
 
-  .btag-rail__cap {
+  .btag-rail__mount {
     display: none;
   }
 
-  /* A scroll row clips on both axes, so the row starts above the rail by
-     the room a dropping, swinging tag needs and gives it back with a
-     negative margin: the drop and the swing are no longer cut off. */
+  /* A scroll row clips on both axes: room above the rail for each cord's
+     hitch and below the cards for their shadow, given back with a
+     negative margin. */
   .btag-row {
     display: flex;
     gap: 1rem;
-    margin: calc(-0.3rem - 2.75rem) calc(-1 * var(--m-gutter)) 0;
-    padding: 2.75rem var(--m-gutter) 1.75rem;
+    margin: calc(-0.31rem - 1rem) calc(-1 * var(--m-gutter)) 0;
+    padding: 1rem var(--m-gutter) 2.25rem;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -2439,10 +2444,19 @@
     display: none;
   }
 
+  /* Trailing room past the last tag, so it centres and swings clear. */
+  .btag-row::after {
+    content: "";
+    flex: 0 0 11%;
+  }
+
+  /* Layout containment makes a swinging card's overhang ink overflow, so it
+     never changes how far the row scrolls (no twitch at the row's end). */
   .btag-hang {
-    flex: 0 0 78%;
+    flex: 0 0 80%;
     scroll-snap-align: center;
     scroll-snap-stop: always;
+    contain: layout;
   }
 
   /* The turn buttons stretch over their face already; the visible label

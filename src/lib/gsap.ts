@@ -16,7 +16,10 @@ import { springCurve, springPath } from "./spring";
  * every back.out / elastic.out and the springy cubic-beziers the CSS kept. */
 const SPRING_CURVE = springCurve({ zeta: 0.62, omega: 12.4 }); // lands: one small overshoot, ~0.93s
 const SPRING_SOFT_CURVE = springCurve({ zeta: 0.8, omega: 14.4 }); // follows: barely overshoots, ~0.64s
-const SPRING_HANG_CURVE = springCurve({ zeta: 0.32, omega: 19.6 }); // a hung tag: three decaying swings, ~1.1s
+/** The hung-tag spring's own numbers, for motion that runs the same physics
+ *  frame by frame instead of as a tween (the home swing tags' sway). */
+export const HANG = { zeta: 0.32, omega: 19.6 } as const;
+const SPRING_HANG_CURVE = springCurve(HANG); // a hung tag: three decaying swings, ~1.1s
 
 /* Central GSAP hub. Every animated component imports gsap / ScrollTrigger /
  * SplitText / useGSAP from THIS module, so plugins are registered exactly once

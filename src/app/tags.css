@@ -1,189 +1,384 @@
 /* ------------------------------------------------------------------ */
 /* Business swing tags: home, "Three businesses, one standard"          */
-/* (change round 8). Component: app/(site)/_components/BusinessTags.    */
-/* Phone rules in mobile.css section 24. The tag turns are driven by    */
-/* GSAP (inline transform on .btag-tag), never by a CSS transition.     */
+/* (change round 8, refined 28 October 2026). Component:                */
+/* app/(site)/_components/BusinessTags, geometry in tagModel. Phone     */
+/* rules in mobile.css section 24. Every moving transform is written by */
+/* GSAP inline, never by a CSS transition; the root carries the die,    */
+/* the ring and the model's lengths as custom properties.               */
 /* ------------------------------------------------------------------ */
 
 .btag {
+  --btag-persp: 87.5rem;
+  --btag-brass: oklch(0.74 0.09 82);
+  --btag-steel: color-mix(in oklch, var(--ink) 74%, var(--paper));
+  --btag-steel-deep: color-mix(in oklch, var(--ink) 86%, var(--paper));
+  --btag-steel-hi: color-mix(in oklch, var(--ink) 58%, var(--paper));
   display: flex;
   flex-direction: column;
-  gap: 2.75rem;
+  gap: 2.6rem;
 }
 
 .btag-rack {
   position: relative;
 }
 
-/* The clothes rail. */
+/* The rail: a steel tube on two round wall flanges, its ends in cups. Flat
+   tones only: a highlight line along the top, a darker line underneath and
+   a soft shadow cast on the wall. */
 .btag-rail {
   position: relative;
-  z-index: 1;
-  height: 0.55rem;
-  margin-inline: -0.75rem;
-  border-radius: 1rem;
-  background: color-mix(in oklch, var(--ink) 78%, var(--paper));
-  box-shadow: 0 0.3rem 0.5rem -0.25rem color-mix(in oklch, var(--ink) 55%, transparent);
+  z-index: 0;
+  height: 0.62rem;
 }
 
-.btag-rail__cap {
+.btag-rail__tube {
+  position: absolute;
+  inset: 0 0.88rem;
+  border-radius: 1rem;
+  background: var(--btag-steel);
+  box-shadow: 0 0.8rem 0.6rem -0.5rem color-mix(in oklch, var(--ink) 30%, transparent);
+}
+
+.btag-rail__tube::before,
+.btag-rail__tube::after {
+  content: "";
+  position: absolute;
+  border-radius: 1rem;
+}
+
+.btag-rail__tube::before {
+  top: 0.12rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 0.09rem;
+  background: color-mix(in oklch, var(--paper) 52%, transparent);
+}
+
+.btag-rail__tube::after {
+  bottom: 0;
+  left: 0.3rem;
+  right: 0.3rem;
+  height: 0.1rem;
+  background: color-mix(in oklch, var(--ink) 55%, transparent);
+}
+
+.btag-rail__mount {
   position: absolute;
   top: 50%;
-  left: -0.35rem;
-  width: 1.15rem;
-  height: 1.15rem;
+  left: 0;
+  width: 1.76rem;
+  height: 1.76rem;
   translate: 0 -50%;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--btag-steel-deep);
+  box-shadow: 0 0.35rem 0.55rem -0.2rem color-mix(in oklch, var(--ink) 30%, transparent);
 }
 
-.btag-rail__cap--end {
+.btag-rail__mount--end {
   left: auto;
-  right: -0.35rem;
+  right: 0;
 }
 
+/* The cup that holds the tube's end, nearer the eye than the flange. */
+.btag-rail__mount::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.78rem;
+  height: 0.98rem;
+  translate: -50% -50%;
+  border-radius: 0.24rem;
+  background: var(--btag-steel-hi);
+}
+
+/* The row hangs from the tube's centre line and paints over the rail, so
+   each cord's hitch sits on the rod. */
 .btag-row {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1.5rem, 4vw, 3.5rem);
-  margin: -0.3rem 0 0;
+  gap: 3rem;
+  margin: -0.31rem 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* The li never moves: it casts the tag's one shadow straight down the wall,
+   deeper while the tag is pointed at. Each gives back under it the extra
+   cord its tag hangs on, so all three cards stay one height. */
 .btag-hang {
   display: flex;
   justify-content: center;
+  padding-bottom: var(--btag-give, 0rem);
+  filter: drop-shadow(0 0.8rem 0.85rem color-mix(in oklch, var(--ink) 20%, transparent));
+  transition: filter var(--dur-spring-soft) var(--ease-spring-soft);
 }
 
-/* Sways about the point where the cord meets the rail. */
+.btag-hang[data-attn] {
+  filter: drop-shadow(0 1.3rem 1.25rem color-mix(in oklch, var(--ink) 24%, transparent));
+}
+
+/* Swings about the point where the cord meets the rail. */
 .btag-swing {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: min(100%, 18.5rem);
+  width: min(100%, 20rem);
+  padding-top: calc(var(--btag-base) + var(--btag-drop, 0rem));
   transform-origin: 50% 0;
-  filter: drop-shadow(0 1rem 1.1rem color-mix(in oklch, var(--ink) 20%, transparent));
 }
 
-/* The two-ply cord, from the rail into the eyelet. Its strands are redrawn
-   on every frame of a turn (BusinessTags, cordPaths). */
+/* The cord, from its hitch on the rod to the card's head. Its strands are
+   redrawn while the card falls, turns or unwinds (tagModel, cordPaths). */
 .btag-cord {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  z-index: 1;
   display: block;
   width: 0.75rem;
-  height: 4.5rem;
-  margin-bottom: -1.9rem;
+  translate: -50% 0;
   overflow: visible;
-  /* A hairline of paper round the strands, so the cord still reads where it
-     crosses a dark tag back. */
-  filter: drop-shadow(0 0 0.6px var(--paper)) drop-shadow(0 0 0.4px var(--paper));
+  pointer-events: none;
 }
 
-.btag-cord path {
+.btag-cord path,
+.btag-thread path {
   fill: none;
-  stroke-width: 1.7px;
+  stroke-width: 1.6px;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 
 .btag-cord__back {
-  stroke: color-mix(in oklch, var(--ink) 30%, var(--paper-shade));
+  stroke: color-mix(in oklch, var(--ink) 38%, var(--paper-shade));
 }
 
-.btag-cord__front {
-  stroke: color-mix(in oklch, var(--ink) 82%, transparent);
+.btag-cord__front,
+.btag-thread path {
+  stroke: color-mix(in oklch, var(--ink) 84%, transparent);
 }
 
-/* Every tag as long as the longest, so the three hang level. */
+/* The card turns about its eyelet when it flicks on the cord, and lifts
+   about it when pointed at. */
+.btag-hinge {
+  position: relative;
+  display: flex;
+  flex: 1;
+  width: 100%;
+  transform-origin: 50% var(--btag-eye);
+}
+
+/* The card's edge, seen only as the card passes edge-on in a turn. */
+.btag-edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1.5px;
+  translate: -50% 0;
+  background: color-mix(in oklch, var(--ink) 55%, var(--paper));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The 3D card: its own vanishing point, its rest yaw, and nothing that
+   would group its faces (no filter, clip, opacity or overflow here). */
 .btag-tag {
   position: relative;
   display: grid;
   flex: 1;
   width: 100%;
-  transform: perspective(1400px) rotateY(0deg);
+  transform: perspective(var(--btag-persp)) rotateY(var(--btag-yaw, 0deg));
   transform-style: preserve-3d;
 }
 
+/* Each face is a bare plane; the card inside it carries the die, the
+   print, the light and the focus ring. */
 .btag-face {
   position: relative;
   grid-area: 1 / 1;
   display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  padding: 3rem 1.4rem 1.2rem;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  clip-path: polygon(17% 0, 83% 0, 100% 4.5%, 100% 100%, 0 100%, 0 4.5%);
 }
 
-.btag-face--front {
+.btag-face--back {
+  transform: rotateY(180deg);
+}
+
+.btag-card {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 3.15rem 1.3rem 0;
+  clip-path: var(--btag-die);
+}
+
+.btag-face--front .btag-card {
   background: var(--paper);
   color: var(--ink);
 }
 
-.btag-face--back {
+.btag-face--back .btag-card {
+  --btag-ring-c: var(--paper);
   background: var(--unit-accent);
   color: var(--paper);
-  transform: rotateY(180deg);
 }
 
+/* Light on the card: ink as it turns away, a breath of paper as it turns
+   toward the light (BusinessTags writes both while it turns). */
+.btag-light {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.btag-light::before,
+.btag-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.btag-light::before {
+  background: var(--ink);
+  opacity: var(--btag-dark, 0);
+}
+
+.btag-light::after {
+  background: var(--paper);
+  opacity: var(--btag-glow, 0);
+}
+
+/* The focus ring follows the die: a band inside its edge, vermillion on
+   the paper front, paper on the back. */
+.btag-card:has(.btag-turn:focus-visible)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: var(--btag-ring-c, var(--focus));
+  clip-path: var(--btag-ring);
+  pointer-events: none;
+}
+
+/* The eyelet: a flat brass ring round a hole that shows the wall. */
 .btag-eyelet {
   position: absolute;
-  top: 1.15rem;
+  top: calc(var(--btag-eye) - 0.625rem);
   left: 50%;
-  width: 1.3rem;
-  height: 1.3rem;
+  width: 1.25rem;
+  height: 1.25rem;
   translate: -50% 0;
   border-radius: 50%;
-  background: color-mix(in oklch, var(--ink) 10%, var(--paper-shade));
+  background: var(--paper-shade);
   box-shadow:
-    inset 0 0 0 0.28rem oklch(0.74 0.09 82),
-    0 0 0 1px color-mix(in oklch, var(--ink) 18%, transparent);
+    inset 0 0 0 0.3rem var(--btag-brass),
+    inset 0 0.38rem 0 0 color-mix(in oklch, var(--ink) 30%, var(--paper-shade)),
+    0 0 0 1px color-mix(in oklch, var(--ink) 14%, transparent);
 }
 
+/* The cord's last strand, over the card's head and into the eyelet. */
+.btag-thread {
+  position: absolute;
+  top: -0.2rem;
+  left: 50%;
+  z-index: 6;
+  width: 0.75rem;
+  height: calc(var(--btag-eye) + 0.2rem);
+  translate: -50% 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.btag-face--back .btag-thread path {
+  stroke: color-mix(in oklch, var(--paper) 72%, var(--ink));
+}
+
+/* The print. Each mark at the height that gives the three the same
+   weight (their trimmed alpha boxes: a wide mark, a crown, a bag). */
 .btag-logo {
   position: relative;
   width: 100%;
-  height: 2.5rem;
-  margin-top: 0.35rem;
+  height: var(--btag-logo-h, 3rem);
+  margin-top: 0.1rem;
+}
+
+.btag-logo[data-unit="marketing"] {
+  --btag-logo-h: 3.1rem;
+}
+
+.btag-logo[data-unit="apparels"] {
+  --btag-logo-h: 3.35rem;
+}
+
+.btag-logo[data-unit="retail"] {
+  --btag-logo-h: 3.6rem;
 }
 
 .btag-name {
   font-family: var(--font-besley), Georgia, serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  line-height: 1.15;
+  font-size: 1.5rem;
+  font-weight: 760;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
   text-align: center;
+  text-wrap: balance;
   color: var(--ink);
 }
 
-/* The business's line, printed on a band in its colour. */
-.btag-band {
-  margin-inline: -1.4rem;
-  padding: 0.55rem 1.4rem;
+/* The business's line on a woven label sewn to the card: inset from the
+   card's edges, a running stitch just inside its own. */
+.btag-label {
+  position: relative;
+  margin: 0.1rem -0.4rem 0;
+  padding: 0.7rem 1rem;
   background: var(--unit-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--ink) 16%, transparent);
   color: var(--paper);
   font-family: var(--font-besley), Georgia, serif;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.28;
   text-align: center;
+  text-wrap: balance;
+}
+
+.btag-stitch {
+  position: absolute;
+  top: 0.26rem;
+  left: 0.26rem;
+  width: calc(100% - 0.52rem);
+  height: calc(100% - 0.52rem);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.btag-stitch line {
+  stroke: color-mix(in oklch, var(--paper) 58%, transparent);
+  stroke-width: 1px;
+  stroke-dasharray: 3.5 2.5;
+  vector-effect: non-scaling-stroke;
 }
 
 .btag-spec {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  margin: 0.15rem 0 0;
+  gap: 0.42rem;
+  margin: 0.3rem 0 0;
 }
 
 .btag-spec__row {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: 0.4rem;
   font-size: 0.82rem;
 }
 
@@ -191,40 +386,71 @@
   display: flex;
   flex: 1;
   align-items: baseline;
-  gap: 0.4rem;
+  gap: 0.35rem;
   color: var(--ink-soft);
 }
 
 .btag-spec__row dt::after {
   content: "";
   flex: 1;
-  border-bottom: 1px dotted color-mix(in oklch, var(--ink) 35%, transparent);
+  border-bottom: 1px dotted color-mix(in oklch, var(--ink) 32%, transparent);
 }
 
+/* The figures in the stat cut: condensed, heavy, tabular. */
 .btag-spec__row dd {
   margin: 0;
-  font-weight: 750;
+  font-size: 1rem;
+  font-weight: 800;
+  font-stretch: 85%;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
   color: var(--ink);
 }
 
-/* Any height the tag has over its front's content (the three hang level, so
-   the longest back sets it) opens above the barcode, where a printed tag
-   has its blank, not between the barcode and "Turn over". */
+/* The stub: a fixed band at the foot under the perforation, so the die's
+   notches meet the punched line exactly. It stays unpositioned, so the
+   card remains the turn button's frame and a tap anywhere turns. */
+.btag-stub {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: var(--btag-stub);
+  margin: auto -1.3rem 0;
+  padding: 0.6rem 1.3rem 0.4rem;
+}
+
+.btag-perf {
+  position: absolute;
+  bottom: var(--btag-stub);
+  left: calc(var(--btag-notch) + 0.3rem);
+  width: calc(100% - 2 * (var(--btag-notch) + 0.3rem));
+  height: 2px;
+  translate: 0 50%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.btag-perf line {
+  stroke: color-mix(in oklch, currentColor 32%, transparent);
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-dasharray: 0 6;
+}
+
 .btag-barcode {
   display: block;
   flex: none;
-  width: 72%;
-  height: 2rem;
-  margin: auto auto 0;
-  padding-top: 0.45rem;
+  width: 66%;
+  height: 1.85rem;
   fill: var(--ink);
 }
 
 .btag-turn {
   align-self: center;
-  margin-top: 0.15rem;
-  padding: 0.55rem 0.8rem;
+  padding: 0.5rem 0.8rem;
   border: 0;
   background: none;
   color: var(--vermillion-deep);
@@ -236,35 +462,44 @@
   cursor: pointer;
 }
 
-/* Both turn buttons stretch over their whole face, so a tap anywhere turns
-   the tag. On the back the asks sit above the stretch (z-index), so they
-   stay links; the rest of the back turns it back. */
+/* Both turn buttons stretch over their whole card, so a tap anywhere turns
+   the tag. On the back the asks sit above the stretch, so they stay links;
+   the rest of the back turns it back. */
 .btag-turn::after {
   content: "";
   position: absolute;
   inset: 0;
 }
 
+/* The die's ring marks keyboard focus instead of an outline. */
 .btag-turn:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
+  outline: none;
 }
 
-/* Both faces end on their turn button, at the foot of the tag. */
 .btag-turn--back {
-  margin-top: auto;
   color: var(--paper);
 }
 
-.btag-turn--back:focus-visible {
-  outline-color: var(--paper);
+/* The arrow nudges round the way the tag will go. */
+.btag-turn__mark {
+  display: inline-block;
+  transition: rotate var(--dur-spring-soft) var(--ease-spring-soft);
+}
+
+.btag-card:hover .btag-turn--front .btag-turn__mark {
+  rotate: 60deg;
+}
+
+.btag-card:hover .btag-turn--back .btag-turn__mark {
+  rotate: -60deg;
 }
 
 .btag-back__line {
   font-family: var(--font-besley), Georgia, serif;
   font-size: 1.1rem;
   font-weight: 700;
-  line-height: 1.32;
+  line-height: 1.3;
+  text-wrap: pretty;
 }
 
 .btag-back__meta {
@@ -278,7 +513,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.6rem;
-  margin-top: 0.35rem;
+  margin-top: 0.3rem;
 }
 
 .btag-back__asks > * {
@@ -296,4 +531,26 @@
 
 .btag-back__link:hover {
   text-decoration-color: var(--paper);
+}
+
+/* Reduced motion: the tags keep their rest pose, nothing swings, and a
+   turn crossfades the faces in place instead of rotating the card. */
+@media (prefers-reduced-motion: reduce) {
+  .btag-face--back {
+    transform: none;
+  }
+
+  .btag-face {
+    transition: opacity var(--dur-fast) linear;
+  }
+
+  .btag-tag[data-side="front"] .btag-face--back,
+  .btag-tag[data-side="back"] .btag-face--front {
+    opacity: 0;
+  }
+
+  .btag-hang,
+  .btag-turn__mark {
+    transition: none;
+  }
 }
