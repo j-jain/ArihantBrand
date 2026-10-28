@@ -288,9 +288,10 @@ export const photoSlots = {
     // The group's own racked stock, not a stock boutique (change round 9): the
     // first photograph on the site shows the business the house is in, from a
     // godown it runs. Since change round 12 (client's request) a store's polo
-    // wall instead; landscape, so the 4/5 frame centres on the two polos.
-    src: "/images/photos/stores/store-itanagar-polos.jpg",
-    alt: "A wall of polos and folded shirts on timber and steel shelving, two polos hung at its centre",
+    // wall; since change round 13 (client's request) the group's building, the
+    // same portrait file as the Marketing hero.
+    src: "/images/photos/group-building-portrait.jpg",
+    alt: "Arihant Tower, the group's building in Guwahati, where all three businesses work",
     ratio: "4 / 5",
     real: true,
   },
@@ -307,8 +308,8 @@ export const photoSlots = {
   /* The feature hero (change round 6): a wide photograph run to the screen's
      edge and a smaller inset on it. Since change round 11 the wide one is the
      Marketing godown itself (the client's own photograph; it stood on stock
-     until then). Since change round 7 the inset is the trophy
-     (`marketingAward`, below). */
+     until then). From change round 7 the inset was the trophy; since change
+     round 13 Marketing's hero has no inset. */
   /* Since change round 12 the wide one is the group's building (client's
      request); the godown still runs in the About values panel. */
   marketingHero: {
@@ -317,27 +318,19 @@ export const photoSlots = {
     ratio: "4 / 5",
     real: true,
   },
-  /* The trophy itself, a real object we hold. It stood beside the award band
-     until change round 7; it is now the small photograph on the corner of the
-     hero's wide one, in a 3/4 frame. Since change round 11 the file is the
-     trophy cut out of its background (scripts/cutout-awards.py), shown whole
-     on a paper-shade plate (feature-hero.css, the portrait inset) rather than
-     cropped out of an office. Uncaptioned: the hero's proof line beside it
-     already names the award. */
-  marketingAward: {
-    src: "/images/photos/awards/cut/award-distributor-of-the-year.webp",
-    alt: "The Golden Star Seller Distributor of the Year trophy awarded to Arihant Marketing",
-    ratio: "3 / 4",
-    real: true,
-  },
+  /* The trophy inset (`marketingAward`, change rounds 7 to 12) came off the
+     hero in change round 13 at the client's request, with the proof line
+     beside it. The cut-out still stands in the recognition cabinet. */
   /* ---- Arihant Apparels ---------------------------------------- AA6 */
   /* The feature hero (change round 6): the team working the warehouse floor,
      and the 2024 spring summer fair (its banner names the event). */
-  /* Since change round 12 the wide one is a store floor stocked by Apparels
-     (the Itanagar shoot's DSCF0401, client's request); the inset is unchanged. */
+  /* In change round 12 the wide one was a store floor stocked by Apparels;
+     since change round 13 (client's request) it is the team at their office,
+     the same file as the team band lower down. The photograph is 16:9, so the
+     tall desktop frame shows the middle of the group; the inset is unchanged. */
   apparelsHero: {
-    src: "/images/photos/stores/store-itanagar-floor.jpg",
-    alt: "A store floor of shirt bays and hanging rails under track lights, stocked with the season's menswear",
+    src: "/images/photos/apparels-team.jpg",
+    alt: "The Arihant Apparels team in their green uniforms at the Guwahati office",
     ratio: "4 / 5",
     real: true,
   },

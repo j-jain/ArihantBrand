@@ -184,12 +184,16 @@ export default async function RecognitionPage() {
                     <h3 className="t-h2 max-w-[18ch] text-on-charcoal">
                       {headlineAward.title}
                     </h3>
-                    <p className="award-row__issuer t-lead text-on-charcoal-soft">
-                      {headlineAward.issuer}
-                    </p>
-                    <p className="award-row__year t-label text-on-charcoal-soft">
-                      {headlineAward.year}
-                    </p>
+                    {headlineAward.issuer ? (
+                      <p className="award-row__issuer t-lead text-on-charcoal-soft">
+                        {headlineAward.issuer}
+                      </p>
+                    ) : null}
+                    {headlineAward.year ? (
+                      <p className="award-row__year t-label text-on-charcoal-soft">
+                        {headlineAward.year}
+                      </p>
+                    ) : null}
                     {headlineAward.detail ? (
                       <p className="t-body measure mt-3 text-on-charcoal-soft">
                         {headlineAward.detail}
@@ -206,12 +210,18 @@ export default async function RecognitionPage() {
                     <h3 className="t-h3 max-w-[22ch] text-on-charcoal">
                       {award.title}
                     </h3>
-                    <p className="award-row__issuer t-body text-on-charcoal-soft">
-                      {award.issuer}
-                    </p>
-                    <p className="award-row__year t-label text-on-charcoal-soft">
-                      {award.year}
-                    </p>
+                    {/* An award may be its title alone (change round 13:
+                        the footfall entry). */}
+                    {award.issuer ? (
+                      <p className="award-row__issuer t-body text-on-charcoal-soft">
+                        {award.issuer}
+                      </p>
+                    ) : null}
+                    {award.year ? (
+                      <p className="award-row__year t-label text-on-charcoal-soft">
+                        {award.year}
+                      </p>
+                    ) : null}
                     {award.detail ? (
                       <p className="t-small measure mt-2 text-on-charcoal-soft">
                         {award.detail}

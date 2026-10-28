@@ -27,7 +27,6 @@ import {
   faqJsonLd,
   pageMetadata,
 } from "@/lib/seo";
-import { facts } from "@/content/facts";
 import { unitScope } from "@/lib/units";
 import { FeatureHeroMedia } from "../_components/FeatureHeroMedia";
 import { UnitHero } from "../_components/UnitHero";
@@ -72,16 +71,12 @@ export default async function ArihantMarketingPage() {
   const contact = settings.contacts.find((c) => c.unit === UNIT);
   const marketingPartners = partners.filter((p) => p.unit === UNIT);
   const { hero, sections } = copy;
-  const award = sections.award;
   const film = sections.film;
   const strengthsSection = sections.strengths;
   const how = sections.how;
   const brandsSection = sections.brands;
   const faqSection = sections.faq;
   const ctaSection = sections.cta;
-  // The award is told once, in the hero: its name on the proof line and the
-  // trophy itself as the photograph on the corner of the wide one.
-  const awardLine = award ? `${award.heading} · CMAI ${facts.marketing.awardYear}` : undefined;
 
   return (
     <div>
@@ -99,21 +94,16 @@ export default async function ArihantMarketingPage() {
           asks, the figures and the award beside a wide photograph run to the
           screen's edge. Change round 7: the charcoal award band that followed
           is gone, and its trophy is the small photograph laid on the wide
-          one, beside the proof line that names it. Both are Studio slots
-          (the wide one on stock for now, the trophy real). */}
+          one, beside the proof line that names it. Change round 13 (client's
+          request): the trophy and the proof line are gone too, so the hero is
+          the claim, its asks and figures beside the building alone. The
+          award is still told on /recognition and the home awards band. */}
       {business ? (
         <UnitHero
           business={business}
           hero={hero}
           feature
-          proof={awardLine}
-          media={
-            <FeatureHeroMedia
-              main={photos.marketingHero}
-              inset={photos.marketingAward}
-              insetRatio={photos.marketingAward.ratio}
-            />
-          }
+          media={<FeatureHeroMedia main={photos.marketingHero} />}
         />
       ) : null}
 

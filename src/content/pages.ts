@@ -75,12 +75,7 @@ export const pages: Record<string, PageCopy> = {
       secondaryCta: { label: "Distribute your brand", href: "/contact?intent=brand" },
     },
     sections: {
-      award: {
-        // The year is set beside this as a numeral at signage scale, so the
-        // heading no longer carries it twice.
-        heading: "Best Distributor of India",
-        lead: `Awarded by the Clothing Manufacturers Association of India in ${facts.marketing.awardYear}. In this trade, that is the reference that needs no explaining.`,
-      },
+      // `award` went with the hero's proof line in change round 13.
       strengths: {
         heading: "What a brand gets from us",
         lead: "Four things, and none of them need building from scratch.",
@@ -118,8 +113,9 @@ export const pages: Record<string, PageCopy> = {
       headingEmphasis: "category leaders",
       // Change round 9: what the portfolio is and how it is bought. The
       // founding year, the label count and the warehouse are the figures
-      // under the asks, so the lead no longer repeats them.
-      lead: "The group's second distribution house, with a portfolio of its own: the Northeast's leading ladies' ethnic labels, with westernwear, kidswear and footwear beside them, bought on sell-through data so your racks hold what moved.",
+      // under the asks, so the lead no longer repeats them. Change round 13
+      // (client's request): no westernwear, and no sell-through clause.
+      lead: "The group's second distribution house, with a portfolio of its own: the Northeast's leading ladies' ethnic labels, with kidswear and footwear beside them.",
       primaryCta: {
         label: "Shop fast moving brands for your store",
         href: "/contact?intent=retailer",
@@ -143,7 +139,7 @@ export const pages: Record<string, PageCopy> = {
       },
       brands: {
         heading: "The Apparels portfolio",
-        lead: "Home to the Northeast's leading ladies' ethnic labels, with westernwear, kidswear and footwear alongside, distributed across the region from our Guwahati warehouse.",
+        lead: "Home to the Northeast's leading ladies' ethnic labels, with kidswear and footwear alongside, distributed across the region from our Guwahati warehouse.",
       },
       faq: { heading: "Straight answers" },
       cta: {
@@ -157,8 +153,9 @@ export const pages: Record<string, PageCopy> = {
     metaTitle: "Multi-brand Retail Stores in Guwahati | Arihant Retail",
     metaDescription: `The most modern and professionally run multi-brand apparel stores in Northeast India. ${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, all company-run. Zero deadstock, asset-light.`,
     hero: {
+      // Change round 13 (client's request): "multi-brand stores across".
       heading:
-        "The most modern and professionally run retail stores in Northeast India",
+        "The most modern and professionally run multi-brand stores across Northeast India",
       headingEmphasis: "most modern",
       // Change round 5: one sentence on what the stores are, one on who owns
       // them. Every figure from facts.ts.
@@ -275,11 +272,13 @@ export const pages: Record<string, PageCopy> = {
   recognition: {
     metaTitle: "Awards & Testimonials | Arihant Group Recognition",
     metaDescription:
-      "CMAI's Best Distributor of India 2015, NEGTA founder membership, and what retailers, brands and store owners across the Northeast say about Arihant.",
+      "CMAI's Best Distributor of India 2015, the highest footfall at the region's garment exhibitions, and what retailers, brands and store owners across the Northeast say about Arihant.",
     hero: {
       heading: "Awards, and who gave them",
       headingEmphasis: "Awards",
-      lead: `One national award, one founding membership, and ${facts.apparels.exhibitions} regional fairs led on footfall. Retailer references are available on a call.`,
+      // Change round 13: the NEGTA membership is off the awards list and the
+      // fair count off the footfall entry, so neither is counted here.
+      lead: "One national award and the highest footfall at the region's garment exhibitions. Retailer references are available on a call.",
       primaryCta: { label: "Work with us", href: "/contact" },
     },
     sections: {

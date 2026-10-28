@@ -63,14 +63,16 @@ export function UnitHero({
 }: UnitHeroProps) {
   /* Which company this is, said plainly and small. */
   const lockup = (
-    <div data-hero-reveal className="unit-lockup flex items-center gap-3">
+    // `data-unit` lets one unit's mark take its own size (change round 13:
+    // the Apparels mark, the squarest of the three, a size up).
+    <div data-hero-reveal data-unit={business.unit} className="unit-lockup flex items-center gap-3">
       <span className="unit-lockup__logo relative block">
         <Image
           src={business.logo}
           alt=""
           fill
           className="object-contain object-left"
-          sizes="140px"
+          sizes="200px"
         />
       </span>
       <span className="unit-lockup__name t-label text-ink-soft">{business.name}</span>

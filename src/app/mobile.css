@@ -1026,8 +1026,8 @@
   }
 
   .funnel-card__mark {
-    width: 5rem;
-    height: 1.5rem;
+    width: 3.9rem;
+    height: 2.25rem;
   }
 
   /* --- Awards and testimonials -------------------------------------- */
@@ -2222,6 +2222,12 @@
 
   .unit-hero-feature__grid {
     gap: 1.75rem;
+  }
+
+  /* The Apparels mark a size up, as on desktop (change round 13). */
+  .unit-hero--feature .unit-lockup[data-unit="apparels"] .unit-lockup__logo {
+    width: 4.5rem;
+    height: 2.75rem;
   }
 
   .unit-hero-feature__copy {

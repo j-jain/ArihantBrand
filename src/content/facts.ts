@@ -10,7 +10,8 @@
  *
  * Scoping is the point. `facts.group.years` is the age of the house;
  * `facts.marketing.years` is how long the distribution arm has traded. They
- * differ legitimately, and the labels beside them say which is which.
+ * may differ legitimately, and the labels beside them say which is which
+ * (since change round 13 both are 35, on the client's word).
  *
  * Three figures are DERIVED from `partners.ts` so they can never disagree with
  * the logo walls that render them: `group.labels`, `marketing.brandsOnWall`
@@ -62,8 +63,9 @@ export const InWords = (value: number): string => {
 /* ------------------------------------------------------------------ */
 
 const marketing = {
-  /** Years Arihant Marketing has distributed. Shorter than the group's age. */
-  years: 30,
+  /** Years Arihant Marketing has distributed. Since change round 13 (the
+   *  client's figure) the same as the group's age. */
+  years: 35,
   /** Retailers served across the region. */
   retailers: 300,
   /** Shop-in-shop counters run inside modern trade. */
@@ -90,8 +92,8 @@ const apparels = {
 
 /** Owned by the company and run by the company. */
 const storesCompanyOwned = 2;
-/** Owned by a franchisee and run by the company (K.A.K in Kohima, the
- *  Itanagar store, and Urban Closet in Tura since change round 11). */
+/** Owned by a franchisee and run by the company (K.A.K in Kohima, Urban
+ *  Closet in Itanagar, and Urban Closet in Tura since change round 11). */
 const storesFranchisee = 3;
 
 const retail = {

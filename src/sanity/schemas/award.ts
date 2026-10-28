@@ -2,16 +2,18 @@ import { defineType, defineField } from "sanity";
 
 /** Awards & recognition (recognition page trophy case). Mirrors a seed
  *  `awards[]` entry (`Award` in src/content/types.ts). `year` is a display
- *  marker — a real year ("2015") or a short tag ("Founder", "4 fairs").
+ *  marker — a real year ("2015") or a short tag. Year and issuer are
+ *  optional since change round 13: an award may be its title alone (the
+ *  footfall entry), and the rows print only the lines that are filled.
  *  Honesty rail: only genuine, documented recognitions belong here. */
 export const award = defineType({
   name: "award",
   title: "Award / Recognition",
   type: "document",
   fields: [
-    defineField({ name: "year", title: "Year / marker (label)", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "year", title: "Year / marker (label)", type: "string" }),
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
-    defineField({ name: "issuer", title: "Issuer", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "issuer", title: "Issuer", type: "string" }),
     defineField({ name: "detail", title: "Detail", type: "text", rows: 3 }),
     defineField({
       name: "image",

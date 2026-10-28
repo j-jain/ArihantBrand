@@ -13,8 +13,9 @@ interface Photo {
 interface FeatureHeroMediaProps {
   /** The wide photograph, run to the screen's right edge. */
   main: Photo;
-  /** The smaller photograph laid over its lower-left corner on a keyline. */
-  inset: Photo;
+  /** The smaller photograph laid over its lower-left corner on a keyline.
+   *  Optional since change round 13: Marketing's hero is the wide one alone. */
+  inset?: Photo;
   /** A short caption under the inset, only when the photograph itself says
    *  what it shows (the fair's own banner, say). */
   caption?: string;
@@ -93,29 +94,31 @@ export function FeatureHeroMedia({
           />
         </div>
       </div>
-      <figure
-        className={
-          portrait ? "feature-media__inset feature-media__inset--portrait" : "feature-media__inset"
-        }
-      >
-        <div data-hero-clip className="feature-media__keyline">
-          <ParallaxImage
-            src={inset.src}
-            alt={inset.alt}
-            ratio={insetRatio}
-            parallax={false}
-            tilt
-            priority
-            sizes={portrait ? "(max-width: 767px) 34vw, 12rem" : "(max-width: 767px) 45vw, 16rem"}
-            className="feature-media__inset-frame"
-          />
-        </div>
-        {caption ? (
-          <figcaption data-hero-reveal className="feature-media__caption">
-            {caption}
-          </figcaption>
-        ) : null}
-      </figure>
+      {inset ? (
+        <figure
+          className={
+            portrait ? "feature-media__inset feature-media__inset--portrait" : "feature-media__inset"
+          }
+        >
+          <div data-hero-clip className="feature-media__keyline">
+            <ParallaxImage
+              src={inset.src}
+              alt={inset.alt}
+              ratio={insetRatio}
+              parallax={false}
+              tilt
+              priority
+              sizes={portrait ? "(max-width: 767px) 34vw, 12rem" : "(max-width: 767px) 45vw, 16rem"}
+              className="feature-media__inset-frame"
+            />
+          </div>
+          {caption ? (
+            <figcaption data-hero-reveal className="feature-media__caption">
+              {caption}
+            </figcaption>
+          ) : null}
+        </figure>
+      ) : null}
     </div>
   );
 }

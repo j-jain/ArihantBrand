@@ -218,7 +218,7 @@ export default async function HomePage() {
                                 src={b.logo}
                                 alt={b.name}
                                 fill
-                                sizes="96px"
+                                sizes="128px"
                                 className="object-contain object-left"
                               />
                             </span>
@@ -295,12 +295,18 @@ export default async function HomePage() {
                           >
                             {award.title}
                           </h3>
-                          <p className="award-row__issuer t-small text-on-charcoal-soft">
-                            {award.issuer}
-                          </p>
-                          <p className="award-row__year t-label text-on-charcoal-soft">
-                            {award.year}
-                          </p>
+                          {/* An award may be its title alone (change round
+                              13: the footfall entry). */}
+                          {award.issuer ? (
+                            <p className="award-row__issuer t-small text-on-charcoal-soft">
+                              {award.issuer}
+                            </p>
+                          ) : null}
+                          {award.year ? (
+                            <p className="award-row__year t-label text-on-charcoal-soft">
+                              {award.year}
+                            </p>
+                          ) : null}
                         </li>
                       ))}
                     </ol>

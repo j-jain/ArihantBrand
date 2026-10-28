@@ -122,7 +122,8 @@ export interface Testimonial {
 }
 
 export interface Award {
-  /** Display marker: a year ("2015") or a short tag ("Founder"). */
+  /** Display marker: a year ("2015") or a short tag. May be empty (change
+   *  round 13), and then no year line prints; the same goes for `issuer`. */
   year: string;
   title: string;
   issuer: string;

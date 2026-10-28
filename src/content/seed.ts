@@ -154,11 +154,12 @@ export const businesses: Business[] = [
         suffix: "+",
         label: "Retailers",
       },
+      // Change round 13: the brand partners, in place of the warehouse (which
+      // the points and the CTA lead still state).
       {
-        id: "warehouse",
-        value: facts.marketing.warehouseSqFt,
-        suffix: " sq ft",
-        label: "Guwahati warehouse",
+        id: "brand-partners",
+        value: facts.marketing.brandsOnWall,
+        label: "Brand partners",
       },
     ],
     audienceCtas: [
@@ -188,7 +189,7 @@ export const businesses: Business[] = [
       },
       {
         id: "ethnic-leadership",
-        text: "Home to the Northeast's leading ladies' ethnic labels, alongside westernwear, kidswear and footwear.",
+        text: "Home to the Northeast's leading ladies' ethnic labels, alongside kidswear and footwear.",
       },
       {
         id: "category-leaders",
@@ -212,10 +213,12 @@ export const businesses: Business[] = [
         suffix: " sq ft",
         label: "Guwahati warehouse",
       },
+      // Change round 13: the brand partners, in place of the exhibitions
+      // count (the footfall claim stays as a point and on the awards list).
       {
-        id: "exhibitions",
-        value: facts.apparels.exhibitions,
-        label: "Exhibitions led on footfall",
+        id: "brand-partners",
+        value: facts.apparels.brandsOnWall,
+        label: "Brand partners",
       },
     ],
     audienceCtas: [
@@ -298,13 +301,13 @@ export const funnels: Funnel[] = [
   {
     id: "retailer",
     title: "Shop fast moving brands for your store",
-    text: "You run a counter. We put the national labels that move onto your racks, keep the size sets whole, and settle claims on the date we name.",
+    text: "You run a counter. We keep your racks full of the national labels that move.",
     cta: { label: "Stock our brands", href: "/contact?intent=retailer" },
   },
   {
     id: "franchise",
     title: "Own a retail store",
-    text: "You bring the capital and the property. We hire, buy, merchandise and market, and the deadstock stays off your books.",
+    text: "You bring the intent. We run the show, right from the first hire.",
     cta: { label: "Tap the North East with us", href: "/partner" },
   },
 ];
@@ -521,8 +524,9 @@ export const marketingReasons = [
 /* store in the atlas ledger and the photograph's alt text on /partner's     */
 /* proof strip (which prints the store and town itself), so it says what     */
 /* the picture shows and names neither.                                      */
-/* Itanagar (change round 12) carries an interior, not its front: the front's */
-/* sign reads URBAN CLOSET, which contradicts the Tanzee name.               */
+/* Itanagar (change round 12) carries an interior, not its front. It traded  */
+/* on the site as Tanzee until change round 13, when the client named it    */
+/* Urban Closet, the name its sign and the client's photo folder carry.     */
 /* ------------------------------------------------------------------ */
 
 export const stores: Store[] = [
@@ -555,7 +559,7 @@ export const stores: Store[] = [
     caption: "The front, mannequins in both window floors",
   },
   {
-    name: "Tanzee",
+    name: "Urban Closet",
     city: "Itanagar",
     format: "Multi-brand",
     status: "Open",
@@ -692,7 +696,7 @@ export const faqs: Faq[] = [
     answer: `Arihant Apparels holds a separate ${phrase.apparelsBrands}-label portfolio, weighted differently:`,
     bullets: [
       "The Northeast's leading ladies' ethnic labels.",
-      "Westernwear, kidswear and footwear alongside them.",
+      "Kidswear and footwear alongside them.",
       "A separate warehouse, a separate buying team, one group behind both.",
     ],
   },
@@ -1449,8 +1453,12 @@ export const timeline = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Awards & recognition (public record: CMAI 2015, NEGTA membership,    */
-/* exhibition footfall — see PRODUCT.md fact base)                      */
+/* Awards & recognition (public record: CMAI 2015 and exhibition        */
+/* footfall — see PRODUCT.md fact base). Change round 13, the client's   */
+/* request: the NEGTA founder membership is off the list (the About      */
+/* story still tells it), and the footfall entry is its title alone. Its */
+/* year and issuer are empty strings, not absent: the seed patches award */
+/* documents field by field, so only "" clears the old values.          */
 /* ------------------------------------------------------------------ */
 
 export const awards: Award[] = [
@@ -1461,15 +1469,9 @@ export const awards: Award[] = [
     detail: "The national distributor award in Indian apparel.",
   },
   {
-    year: "Founder",
-    title: "NEGTA founder membership",
-    issuer: "North Eastern Garment Traders Association",
-    detail: "The house helped found the association that organises the Northeast's garment trade.",
-  },
-  {
-    year: `${facts.apparels.exhibitions} fairs`,
+    year: "",
     title: "Highest footfall in exhibitions",
-    issuer: "Regional garment exhibitions",
+    issuer: "",
     detail: "",
   },
 ];

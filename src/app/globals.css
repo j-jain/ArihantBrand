@@ -876,11 +876,14 @@ svg {
   margin-top: 0.25rem;
 }
 
+/* A size up in change round 13 (client's request): at 1.75rem the Apparels
+   mark, the squarest of the three, read as a speck. The box is only as wide
+   as the widest mark at this height (Retail's), so a pair sits together. */
 .funnel-card__mark {
   position: relative;
   display: block;
-  width: 6rem;
-  height: 1.75rem;
+  width: 4.75rem;
+  height: 2.75rem;
 }
 
 /* ------------------------------------------------------------------ */

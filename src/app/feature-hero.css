@@ -62,6 +62,14 @@
     width: 4.75rem;
     height: 2.6rem;
   }
+
+  /* The Apparels mark is nearly square, so at the shared height it read
+     smaller than Marketing's; a size up at the client's request (change
+     round 13). */
+  .unit-hero--feature .unit-lockup[data-unit="apparels"] .unit-lockup__logo {
+    width: 6rem;
+    height: 4rem;
+  }
 }
 
 /* The second ask, quiet beside the button: a link, not a second button. */

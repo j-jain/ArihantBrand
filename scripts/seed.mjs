@@ -512,7 +512,7 @@ async function main() {
    * renders (officeMap) are deliberately not listed. */
   const EDITABLE_SLOTS = [
     "homeHero", "homeProofGround",
-    "marketingHero", "marketingAward",
+    "marketingHero",
     "apparelsHero", "apparelsHeroInset",
     "apparelsWarehouse", "apparelsTeam",
     "retailInterior", "retailStorefront", "partnerStorefront",
