@@ -287,9 +287,10 @@ export const photoSlots = {
   homeHero: {
     // The group's own racked stock, not a stock boutique (change round 9): the
     // first photograph on the site shows the business the house is in, from a
-    // godown it runs. Native portrait, so the 4/5 frame takes it whole.
-    src: "/images/photos/apparels-warehouse-2.jpg",
-    alt: "Racks of folded denim organised by label in the Arihant Apparels warehouse, Guwahati",
+    // godown it runs. Since change round 12 (client's request) a store's polo
+    // wall instead; landscape, so the 4/5 frame centres on the two polos.
+    src: "/images/photos/stores/store-itanagar-polos.jpg",
+    alt: "A wall of polos and folded shirts on timber and steel shelving, two polos hung at its centre",
     ratio: "4 / 5",
     real: true,
   },

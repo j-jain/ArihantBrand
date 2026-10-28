@@ -63,6 +63,8 @@ const jobs = [
   // The floor shot runs as the Apparels hero; the interior on the store card.
   ["Urban Closet Itanagar Photos/DSCF0401.JPG", "stores/store-itanagar-floor.jpg", 2000],
   ["Urban Closet Itanagar Photos/DSCF0311.JPG", "stores/store-itanagar-interior.jpg", 2000],
+  // The polo wall, the home hero since change round 12
+  ["Urban Closet Itanagar Photos/WhatsApp Image 2026-03-16 at 11.52.10.jpeg", "stores/store-itanagar-polos.jpg", 1600],
   // Urban Closet, Tura
   ["Urban Closet Tura/Store Front.jpeg", "stores/store-tura-front.jpg", 1600],
   // Arihant Marketing godown, and the group's building
