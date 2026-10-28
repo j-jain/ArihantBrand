@@ -3,7 +3,7 @@ import { Analytics } from "@/components/Analytics";
 import { besley, archivo } from "./fonts";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arihantgroup.in";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.arihant.marketing";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

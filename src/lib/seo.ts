@@ -51,7 +51,7 @@ export function mapsEmbedUrl(s: SiteSettings): string {
 
 /** Canonical site origin. Set NEXT_PUBLIC_SITE_URL in production (no trailing slash). */
 export function siteUrl(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://arihantgroup.in").replace(/\/$/, "");
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.arihant.marketing").replace(/\/$/, "");
 }
 
 export function pageMetadata(opts: {
