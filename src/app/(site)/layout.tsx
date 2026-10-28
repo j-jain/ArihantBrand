@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import {
   SiteFooter,
   SiteHeader,
@@ -39,6 +40,10 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
         contacts={settings.contacts}
       />
       <WhatsAppFab fallback={settings.defaultWhatsapp} />
+      {/* Vercel Web Analytics: page views for the public site only, so the
+          Studio is never counted. Cookieless and served from the site's own
+          domain (/_vercel/insights), so no consent banner is needed. */}
+      <Analytics />
     </>
   );
 }

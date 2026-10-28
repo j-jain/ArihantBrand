@@ -1,7 +1,9 @@
 import Script from "next/script";
 
 /**
- * Plausible, and only Plausible.
+ * Plausible, the one third-party script allowed. Inert until configured; the
+ * page views actually collected come from Vercel Web Analytics, mounted in
+ * the (site) layout.
  *
  * Chosen over GA4 because it sets no cookies and stores no personal data,
  * which is why this site needs no consent banner (change brief, X10: not
