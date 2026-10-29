@@ -104,13 +104,39 @@ function postalAddress(s: SiteSettings) {
   };
 }
 
+/** The group's own profiles elsewhere, for `sameAs`. Only pages the group
+ *  runs: a search engine joins them to this site as one business. */
+const PROFILES = ["https://www.linkedin.com/company/arihant-marketinghy"];
+
+/** The site itself, so Google can show "Arihant Group" as the site name and
+ *  match the people who search for it as "Arihant Marketing" (the domain). */
+export function websiteJsonLd(s: SiteSettings) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${siteUrl()}/#website`,
+    name: s.orgName,
+    alternateName: [
+      ...s.contacts.map((c) => c.businessName),
+      new URL(siteUrl()).hostname.replace(/^www\./, ""),
+    ],
+    url: siteUrl(),
+    inLanguage: "en-IN",
+    publisher: { "@id": `${siteUrl()}/#organization` },
+  };
+}
+
 export function organizationJsonLd(s: SiteSettings) {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${siteUrl()}/#organization`,
     name: s.orgName,
+    // The three trading names people search for (Marketing, Apparels, Retail).
+    alternateName: s.contacts.map((c) => c.businessName),
     url: siteUrl(),
+    logo: `${siteUrl()}/icon.png`,
+    sameAs: PROFILES,
     description: s.tagline,
     foundingDate: "1999",
     address: postalAddress(s),

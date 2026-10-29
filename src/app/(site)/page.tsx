@@ -30,7 +30,7 @@ import {
   getSiteSettings,
   getTestimonials,
 } from "@/lib/content";
-import { localBusinessJsonLd, organizationJsonLd, pageMetadata } from "@/lib/seo";
+import { localBusinessJsonLd, organizationJsonLd, pageMetadata, websiteJsonLd } from "@/lib/seo";
 import { whatsappFor } from "@/lib/whatsapp";
 import { WhatsAppIcon } from "@/components/icons";
 import { BusinessTags } from "./_components/BusinessTags";
@@ -121,6 +121,7 @@ export default async function HomePage() {
   const latestPosts = posts.slice(0, 3);
   return (
     <>
+      <JsonLd data={websiteJsonLd(settings)} />
       <JsonLd data={organizationJsonLd(settings)} />
       <JsonLd data={localBusinessJsonLd(settings)} />
 
