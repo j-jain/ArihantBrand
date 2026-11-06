@@ -7,6 +7,7 @@ import {
   JsonLd,
   SectionHeading,
 } from "@/components";
+import { phrase } from "@/content/facts";
 import { getPageCopy, getPartners, getSiteSettings } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { whatsappFor } from "@/lib/whatsapp";
@@ -55,8 +56,6 @@ export default async function BrandsPage() {
 
   const { hero, sections } = copy;
   const cta = sections.cta;
-  const marketingCount = partners.filter((p) => p.unit === "marketing").length;
-  const apparelsCount = partners.filter((p) => p.unit === "apparels").length;
 
   return (
     <div>
@@ -93,7 +92,9 @@ export default async function BrandsPage() {
               ) : null}
             </div>
             <p data-hero-reveal className="t-small text-ink-soft">
-              {marketingCount} labels via Arihant Marketing &middot; {apparelsCount} via Arihant Apparels
+              {/* The client's counts (facts.ts), not the list's: the list
+                  below shows the labels whose logos are on file. */}
+              {phrase.marketingBrands} labels via Arihant Marketing &middot; {phrase.apparelsBrands} via Arihant Apparels
             </p>
           </div>
         </HeroIntro>

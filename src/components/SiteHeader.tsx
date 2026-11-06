@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { phrase } from "@/content/facts";
 import { businesses } from "@/content/seed";
 import type { UnitKey } from "@/content/types";
 import { DUR, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
@@ -661,7 +660,7 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
               </div>
               <div className="nav-panel__foot">
                 <Link href="/brands" className="nav-panel__footlink t-small">
-                  All {phrase.groupLabels} labels <span aria-hidden="true">→</span>
+                  All labels <span aria-hidden="true">→</span>
                 </Link>
                 <Link
                   href="/recognition"

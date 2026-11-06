@@ -890,6 +890,23 @@ svg {
   height: 2.75rem;
 }
 
+/* The retailer card's pair, matched (7 November 2026, the client's request:
+   aligned and the same size). At one height the Apparels mark, squarer
+   (347x283) and drawn in thin lines, read smaller than Marketing's
+   (748x487). Each box now takes its logo's exact proportions, so the gap
+   between the two is the row's gap and nothing else, and the two are sized
+   to the same area (Apparels about 12% taller) with their centres on one
+   line. Retail, alone in its card, keeps the box above. */
+.funnel-card__mark[data-unit="marketing"] {
+  height: 2.6rem;
+  width: calc(2.6rem * 748 / 487);
+}
+
+.funnel-card__mark[data-unit="apparels"] {
+  height: 2.9rem;
+  width: calc(2.9rem * 347 / 283);
+}
+
 /* ------------------------------------------------------------------ */
 /* Logo marquee                                                        */
 /* ------------------------------------------------------------------ */

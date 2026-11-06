@@ -92,7 +92,7 @@ export const groupStats: Stat[] = [
     suffix: "+",
     label: "Retailers served",
   },
-  { id: "labels", value: facts.group.labels, label: "National labels" },
+  { id: "labels", value: facts.group.brands, label: "National labels" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -158,7 +158,7 @@ export const businesses: Business[] = [
       // the points and the CTA lead still state).
       {
         id: "brand-partners",
-        value: facts.marketing.brandsOnWall,
+        value: facts.marketing.brands,
         label: "Brand partners",
       },
     ],
@@ -217,7 +217,7 @@ export const businesses: Business[] = [
       // count (the footfall claim stays as a point and on the awards list).
       {
         id: "brand-partners",
-        value: facts.apparels.brandsOnWall,
+        value: facts.apparels.brands,
         label: "Brand partners",
       },
     ],

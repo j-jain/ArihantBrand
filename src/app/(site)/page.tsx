@@ -215,12 +215,13 @@ export default async function HomePage() {
                       {servedBy.length ? (
                         <span className="funnel-card__marks" role="group" aria-label="Served by">
                           {servedBy.map((b) => (
-                            <span key={b.unit} className="funnel-card__mark">
+                            <span key={b.unit} className="funnel-card__mark" data-unit={b.unit}>
                               <Image
                                 src={b.logo}
                                 alt={b.name}
-                                // .funnel-card__mark is 8rem x 2.75rem: 144px
-                                // at the largest root size.
+                                // .funnel-card__mark is at most 4.75rem x
+                                // 2.75rem: under 144px at the largest root
+                                // size. Each unit's box is sized in globals.css.
                                 width={144}
                                 height={50}
                                 className="absolute inset-0 h-full w-full object-contain object-left"
@@ -386,7 +387,9 @@ export default async function HomePage() {
               href="/brands"
               className="m-link inline-flex items-center gap-1.5 font-sans font-semibold text-vermillion-deep underline-offset-4 hover:underline"
             >
-              See all {partners.length} labels
+              {/* No number (7 November 2026): the client's count (89) runs
+                  ahead of the logos on file, and the link opens that list. */}
+              See all labels
               <span aria-hidden="true">→</span>
             </Link>
           </p>

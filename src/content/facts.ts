@@ -13,18 +13,17 @@
  * may differ legitimately, and the labels beside them say which is which
  * (since change round 13 both are 35, on the client's word).
  *
- * Three figures are DERIVED from `partners.ts` so they can never disagree with
- * the logo walls that render them: `group.labels`, `marketing.brandsOnWall`
- * and `apparels.brandsOnWall`. Those three describe the WALL.
+ * Brand counts (7 November 2026, the client's latest figures): Arihant
+ * Marketing carries 47 brands and Arihant Apparels 42, so the group carries
+ * 89. These are STATED figures, `marketing.brands` and `apparels.brands`,
+ * and `group.brands` is derived from the two so the total can never disagree
+ * with its parts. Every count the site prints reads them.
  *
- * `group.brandPartners` is deliberately NOT derived, and is the one place this
- * file states a figure the site cannot show you. The client's brand-partner
- * count is 80+; the wall currently renders 77 logos, because the remaining
- * logo files have not been supplied. Until they arrive the stated count and
- * the rendered wall legitimately differ, which is why they are two named
- * fields rather than one. When the missing logos land in
- * `public/images/partners/` and `partners.ts`, delete `brandPartners` and
- * point `phrase.groupBrandPartners` back at `group.labels`.
+ * The logo walls lag behind: `partners.ts` renders 48 Marketing logos and 29
+ * Apparels logos (77 in all), because the client's list has not been matched
+ * to the logo files yet. `marketing.brandsOnWall`, `apparels.brandsOnWall`
+ * and `group.labels` stay DERIVED from `partners.ts` and describe the WALL
+ * only; no copy prints them. When the walls catch up, the two pairs agree.
  *
  * Every value here is awaiting client sign-off (change brief, open item X8).
  * See CHANGE-BRIEF-STATUS.md for the questions attached to each one.
@@ -70,7 +69,9 @@ const marketing = {
   retailers: 300,
   /** Shop-in-shop counters run inside modern trade. */
   sisCounters: 300,
-  /** Labels this arm renders on its wall. Derived, so it cannot drift. */
+  /** Brands this arm carries, as stated by the client (7 Nov 2026). */
+  brands: 47,
+  /** Logos this arm renders on its wall. Derived; describes the wall only. */
   brandsOnWall: partnersOf("marketing").length,
   warehouseSqFt: 15000,
   /** Days between two visits to the same retailer. */
@@ -86,7 +87,9 @@ const apparels = {
   warehouseSqFt: 9000,
   /** Consecutive regional exhibitions led on footfall. */
   exhibitions: 4,
-  /** Labels this arm renders on its wall. Derived, as above. */
+  /** Brands this arm carries, as stated by the client (7 Nov 2026). */
+  brands: 42,
+  /** Logos this arm renders on its wall. Derived, as above. */
   brandsOnWall: partnersOf("apparels").length,
 } as const;
 
@@ -116,13 +119,11 @@ const group = {
   years: 35,
   /** Retailers served across the Northeast. */
   retailers: 300,
-  /** Labels on the portfolio wall. Derived: exactly what the wall renders. */
+  /** Brands the group carries: both arms together. Derived from the two
+   *  stated counts (47 + 42 = 89), so the total matches its parts. */
+  brands: marketing.brands + apparels.brands,
+  /** Logos on the portfolio wall. Derived; describes the wall only. */
   labels: partners.length,
-  /**
-   * Brand partners the house works with, as stated by the client. NOT derived.
-   * Exceeds `labels` while logo files are outstanding. See the file header.
-   */
-  brandPartners: 80,
   /** Both godowns together. Derived. */
   warehouseSqFt: marketing.warehouseSqFt + apparels.warehouseSqFt,
   /** States of the Northeast served. */
@@ -151,10 +152,10 @@ export const phrase = {
   marketingRetailers: atLeast(facts.marketing.retailers),
   /** "300+" shop-in-shop counters. */
   sisCounters: atLeast(facts.marketing.sisCounters),
-  /** "80+" brand partners, the stated figure. */
-  groupBrandPartners: atLeast(facts.group.brandPartners),
-  /** "77" labels on the wall; "48" Marketing; "29" Apparels. All derived. */
-  groupLabels: num(facts.group.labels),
-  marketingBrands: num(facts.marketing.brandsOnWall),
-  apparelsBrands: num(facts.apparels.brandsOnWall),
+  /** "89" brand partners: the group's brands, the client's latest total. */
+  groupBrandPartners: num(facts.group.brands),
+  /** "89" labels for the group; "47" Marketing; "42" Apparels. Stated. */
+  groupLabels: num(facts.group.brands),
+  marketingBrands: num(facts.marketing.brands),
+  apparelsBrands: num(facts.apparels.brands),
 } as const;

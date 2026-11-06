@@ -105,7 +105,7 @@ export function SectionReveal({
         // Static until near (performance pass): nothing is hidden, split or
         // measured until this comes within half a screen of the viewport, so
         // the hydration commit carries no below-the-fold motion work.
-        return buildWhenNear(root, () => {
+        return buildWhenNear(root, (self) => {
           // It reached the screen before the observer reported (a fling, a jump
           // link): it stays as served.
           if (onScreenAtMount(root)) return;
@@ -194,7 +194,9 @@ export function SectionReveal({
             }
             tl.play();
           };
-          const addHeadings = ctx.add("headings", () => {
+          // Added to this lazily built context, never to the branch's `ctx`:
+          // see LazySetup in lib/offscreen.ts (the 7 November 2026 crash).
+          const addHeadings = self.add("headings", () => {
             if (!alive || fontsReady) return;
             fontsReady = true;
             window.clearTimeout(timer);

@@ -1030,6 +1030,18 @@
     height: 2.25rem;
   }
 
+  /* The matched pair (globals.css), at the phone's mark size: the same
+     equal-area pair scaled with the box (2.25 / 2.75). */
+  .funnel-card__mark[data-unit="marketing"] {
+    height: 2.13rem;
+    width: calc(2.13rem * 748 / 487);
+  }
+
+  .funnel-card__mark[data-unit="apparels"] {
+    height: 2.37rem;
+    width: calc(2.37rem * 347 / 283);
+  }
+
   /* --- Awards and testimonials -------------------------------------- */
   /* One column that never grows past the screen: the testimonial rail's
      intrinsic width used to widen it, cutting the heading off at 360px. */

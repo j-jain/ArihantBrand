@@ -178,23 +178,40 @@ export function whenIdle(fn: () => void, { timeout = 500 }: { timeout?: number }
   return () => window.clearTimeout(id);
 }
 
+/** The setup a lazily built context runs. It is called with that context, so
+ *  work that lands later (after fonts, on a timer) is added to IT with
+ *  `self.add(...)`. Never add to an outer context (a matchMedia branch's
+ *  `ctx`) from inside a setup: GSAP files the outer context inside this one
+ *  while the outer still holds this one's cleanup, and the two then revert
+ *  each other forever when the page unmounts (the "This page couldn't load"
+ *  crash of 7 November 2026: leaving the home page after scrolling it). */
+export type LazySetup = (self: gsap.Context) => void | (() => void);
+
+/** Revert a lazily built context exactly once. The slot is emptied BEFORE the
+ *  revert, so a cleanup that is reached again from inside the revert (a cycle
+ *  of nested contexts) finds nothing to do instead of recursing. */
+function revertOnce(slot: { ctx: gsap.Context | null }): void {
+  const ctx = slot.ctx;
+  slot.ctx = null;
+  ctx?.revert();
+}
+
 /** Build `setup` in its own GSAP context once `el` comes near, and revert it
  *  on cleanup. The way a below-the-fold section keeps its motion off the
  *  hydration commit: nothing is split, measured or hidden until it matters.
  *  `setup` may return a cleanup of its own, as in gsap.context. */
 export function buildWhenNear(
   el: Element,
-  setup: () => void | (() => void),
+  setup: LazySetup,
   opts?: { margin?: string; scope?: Element },
 ): () => void {
-  let ctx: gsap.Context | null = null;
+  const slot: { ctx: gsap.Context | null } = { ctx: null };
   const cancel = whenNear(el, () => {
-    ctx = gsap.context(setup, opts?.scope ?? el);
+    slot.ctx = gsap.context((self) => setup(self), opts?.scope ?? el);
   }, opts);
   return () => {
     cancel();
-    ctx?.revert();
-    ctx = null;
+    revertOnce(slot);
   };
 }
 
@@ -202,16 +219,15 @@ export function buildWhenNear(
  *  reflowing set pieces: built off the hydration commit, but long before the
  *  reader can reach them), and revert it on cleanup. */
 export function buildWhenIdle(
-  setup: () => void | (() => void),
+  setup: LazySetup,
   opts?: { timeout?: number; scope?: Element },
 ): () => void {
-  let ctx: gsap.Context | null = null;
+  const slot: { ctx: gsap.Context | null } = { ctx: null };
   const cancel = whenIdle(() => {
-    ctx = gsap.context(setup, opts?.scope);
+    slot.ctx = gsap.context((self) => setup(self), opts?.scope);
   }, opts);
   return () => {
     cancel();
-    ctx?.revert();
-    ctx = null;
+    revertOnce(slot);
   };
 }
