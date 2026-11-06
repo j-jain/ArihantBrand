@@ -8,10 +8,13 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.dirname(fileURLToPath(import.meta.url)),
   images: {
     remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
-    // WebP for every browser (performance pass, the user's call): the sources
-    // are WebP too, and a WebP encode on a cold cache is far quicker than the
-    // AVIF one, so a first visitor after a deploy is not left waiting on it.
-    formats: ["image/webp"],
+    // AVIF first, WebP for browsers that don't accept it (the user's call, 6 Nov
+    // 2026). Measured on this site, AVIF photos are 40-70% smaller than WebP
+    // (the retail page's photos 309 KB against 521 KB), which matters more to
+    // visitors on phone data than AVIF's slower decode. The cost is a slower
+    // encode on the first request for each size after a deploy; it is cached
+    // after that.
+    formats: ["image/avif", "image/webp"],
     // Next's default deviceSizes top out at 3840, and the widest entry becomes
     // the `src` fallback on every <Image>. On /brands that put a 3840px URL on
     // 77 lazy logo tiles rendered at 180px (change brief, G11). No source image
