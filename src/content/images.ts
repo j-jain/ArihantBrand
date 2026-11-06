@@ -22,7 +22,7 @@
  */
 
 export interface StockImage {
-  /** Site-root path, e.g. "/images/stock/hero/home-texture.jpg" */
+  /** Site-root path, e.g. "/images/stock/blog/blog-1.webp" */
   src: string;
   /** Factual description of the visible scene; no invented claims. */
   alt: string;
@@ -56,141 +56,9 @@ export interface PhotoSlot {
 }
 
 export const stockImages = {
-  /* ---------------------------------------------------------------- hero */
-  homeTexture: {
-    src: "/images/stock/hero/home-texture.jpg",
-    alt: "Folded grey linen in soft directional light, the weave visible up close",
-    width: 2400,
-    height: 1600,
-    credit: "Luca Laurence",
-    source: "unsplash",
-    sourceUrl: "https://unsplash.com/photos/grey-linen-FseXc3OsIic",
-  },
-
-  /* ------------------------------------------- trade: Arihant Marketing */
-  marketingWarehouse1: {
-    src: "/images/stock/trade/marketing-warehouse-1.jpg",
-    alt: "Tall pallet racking stacked with labelled cartons in a distribution warehouse",
-    width: 1601,
-    height: 2400,
-    credit: "ALHAWRAA",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/warehouse-storage-with-stacked-cardboard-boxes-38195854/",
-  },
-  marketingWarehouse2: {
-    src: "/images/stock/trade/marketing-warehouse-2.jpg",
-    alt: "Low-angle view of warehouse racking loaded with wrapped cartons under working lights",
-    width: 2200,
-    height: 1467,
-    credit: "Ryan Klaus",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/low-angle-shot-of-boxes-standing-on-the-shelves-in-a-warehouse-27111449/",
-  },
-
-  systemsWarehouse1: {
-    src: "/images/stock/trade/systems-warehouse-1.jpg",
-    alt: "Tall stacks of sealed kraft cartons on pallets under the blue steel roof of a wholesale godown",
-    width: 2000,
-    height: 1500,
-    credit: "Ihsan Adityawarman",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/stacked-boxes-in-a-warehouse-10834810/",
-  },
-
-  /* -------------------------------------------- trade: Arihant Apparels */
-  apparelsRacks1: {
-    src: "/images/stock/trade/apparels-racks-1.jpg",
-    alt: "Linen shirts on wooden hangers along a showroom rack in natural light",
-    width: 1600,
-    height: 2400,
-    credit: "Pew Nguyen",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/clothes-in-neutral-colors-hanging-on-the-racks-in-a-clothing-store-17293347/",
-  },
-  apparelsRacks2: {
-    src: "/images/stock/trade/apparels-racks-2.jpg",
-    alt: "Black and white shirts alternating along a display rail by a shop window",
-    width: 2200,
-    height: 1469,
-    credit: "Star Zhang",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/black-and-white-clothing-display-in-retail-shop-29906028/",
-  },
-
-  /* ------------------------------------------------------- trade: about */
-  aboutCraft1: {
-    src: "/images/stock/trade/about-craft-1.jpg",
-    alt: "A tailor's hands cutting grey cloth with shears at a workbench",
-    width: 1600,
-    height: 2400,
-    credit: "Anna Shvets",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/close-up-of-a-hand-with-scissors-cutting-a-fabric-5830661/",
-  },
-  aboutCraft2: {
-    src: "/images/stock/trade/about-craft-2.jpg",
-    alt: "Hands smoothing a stack of freshly cut cream fabric panels on a worktable",
-    width: 1600,
-    height: 2400,
-    credit: "Jane Blaze",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/hands-on-top-of-folder-fabrics-12362543/",
-  },
-
-  /* ----------------------------------------------------- trade: partner */
-  partnerStorefront: {
-    src: "/images/stock/trade/partner-storefront.jpg",
-    alt: "A shopfront glowing warm at night, garments and goods visible through arched windows",
-    width: 1600,
-    height: 2400,
-    credit: "Avenu3",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/stylish-boutique-window-display-at-night-37118432/",
-  },
-
-  /* -------------------------------------------------------------- retail */
-  retailInterior1: {
-    src: "/images/stock/retail/retail-interior-1.jpg",
-    alt: "Interior of a multi-brand clothing store with racks, shelving and a central display case",
-    width: 2200,
-    height: 1467,
-    credit: "Rachel Claire",
-    source: "pexels",
-    sourceUrl: "https://www.pexels.com/photo/clothing-store-interior-5531541/",
-  },
-  retailInterior2: {
-    src: "/images/stock/retail/retail-interior-2.jpg",
-    alt: "Apparel and accessories arranged on a display table inside a warmly lit store",
-    width: 1600,
-    height: 2400,
-    credit: "Ron Lach",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/interior-of-a-clothing-store-8311878/",
-  },
-
-  retailCartons1: {
-    src: "/images/stock/retail/retail-cartons-1.jpg",
-    alt: "A bright distribution aisle with racking loaded on both sides with wrapped cartons",
-    width: 2000,
-    height: 1125,
-    credit: "Handi Boyz LLC",
-    source: "pexels",
-    sourceUrl:
-      "https://www.pexels.com/photo/stacks-of-cardboard-boxes-5775099/",
-  },
-
   /* ------------------------------------------------- blog thumbnails, 3:2 */
   blog1: {
-    src: "/images/stock/blog/blog-1.jpg",
+    src: "/images/stock/blog/blog-1.webp",
     alt: "A dark warehouse aisle between tall stocked racks, daylight at the far end",
     width: 1600,
     height: 1067,
@@ -200,7 +68,7 @@ export const stockImages = {
       "https://www.pexels.com/photo/dimly-lit-warehouse-aisle-with-tall-shelves-30341205/",
   },
   blog2: {
-    src: "/images/stock/blog/blog-2.jpg",
+    src: "/images/stock/blog/blog-2.webp",
     alt: "A loaded cargo truck moving along a highway, the roadside blurred with speed",
     width: 1600,
     height: 1067,
@@ -209,7 +77,7 @@ export const stockImages = {
     sourceUrl: "https://www.pexels.com/photo/truck-on-highway-20862827/",
   },
   blog3: {
-    src: "/images/stock/blog/blog-3.jpg",
+    src: "/images/stock/blog/blog-3.webp",
     alt: "Early morning on a shuttered Indian market street, knitwear hung outside shopfronts",
     width: 1600,
     height: 1067,
@@ -219,7 +87,7 @@ export const stockImages = {
       "https://www.pexels.com/photo/bustling-street-scene-in-ludhiana-india-32486624/",
   },
   blog4: {
-    src: "/images/stock/blog/blog-4.jpg",
+    src: "/images/stock/blog/blog-4.webp",
     alt: "Folded shirts spaced along timber shelves against a glass-block wall",
     width: 1600,
     height: 1067,
@@ -229,7 +97,7 @@ export const stockImages = {
       "https://www.pexels.com/photo/selection-of-clothes-on-shelves-21835299/",
   },
   blog5: {
-    src: "/images/stock/blog/blog-5.jpg",
+    src: "/images/stock/blog/blog-5.webp",
     alt: "Garments on wooden hangers suspended in rows inside a boutique",
     width: 1600,
     height: 1067,
@@ -239,7 +107,7 @@ export const stockImages = {
       "https://www.pexels.com/photo/hangers-in-a-clothing-store-8306359/",
   },
   blog6: {
-    src: "/images/stock/blog/blog-6.jpg",
+    src: "/images/stock/blog/blog-6.webp",
     alt: "Folded jeans sealed in poly bags, stacked on a table ready for dispatch",
     width: 1600,
     height: 1067,
@@ -249,7 +117,7 @@ export const stockImages = {
       "https://www.pexels.com/photo/a-pile-of-jeans-in-plastic-packages-lying-on-a-table-17096040/",
   },
   blog7: {
-    src: "/images/stock/blog/blog-7.jpg",
+    src: "/images/stock/blog/blog-7.webp",
     alt: "A fabric swatch book with handwritten shade names and prices per metre",
     width: 1600,
     height: 1067,
@@ -259,7 +127,7 @@ export const stockImages = {
       "https://www.pexels.com/photo/fabric-samples-in-a-notebook-15764776/",
   },
   blog8: {
-    src: "/images/stock/blog/blog-8.jpg",
+    src: "/images/stock/blog/blog-8.webp",
     alt: "A pigeonhole wall of folded dress shirts sorted by colour and pattern",
     width: 1600,
     height: 1067,
@@ -290,7 +158,7 @@ export const photoSlots = {
     // godown it runs. Since change round 12 (client's request) a store's polo
     // wall; since change round 13 (client's request) the group's building, a
     // portrait cut of it, and the polo wall moved to the Marketing hero.
-    src: "/images/photos/group-building-portrait.jpg",
+    src: "/images/photos/group-building-portrait.webp",
     alt: "Arihant Tower, the group's building in Guwahati, where all three businesses work",
     ratio: "4 / 5",
     real: true,
@@ -298,7 +166,7 @@ export const photoSlots = {
   homeProofGround: {
     // The Apparels dispatch floor, open cartons mid-indent, at low opacity
     // behind the awards band (change round 9: it stood on stock racking).
-    src: "/images/photos/apparels-warehouse-1.jpg",
+    src: "/images/photos/apparels-warehouse-1.webp",
     alt: "",
     ratio: "16 / 9",
     real: true,
@@ -316,7 +184,7 @@ export const photoSlots = {
      home hero's earlier photograph, the Itanagar polo wall (client's
      request): landscape, so the tall frame centres on the two polos. */
   marketingHero: {
-    src: "/images/photos/stores/store-itanagar-polos.jpg",
+    src: "/images/photos/stores/store-itanagar-polos.webp",
     alt: "A wall of polos and folded shirts on timber and steel shelving, two polos hung at its centre",
     ratio: "4 / 5",
     real: true,
@@ -332,13 +200,13 @@ export const photoSlots = {
      the same file as the team band lower down. The photograph is 16:9, so the
      tall desktop frame shows the middle of the group; the inset is unchanged. */
   apparelsHero: {
-    src: "/images/photos/apparels-team.jpg",
+    src: "/images/photos/apparels-team.webp",
     alt: "The Arihant Apparels team in their green uniforms at the Guwahati office",
     ratio: "4 / 5",
     real: true,
   },
   apparelsHeroInset: {
-    src: "/images/photos/apparels-fair-2024.jpg",
+    src: "/images/photos/apparels-fair-2024.webp",
     alt: "The Arihant Apparels team outside the Spring Summer Garment Fair, January 2024",
     ratio: "4 / 3",
     real: true,
@@ -347,13 +215,13 @@ export const photoSlots = {
   apparelsWarehouse: {
     // The dispatch floor (change round 9): the racked denim moved to the home
     // hero, so the Apparels page does not print the same photograph twice.
-    src: "/images/photos/apparels-warehouse-1.jpg",
+    src: "/images/photos/apparels-warehouse-1.webp",
     alt: "Open cartons of the season's indents on the Arihant Apparels dispatch floor in Guwahati",
     ratio: "4 / 5",
     real: true,
   },
   apparelsTeam: {
-    src: "/images/photos/apparels-team.jpg",
+    src: "/images/photos/apparels-team.webp",
     alt: "The Arihant Apparels team at their Guwahati office",
     ratio: "4 / 3",
     real: true,
@@ -368,13 +236,13 @@ export const photoSlots = {
      (store-interior.jpg, store-urban-closet.jpg, the town of the second
      never confirmed) are gone, and with them the small-file caps. */
   retailInterior: {
-    src: "/images/photos/stores/store-goalpara-aisle.jpg",
+    src: "/images/photos/stores/store-goalpara-aisle.webp",
     alt: "The aisle of Urban Closet, Goalpara, under the track lights, folded stock on the shelves either side",
     ratio: "4 / 5",
     real: true,
   },
   retailStorefront: {
-    src: "/images/photos/stores/store-goalpara-sign.jpg",
+    src: "/images/photos/stores/store-goalpara-sign.webp",
     alt: "The counter at Urban Closet, Goalpara, under the store's lit sign",
     ratio: "6 / 7",
     real: true,
@@ -385,7 +253,7 @@ export const photoSlots = {
      on a stock shopfront with arched windows): since change round 11 the
      Goalpara counter under its sign, the same file as retailStorefront. */
   partnerStorefront: {
-    src: "/images/photos/stores/store-goalpara-sign.jpg",
+    src: "/images/photos/stores/store-goalpara-sign.webp",
     alt: "The counter at Urban Closet, Goalpara, under the store's lit sign",
     ratio: "6 / 7",
     real: true,
@@ -395,7 +263,7 @@ export const photoSlots = {
      client's file is titled the group building; the About copy and the
      contact settings place all three businesses in Arihant Tower. */
   aboutCraft: {
-    src: "/images/photos/group-building.jpg",
+    src: "/images/photos/group-building.webp",
     alt: "Arihant Tower, the group's building in Guwahati, where all three businesses work",
     ratio: "3 / 2",
     real: true,
@@ -404,19 +272,19 @@ export const photoSlots = {
      each since change round 11: the Apparels team at the fair, the Marketing
      godown's racks, a Retail store's aisle. */
   aboutValue1: {
-    src: "/images/photos/apparels-fair-2024.jpg",
+    src: "/images/photos/apparels-fair-2024.webp",
     alt: "The Arihant Apparels team outside the Spring Summer Garment Fair, January 2024",
     ratio: "3 / 4",
     real: true,
   },
   aboutValue2: {
-    src: "/images/photos/marketing-godown-2.jpg",
+    src: "/images/photos/marketing-godown-2.webp",
     alt: "Racks of packed denim and cartons of the season's indents in the Arihant Marketing godown, Guwahati",
     ratio: "3 / 4",
     real: true,
   },
   aboutValue3: {
-    src: "/images/photos/stores/store-goalpara-aisle.jpg",
+    src: "/images/photos/stores/store-goalpara-aisle.webp",
     alt: "The aisle of Urban Closet, Goalpara, under the track lights, folded stock on the shelves either side",
     ratio: "3 / 4",
     real: true,

@@ -93,7 +93,8 @@ export default async function BlogPage() {
                         src={post.image}
                         alt=""
                         fill
-                        priority={i === 0}
+                        loading={i === 0 ? "eager" : undefined}
+                        fetchPriority={i === 0 ? "high" : undefined}
                         sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] group-hover:scale-[1.045]"
                       />

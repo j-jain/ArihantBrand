@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { EASE, SPRING, SPRING_HANG, ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+
+// Registered where it is used (performance pass), not in lib/gsap.
+if (typeof window !== "undefined") gsap.registerPlugin(MotionPathPlugin);
 
 interface AtlasBehaviourProps {
   children: ReactNode;

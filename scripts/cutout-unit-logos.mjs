@@ -10,19 +10,20 @@
  * light halo is left), trims each file to its ink and pads it by 2px.
  *
  * Originals live in assets/unit-logos-original/{slug}.png (never served).
- * Every run reads the originals and overwrites public/images/logos/{slug}.png,
- * so running it again gives the same output.
+ * Every run reads the originals and overwrites public/images/logos/{slug}.webp
+ * (lossless WebP since the performance pass; PNG before), so running it again
+ * gives the same output.
  *
  *   node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/cutout-unit-logos.mjs [--bootstrap] [--dry-run]
  *
- *   --bootstrap  copy public/images/logos/*.png into the originals folder and
- *                stop. Refuses to overwrite an original whose bytes differ.
+ *   --bootstrap  save public/images/logos/*.webp as PNG originals for any slug
+ *                that has none yet, and stop. Never touches an existing original.
  *   --dry-run    process and report, write nothing
  *
  * The seed uploads these files to Sanity, so a re-run reaches production only
  * through `npm run seed` (after the matching deploy).
  */
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -53,15 +54,13 @@ const hasFlag = (name) => args.includes(`--${name}`);
 async function bootstrap() {
   await mkdir(ORIGINALS_DIR, { recursive: true });
   for (const slug of SLUGS) {
-    const from = path.join(PUBLIC_DIR, `${slug}.png`);
+    const from = path.join(PUBLIC_DIR, `${slug}.webp`);
     const to = path.join(ORIGINALS_DIR, `${slug}.png`);
     if (existsSync(to)) {
-      const [a, b] = await Promise.all([readFile(from), readFile(to)]);
-      if (!a.equals(b)) throw new Error(`${slug}: an original already exists and differs; not overwriting`);
       console.log(`  ${slug}: original already in place`);
       continue;
     }
-    await copyFile(from, to);
+    await sharp(from).png({ compressionLevel: 9, palette: false }).toFile(to);
     console.log(`  ${slug}: original saved`);
   }
 }
@@ -81,7 +80,7 @@ async function processLogo(slug) {
   const bytes = await sharp(Buffer.from(img.px.buffer, img.px.byteOffset, img.px.byteLength), {
     raw: { width: img.w, height: img.h, channels: 4 },
   })
-    .png({ compressionLevel: 9, palette: false })
+    .webp({ lossless: true, effort: 6 })
     .toBuffer();
   return {
     slug,
@@ -119,8 +118,8 @@ async function main() {
     console.log("  Dry run: nothing written.");
     return;
   }
-  for (const r of rows) await writeFile(path.join(PUBLIC_DIR, `${r.slug}.png`), r.bytes);
-  console.log(`  Wrote ${rows.length} PNG(s) to ${path.relative(root, PUBLIC_DIR)}.`);
+  for (const r of rows) await writeFile(path.join(PUBLIC_DIR, `${r.slug}.webp`), r.bytes);
+  console.log(`  Wrote ${rows.length} WebP file(s) to ${path.relative(root, PUBLIC_DIR)}.`);
 }
 
 main().catch((err) => {

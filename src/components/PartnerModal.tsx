@@ -33,9 +33,9 @@ export function PartnerModal({ partner, open, onClose }: PartnerModalProps) {
               <Image
                 src={partner.image}
                 alt=""
-                fill
-                sizes="240px"
-                className="object-contain"
+                width={240}
+                height={160}
+                className="absolute inset-0 h-full w-full object-contain"
               />
             </div>
           </div>

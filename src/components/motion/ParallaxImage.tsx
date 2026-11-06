@@ -11,7 +11,12 @@ interface ParallaxImageProps {
   /** CSS aspect-ratio for the frame, e.g. "4/5" or "3/2". */
   ratio?: string;
   sizes?: string;
+  /** Load at once (a hero photograph in the first viewport). Next 16's own
+   *  `priority` is deprecated, so this maps to `loading="eager"`. */
   priority?: boolean;
+  /** "high" on the one photograph that is the route's LCP; Next 16 sets no
+   *  fetchpriority for `priority`, so the browser treated it like any image. */
+  fetchPriority?: "high" | "low" | "auto";
   className?: string;
   /** Disable the scrub parallax (e.g. small inline images). Frame still clips. */
   parallax?: boolean;
@@ -45,6 +50,7 @@ export function ParallaxImage({
   ratio = "4/5",
   sizes = "(max-width: 767px) 100vw, 45vw",
   priority = false,
+  fetchPriority,
   className,
   parallax = true,
   tilt = false,
@@ -125,11 +131,18 @@ export function ParallaxImage({
             const MAX_TILT = 2.5; // degrees
             const MAX_SHIFT = 6; // px
 
+            // No standing will-change (performance pass): the frame takes its
+            // own layer on pointerenter and gives it back once it has settled.
             gsap.set(frame, {
               transformPerspective: 800,
               transformOrigin: "center center",
-              willChange: "transform",
             });
+            // The frame's rect, read once per hover instead of on every
+            // pointermove; a scroll moves the frame, so it drops the cache.
+            let rect: DOMRect | null = null;
+            const forget = () => {
+              rect = null;
+            };
 
             // Each ROTATION/TRANSLATE channel is owned by one quickTo, so no
             // `overwrite` is needed and quickTo's resetTo() always finds its
@@ -158,7 +171,7 @@ export function ParallaxImage({
             });
 
             const onMove = (event: PointerEvent) => {
-              const rect = frame.getBoundingClientRect();
+              rect ??= frame.getBoundingClientRect();
               // Normalised cursor position: -1 (top/left) .. 1 (bottom/right).
               const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
               const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
@@ -174,27 +187,36 @@ export function ParallaxImage({
             // quickTo PropTweens above; a plain tween reads its live start each
             // time, so it can't desync the rotation/translate channels.
             const onEnter = () => {
+              rect = frame.getBoundingClientRect();
+              gsap.set(frame, { willChange: "transform" });
               gsap.to(frame, { scale: 1.015, duration: 0.45, ease: "power2.out" });
             };
 
             const onLeave = () => {
+              rect = null;
               rotX(0);
               rotY(0);
               shiftX(0);
               shiftY(0);
               // Home on the soft spring: the frame settles back, it does not
-              // just slow down.
-              gsap.to(frame, { scale: 1, ...SPRING_SOFT });
+              // just slow down. The layer goes once it has.
+              gsap.to(frame, {
+                scale: 1,
+                ...SPRING_SOFT,
+                onComplete: () => gsap.set(frame, { willChange: "auto" }),
+              });
             };
 
             frame.addEventListener("pointerenter", onEnter);
             frame.addEventListener("pointermove", onMove);
             frame.addEventListener("pointerleave", onLeave);
+            window.addEventListener("scroll", forget, { passive: true });
 
             return () => {
               frame.removeEventListener("pointerenter", onEnter);
               frame.removeEventListener("pointermove", onMove);
               frame.removeEventListener("pointerleave", onLeave);
+              window.removeEventListener("scroll", forget);
               gsap.set(frame, {
                 clearProps: "willChange,transform,transformOrigin",
               });
@@ -228,7 +250,8 @@ export function ParallaxImage({
         alt={alt}
         fill
         sizes={sizes}
-        priority={priority}
+        loading={priority ? "eager" : undefined}
+        fetchPriority={fetchPriority}
         className="parallax-img"
       />
     </div>

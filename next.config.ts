@@ -8,9 +8,10 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.dirname(fileURLToPath(import.meta.url)),
   images: {
     remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
-    // AVIF first, WebP second. Both beat the source PNG/JPEG substantially and
-    // every browser this site targets takes one of them.
-    formats: ["image/avif", "image/webp"],
+    // WebP for every browser (performance pass, the user's call): the sources
+    // are WebP too, and a WebP encode on a cold cache is far quicker than the
+    // AVIF one, so a first visitor after a deploy is not left waiting on it.
+    formats: ["image/webp"],
     // Next's default deviceSizes top out at 3840, and the widest entry becomes
     // the `src` fallback on every <Image>. On /brands that put a 3840px URL on
     // 77 lazy logo tiles rendered at 180px (change brief, G11). No source image

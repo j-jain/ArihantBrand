@@ -104,7 +104,7 @@ export const businesses: Business[] = [
     unit: "marketing",
     name: "Arihant Marketing",
     slug: "arihant-marketing",
-    logo: "/images/logos/arihant-marketing.png",
+    logo: "/images/logos/arihant-marketing.webp",
     founded: "Since the 1990s",
     leaders: ["Sagar Sancheti", "Anand Sancheti"],
     positioning: "The founding arm. The routes, the relationships and the brand roster everything else stands on.",
@@ -171,7 +171,7 @@ export const businesses: Business[] = [
     unit: "apparels",
     name: "Arihant Apparels",
     slug: "arihant-apparels",
-    logo: "/images/logos/arihant-apparels.png",
+    logo: "/images/logos/arihant-apparels.webp",
     founded: "Founded 2013",
     leaders: ["Ajay Sancheti"],
     // The client's tagline (change round 2), the same line the Apparels hero
@@ -230,7 +230,7 @@ export const businesses: Business[] = [
     unit: "retail",
     name: "Arihant Retail",
     slug: "arihant-retail",
-    logo: "/images/logos/arihant-retail.png",
+    logo: "/images/logos/arihant-retail.webp",
     founded: "Founded 2023",
     leaders: ["Shreyansh Sancheti"],
     positioning: "Multi-brand modern retail, run by the house that supplies the region.",
@@ -527,6 +527,12 @@ export const marketingReasons = [
 /* Itanagar (change round 12) carries an interior, not its front. It traded  */
 /* on the site as Tanzee until change round 13, when the client named it    */
 /* Urban Closet, the name its sign and the client's photo folder carry.     */
+/*                                                                      */
+/* ADDRESSES (change round 13): `mapsQuery` is the address the client sent */
+/* for each store and `mapsLink` the store's Google Maps link from the same */
+/* message (28 October 2026). Get directions opens the link; the address    */
+/* feeds the JSON-LD. The atlas pins sit on those places (towns.ts).        */
+/* Guwahati's old Jyotikuchi address was the office's, not the store's.     */
 /* ------------------------------------------------------------------ */
 
 export const stores: Store[] = [
@@ -536,9 +542,10 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Company-owned",
-    image: "/images/photos/stores/store-guwahati-front.jpg",
+    image: "/images/photos/stores/store-guwahati-front.webp",
     caption: "The front at night, under its Indian Terrain and Spykar fascias",
-    mapsQuery: "Urban Closet, Jyotikuchi, Guwahati, Assam 781040",
+    mapsQuery: "Beside Soch showroom, near Sohum Shoppe, Christian Basti, GS Road, Guwahati, Assam 781005",
+    mapsLink: "https://maps.app.goo.gl/PyPDbXxVfHkyeryK8",
   },
   {
     name: "Urban Closet",
@@ -546,8 +553,10 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Company-owned",
-    image: "/images/photos/stores/store-goalpara-front.jpg",
+    image: "/images/photos/stores/store-goalpara-front.webp",
     caption: "The front, its sign in Assamese and English",
+    mapsQuery: "Opp Premchand Champalal, Bara Bazar, Kachari Road, Goalpara, Assam 783101",
+    mapsLink: "https://maps.app.goo.gl/NpGUJwU5fLiNx43V6",
   },
   {
     name: "K.A.K",
@@ -555,8 +564,10 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Franchisee-owned",
-    image: "/images/photos/stores/store-kohima-front.jpg",
+    image: "/images/photos/stores/store-kohima-front.webp",
     caption: "The front, mannequins in both window floors",
+    mapsQuery: "Razhu point, National Highway 61, Naga Bazaar, Kohima, Nagaland 797001",
+    mapsLink: "https://maps.app.goo.gl/P2mZBzhH8UqvmSu66",
   },
   {
     name: "Urban Closet",
@@ -564,8 +575,10 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Franchisee-owned",
-    image: "/images/photos/stores/store-itanagar-interior.jpg",
+    image: "/images/photos/stores/store-itanagar-interior.webp",
     caption: "Inside, the shirt and denim bays under track lights",
+    mapsQuery: "Near BB Plaza, near Secretariat, Itanagar, Arunachal Pradesh 791111",
+    mapsLink: "https://maps.app.goo.gl/c3YjEFLqxzHzQvHMA",
   },
   {
     name: "Urban Closet",
@@ -573,8 +586,10 @@ export const stores: Store[] = [
     format: "Multi-brand",
     status: "Open",
     ownership: "Franchisee-owned",
-    image: "/images/photos/stores/store-tura-front.jpg",
+    image: "/images/photos/stores/store-tura-front.webp",
     caption: "The two-storey front, with its Puma and Wildcraft fascias",
+    mapsQuery: "Near Goanang Baptist Church, Araimile, Tura, Meghalaya 794101",
+    mapsLink: "https://maps.app.goo.gl/rrtMpA4Cz1yeK6Po8",
   },
 ];
 
@@ -850,7 +865,7 @@ export const posts: Post[] = [
   {
     title: "Five checks before you sign with a garment distributor in Northeast India",
     slug: "choose-garment-distributor-northeast-india",
-    image: "/images/stock/blog/blog-1.jpg",
+    image: "/images/stock/blog/blog-1.webp",
     excerpt:
       "Your margin is decided before stock ever reaches the rack. Visit cadence, fill rate, claim discipline: the checklist we would use on your side of the counter.",
     date: "2026-06-10",
@@ -902,7 +917,7 @@ export const posts: Post[] = [
   {
     title: "The entry playbook for apparel brands coming into Northeast India",
     slug: "apparel-brand-distribution-northeast-india",
-    image: "/images/stock/blog/blog-2.jpg",
+    image: "/images/stock/blog/blog-2.webp",
     excerpt:
       "Seven states, distinct tastes, and retail built on decades-old relationships. How to sequence a market entry so the first two seasons pay for the third.",
     date: "2026-05-18",
@@ -946,7 +961,7 @@ export const posts: Post[] = [
   {
     title: "The four places first-time apparel store owners lose money",
     slug: "managed-franchise-vs-independent-apparel-retail",
-    image: "/images/stock/blog/blog-4.jpg",
+    image: "/images/stock/blog/blog-4.webp",
     excerpt:
       "Deadstock, people, footfall, buying. Most first stores underperform in the same four places. Who should carry each risk, and what to ask before you invest.",
     date: "2026-04-22",
@@ -998,7 +1013,7 @@ export const posts: Post[] = [
   {
     title: "What a shop-in-shop programme actually involves",
     slug: "what-a-shop-in-shop-programme-involves",
-    image: "/images/stock/blog/blog-5.jpg",
+    image: "/images/stock/blog/blog-5.webp",
     excerpt:
       "An SIS counter looks simple from the outside: a branded bay inside someone else's store. The work behind it decides whether it earns its floor space.",
     date: "2025-02-10",
@@ -1086,7 +1101,7 @@ export const posts: Post[] = [
   {
     title: "MBO or EBO: which store format fits your property?",
     slug: "mbo-vs-ebo-store-format-northeast-india",
-    image: "/images/stock/blog/blog-3.jpg",
+    image: "/images/stock/blog/blog-3.webp",
     excerpt:
       "Landlords and first-time investors in Northeast India usually face this choice first. The honest answer depends on your catchment, not your taste in brands.",
     date: "2025-04-15",
@@ -1170,7 +1185,7 @@ export const posts: Post[] = [
   {
     title: "How a 20-day visit cycle protects your season",
     slug: "20-day-visit-cycle-protects-your-season",
-    image: "/images/stock/blog/blog-6.jpg",
+    image: "/images/stock/blog/blog-6.webp",
     excerpt:
       "Stock rotation, claims and reorders all depend on one thing: somebody from your distributor standing in your store on a fixed date. The number matters.",
     date: "2025-07-08",
@@ -1243,7 +1258,7 @@ export const posts: Post[] = [
   {
     title: "What to ask a regional distributor before you sign",
     slug: "what-to-ask-a-regional-distributor",
-    image: "/images/stock/blog/blog-7.jpg",
+    image: "/images/stock/blog/blog-7.webp",
     excerpt:
       "Warehouse, coverage, claims discipline, market feedback. The questions that separate a distribution partner from a freight forwarder with a signboard.",
     date: "2025-10-21",
@@ -1333,7 +1348,7 @@ export const posts: Post[] = [
   {
     title: "What ‘we run it, you own it’ actually covers",
     slug: "what-we-run-it-you-own-it-covers",
-    image: "/images/stock/blog/blog-8.jpg",
+    image: "/images/stock/blog/blog-8.webp",
     excerpt:
       "Managed retail sounds like a slogan until you list who does what. A plain-language walk through the split between owner and operator, task by task.",
     date: "2026-01-27",
@@ -1492,7 +1507,7 @@ export const team: TeamMember[] = [
 /* ------------------------------------------------------------------ */
 /* Leader portraits, keyed by the exact name used in business.leaders.  */
 /* Empty until real photographs exist: drop the file at                 */
-/* public/images/photos/leaders/<slug>.jpg and add its entry here, and  */
+/* public/images/photos/leaders/<slug>.webp and add its entry here, and  */
 /* the about page swaps the monogram placeholder for the photograph     */
 /* with no component change.                                            */
 /* ------------------------------------------------------------------ */
@@ -1574,58 +1589,58 @@ const STORE_PHOTOS = "/images/photos/stores";
 
 export const storeGallery: StorePhoto[] = [
   {
-    src: `${STORE_PHOTOS}/store-kohima-menswear.jpg`,
+    src: `${STORE_PHOTOS}/store-kohima-menswear.webp`,
     alt: "The entrance to the men's wear floor at K.A.K, Kohima, bags racked either side of the way in",
     caption: "K.A.K, Kohima",
     store: "kohima",
     tall: true,
   },
   {
-    src: `${STORE_PHOTOS}/store-guwahati-floor.jpg`,
+    src: `${STORE_PHOTOS}/store-guwahati-floor.webp`,
     alt: "The menswear floor of Urban Closet, Guwahati: shirt bays along the wall and a glass display island",
     caption: "Urban Closet, Guwahati",
     store: "guwahati",
   },
   {
-    src: `${STORE_PHOTOS}/store-goalpara-floor.jpg`,
+    src: `${STORE_PHOTOS}/store-goalpara-floor.webp`,
     alt: "The main aisle of Urban Closet, Goalpara, looking out to the street",
     caption: "Urban Closet, Goalpara",
     store: "goalpara",
   },
   {
-    src: `${STORE_PHOTOS}/store-kohima-indian-terrain.jpg`,
+    src: `${STORE_PHOTOS}/store-kohima-indian-terrain.webp`,
     alt: "The Indian Terrain shelves at K.A.K, Kohima, folded shirts and trousers under the brand's lettering",
     caption: "K.A.K, Kohima",
     store: "kohima",
     tall: true,
   },
   {
-    src: `${STORE_PHOTOS}/store-goalpara-shirtwall.jpg`,
+    src: `${STORE_PHOTOS}/store-goalpara-shirtwall.webp`,
     alt: "The shirt wall at Urban Closet, Goalpara, folded stock below the rail",
     caption: "Urban Closet, Goalpara",
     store: "goalpara",
   },
   {
-    src: `${STORE_PHOTOS}/store-kohima-kids.jpg`,
+    src: `${STORE_PHOTOS}/store-kohima-kids.webp`,
     alt: "The children's racks at K.A.K, Kohima, girls' and boys' sets on red arched rails",
     caption: "K.A.K, Kohima",
     store: "kohima",
     tall: true,
   },
   {
-    src: `${STORE_PHOTOS}/store-guwahati-shirts.jpg`,
+    src: `${STORE_PHOTOS}/store-guwahati-shirts.webp`,
     alt: "Shirt bays and a hanging rail at Urban Closet, Guwahati",
     caption: "Urban Closet, Guwahati",
     store: "guwahati",
   },
   {
-    src: `${STORE_PHOTOS}/store-goalpara-entry.jpg`,
+    src: `${STORE_PHOTOS}/store-goalpara-entry.webp`,
     alt: "Urban Closet, Goalpara, from the entrance: shirts and denim either side of the centre table",
     caption: "Urban Closet, Goalpara",
     store: "goalpara",
   },
   {
-    src: `${STORE_PHOTOS}/store-kohima-floor.jpg`,
+    src: `${STORE_PHOTOS}/store-kohima-floor.webp`,
     alt: "The menswear aisle at K.A.K, Kohima, brand bays on both sides",
     caption: "K.A.K, Kohima",
     store: "kohima",

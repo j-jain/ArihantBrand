@@ -7,7 +7,7 @@
  * of empty rows and are dropped, since no letter survives at 16 to 48px. The
  * emblem is centred on a white tile so it reads on light and dark tab strips.
  *
- * Reads public/images/logos/arihant-marketing.png (the transparent cutout from
+ * Reads public/images/logos/arihant-marketing.webp (the transparent cutout from
  * scripts/cutout-unit-logos.mjs) and writes, by Next's file conventions:
  *   src/app/favicon.ico     16, 32 and 48px PNGs in one ICO
  *   src/app/icon.png        192px (a multiple of 48, as Google's favicon asks)
@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SOURCE = path.join(root, "public", "images", "logos", "arihant-marketing.png");
+const SOURCE = path.join(root, "public", "images", "logos", "arihant-marketing.webp");
 const APP_DIR = path.join(root, "src", "app");
 
 /** A row counts as inked when any pixel's alpha is above this. */

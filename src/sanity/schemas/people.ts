@@ -44,7 +44,7 @@ export const recognitionPhoto = defineType({
     defineField({ name: "image", title: "Photograph (uploaded, preferred)", type: "image", options: { hotspot: true } }),
     defineField({
       name: "srcPath",
-      title: "Photograph path (fallback, e.g. /images/photos/awards/x.jpg)",
+      title: "Photograph path (fallback, e.g. /images/photos/awards/x.webp)",
       type: "string",
     }),
     defineField({

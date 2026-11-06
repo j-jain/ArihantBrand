@@ -3,17 +3,20 @@
  * audio) into a web-sized MP4 plus a poster frame. WebM is produced separately.
  * Run: `node scripts/process-video.mjs`
  */
-import { mkdir } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import ffmpegPath from "ffmpeg-static";
+import sharp from "sharp";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = path.join(root, "Arihant Event Promo.mov");
 const videoDir = path.join(root, "public", "videos");
-const posterPath = path.join(root, "public", "images", "photos", "apparels-promo-poster.jpg");
+// WebP since the performance pass: a <video poster> is fetched as-is, outside
+// next/image, so the file itself is what the visitor downloads.
+const posterPath = path.join(root, "public", "images", "photos", "apparels-promo-poster.webp");
 const mp4 = path.join(videoDir, "apparels-promo.mp4");
 
 if (!existsSync(src)) {
@@ -36,7 +39,10 @@ run([
 ]);
 
 console.log("Extracting poster frame...");
-run(["-y", "-ss", "00:00:03", "-i", src, "-frames:v", "1", "-q:v", "3", posterPath]);
+const frame = path.join(videoDir, ".poster-frame.png");
+run(["-y", "-ss", "00:00:03", "-i", src, "-frames:v", "1", frame]);
+await sharp(frame).webp({ quality: 80, effort: 6 }).toFile(posterPath);
+await rm(frame);
 
 const mb = (p) => (statSync(p).size / 1024 / 1024).toFixed(1);
 console.log(`\nMP4:    ${mb(mp4)} MB`);

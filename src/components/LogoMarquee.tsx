@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { watchOnScreen } from "@/lib/offscreen";
 import { logoGeometry, marqueeBox, marqueeSequence } from "@/lib/logoGeometry";
 import type { Partner } from "@/content/types";
 
@@ -60,10 +61,12 @@ function MarqueeGroup({
             <Image
               src={partner.image}
               alt={clone ? "" : partner.name}
-              fill
-              className="object-contain"
-              // 18px is the largest the root font size gets.
-              sizes={`${Math.ceil(box.w * 18)}px`}
+              // A fixed box, so a 1x/2x pair (18px is the largest the root
+              // font size gets). A single-value `sizes` printed every
+              // configured width on each of ~100 logos: ~230 KB of srcset.
+              width={Math.ceil(box.w * 18)}
+              height={Math.ceil(box.h * 18)}
+              className="absolute inset-0 h-full w-full object-contain"
             />
           </div>
         );
@@ -112,14 +115,19 @@ export function LogoMarquee({ partners }: LogoMarqueeProps) {
         // the computed duration).
         const seconds = loopSeconds(track, MARQUEE_SECONDS);
         track.setAttribute("data-loop", "js");
-        // The one element moving every frame keeps its own layer for the
-        // loop's whole life (the context reverts it with the loop).
-        gsap.set(track, { willChange: "transform" });
         const loop = gsap.to(track, {
           xPercent: -50,
           duration: seconds,
           ease: "none",
           repeat: -1,
+        });
+        // Static off screen (performance pass): the row stops and gives its
+        // layer back while it is scrolled away. Pausing leaves timeScale
+        // alone, so hover, focus and the button still ramp it.
+        const stopWatch = watchOnScreen(root, (onScreen) => {
+          if (onScreen) loop.resume();
+          else loop.pause();
+          track.style.willChange = onScreen ? "transform" : "";
         });
 
         let hover = false;
@@ -179,6 +187,8 @@ export function LogoMarquee({ partners }: LogoMarqueeProps) {
         sync(true);
 
         return () => {
+          stopWatch();
+          track.style.removeProperty("will-change");
           root.removeEventListener("pointerenter", onEnter);
           root.removeEventListener("pointerleave", onLeave);
           root.removeEventListener("focusin", onFocusIn);
@@ -212,18 +222,18 @@ export function LogoMarquee({ partners }: LogoMarqueeProps) {
           // onUpdate only fires while the page moves, so without a settle
           // call a scroll that stops dead (a touch tablet, no Lenis) left the
           // row leaning (change round 9). Each update re-arms the return to
-          // flat.
-          let settle: gsap.core.Tween | null = null;
+          // flat: one call, restarted (performance pass; it used to be killed
+          // and re-created on every scroll frame).
+          const settle = gsap.delayedCall(0.12, () => skewTo(0)).pause();
           const trigger = ScrollTrigger.create({
             trigger: root,
             onUpdate: (self) => {
               skewTo(gsap.utils.clamp(-3, 3, self.getVelocity() / -300));
-              settle?.kill();
-              settle = gsap.delayedCall(0.12, () => skewTo(0));
+              settle.restart(true);
             },
           });
           return () => {
-            settle?.kill();
+            settle.kill();
             trigger.kill();
             stop();
           };

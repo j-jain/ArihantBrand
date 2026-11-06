@@ -38,3 +38,26 @@ export function ContactForm({
     />
   );
 }
+
+/** The same form with no intent, for the page's Suspense fallback
+ *  (performance pass). useSearchParams() keeps ContactForm out of the static
+ *  HTML, so with a `null` fallback the page's main element only appeared once
+ *  JS had run, and the column jumped as it did. This prints the form's first
+ *  step (the intent chooser, nothing typed into it yet) in the served HTML;
+ *  ContactForm takes over on hydration and opens step 2 for an ?intent= link. */
+export function ContactFormStatic({
+  whatsapp,
+  contacts,
+}: {
+  whatsapp?: string;
+  contacts?: SiteSettings["contacts"];
+}) {
+  return (
+    <InquiryForm
+      action={submitLeadAction}
+      sourcePage="/contact"
+      whatsapp={whatsapp}
+      contacts={contacts}
+    />
+  );
+}

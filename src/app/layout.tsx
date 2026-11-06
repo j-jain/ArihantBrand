@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@/components/Analytics";
-import { besley, archivo } from "./fonts";
+import { besley, besleyItalic, archivo } from "./fonts";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.arihant.marketing";
@@ -33,7 +33,11 @@ export default function RootLayout({
   return (
     // suppressHydrationWarning: the intro gate below adds data-intro to <html>
     // before React hydrates, and HeroIntro removes it again.
-    <html lang="en" className={`${besley.variable} ${archivo.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${besley.variable} ${besleyItalic.variable} ${archivo.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Hero intro gate. Runs while the HTML is parsed, so the hero is held
             hidden before the first paint instead of painting finished and then

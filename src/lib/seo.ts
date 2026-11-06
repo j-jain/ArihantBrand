@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TOWNS, townKey } from "@/content/towns";
 import type {
   Business,
   Faq,
@@ -15,10 +16,18 @@ export function fullAddress(s: SiteSettings): string {
 
 /** A plain external Google Maps link for one address string. Google's
  *  documented cross-platform Maps URL (change round 6): it opens the Maps app
- *  on a phone and the site on a desktop. Used by the store atlas for stores
- *  with a confirmed `mapsQuery`, and by `mapsUrl` below. */
+ *  on a phone and the site on a desktop. Used by `storeMapsUrl` and
+ *  `mapsUrl` below. */
 export function directionsUrl(query: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+/** One store on Google Maps, for the atlas's Get directions and the JSON-LD
+ *  (change round 13). Like `mapsUrl`: the store's own Maps link (the exact
+ *  place) wins, then a search for its confirmed address, else nothing. */
+export function storeMapsUrl(store: Store): string | undefined {
+  if (store.mapsLink) return store.mapsLink;
+  return store.mapsQuery ? directionsUrl(store.mapsQuery) : undefined;
 }
 
 /** The office on Google Maps. One definition, used by the footer, /contact
@@ -293,6 +302,9 @@ export function localBusinessJsonLd(s: SiteSettings) {
  *  exactly the kind of claim this site does not make. */
 export function storeJsonLd(s: SiteSettings, store: Store) {
   if (store.status !== "Open") return null;
+  // Since change round 13 a town's row in towns.ts is the store's own place.
+  const town = TOWNS[townKey(store.city)];
+  const map = storeMapsUrl(store);
   return {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
@@ -304,6 +316,8 @@ export function storeJsonLd(s: SiteSettings, store: Store) {
     address: store.mapsQuery
       ? { "@type": "PostalAddress", streetAddress: store.mapsQuery, addressLocality: store.city, addressCountry: s.country }
       : { "@type": "PostalAddress", addressLocality: store.city, addressCountry: s.country },
+    ...(town ? { geo: { "@type": "GeoCoordinates", latitude: town.lat, longitude: town.lon } } : {}),
+    ...(map ? { hasMap: map } : {}),
     ...(store.image ? { image: `${siteUrl()}${store.image}` } : {}),
   };
 }

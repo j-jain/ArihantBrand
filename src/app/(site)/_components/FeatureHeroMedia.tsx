@@ -89,6 +89,7 @@ export function FeatureHeroMedia({
             fillHeight
             parallax={false}
             priority
+            fetchPriority="high"
             sizes="(max-width: 767px) 100vw, 46vw"
             className="feature-media__frame"
           />

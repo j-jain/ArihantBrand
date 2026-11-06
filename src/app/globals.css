@@ -1,4 +1,8 @@
-@import "tailwindcss";
+/* Classes are looked for in src/ only (performance pass). Detection used to
+   start at the project root, so the root's Markdown (DESIGN.md, the status
+   files) and scratchpad/ were scanned too, and any word in them shaped like
+   a utility was minted into the CSS every page loads. */
+@import "tailwindcss" source("..");
 @import "./motion.css";
 @import "./form.css";
 @import "./atlas.css";
@@ -1266,7 +1270,9 @@ svg {
   z-index: var(--z-header);
   background: var(--paper);
   border-bottom: 1px solid var(--line);
-  transition: box-shadow var(--dur) var(--ease);
+  transition:
+    box-shadow var(--dur) var(--ease),
+    margin-bottom var(--dur) var(--ease);
 }
 
 /* The vermillion rule along the top edge. A paper bar over a paper page has no
@@ -1293,6 +1299,14 @@ svg {
 @media (min-width: 768px) {
   .site-header[data-scrolled] .site-header__bar {
     height: 3.5rem;
+  }
+
+  /* The height the bar gives up comes back as margin under it, on the same
+     curve (performance pass), so nothing below the header ever moves: no
+     document relayout through the transition and no ScrollTrigger refresh
+     after it. The margin sits under the stuck bar, so it is never seen. */
+  .site-header[data-scrolled] {
+    margin-bottom: calc(var(--header-h, 4rem) - 3.5rem);
   }
 }
 

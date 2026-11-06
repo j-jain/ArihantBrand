@@ -79,24 +79,53 @@
   /* 1 = in the air, 0 = landed (change round 10). Written by JS. */
   --stack-lift: 0;
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   padding: 1.6rem 2rem 1.8rem;
-  background: color-mix(
-    in oklch,
-    var(--paper),
-    var(--paper-shade) calc(var(--stack-depth) * 100%)
-  );
+  background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 10px;
   /* A flat hairline plus a soft upward shadow separates a card from the one
-     it rests on, which shares its ground; a third shadow, under the card,
-     exists only while it is in the air (--stack-lift) and dies as it lands. */
+     it rests on, which shares its ground. */
   box-shadow:
     0 -1px 0 var(--line),
-    0 -20px 32px -26px rgb(0 0 0 / 0.22),
-    0 calc(var(--stack-lift) * 1.5rem) calc(var(--stack-lift) * 2.4rem)
-      calc(var(--stack-lift) * -0.9rem - 0.1rem) rgb(0 0 0 / 0.24);
+    0 -20px 32px -26px rgb(0 0 0 / 0.22);
+}
+
+/* What JS writes every scrub frame is now only opacity (performance pass):
+   the depth tint is a paper-shade sheet at --stack-depth, and the shadow
+   under a card in the air (--stack-lift, gone once it lands) is drawn whole
+   and faded. They used to be a color-mix background and a third box-shadow
+   whose blur and offset grew with the variables, which repainted all four
+   cards on every frame of the pinned deck. At rest (0 or 1) the pixels are
+   the same. Both sheets sit under the card's text: z-index -1 inside the
+   card's own stacking context (isolation above). */
+.stack__card::before,
+.stack__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.stack__card::before {
+  background: var(--paper-shade);
+  opacity: var(--stack-depth);
+}
+
+.stack__card::after {
+  box-shadow: 0 1.5rem 2.4rem -1rem rgb(0 0 0 / 0.24);
+  opacity: var(--stack-lift);
+}
+
+/* Their own layers only while the deck is pinned and moving (CardsStack sets
+   data-moving with the cards' will-change), so the fades never repaint. */
+.stack[data-moving] .stack__card::before,
+.stack[data-moving] .stack__card::after {
+  will-change: opacity;
 }
 
 /* The mark sits inline with the heading's first line. Since change round 8
@@ -250,14 +279,17 @@
 /* The one place CSS holds content hidden before JS, and only under three
    guards: html[data-intro] exists only when the inline head script ran (so
    JS is on and motion is allowed); HeroIntro removes it as soon as its own
-   from-states are set; and the failsafe below shows the hero after 3s if
+   from-states are set; and the failsafe below shows the hero after 1.2s if
    that never happens. Without it the hero paints finished, then blanks and
-   replays the moment React hydrates. */
+   replays the moment React hydrates. 1.2s since the performance pass (3s
+   before, the user's call): a device that has hydrated by then still plays
+   the intro; a slower one shows the finished hero at 1.2s and HeroIntro
+   skips the intro, instead of a blank hero for up to three seconds. */
 html[data-intro] [data-hero-intro] [data-hero-reveal],
 html[data-intro] [data-hero-intro] [data-hero-clip],
 html[data-intro] [data-hero-intro] [data-hero-title] {
   visibility: hidden;
-  animation: hero-intro-failsafe 0s linear 3s forwards;
+  animation: hero-intro-failsafe 0s linear 1.2s forwards;
 }
 
 @keyframes hero-intro-failsafe {
@@ -344,8 +376,9 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
 .tcol__track {
   display: flex;
   flex-direction: column;
+  /* No standing will-change (performance pass): a running keyframe gets its
+     own layer anyway, and the JS loop holds one only while on screen. */
   animation: vert-marquee var(--tcol-dur, 42s) linear infinite;
-  will-change: transform;
 }
 
 /* JS-driven loop, as the brand marquee's (change round 10; TestimonialColumns
@@ -418,7 +451,7 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
   position: relative;
   margin: 0 0 1.25rem;
   padding-left: 1.1rem;
-  font-family: var(--font-besley), Georgia, serif;
+  font-family: var(--font-besley-italic), var(--font-besley), Georgia, serif;
   font-style: italic;
   font-size: 1.0625rem;
   line-height: 1.6;
@@ -1040,7 +1073,7 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
 /* (the large-mark red); the dot field and the spoke nodes use the      */
 /* on-charcoal ink. Arcs render solid at 0.35                           */
 /* opacity by default, so they are never hidden if scripts don't run —  */
-/* the dash/draw state is applied only from JS (see NetworkMap.tsx).    */
+/* the dash/draw state is applied only from JS (NetworkMapMotion.tsx).  */
 /* ------------------------------------------------------------------ */
 
 .nm-svg {
@@ -1055,8 +1088,14 @@ html[data-intro] [data-hero-intro] [data-hero-title] {
   }
 }
 
-.nm-dots circle {
-  fill: var(--on-charcoal-soft);
+/* One path of zero-length, round-capped strokes (performance pass): each is
+   the same 1.4-radius disc the 615 circles were, and since no two dots touch,
+   one opacity on the whole path matches 0.28 on each. */
+.nm-dots {
+  fill: none;
+  stroke: var(--on-charcoal-soft);
+  stroke-width: 2.8;
+  stroke-linecap: round;
   opacity: 0.28;
 }
 

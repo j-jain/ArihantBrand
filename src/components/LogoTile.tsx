@@ -31,9 +31,11 @@ export function LogoTile({ partner, onSelect }: LogoTileProps) {
       <Image
         src={partner.image}
         alt={onSelect ? "" : partner.name}
-        fill
-        className="object-contain"
-        sizes="(max-width: 640px) 30vw, 160px"
+        // A mark at most 160px wide: a 1x/2x pair rather than every
+        // configured width (the walls run to 77 logos).
+        width={160}
+        height={Math.round(160 / (geometry.w > 0 && geometry.h > 0 ? geometry.w / geometry.h : 2))}
+        className="absolute inset-0 h-full w-full object-contain"
       />
     </span>
   );

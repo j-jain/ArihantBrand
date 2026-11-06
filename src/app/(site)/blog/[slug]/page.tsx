@@ -124,6 +124,7 @@ export default async function ArticlePage({
                     alt={post.imageAlt || altForImage(post.image)}
                     ratio="3 / 2"
                     priority
+                    fetchPriority="high"
                     sizes="(max-width: 767px) 100vw, 46rem"
                     mBleed
                   />
@@ -164,9 +165,9 @@ export default async function ArticlePage({
                             <Image
                               src={other.image}
                               alt=""
-                              fill
-                              sizes="112px"
-                              className="object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] group-hover:scale-[1.05]"
+                              width={112}
+                              height={75}
+                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 [transition-timing-function:var(--ease)] group-hover:scale-[1.05]"
                             />
                           </span>
                         ) : null}

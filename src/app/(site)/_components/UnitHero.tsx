@@ -70,9 +70,9 @@ export function UnitHero({
         <Image
           src={business.logo}
           alt=""
-          fill
-          className="object-contain object-left"
-          sizes="200px"
+          width={200}
+          height={100}
+          className="absolute inset-0 h-full w-full object-contain object-left"
         />
       </span>
       <span className="unit-lockup__name t-label text-ink-soft">{business.name}</span>

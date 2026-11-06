@@ -359,7 +359,7 @@
 }
 
 .atlas-label--river {
-  font-family: var(--font-besley), Georgia, serif;
+  font-family: var(--font-besley-italic), var(--font-besley), Georgia, serif;
   font-style: italic;
   font-weight: 600;
   font-size: 19px;

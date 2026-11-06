@@ -13,7 +13,7 @@ import {
   SectionHeading,
   SectionReveal,
 } from "@/components";
-import { ContactForm } from "./_components/ContactForm";
+import { ContactForm, ContactFormStatic } from "./_components/ContactForm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy("contact");
@@ -92,7 +92,14 @@ export default async function ContactPage() {
             <div className="md:col-span-7">
               <div className="m-flow flex flex-col gap-8">
                 <SectionHeading heading={sections.form.heading} sr />
-                <Suspense fallback={null}>
+                <Suspense
+                  fallback={
+                    <ContactFormStatic
+                      whatsapp={settings.defaultWhatsapp}
+                      contacts={settings.contacts}
+                    />
+                  }
+                >
                   <ContactForm
                     whatsapp={settings.defaultWhatsapp}
                     contacts={settings.contacts}

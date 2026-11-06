@@ -44,7 +44,7 @@ export function TrophyShelf({ photos, label, variant = "cabinet", className }: T
   if (variant === "hero") {
     return (
       <ul className={cn("shelf shelf--hero", className)} aria-label={label}>
-        {photos.map((photo) => (
+        {photos.map((photo, i) => (
           <li key={photo.src} className="shelf__item">
             <span className="shelf__obj">
               <Image
@@ -52,7 +52,10 @@ export function TrophyShelf({ photos, label, variant = "cabinet", className }: T
                 alt={photo.alt}
                 width={photo.width}
                 height={photo.height}
-                priority
+                // In the hero, so loaded at once; only the first is fetched
+                // ahead of everything else (Next 16's `priority` never set it).
+                loading="eager"
+                fetchPriority={i === 0 ? "high" : undefined}
                 sizes="(max-width: 767px) 30vw, 12rem"
                 className="shelf__img"
               />

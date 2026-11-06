@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { gsap, useGSAP, DUR, EASE, REVEAL, RISE, STAGGER, onScreenAtMount } from "@/lib/gsap";
 import { cn } from "../cn";
+import { buildWhenNear } from "@/lib/offscreen";
 
 interface DrenchBandProps {
   children: ReactNode;
@@ -45,14 +46,22 @@ export function DrenchBand({ children, className, id }: DrenchBandProps) {
           // A reload at the foot of a page used to hide the band and replay
           // it (change round 9): the same guard every other reveal has.
           if (onScreenAtMount(root)) return;
+          // Static until near (performance pass): nothing is hidden, split or
+          // measured until this comes within half a screen of the viewport, so
+          // the hydration commit carries no below-the-fold motion work.
+          return buildWhenNear(root, () => {
+            // It reached the screen before the observer reported (a fling, a jump
+            // link): it stays as served.
+            if (onScreenAtMount(root)) return;
 
-          gsap.from(reveals, {
-            autoAlpha: 0,
-            y: mobile ? RISE / 2 : RISE,
-            duration: mobile ? REVEAL.durMobile : DUR,
-            ease: EASE,
-            stagger: STAGGER,
-            scrollTrigger: { trigger: root, start: REVEAL.band, once: true, fastScrollEnd: true },
+            gsap.from(reveals, {
+              autoAlpha: 0,
+              y: mobile ? RISE / 2 : RISE,
+              duration: mobile ? REVEAL.durMobile : DUR,
+              ease: EASE,
+              stagger: STAGGER,
+              scrollTrigger: { trigger: root, start: REVEAL.band, once: true, fastScrollEnd: true },
+            });
           });
         },
       );

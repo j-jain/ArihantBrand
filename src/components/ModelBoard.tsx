@@ -13,6 +13,7 @@ import { StaggerGroup } from "./motion/StaggerGroup";
 import { CalculatorIcon, TrendIcon } from "./icons";
 import { cn } from "./cn";
 import { trackClass } from "./Analytics";
+import { buildWhenNear } from "@/lib/offscreen";
 
 interface ModelBoardProps {
   /** Section h2. Retail passes sections.model; partner passes sections.promise. */
@@ -88,141 +89,147 @@ export function ModelBoard({
           // drawn in their finished state in the served markup.
           if (conditions.reduced) return;
 
-          const rows = gsap.utils.toArray<HTMLElement>(
-            root.querySelectorAll(".model-row"),
-          );
-
-          // One screen: the four rows are in view together, so four per-row
-          // triggers would fire at once. Their figures draw as one sequence
-          // instead, each a beat after the one above, as the rows land. Its
-          // trigger is the rows container: already on screen at mount (a
-          // navigation back to a scrolled page), the sequence is skipped
-          // and every figure stays as served, the guard every primitive
-          // applies.
-          const rowsEl = root.querySelector<HTMLElement>(".model-rows") ?? root;
-          const fitSeen = fit && conditions.desktop && onScreenAtMount(rowsEl);
-          const master =
-            fit && conditions.desktop && !fitSeen
-              ? gsap.timeline({ paused: true })
-              : null;
-
-          rows.forEach((row, index) => {
-            const figure = row.querySelector<SVGSVGElement>(".model-fig");
-            if (!figure) return;
-            // A row already on screen at mount keeps its served figure: no
-            // from-state is written and nothing replays.
-            if (fitSeen || onScreenAtMount(row)) return;
-
-            // A handset gets one short settle per figure and pays for no dash
-            // measurement: getTotalLength() four times is not worth it there.
-            if (conditions.mobile) {
-              gsap.from(figure, {
-                autoAlpha: 0,
-                scale: 0.94,
-                transformOrigin: "50% 50%",
-                duration: 0.4,
-                ease: "power2.out",
-                scrollTrigger: { trigger: row, start: "top 88%", once: true },
-              });
-              return;
-            }
-
-            const tl = gsap.timeline({ paused: !master });
-
-            // Every tween is a `from`. The resting state in the HTML is the
-            // finished state, so nothing is ever hidden by an un-run tween.
-            const units = figure.querySelectorAll(".model-fig__unit");
-            if (units.length) {
-              tl.from(units, {
-                x: -26,
-                duration: 0.5,
-                ease: "power3.out",
-                stagger: 0.09,
-              });
-            }
-
-            const tags = figure.querySelectorAll(".model-fig__tag rect");
-            if (tags.length) {
-              tl.from(tags, {
-                scaleY: 0,
-                transformOrigin: "50% 0%",
-                duration: 0.4,
-                ease: "power2.out",
-                stagger: 0.06,
-              });
-            }
-
-            const racks = figure.querySelectorAll(".model-fig__racks path");
-            if (racks.length) {
-              tl.from(racks, {
-                autoAlpha: 0,
-                duration: 0.3,
-                ease: "power1.out",
-                stagger: 0.07,
-              });
-            }
-
-            const halves = figure.querySelectorAll<SVGGElement>(".model-fig__half");
-            if (halves.length) {
-              tl.from(halves, {
-                scaleX: 0,
-                transformOrigin: (i: number) => (i ? "100% 50%" : "0% 50%"),
-                duration: 0.45,
-                ease: "power3.out",
-                stagger: 0.08,
-              });
-            }
-
-            // Stroke-dash draws, cleared on completion so no residual dash
-            // attribute is left on the path.
-            const draws = figure.querySelectorAll<SVGPathElement>(
-              ".model-fig__return, .model-fig__seam",
+          // Static until near (performance pass): no from-state is written and no
+          // figure measured (getTotalLength) until the board comes within half a
+          // screen of the viewport, so the hydration commit carries none of it. The
+          // on-screen guards below then see where the board is at that moment.
+          return buildWhenNear(root, () => {
+            const rows = gsap.utils.toArray<HTMLElement>(
+              root.querySelectorAll(".model-row"),
             );
-            draws.forEach((path) => {
-              const length = path.getTotalLength();
-              if (!length) return;
-              tl.fromTo(
-                path,
-                { strokeDasharray: length, strokeDashoffset: length },
-                {
-                  strokeDashoffset: 0,
-                  duration: 0.55,
-                  ease: "power2.inOut",
-                  onComplete: () =>
-                    gsap.set(path, {
-                      clearProps: "strokeDasharray,strokeDashoffset",
-                    }),
-                },
-                "<0.1",
+
+            // One screen: the four rows are in view together, so four per-row
+            // triggers would fire at once. Their figures draw as one sequence
+            // instead, each a beat after the one above, as the rows land. Its
+            // trigger is the rows container: already on screen at mount (a
+            // navigation back to a scrolled page), the sequence is skipped
+            // and every figure stays as served, the guard every primitive
+            // applies.
+            const rowsEl = root.querySelector<HTMLElement>(".model-rows") ?? root;
+            const fitSeen = fit && conditions.desktop && onScreenAtMount(rowsEl);
+            const master =
+              fit && conditions.desktop && !fitSeen
+                ? gsap.timeline({ paused: true })
+                : null;
+
+            rows.forEach((row, index) => {
+              const figure = row.querySelector<SVGSVGElement>(".model-fig");
+              if (!figure) return;
+              // A row already on screen at mount keeps its served figure: no
+              // from-state is written and nothing replays.
+              if (fitSeen || onScreenAtMount(row)) return;
+
+              // A handset gets one short settle per figure and pays for no dash
+              // measurement: getTotalLength() four times is not worth it there.
+              if (conditions.mobile) {
+                gsap.from(figure, {
+                  autoAlpha: 0,
+                  scale: 0.94,
+                  transformOrigin: "50% 50%",
+                  duration: 0.4,
+                  ease: "power2.out",
+                  scrollTrigger: { trigger: row, start: "top 88%", once: true },
+                });
+                return;
+              }
+
+              const tl = gsap.timeline({ paused: !master });
+
+              // Every tween is a `from`. The resting state in the HTML is the
+              // finished state, so nothing is ever hidden by an un-run tween.
+              const units = figure.querySelectorAll(".model-fig__unit");
+              if (units.length) {
+                tl.from(units, {
+                  x: -26,
+                  duration: 0.5,
+                  ease: "power3.out",
+                  stagger: 0.09,
+                });
+              }
+
+              const tags = figure.querySelectorAll(".model-fig__tag rect");
+              if (tags.length) {
+                tl.from(tags, {
+                  scaleY: 0,
+                  transformOrigin: "50% 0%",
+                  duration: 0.4,
+                  ease: "power2.out",
+                  stagger: 0.06,
+                });
+              }
+
+              const racks = figure.querySelectorAll(".model-fig__racks path");
+              if (racks.length) {
+                tl.from(racks, {
+                  autoAlpha: 0,
+                  duration: 0.3,
+                  ease: "power1.out",
+                  stagger: 0.07,
+                });
+              }
+
+              const halves = figure.querySelectorAll<SVGGElement>(".model-fig__half");
+              if (halves.length) {
+                tl.from(halves, {
+                  scaleX: 0,
+                  transformOrigin: (i: number) => (i ? "100% 50%" : "0% 50%"),
+                  duration: 0.45,
+                  ease: "power3.out",
+                  stagger: 0.08,
+                });
+              }
+
+              // Stroke-dash draws, cleared on completion so no residual dash
+              // attribute is left on the path.
+              const draws = figure.querySelectorAll<SVGPathElement>(
+                ".model-fig__return, .model-fig__seam",
               );
+              draws.forEach((path) => {
+                const length = path.getTotalLength();
+                if (!length) return;
+                tl.fromTo(
+                  path,
+                  { strokeDasharray: length, strokeDashoffset: length },
+                  {
+                    strokeDashoffset: 0,
+                    duration: 0.55,
+                    ease: "power2.inOut",
+                    onComplete: () =>
+                      gsap.set(path, {
+                        clearProps: "strokeDasharray,strokeDashoffset",
+                      }),
+                  },
+                  "<0.1",
+                );
+              });
+
+              if (!tl.totalDuration()) {
+                tl.kill();
+                return;
+              }
+
+              if (master) {
+                master.add(tl, 0.3 + index * 0.12);
+                return;
+              }
+
+              ScrollTrigger.create({
+                trigger: row,
+                start: "top 85%",
+                once: true,
+                onEnter: () => tl.play(0),
+              });
             });
 
-            if (!tl.totalDuration()) {
-              tl.kill();
-              return;
+            if (master && master.totalDuration()) {
+              ScrollTrigger.create({
+                trigger: rowsEl,
+                start: "top 80%",
+                once: true,
+                onEnter: () => master.play(0),
+              });
             }
-
-            if (master) {
-              master.add(tl, 0.3 + index * 0.12);
-              return;
-            }
-
-            ScrollTrigger.create({
-              trigger: row,
-              start: "top 85%",
-              once: true,
-              onEnter: () => tl.play(0),
-            });
           });
-
-          if (master && master.totalDuration()) {
-            ScrollTrigger.create({
-              trigger: rowsEl,
-              start: "top 80%",
-              once: true,
-              onEnter: () => master.play(0),
-            });
-          }
         },
       );
 

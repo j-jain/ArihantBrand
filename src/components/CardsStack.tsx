@@ -225,12 +225,15 @@ export function CardsStack({ items, heading }: CardsStackProps) {
               invalidateOnRefresh: false,
               scrub: smooth ? true : 0.3,
               // The cards sit on their own layers only while the deck is
-              // pinned and moving (change round 10).
-              onToggle: (self) =>
+              // pinned and moving (change round 10), and so do their depth
+              // and lift sheets (data-moving, motion.css).
+              onToggle: (self) => {
+                deck.toggleAttribute("data-moving", self.isActive);
                 cards.forEach((card) => {
                   if (self.isActive) card.style.willChange = "transform, opacity";
                   else card.style.removeProperty("will-change");
-                }),
+                });
+              },
             },
           });
           for (let k = 1; k < n; k++) {
@@ -255,7 +258,10 @@ export function CardsStack({ items, heading }: CardsStackProps) {
             card.style.removeProperty("transform-origin");
             card.style.removeProperty("opacity");
             card.style.removeProperty("--stack-depth");
+            card.style.removeProperty("--stack-lift");
+            card.style.removeProperty("will-change");
           });
+          deck.removeAttribute("data-moving");
           root.removeAttribute("data-deck");
           indexRows.forEach((row) => row.removeAttribute("data-on"));
           onTop = -1;

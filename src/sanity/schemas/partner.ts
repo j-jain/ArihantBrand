@@ -1,7 +1,7 @@
 import { defineType, defineField } from "sanity";
 
 /** Mirrors `Partner` in src/content/types.ts.
- *  `image` (uploaded) preferred over `imagePath` (e.g. /images/partners/x.png). */
+ *  `image` (uploaded) preferred over `imagePath` (e.g. /images/partners/x.webp). */
 export const partner = defineType({
   name: "partner",
   title: "Brand Partner",
@@ -28,7 +28,7 @@ export const partner = defineType({
       validation: (r) => r.required(),
     }),
     defineField({ name: "image", title: "Logo (uploaded — preferred)", type: "image", options: { hotspot: false } }),
-    defineField({ name: "imagePath", title: "Logo path (fallback, e.g. /images/partners/x.png)", type: "string" }),
+    defineField({ name: "imagePath", title: "Logo path (fallback, e.g. /images/partners/x.webp)", type: "string" }),
     defineField({
       name: "category",
       title: "Category (optional — only for well-known verifiable labels)",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
+import { buildWhenNear } from "@/lib/offscreen";
 import {
   gsap,
   ScrollTrigger,
@@ -101,157 +102,165 @@ export function SectionReveal({
         const { reduced, mobile } = ctx.conditions as Record<string, boolean>;
         if (reduced) return;
         if (onScreenAtMount(root)) return;
+        // Static until near (performance pass): nothing is hidden, split or
+        // measured until this comes within half a screen of the viewport, so
+        // the hydration commit carries no below-the-fold motion work.
+        return buildWhenNear(root, () => {
+          // It reached the screen before the observer reported (a fling, a jump
+          // link): it stays as served.
+          if (onScreenAtMount(root)) return;
 
-        const rise = mobile ? RISE / 2 : RISE;
-        const dur = mobile ? REVEAL.durMobile : DUR;
-        const stagger = mobile ? REVEAL.staggerMobile : STAGGER;
-        const travel = mobile ? 18 : 34;
-        const rowFrom =
-          from === "left"
-            ? { autoAlpha: 0, x: -travel }
-            : from === "right"
-              ? { autoAlpha: 0, x: travel }
-              : { autoAlpha: 0, y: rise };
+          const rise = mobile ? RISE / 2 : RISE;
+          const dur = mobile ? REVEAL.durMobile : DUR;
+          const stagger = mobile ? REVEAL.staggerMobile : STAGGER;
+          const travel = mobile ? 18 : 34;
+          const rowFrom =
+            from === "left"
+              ? { autoAlpha: 0, x: -travel }
+              : from === "right"
+                ? { autoAlpha: 0, x: travel }
+                : { autoAlpha: 0, y: rise };
 
-        // 1) The timeline, paused. A from() inside it renders its start state
-        //    at once, so every from-state lands before this frame paints.
-        const tl = gsap.timeline({ paused: true, defaults: { ease: EASE } });
+          // 1) The timeline, paused. A from() inside it renders its start state
+          //    at once, so every from-state lands before this frame paints.
+          const tl = gsap.timeline({ paused: true, defaults: { ease: EASE } });
 
-        if (headings.length) gsap.set(headings, { autoAlpha: 0 });
-        if (leads.length) {
-          tl.from(leads, { autoAlpha: 0, y: rise, duration: dur }, 0.12);
-        }
-        if (medias.length) {
-          const maskDur = mobile ? 0.6 : DUR_SLOW * 1.25;
-          // The sides and the far edge sit outside the box, so a frame's own
-          // shadow is never clipped and nothing pops when the clip clears.
-          tl.fromTo(
-            medias,
-            { clipPath: "inset(100% -15% -15% -15%)" },
-            {
-              clipPath: "inset(-15% -15% -15% -15%)",
-              duration: maskDur,
-              ease: EASE_MASK,
-              clearProps: "clipPath",
-            },
-            0.1,
-          );
-          tl.from(
-            medias,
-            { scale: 1.04, duration: maskDur + 0.2, ease: EASE_MASK, clearProps: "transform" },
-            0.1,
-          );
-        }
-        if (rows.length) {
-          const inRail = mobile && rowGroups.some((g) => g.classList.contains("m-rail"));
-          if (mobile && mobileRows === "wipe" && !inRail) {
+          if (headings.length) gsap.set(headings, { autoAlpha: 0 });
+          if (leads.length) {
+            tl.from(leads, { autoAlpha: 0, y: rise, duration: dur }, 0.12);
+          }
+          if (medias.length) {
+            const maskDur = mobile ? 0.6 : DUR_SLOW * 1.25;
+            // The sides and the far edge sit outside the box, so a frame's own
+            // shadow is never clipped and nothing pops when the clip clears.
             tl.fromTo(
-              rows,
-              { clipPath: "inset(0 100% 0 0)", autoAlpha: 0 },
+              medias,
+              { clipPath: "inset(100% -15% -15% -15%)" },
               {
-                clipPath: "inset(0 0% 0 0)",
-                autoAlpha: 1,
-                duration: 0.5,
-                stagger: STAGGER,
-                onComplete: () => gsap.set(rows, { clearProps: "clipPath" }),
+                clipPath: "inset(-15% -15% -15% -15%)",
+                duration: maskDur,
+                ease: EASE_MASK,
+                clearProps: "clipPath",
               },
-              0.25,
+              0.1,
             );
-          } else {
-            // Inside a snap rail a translation grows the scrollable area and
-            // makes the rail twitch, so rail children scale and fade only.
             tl.from(
-              rows,
-              { ...(inRail ? { autoAlpha: 0, scale: 0.96 } : rowFrom), duration: dur, stagger },
-              0.25,
+              medias,
+              { scale: 1.04, duration: maskDur + 0.2, ease: EASE_MASK, clearProps: "transform" },
+              0.1,
             );
           }
-        }
-        if (items.length) {
-          tl.from(items, { autoAlpha: 0, y: rise, duration: dur, stagger: stagger / 2 }, 0.2);
-        }
-
-        // 2) The heading: words out of a mask once fonts have settled, so the
-        //    split measures the real typeface; a phone rises it whole.
-        const splits: SplitText[] = [];
-        let fontsReady = false;
-        let wanted = false;
-        let alive = true;
-        let timer = 0;
-        const play = () => {
-          if (!alive) return;
-          if (!fontsReady) {
-            wanted = true;
-            return;
+          if (rows.length) {
+            const inRail = mobile && rowGroups.some((g) => g.classList.contains("m-rail"));
+            if (mobile && mobileRows === "wipe" && !inRail) {
+              tl.fromTo(
+                rows,
+                { clipPath: "inset(0 100% 0 0)", autoAlpha: 0 },
+                {
+                  clipPath: "inset(0 0% 0 0)",
+                  autoAlpha: 1,
+                  duration: 0.5,
+                  stagger: STAGGER,
+                  onComplete: () => gsap.set(rows, { clearProps: "clipPath" }),
+                },
+                0.25,
+              );
+            } else {
+              // Inside a snap rail a translation grows the scrollable area and
+              // makes the rail twitch, so rail children scale and fade only.
+              tl.from(
+                rows,
+                { ...(inRail ? { autoAlpha: 0, scale: 0.96 } : rowFrom), duration: dur, stagger },
+                0.25,
+              );
+            }
           }
-          tl.play();
-        };
-        const addHeadings = ctx.add("headings", () => {
-          if (!alive || fontsReady) return;
-          fontsReady = true;
-          window.clearTimeout(timer);
-          headings.forEach((heading) => {
-            if (!heading.isConnected) return;
-            if (mobile) {
-              gsap.set(heading, { autoAlpha: 1 });
-              tl.from(heading, { autoAlpha: 0, y: 12, duration: 0.5 }, 0);
+          if (items.length) {
+            tl.from(items, { autoAlpha: 0, y: rise, duration: dur, stagger: stagger / 2 }, 0.2);
+          }
+
+          // 2) The heading: words out of a mask once fonts have settled, so the
+          //    split measures the real typeface; a phone rises it whole.
+          const splits: SplitText[] = [];
+          let fontsReady = false;
+          let wanted = false;
+          let alive = true;
+          let timer = 0;
+          const play = () => {
+            if (!alive) return;
+            if (!fontsReady) {
+              wanted = true;
               return;
             }
-            try {
-              const split = SplitText.create(heading, {
-                type: "words",
-                mask: "words",
-                wordsClass: "hero-line",
-                aria: "auto",
-              });
-              splits.push(split);
-              gsap.set(heading, { autoAlpha: 1 });
-              tl.from(
-                split.words,
-                {
-                  yPercent: 105,
-                  duration: REVEAL.words,
-                  stagger: REVEAL.wordStagger,
-                  onComplete: () => {
-                    // Restore the clean, unsplit heading once the rise lands.
-                    split.revert();
-                    const i = splits.indexOf(split);
-                    if (i >= 0) splits.splice(i, 1);
+            tl.play();
+          };
+          const addHeadings = ctx.add("headings", () => {
+            if (!alive || fontsReady) return;
+            fontsReady = true;
+            window.clearTimeout(timer);
+            headings.forEach((heading) => {
+              if (!heading.isConnected) return;
+              if (mobile) {
+                gsap.set(heading, { autoAlpha: 1 });
+                tl.from(heading, { autoAlpha: 0, y: 12, duration: 0.5 }, 0);
+                return;
+              }
+              try {
+                const split = SplitText.create(heading, {
+                  type: "words",
+                  mask: "words",
+                  wordsClass: "hero-line",
+                  aria: "auto",
+                });
+                splits.push(split);
+                gsap.set(heading, { autoAlpha: 1 });
+                tl.from(
+                  split.words,
+                  {
+                    yPercent: 105,
+                    duration: REVEAL.words,
+                    stagger: REVEAL.wordStagger,
+                    onComplete: () => {
+                      // Restore the clean, unsplit heading once the rise lands.
+                      split.revert();
+                      const i = splits.indexOf(split);
+                      if (i >= 0) splits.splice(i, 1);
+                    },
                   },
-                },
-                0,
-              );
-            } catch {
-              gsap.set(heading, { autoAlpha: 1 });
-              tl.from(heading, { autoAlpha: 0, y: rise, duration: dur }, 0);
-            }
+                  0,
+                );
+              } catch {
+                gsap.set(heading, { autoAlpha: 1 });
+                tl.from(heading, { autoAlpha: 0, y: rise, duration: dur }, 0);
+              }
+            });
+            if (wanted) tl.play();
+          }) as () => void;
+
+          if (!headings.length) fontsReady = true;
+          else if (document.fonts?.status === "loaded") addHeadings();
+          else {
+            document.fonts?.ready.then(addHeadings);
+            timer = window.setTimeout(addHeadings, FONT_WAIT_MS);
+          }
+
+          // 3) One trigger for the whole section, kept apart from the timeline.
+          const trigger = ScrollTrigger.create({
+            trigger: root,
+            start: mobile ? REVEAL.startMobile : REVEAL.start,
+            once: true,
+            onEnter: play,
           });
-          if (wanted) tl.play();
-        }) as () => void;
 
-        if (!headings.length) fontsReady = true;
-        else if (document.fonts?.status === "loaded") addHeadings();
-        else {
-          document.fonts?.ready.then(addHeadings);
-          timer = window.setTimeout(addHeadings, FONT_WAIT_MS);
-        }
-
-        // 3) One trigger for the whole section, kept apart from the timeline.
-        const trigger = ScrollTrigger.create({
-          trigger: root,
-          start: mobile ? REVEAL.startMobile : REVEAL.start,
-          once: true,
-          onEnter: play,
+          return () => {
+            alive = false;
+            window.clearTimeout(timer);
+            trigger.kill();
+            splits.forEach((s) => s.revert());
+            splits.length = 0;
+            tl.kill();
+          };
         });
-
-        return () => {
-          alive = false;
-          window.clearTimeout(timer);
-          trigger.kill();
-          splits.forEach((s) => s.revert());
-          splits.length = 0;
-          tl.kill();
-        };
       });
 
       return () => mm.revert();

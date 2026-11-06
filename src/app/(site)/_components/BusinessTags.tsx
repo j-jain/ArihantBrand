@@ -17,6 +17,7 @@ import {
   SPRING_SOFT,
   onScreenAtMount,
 } from "@/lib/gsap";
+import { watchOnScreen } from "@/lib/offscreen";
 import { UNIT_ACCENT, unitScope } from "@/lib/units";
 import {
   CORD,
@@ -493,6 +494,30 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
           root.addEventListener("focusout", onFocusOut);
           ScrollTrigger.addEventListener("refresh", measure);
 
+          // Static off screen (performance pass): a tag still swinging or
+          // turning when the section leaves the screen is set straight to rest
+          // and the ticker comes off, rather than settling out of sight.
+          const stopWatch = watchOnScreen(root, (onScreen) => {
+            if (onScreen || !ticking) return;
+            if (entrance && entrance.progress() > 0) entrance.progress(1);
+            pending.length = 0;
+            rowLive = false;
+            state.forEach((s, i) => {
+              if (!s.awake) return;
+              tweens.current[i]?.progress(1);
+              gsap.killTweensOf([s.attn, s.drop, s.spin]);
+              s.attn.a = want[i].on ? 1 : 0;
+              s.drop.y = 0;
+              s.spin.w = 0;
+              s.sway = restSway();
+              s.wind = gsap.utils.clamp(0, 1, turnP.current[i].p);
+              render(i);
+              sleep(i);
+            });
+            ticking = false;
+            gsap.ticker.remove(tick);
+          });
+
           live.current = {
             turn: (i, target) => {
               tweens.current[i]?.kill();
@@ -503,6 +528,7 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
           };
 
           return () => {
+            stopWatch();
             live.current = null;
             trigger?.kill();
             entrance?.kill();
@@ -635,7 +661,7 @@ export function BusinessTags({ businesses, floors, heading, lead }: BusinessTags
                         <div className="btag-card">
                           <span className="btag-eyelet" aria-hidden="true" />
                           <span className="btag-logo" data-unit={b.unit}>
-                            <Image src={b.logo} alt="" fill sizes="160px" className="object-contain object-center" />
+                            <Image src={b.logo} alt="" width={160} height={80} className="absolute inset-0 h-full w-full object-contain object-center" />
                           </span>
                           <h3 className="btag-name">{b.name}</h3>
                           {b.tagline ? (

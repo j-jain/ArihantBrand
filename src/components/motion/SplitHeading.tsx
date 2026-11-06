@@ -3,6 +3,7 @@
 import { useRef, type ElementType } from "react";
 import { gsap, SplitText, useGSAP, EASE, REVEAL, onScreenAtMount } from "@/lib/gsap";
 import { EmphasisHeading } from "@/app/(site)/_components/EmphasisHeading";
+import { buildWhenNear } from "@/lib/offscreen";
 
 interface SplitHeadingProps {
   text: string;
@@ -57,69 +58,77 @@ export function SplitHeading({
           if (reduced) return;
 
           if (onScreenAtMount(heading)) return;
+          // Static until near (performance pass): nothing is hidden, split or
+          // measured until this comes within half a screen of the viewport, so
+          // the hydration commit carries no below-the-fold motion work.
+          return buildWhenNear(heading, () => {
+            // It reached the screen before the observer reported (a fling, a jump
+            // link): it stays as served.
+            if (onScreenAtMount(heading)) return;
 
-          if (mobile) {
-            gsap.from(heading, {
-              autoAlpha: 0,
-              y: 12,
-              duration: 0.5,
-              ease: EASE,
-              scrollTrigger: { trigger: heading, start: REVEAL.startMobile, once: true },
-            });
-            return;
-          }
-
-          let split: SplitText | null = null;
-          const runSplit = () => {
-            if (!heading.isConnected) return;
-            try {
-              split = SplitText.create(heading, {
-                type: "words",
-                mask: "words",
-                wordsClass: "hero-line",
-                aria: "auto",
-              });
-              gsap.from(split.words, {
-                yPercent: 105,
-                duration: REVEAL.words,
-                stagger: REVEAL.wordStagger,
+            if (mobile) {
+              gsap.from(heading, {
+                autoAlpha: 0,
+                y: 12,
+                duration: 0.5,
                 ease: EASE,
-                scrollTrigger: {
-                  trigger: heading,
-                  start: REVEAL.start,
-                  once: true,
-                  fastScrollEnd: true,
-                },
-                onComplete: () => {
-                  split?.revert();
-                  split = null;
-                },
+                scrollTrigger: { trigger: heading, start: REVEAL.startMobile, once: true },
               });
-            } catch {
-              /* heading stays visible and unsplit */
+              return;
             }
-          };
-          // Wait for the webfonts, but not forever (change round 10: the
-          // other primitives already cap the wait at 800ms).
-          let started = false;
-          let timer = 0;
-          const start = () => {
-            if (started) return;
-            started = true;
-            window.clearTimeout(timer);
-            runSplit();
-          };
-          if (document.fonts?.status === "loaded") start();
-          else {
-            document.fonts?.ready.then(start);
-            timer = window.setTimeout(start, FONT_WAIT_MS);
-          }
 
-          return () => {
-            window.clearTimeout(timer);
-            split?.revert();
-            split = null;
-          };
+            let split: SplitText | null = null;
+            const runSplit = () => {
+              if (!heading.isConnected) return;
+              try {
+                split = SplitText.create(heading, {
+                  type: "words",
+                  mask: "words",
+                  wordsClass: "hero-line",
+                  aria: "auto",
+                });
+                gsap.from(split.words, {
+                  yPercent: 105,
+                  duration: REVEAL.words,
+                  stagger: REVEAL.wordStagger,
+                  ease: EASE,
+                  scrollTrigger: {
+                    trigger: heading,
+                    start: REVEAL.start,
+                    once: true,
+                    fastScrollEnd: true,
+                  },
+                  onComplete: () => {
+                    split?.revert();
+                    split = null;
+                  },
+                });
+              } catch {
+                /* heading stays visible and unsplit */
+              }
+            };
+            // Wait for the webfonts, but not forever (change round 10: the
+            // other primitives already cap the wait at 800ms).
+            let started = false;
+            let timer = 0;
+            const start = () => {
+              if (started) return;
+              started = true;
+              window.clearTimeout(timer);
+              runSplit();
+            };
+            if (document.fonts?.status === "loaded") start();
+            else {
+              document.fonts?.ready.then(start);
+              timer = window.setTimeout(start, FONT_WAIT_MS);
+            }
+
+            return () => {
+              window.clearTimeout(timer);
+              split?.revert();
+              split = null;
+            };
+          });
         },
       );
 

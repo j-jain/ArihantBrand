@@ -2,6 +2,7 @@
 
 import { useRef, type ElementType, type ReactNode } from "react";
 import { gsap, useGSAP, DUR, EASE, REVEAL, RISE, STAGGER, onScreenAtMount } from "@/lib/gsap";
+import { buildWhenNear } from "@/lib/offscreen";
 
 type GroupTag = "div" | "ul" | "ol" | "section";
 type FromDir = "up" | "left" | "right" | "scale";
@@ -96,53 +97,61 @@ export function StaggerGroup({
           if (reduced) return;
 
           if (onScreenAtMount(root)) return;
+          // Static until near (performance pass): nothing is hidden, split or
+          // measured until this comes within half a screen of the viewport, so
+          // the hydration commit carries no below-the-fold motion work.
+          return buildWhenNear(root, () => {
+            // It reached the screen before the observer reported (a fling, a jump
+            // link): it stays as served.
+            if (onScreenAtMount(root)) return;
 
-          // `.m-rail` only becomes a scroll container inside the mobile media
-          // query, so the class is inert on desktop and this branch is too.
-          const isRail = mobile && root.classList.contains("m-rail");
+            // `.m-rail` only becomes a scroll container inside the mobile media
+            // query, so the class is inert on desktop and this branch is too.
+            const isRail = mobile && root.classList.contains("m-rail");
 
-          // Ledger wipe: each row is ruled in from the left, hairline and all.
-          // One property on one element, so it stays cheap on a handset.
-          if (mobile && mLedger && !isRail) {
-            gsap.fromTo(
-              items,
-              { clipPath: "inset(0 100% 0 0)", autoAlpha: 0 },
-              {
-                clipPath: "inset(0 0% 0 0)",
-                autoAlpha: 1,
-                duration: 0.5,
-                ease: EASE,
-                stagger: STAGGER,
-                scrollTrigger: {
-                  trigger: root,
-                  start: REVEAL.startMobile,
-                  once: true,
-                  fastScrollEnd: true,
+            // Ledger wipe: each row is ruled in from the left, hairline and all.
+            // One property on one element, so it stays cheap on a handset.
+            if (mobile && mLedger && !isRail) {
+              gsap.fromTo(
+                items,
+                { clipPath: "inset(0 100% 0 0)", autoAlpha: 0 },
+                {
+                  clipPath: "inset(0 0% 0 0)",
+                  autoAlpha: 1,
+                  duration: 0.5,
+                  ease: EASE,
+                  stagger: STAGGER,
+                  scrollTrigger: {
+                    trigger: root,
+                    start: REVEAL.startMobile,
+                    once: true,
+                    fastScrollEnd: true,
+                  },
+                  // A resting inset(0) still clips to the border box and would
+                  // slice focus rings off any control flush with a row edge.
+                  onComplete: () =>
+                    gsap.set(items, { clearProps: "clipPath" }),
                 },
-                // A resting inset(0) still clips to the border box and would
-                // slice focus rings off any control flush with a row edge.
-                onComplete: () =>
-                  gsap.set(items, { clearProps: "clipPath" }),
-              },
-            );
-            return;
-          }
+              );
+              return;
+            }
 
-          gsap.from(items, {
-            ...(isRail
-              ? RAIL_VARS
-              : mobile
-                ? mobileDirectionVars(from)
-                : directionVars(from)),
-            duration: mobile ? REVEAL.durMobile : DUR,
-            ease: EASE,
-            stagger: mobile ? REVEAL.staggerMobile : stagger,
-            scrollTrigger: {
-              trigger: root,
-              start: mobile ? REVEAL.startMobile : start,
-              once: true,
-              fastScrollEnd: true,
-            },
+            gsap.from(items, {
+              ...(isRail
+                ? RAIL_VARS
+                : mobile
+                  ? mobileDirectionVars(from)
+                  : directionVars(from)),
+              duration: mobile ? REVEAL.durMobile : DUR,
+              ease: EASE,
+              stagger: mobile ? REVEAL.staggerMobile : stagger,
+              scrollTrigger: {
+                trigger: root,
+                start: mobile ? REVEAL.startMobile : start,
+                once: true,
+                fastScrollEnd: true,
+              },
+            });
           });
         },
       );

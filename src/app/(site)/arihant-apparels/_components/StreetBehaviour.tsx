@@ -2,6 +2,7 @@
 
 import { useRef, type ReactNode } from "react";
 
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import {
   ANCHOR_ORDER,
@@ -14,6 +15,9 @@ import {
   storeX,
   type MoverPath,
 } from "./streetModel";
+
+// Registered where it is used (performance pass), not in lib/gsap.
+if (typeof window !== "undefined") gsap.registerPlugin(MotionPathPlugin);
 
 const RM = "(prefers-reduced-motion: reduce)";
 const MOB = "(prefers-reduced-motion: no-preference) and (max-width: 767px)";

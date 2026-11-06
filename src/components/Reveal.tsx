@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { gsap, useGSAP, DUR, EASE, REVEAL, RISE, onScreenAtMount } from "@/lib/gsap";
+import { buildWhenNear } from "@/lib/offscreen";
 
 type RevealTag =
   | "div"
@@ -71,104 +72,112 @@ export function Reveal({
           // Skip anything already on screen at mount so it neither flashes nor
           // hides after the server paint; only below-fold elements animate in.
           if (onScreenAtMount(el)) return;
+          // Static until near (performance pass): nothing is hidden, split or
+          // measured until this comes within half a screen of the viewport, so
+          // the hydration commit carries no below-the-fold motion work.
+          return buildWhenNear(el, () => {
+            // It reached the screen before the observer reported (a fling, a jump
+            // link): it stays as served.
+            if (onScreenAtMount(el)) return;
 
-          // One trigger line for every reveal (change round 9), a touch
-          // later on a phone, whose viewport is short.
-          // fastScrollEnd (change round 10): a flick past the band leaves it
-          // finished, never half-risen.
-          const st = {
-            trigger: el,
-            start: mobile ? REVEAL.startMobile : REVEAL.start,
-            once: true,
-            fastScrollEnd: true,
-          } as const;
+            // One trigger line for every reveal (change round 9), a touch
+            // later on a phone, whose viewport is short.
+            // fastScrollEnd (change round 10): a flick past the band leaves it
+            // finished, never half-risen.
+            const st = {
+              trigger: el,
+              start: mobile ? REVEAL.startMobile : REVEAL.start,
+              once: true,
+              fastScrollEnd: true,
+            } as const;
 
-          // On a phone the three variants used to collapse into one identical
-          // fade, which is most of why the old build read as a scaled-down
-          // desktop: sixty sections, one move. They stay three distinct moves
-          // here, just shorter and shallower than their desktop counterparts.
-          if (mobile) {
-            if (variant === "clip") {
-              // Wipe up from the bottom edge — used on imagery and quotes.
-              gsap.fromTo(
-                el,
-                { autoAlpha: 0, clipPath: "inset(0 0 42% 0)", y: 14 },
-                {
-                  autoAlpha: 1,
-                  clipPath: "inset(0 0 0% 0)",
-                  y: 0,
-                  duration: 0.55,
+            // On a phone the three variants used to collapse into one identical
+            // fade, which is most of why the old build read as a scaled-down
+            // desktop: sixty sections, one move. They stay three distinct moves
+            // here, just shorter and shallower than their desktop counterparts.
+            if (mobile) {
+              if (variant === "clip") {
+                // Wipe up from the bottom edge — used on imagery and quotes.
+                gsap.fromTo(
+                  el,
+                  { autoAlpha: 0, clipPath: "inset(0 0 42% 0)", y: 14 },
+                  {
+                    autoAlpha: 1,
+                    clipPath: "inset(0 0 0% 0)",
+                    y: 0,
+                    duration: 0.55,
+                    delay,
+                    ease: EASE,
+                    scrollTrigger: st,
+                    // A resting inset(0) still clips to the border box and would
+                    // slice focus rings off edge-flush children. Drop it.
+                    onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
+                  },
+                );
+              } else if (variant === "fade") {
+                // The quiet one: opacity only, for headings that shouldn't move.
+                gsap.from(el, {
+                  autoAlpha: 0,
+                  duration: 0.45,
                   delay,
                   ease: EASE,
                   scrollTrigger: st,
-                  // A resting inset(0) still clips to the border box and would
-                  // slice focus rings off edge-flush children. Drop it.
-                  onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
-                },
-              );
-            } else if (variant === "fade") {
-              // The quiet one: opacity only, for headings that shouldn't move.
-              gsap.from(el, {
-                autoAlpha: 0,
-                duration: 0.45,
-                delay,
-                ease: EASE,
-                scrollTrigger: st,
-              });
-            } else {
-              // Rise, with a whisper of scale so it reads as approaching
-              // rather than sliding.
-              gsap.from(el, {
-                autoAlpha: 0,
-                y: 22,
-                scale: 0.985,
-                duration: 0.5,
-                delay,
-                ease: EASE,
-                scrollTrigger: st,
-              });
+                });
+              } else {
+                // Rise, with a whisper of scale so it reads as approaching
+                // rather than sliding.
+                gsap.from(el, {
+                  autoAlpha: 0,
+                  y: 22,
+                  scale: 0.985,
+                  duration: 0.5,
+                  delay,
+                  ease: EASE,
+                  scrollTrigger: st,
+                });
+              }
+              return;
             }
-            return;
-          }
 
-          if (variant === "fade") {
-            gsap.from(el, {
-              autoAlpha: 0,
-              y: 0,
-              duration: DUR,
-              delay,
-              ease: EASE,
-              scrollTrigger: st,
-            });
-          } else if (variant === "clip") {
-            gsap.fromTo(
-              el,
-              { autoAlpha: 0, clipPath: "inset(0 0 100% 0)", y: 20 },
-              {
-                autoAlpha: 1,
-                clipPath: "inset(0 0 0% 0)",
+            if (variant === "fade") {
+              gsap.from(el, {
+                autoAlpha: 0,
                 y: 0,
                 duration: DUR,
                 delay,
                 ease: EASE,
                 scrollTrigger: st,
-                // `inset(0)` still clips to the border box, so a lingering
-                // clip-path slices focus rings (outline-offset) off any child
-                // that sits flush against this wrapper's edge. Drop it once the
-                // wipe is done.
-                onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
-              },
-            );
-          } else {
-            gsap.from(el, {
-              autoAlpha: 0,
-              y,
-              duration: DUR,
-              delay,
-              ease: EASE,
-              scrollTrigger: st,
-            });
-          }
+              });
+            } else if (variant === "clip") {
+              gsap.fromTo(
+                el,
+                { autoAlpha: 0, clipPath: "inset(0 0 100% 0)", y: 20 },
+                {
+                  autoAlpha: 1,
+                  clipPath: "inset(0 0 0% 0)",
+                  y: 0,
+                  duration: DUR,
+                  delay,
+                  ease: EASE,
+                  scrollTrigger: st,
+                  // `inset(0)` still clips to the border box, so a lingering
+                  // clip-path slices focus rings (outline-offset) off any child
+                  // that sits flush against this wrapper's edge. Drop it once the
+                  // wipe is done.
+                  onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
+                },
+              );
+            } else {
+              gsap.from(el, {
+                autoAlpha: 0,
+                y,
+                duration: DUR,
+                delay,
+                ease: EASE,
+                scrollTrigger: st,
+              });
+            }
+          });
         },
       );
 

@@ -127,9 +127,9 @@ export function TowerLedger({ businesses, floors, className }: TowerLedgerProps)
                 <Image
                   src={business.logo}
                   alt={business.name}
-                  fill
-                  sizes="112px"
-                  className="object-contain object-left"
+                  width={126}
+                  height={36}
+                  className="absolute inset-0 h-full w-full object-contain object-left"
                 />
               </span>
               <span className="tower__stamp flex items-baseline gap-3">

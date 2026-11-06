@@ -147,6 +147,7 @@ export default async function RecognitionPage() {
                     alt={slots.recognitionHero.alt}
                     ratio={slots.recognitionHero.ratio}
                     priority
+                    fetchPriority="high"
                     tilt
                     mBleed
                     sizes="(max-width: 767px) 100vw, 40vw"

@@ -16,7 +16,12 @@ import {
 
 import { LogoTile, PartnerModal } from "@/components";
 import type { Partner } from "@/content/types";
-import { EASE, Flip, ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+import { Flip } from "gsap/Flip";
+import { EASE, ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+import { tickWhileOnScreen } from "@/lib/offscreen";
+
+// Registered here, not in lib/gsap (performance pass): only /brands uses it.
+if (typeof window !== "undefined") gsap.registerPlugin(Flip);
 import { UNIT_ACCENT } from "@/lib/units";
 
 type UnitFilter = "all" | "marketing" | "apparels";
@@ -184,31 +189,47 @@ export function BrandIndex({ partners, whatsapp }: BrandIndexProps) {
     // From 768px up only (change round 9): on a phone the toolbar scrolls
     // with the page and the sticky offset comes from --m-sticky-top, so the
     // per-frame header read was a cost with no effect there.
+    // Performance pass: no layout read per frame. The header is stuck at the
+    // top, so its bottom is its height (kept by a ResizeObserver) moved by
+    // GSAP's cached yPercent from SiteHeader's hide tween, the way the phone
+    // header offset is read. The tick runs only while the index is on
+    // screen, and not at all under reduced motion, where the bar never slides.
     const tools = rootRef.current;
     const header = document.querySelector("header");
     if (!tools || !header) return;
     const wide = window.matchMedia("(min-width: 768px)");
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let height = header.offsetHeight;
     let last = -1;
-    const tick = () => {
-      const top = Math.max(0, Math.round(header.getBoundingClientRect().bottom));
+    const write = () => {
+      const y = Number(gsap.getProperty(header, "yPercent")) || 0;
+      const top = Math.max(0, Math.round(height * (1 + y / 100)));
       if (top !== last) {
         last = top;
         tools.style.setProperty("--bi-top", `${top}px`);
       }
     };
-    const start = () => {
-      tick();
-      gsap.ticker.add(tick);
+    const ro = new ResizeObserver(() => {
+      height = header.offsetHeight;
+      if (wide.matches) write();
+    });
+    let stopTick: (() => void) | null = null;
+    const onChange = () => {
+      stopTick?.();
+      stopTick = null;
+      if (!wide.matches) return;
+      write();
+      if (!still.matches) stopTick = tickWhileOnScreen(tools, write);
     };
-    const stop = () => {
-      gsap.ticker.remove(tick);
-    };
-    const onChange = () => (wide.matches ? start() : stop());
+    ro.observe(header);
     onChange();
     wide.addEventListener("change", onChange);
+    still.addEventListener("change", onChange);
     return () => {
       wide.removeEventListener("change", onChange);
-      stop();
+      still.removeEventListener("change", onChange);
+      ro.disconnect();
+      stopTick?.();
     };
   }, []);
 

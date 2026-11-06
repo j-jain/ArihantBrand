@@ -142,7 +142,13 @@ export default async function ArihantApparelsPage() {
                 <p
                   data-sr="lead"
                   className="font-display measure text-ink"
-                  style={{ fontStyle: "italic", fontSize: "var(--text-h3)", lineHeight: 1.3 }}
+                  style={{
+                    // Besley's italic is its own (non-preloaded) family, src/app/fonts.ts.
+                    fontFamily: "var(--font-besley-italic), var(--font-besley), Georgia, serif",
+                    fontStyle: "italic",
+                    fontSize: "var(--text-h3)",
+                    lineHeight: 1.3,
+                  }}
                 >
                   {mission.lead}
                 </p>

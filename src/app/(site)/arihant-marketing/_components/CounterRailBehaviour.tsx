@@ -2,8 +2,10 @@
 
 import { useRef, type ReactNode } from "react";
 
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { scrollToY } from "@/lib/lenis";
+import { watchOnScreen } from "@/lib/offscreen";
 import {
   BOARDS,
   COIN,
@@ -21,6 +23,9 @@ import {
   statusY,
   toss,
 } from "./railModel";
+
+// Registered where it is used (performance pass), not in lib/gsap.
+if (typeof window !== "undefined") gsap.registerPlugin(MotionPathPlugin);
 
 const RM = "(prefers-reduced-motion: reduce)";
 const MOB = "(prefers-reduced-motion: no-preference) and (max-width: 767px)";
@@ -201,7 +206,23 @@ export function CounterRailBehaviour({
           step = Math.max(-cap, Math.min(cap, step));
           tl.time(Math.abs(gap - step) < 0.0005 ? target : now + step);
         };
-        if (!mobile) gsap.ticker.add(follow);
+        // Static off screen (performance pass): the follower runs only while
+        // the rail's section is on screen. On the way out the drawing jumps to
+        // where the scroll left it, instead of playing ~200 tweens out of
+        // sight for seconds after a flick.
+        let following = false;
+        const stopFollow = mobile
+          ? () => {}
+          : watchOnScreen(section, (onScreen) => {
+              if (onScreen === following) return;
+              following = onScreen;
+              if (onScreen) {
+                gsap.ticker.add(follow);
+                return;
+              }
+              gsap.ticker.remove(follow);
+              if (Math.abs(target - tl.time()) >= 0.0005) tl.time(target);
+            });
 
         /* ---------------- modes ---------------- */
 
@@ -296,7 +317,8 @@ export function CounterRailBehaviour({
         window.addEventListener("resize", onResize);
 
         return () => {
-          if (!mobile) gsap.ticker.remove(follow);
+          stopFollow();
+          if (following) gsap.ticker.remove(follow);
           window.removeEventListener("resize", onResize);
           window.clearTimeout(flipTimer);
           buttons.forEach((b, i) => b.removeEventListener("click", handlers[i]));

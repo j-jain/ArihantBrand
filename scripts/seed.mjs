@@ -316,6 +316,7 @@ async function main() {
       ...(s.image ? { imagePath: s.image } : {}),
       ...(s.caption ? { caption: s.caption } : {}),
       ...(s.mapsQuery ? { mapsQuery: s.mapsQuery } : {}),
+      ...(s.mapsLink ? { mapsLink: s.mapsLink } : {}),
       order: i,
     });
   });

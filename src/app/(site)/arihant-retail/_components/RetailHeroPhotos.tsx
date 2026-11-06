@@ -75,6 +75,7 @@ export function RetailHeroPhotos({ interior, storefront }: RetailHeroPhotosProps
             parallax={false}
             tilt
             priority
+            fetchPriority="high"
             sizes="(max-width: 767px) 50vw, 18rem"
             className="retail-stack__frame"
           />

@@ -3,9 +3,7 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
-import { Flip } from "gsap/Flip";
 import { CustomEase } from "gsap/CustomEase";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { useGSAP } from "@gsap/react";
 import { springCurve, springPath } from "./spring";
 
@@ -26,11 +24,12 @@ const SPRING_HANG_CURVE = springCurve(HANG); // a hung tag: three decaying swing
  * and never touched during SSR. All GSAP plugins are free (Webflow acquisition),
  * so SplitText needs no auth token. */
 if (typeof window !== "undefined") {
-  // Flip (change round 6): the /brands index re-flows its names as a search
-  // narrows them. CustomEase (change round 9): the one site ease, below.
-  // MotionPath (change round 10): the drawn set pieces fly their tags, slips
-  // and cartons along real paths instead of straight lines.
-  gsap.registerPlugin(ScrollTrigger, SplitText, Flip, CustomEase, MotionPathPlugin, useGSAP);
+  // CustomEase (change round 9): the one site ease, below. Two plugins are
+  // registered where they are used instead (performance pass), so they ship
+  // only with the pages that need them, not in every route's bundle: Flip in
+  // the /brands index, MotionPath in the drawn set pieces (counter rail,
+  // storefront street, store atlas) and, loaded on demand, the footer map.
+  gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase, useGSAP);
   // Mobile browsers fire resize when the URL bar shows/hides; ignoring it stops
   // needless ScrollTrigger refreshes (a common source of scroll jank).
   // limitCallbacks (change round 10): a trigger's enter/leave callbacks fire
@@ -53,14 +52,17 @@ if (typeof window !== "undefined") {
   // images above settle. Each of those shifts everything below it, so triggers
   // further down the page fire against stale offsets. The pillar card stack
   // showed it worst, tucking its cards before the reader had reached them.
-  // Re-measure once the page has actually settled.
-  const refresh = () => ScrollTrigger.refresh();
-  document.fonts?.ready.then(refresh);
-  if (document.readyState === "complete") refresh();
-  else window.addEventListener("load", refresh, { once: true });
+  // Re-measure once the page has actually settled. ScrollTrigger refreshes
+  // itself on DOMContentLoaded and load; the fonts settling is the one late
+  // shift it does not see, so that refresh runs only when the fonts land
+  // after load (performance pass: this used to add a second full refresh on
+  // load as well, one more long task while the page was still busy).
+  document.fonts?.ready.then(() => {
+    if (document.readyState === "complete") ScrollTrigger.refresh();
+  });
 }
 
-export { gsap, ScrollTrigger, SplitText, Flip, useGSAP };
+export { gsap, ScrollTrigger, SplitText, useGSAP };
 
 /* Lag smoothing, shared. SmoothScroll turns it off (Lenis wants a ticker that
  * never fakes time), but the hero intro plays while hydration, image decode

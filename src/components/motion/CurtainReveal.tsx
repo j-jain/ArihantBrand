@@ -2,6 +2,7 @@
 
 import { useRef, type ReactNode } from "react";
 import { gsap, useGSAP, EASE, REVEAL, onScreenAtMount } from "@/lib/gsap";
+import { buildWhenNear } from "@/lib/offscreen";
 
 interface CurtainRevealProps {
   children: ReactNode;
@@ -39,31 +40,39 @@ export function CurtainReveal({ children, className }: CurtainRevealProps) {
           // Skip anything already on screen at mount so it neither flashes nor
           // hides after the server paint.
           if (onScreenAtMount(el)) return;
+          // Static until near (performance pass): nothing is hidden, split or
+          // measured until this comes within half a screen of the viewport, so
+          // the hydration commit carries no below-the-fold motion work.
+          return buildWhenNear(el, () => {
+            // It reached the screen before the observer reported (a fling, a jump
+            // link): it stays as served.
+            if (onScreenAtMount(el)) return;
 
-          if (mobile) {
-            gsap.from(el, {
-              autoAlpha: 0,
-              y: 14,
-              duration: REVEAL.durMobile,
-              ease: EASE,
-              scrollTrigger: { trigger: el, start: REVEAL.band, once: true, fastScrollEnd: true },
-            });
-            return;
-          }
+            if (mobile) {
+              gsap.from(el, {
+                autoAlpha: 0,
+                y: 14,
+                duration: REVEAL.durMobile,
+                ease: EASE,
+                scrollTrigger: { trigger: el, start: REVEAL.band, once: true, fastScrollEnd: true },
+              });
+              return;
+            }
 
-          gsap.fromTo(
-            el,
-            { clipPath: "inset(0 0 100% 0)" },
-            {
-              clipPath: "inset(0 0 0% 0)",
-              duration: 0.9,
-              ease: EASE,
-              scrollTrigger: { trigger: el, start: REVEAL.band, once: true, fastScrollEnd: true },
-              // `inset(0)` still clips to the border box: left in place it would
-              // slice the focus rings off any control flush with the band edge.
-              onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
-            },
-          );
+            gsap.fromTo(
+              el,
+              { clipPath: "inset(0 0 100% 0)" },
+              {
+                clipPath: "inset(0 0 0% 0)",
+                duration: 0.9,
+                ease: EASE,
+                scrollTrigger: { trigger: el, start: REVEAL.band, once: true, fastScrollEnd: true },
+                // `inset(0)` still clips to the border box: left in place it would
+                // slice the focus rings off any control flush with the band edge.
+                onComplete: () => gsap.set(el, { clearProps: "clipPath" }),
+              },
+            );
+          });
         },
       );
 

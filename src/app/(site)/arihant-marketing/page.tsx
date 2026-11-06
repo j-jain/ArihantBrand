@@ -143,7 +143,7 @@ export default async function ArihantMarketingPage() {
               <div data-sr="media" className="md:col-span-7">
                 <VideoFeature
                   mp4="/videos/apparels-promo.mp4"
-                  poster="/images/photos/apparels-promo-poster.jpg"
+                  poster="/images/photos/apparels-promo-poster.webp"
                   label="Play the Arihant Marketing film"
                   className="m-bleed"
                 />

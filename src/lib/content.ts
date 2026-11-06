@@ -220,6 +220,7 @@ interface RawStore {
   imagePath?: string | null;
   caption?: string | null;
   mapsQuery?: string | null;
+  mapsLink?: string | null;
 }
 interface RawFaq {
   question: string;
@@ -412,6 +413,7 @@ function mapStore(s: RawStore): Store {
     ...(image ? { image } : {}),
     ...(s.caption ? { caption: s.caption } : {}),
     ...(s.mapsQuery ? { mapsQuery: s.mapsQuery } : {}),
+    ...(s.mapsLink?.trim() ? { mapsLink: s.mapsLink.trim() } : {}),
   };
 }
 
@@ -546,7 +548,7 @@ const RETAIL_MODEL_QUERY = `*[_type == "retailModel"][0]{
 }`;
 
 const STORES_QUERY = `*[_type == "store"] | order(order asc){
-  name, city, format, status, ownership, image, imagePath, caption, mapsQuery
+  name, city, format, status, ownership, image, imagePath, caption, mapsQuery, mapsLink
 }`;
 
 const FAQS_ALL_QUERY = `*[_type == "faq"] | order(order asc){ question, answer, bullets, page }`;

@@ -49,14 +49,22 @@ export const store = defineType({
       },
     }),
     defineField({ name: "image", title: "Photo (uploaded — preferred)", type: "image", options: { hotspot: true } }),
-    defineField({ name: "imagePath", title: "Photo path (fallback, e.g. /images/photos/x.jpg)", type: "string" }),
+    defineField({ name: "imagePath", title: "Photo path (fallback, e.g. /images/photos/x.webp)", type: "string" }),
     defineField({ name: "caption", title: "Caption / alt text", type: "text", rows: 2 }),
     defineField({
       name: "mapsQuery",
-      title: "Address for directions",
+      title: "Address",
       description:
-        "Full address. Fill this only when the location is confirmed; leaving it blank hides the Get directions link.",
+        "Full address. Fill this only when the location is confirmed. Used for search engines, and for Get directions when there is no Google Maps link.",
       type: "string",
+    }),
+    defineField({
+      name: "mapsLink",
+      title: "Google Maps link",
+      description:
+        "The store's exact pin: in Google Maps open the store, then Share > Copy link, and paste it here. Get directions opens it. Leave blank to fall back to a Maps search for the address; with neither, the store shows no Get directions link.",
+      type: "url",
+      validation: (r) => r.uri({ scheme: ["https"] }),
     }),
     defineField({ name: "order", title: "Display order", type: "number", initialValue: 0 }),
   ],

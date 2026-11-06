@@ -38,8 +38,10 @@
   margin-inline: -1rem;
   padding: 0.85rem 1rem 0.75rem;
   border-bottom: 1px solid var(--line);
-  background: color-mix(in oklch, var(--paper-shade) 86%, transparent);
-  backdrop-filter: blur(12px) saturate(1.1);
+  /* Opaque paper since the performance pass: the frosted blur(12px) over the
+     names re-rendered on every scroll frame while the bar was stuck, and on
+     the paper-shade ground it read the same at rest. */
+  background: var(--paper-shade);
   transition: top 0s;
 }
 

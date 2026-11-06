@@ -127,21 +127,11 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // From 768px up the bar's height changes with this state (4rem <-> 3.5rem),
-  // which moves everything below it. Scroll triggers measured in the other
-  // state would then fire half a rem off (the pinned "Why us?" deck visibly
-  // snapped 8px as it engaged and released), so re-measure once the height
-  // transition has settled. Skipped on mount, where nothing was measured yet.
-  const scrolledMounted = useRef(false);
-  useEffect(() => {
-    if (!scrolledMounted.current) {
-      scrolledMounted.current = true;
-      return;
-    }
-    if (!window.matchMedia("(min-width: 768px)").matches) return;
-    const id = window.setTimeout(() => ScrollTrigger.refresh(), 400);
-    return () => window.clearTimeout(id);
-  }, [scrolled]);
+  // From 768px up the bar's height changes with this state (4rem <-> 3.5rem).
+  // It used to move everything below it, so every crossing of the line ended
+  // in a full ScrollTrigger.refresh(); since the performance pass the header
+  // takes the difference back as margin (globals.css), nothing moves, and
+  // there is nothing to re-measure.
 
   const [businessesOpen, setBusinessesOpen] = useState(false);
   // The panel is kept mounted through its close animation, then unmounted, so
@@ -653,7 +643,6 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
                         alt=""
                         width={144}
                         height={40}
-                        unoptimized
                       />
                     </span>
                     <span className="nav-panel__name">{b.name}</span>
@@ -754,7 +743,6 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
                     width={96}
                     height={24}
                     className="menu-sublink__logo"
-                    unoptimized
                   />
                   {b.name}
                 </Link>

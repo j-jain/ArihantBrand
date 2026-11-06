@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { watchOnScreen } from "@/lib/offscreen";
 import type { Testimonial } from "@/content/types";
 
 interface TestimonialColumnsProps {
@@ -108,8 +109,8 @@ export function TestimonialColumns({
           const loops = tracks.map((track, i) => {
             // Read the pace first: `data-loop` hands the transform to JS (the
             // stylesheet switches the keyframe off under it, which also
-            // zeroes the computed duration). The tracks already hold their
-            // own layer (`will-change: transform` in motion.css).
+            // zeroes the computed duration). Each track holds its own layer
+            // only while the wall is on screen (below).
             const seconds = loopSeconds(track, COLUMN_SECONDS[i] ?? 42);
             track.setAttribute("data-loop", "js");
             return gsap.to(track, {
@@ -176,7 +177,19 @@ export function TestimonialColumns({
           // (a window resized across 768px): start stopped, with no ramp.
           sync(true);
 
+          // Static off screen (performance pass): the columns hold still and
+          // give their layers back while the wall is scrolled away. Pausing
+          // leaves timeScale alone, so hover and the button still ramp.
+          const stopWatch = watchOnScreen(grid, (onScreen) => {
+            loops.forEach((loop) => (onScreen ? loop.resume() : loop.pause()));
+            tracks.forEach((track) => {
+              track.style.willChange = onScreen ? "transform" : "";
+            });
+          });
+
           return () => {
+            stopWatch();
+            tracks.forEach((track) => track.style.removeProperty("will-change"));
             grid.removeEventListener("pointerenter", onEnter);
             grid.removeEventListener("pointerleave", onLeave);
             grid.removeEventListener("focusin", onFocusIn);

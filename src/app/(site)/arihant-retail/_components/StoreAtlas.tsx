@@ -6,7 +6,7 @@ import { Button, SplitHeading, StaggerGroup, cn, trackClass } from "@/components
 import { townPhotos } from "@/content/images";
 import { townKey } from "@/content/towns";
 import type { Cta, Stat, Store } from "@/content/types";
-import { directionsUrl } from "@/lib/seo";
+import { storeMapsUrl } from "@/lib/seo";
 import { unitScope } from "@/lib/units";
 import { AtlasBehaviour } from "./AtlasBehaviour";
 import { buildAtlas, type AtlasStore } from "./atlasGeometry";
@@ -69,8 +69,9 @@ function cardPhoto(s: AtlasStore) {
  * one-shot entry build; with JS off the tags are plain anchors into the list
  * and `:target` highlights the entry.
  *
- * Honesty rails: trading stores only, town-level pins only (src/content/
- * towns.ts), directions only where a confirmed `mapsQuery` exists, every
+ * Honesty rails: trading stores only, one pin per town at the store's own
+ * Google Maps place (src/content/towns.ts, since change round 13), directions
+ * only where a confirmed `mapsLink` or `mapsQuery` exists, every
  * printed figure from `business.stats`, and a town photograph is captioned
  * and credited as the town, never as the store.
  *
@@ -374,10 +375,10 @@ export function StoreAtlas({
               {s.store.caption ? (
                 <p className="atlas-entry__caption t-small text-ink-soft">{s.store.caption}</p>
               ) : null}
-              {s.store.mapsQuery ? (
+              {storeMapsUrl(s.store) ? (
                 <a
                   className={cn("atlas-entry__dir t-small", trackClass("Store directions"))}
-                  href={directionsUrl(s.store.mapsQuery)}
+                  href={storeMapsUrl(s.store)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

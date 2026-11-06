@@ -167,6 +167,7 @@ export default async function HomePage() {
                 alt={photos.homeHero.alt}
                 ratio={photos.homeHero.ratio}
                 priority
+                fetchPriority="high"
                 sizes="(max-width: 767px) 100vw, 48vw"
                 tilt
                 mBleed
@@ -218,9 +219,11 @@ export default async function HomePage() {
                               <Image
                                 src={b.logo}
                                 alt={b.name}
-                                fill
-                                sizes="128px"
-                                className="object-contain object-left"
+                                // .funnel-card__mark is 8rem x 2.75rem: 144px
+                                // at the largest root size.
+                                width={144}
+                                height={50}
+                                className="absolute inset-0 h-full w-full object-contain object-left"
                               />
                             </span>
                           ))}
@@ -258,7 +261,9 @@ export default async function HomePage() {
                 src={photos.homeProofGround.src}
                 alt=""
                 fill
-                sizes="100vw"
+                // A texture at 16% under a scrim: two thirds of the width is
+                // plenty, where 100vw fetched the full 2048px file.
+                sizes="(max-width: 767px) 100vw, 60vw"
                 className="object-cover opacity-[0.16]"
               />
               {/* Horizontal scrim on desktop, where the copy holds the left

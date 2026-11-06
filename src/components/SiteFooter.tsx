@@ -2,6 +2,7 @@ import type { SiteSettings } from "@/content/types";
 import { mapsEmbedUrl, mapsUrl } from "@/lib/seo";
 import { ContactAccordion, ContactChannels } from "./ContactChannels";
 import { MapPinIcon } from "./icons";
+import { MapFrame } from "./MapFrame";
 import { NetworkMap } from "./motion/NetworkMap";
 
 interface SiteFooterProps {
@@ -61,20 +62,17 @@ export function SiteFooter({ settings }: SiteFooterProps) {
 
         {/* The office on a live map (change round 7: the client wanted a map
             to click, not only a link). The frame is Google's own widget, so a
-            reader can pan, zoom and take directions in place; it loads lazily,
-            only as the footer comes near. The card is the plain link to the
-            exact pin, for anyone who would rather open the Maps app. */}
+            reader can pan, zoom and take directions in place; since the
+            performance pass MapFrame mounts it only once the footer is near
+            and the browser is idle. The card is the plain link to the exact
+            pin, for anyone who would rather open the Maps app. */}
         <div className="footer-office mt-14">
-          <div className="footer-office__map">
-            <iframe
-              className="footer-office__frame"
-              src={mapsEmbedUrl(settings)}
-              title={`${building}, ${settings.locality}, ${settings.city}, on Google Maps`}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
-          </div>
+          <MapFrame
+            className="footer-office__map"
+            frameClassName="footer-office__frame"
+            src={mapsEmbedUrl(settings)}
+            title={`${building}, ${settings.locality}, ${settings.city}, on Google Maps`}
+          />
           <a
             className="footer-office__card group"
             href={directionsUrl}

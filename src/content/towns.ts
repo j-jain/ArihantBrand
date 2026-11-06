@@ -1,18 +1,20 @@
 /**
  * Towns on the Arihant Retail store atlas (change round 3).
  *
- * City-level centroids only. Only Guwahati's address is confirmed (it is the
- * one store with a `mapsQuery`); every other row here is the town, never the
- * shop. This is geography that is never printed: no coordinate, distance or
- * cell appears on the page, and none of it is a business figure, which is why
- * it lives here and not in facts.ts.
+ * Since change round 13 each row is the store's own point: the place behind
+ * the Google Maps link the client sent for it (the store's `mapsLink` in
+ * seed.ts), read off the resolved place on 28 October 2026. Before that the
+ * rows were town centroids. Still one pin per town. This is geography that is
+ * never printed: no coordinate, distance or cell appears on the page, and
+ * none of it is a business figure, which is why it lives here and not in
+ * facts.ts. The stores' JSON-LD `geo` reads the same rows.
  *
  * A store gets a pin when `townKey(store.city)` matches a row. A store in a
  * town not listed here still gets its list entry, just no pin (with a dev
  * warning), so adding a town is one line in this table.
  *
  * Per row:
- *  - `lon`, `lat`: the town centroid, placed on the terrain map through
+ *  - `lon`, `lat`: the store's Maps location, placed on the terrain map through
  *    arihant-retail/_components/atlasProjection.ts (change round 4).
  *  - `tag`: where the swing tag hangs, as the offset from the pin centre to
  *    the tag's eyelet in cells of 1/45 of the map's width. Placed by hand,
@@ -37,12 +39,12 @@ export function townKey(city: string): string {
 }
 
 export const TOWNS: Readonly<Record<string, Town>> = {
-  guwahati: { lon: 91.75, lat: 26.14, tag: { dx: 1.6, dy: 1.6 }, phoneSide: "below" },
-  goalpara: { lon: 90.62, lat: 26.17, tag: { dx: -2.2, dy: -2.8 }, phoneSide: "above" },
-  kohima: { lon: 94.11, lat: 25.67, tag: { dx: 2.7, dy: 0.4 }, phoneSide: "below" },
-  itanagar: { lon: 93.61, lat: 27.08, tag: { dx: 1.9, dy: -2.9 }, phoneSide: "below" },
+  guwahati: { lon: 91.77926, lat: 26.15551, tag: { dx: 1.6, dy: 1.6 }, phoneSide: "below" },
+  goalpara: { lon: 90.62514, lat: 26.1839, tag: { dx: -2.2, dy: -2.8 }, phoneSide: "above" },
+  kohima: { lon: 94.10797, lat: 25.67413, tag: { dx: 2.7, dy: 0.4 }, phoneSide: "below" },
+  itanagar: { lon: 93.62113, lat: 27.09383, tag: { dx: 1.9, dy: -2.9 }, phoneSide: "below" },
   // Change round 11: the fifth store. Near the map's lower-left, so the tag
   // hangs out to the left, clear of Goalpara's (up-left of its pin) and
   // Guwahati's (down-right of its own).
-  tura: { lon: 90.2, lat: 25.51, tag: { dx: -2.1, dy: -0.9 }, phoneSide: "below" },
+  tura: { lon: 90.19732, lat: 25.51304, tag: { dx: -2.1, dy: -0.9 }, phoneSide: "below" },
 };

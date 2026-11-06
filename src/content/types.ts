@@ -95,9 +95,13 @@ export interface Store {
   ownership?: "Company-owned" | "Franchisee-owned";
   image?: string;
   caption?: string;
-  /** Address string for a maps "Get directions" link. Present only where the
-   *  location is confirmed; absent stores render no directions link. */
+  /** The store's confirmed address. The JSON-LD street address, and the
+   *  "Get directions" search when there is no `mapsLink`. */
   mapsQuery?: string;
+  /** The store's own Google Maps link (a share link, the exact place). Wins
+   *  over `mapsQuery` for "Get directions" (change round 13). A store with
+   *  neither renders no directions link. */
+  mapsLink?: string;
 }
 
 export interface Faq {

@@ -1,7 +1,7 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
 
 /** Mirrors `Business` in src/content/types.ts.
- *  `logo` (uploaded image) is preferred; `logoPath` (e.g. /images/logos/x.png)
+ *  `logo` (uploaded image) is preferred; `logoPath` (e.g. /images/logos/x.webp)
  *  is the fallback the seed uses. `order` is schema-only (drives display order). */
 export const business = defineType({
   name: "business",
@@ -30,7 +30,7 @@ export const business = defineType({
       validation: (r) => r.required(),
     }),
     defineField({ name: "logo", title: "Logo (uploaded — preferred)", type: "image", options: { hotspot: false } }),
-    defineField({ name: "logoPath", title: "Logo path (fallback, e.g. /images/logos/x.png)", type: "string" }),
+    defineField({ name: "logoPath", title: "Logo path (fallback, e.g. /images/logos/x.webp)", type: "string" }),
     defineField({ name: "founded", title: "Founded (label)", type: "string" }),
     defineField({ name: "leaders", title: "Leaders", type: "array", of: [defineArrayMember({ type: "string" })] }),
     defineField({ name: "positioning", title: "Positioning", type: "string" }),
