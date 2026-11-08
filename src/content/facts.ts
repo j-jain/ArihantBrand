@@ -19,9 +19,10 @@
  * and `group.brands` is derived from the two so the total can never disagree
  * with its parts. Every count the site prints reads them.
  *
- * The logo walls lag behind: `partners.ts` renders 48 Marketing logos and 29
- * Apparels logos (77 in all), because the client's list has not been matched
- * to the logo files yet. `marketing.brandsOnWall`, `apparels.brandsOnWall`
+ * The logo walls lag behind: `partners.ts` renders 46 Marketing logos and 28
+ * Apparels logos (74 in all; Catwalk, Chocolate Baby and Vriti came off in
+ * change round 14 while the stated counts stayed, on the user's word),
+ * because the client's list has not been matched to the logo files yet. `marketing.brandsOnWall`, `apparels.brandsOnWall`
  * and `group.labels` stay DERIVED from `partners.ts` and describe the WALL
  * only; no copy prints them. When the walls catch up, the two pairs agree.
  *
@@ -101,6 +102,13 @@ const storesFranchisee = 3;
 
 const retail = {
   established: 2023,
+  /** The returns worksheet's two fixed inputs (change round 14, 8 November
+   *  2026, the client's figures): monthly sales per sq ft of carpet area, in
+   *  rupees, and the gross margin on those sales, in per cent. NEVER
+   *  PRINTED: the worksheet multiplies with them and shows only its results
+   *  (the client asked for neither to be displayed). */
+  worksheetSalesPerSqFt: 1100,
+  worksheetMarginPct: 22,
   /** Stores trading. Derived from the two ownership counts so the total can
    *  never disagree with its parts. All are open; no fit-out pipeline is
    *  stated. */

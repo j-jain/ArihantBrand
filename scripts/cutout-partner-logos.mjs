@@ -61,8 +61,8 @@ const CLASS_TABLE = {
   /** Ink on a white canvas: flood the edge-connected white away. */
   white: [
     "alvaro-castagnino", "amidhara", "azzurro", "bad-boys", "beevee",
-    "believe-in-shirts", "blazo", "bonny", "catwalk", "charter",
-    "chocolate-baby", "clubwear", "cross-world", "dagerrfly", "deal-jeans",
+    "believe-in-shirts", "blazo", "bonny", "charter",
+    "clubwear", "cross-world", "dagerrfly", "deal-jeans",
     "exceed", "gemini", "grab-it", "hatchers", "hoffmen", "kashmiera",
     "kidzello", "little-collars", "little-kangaroos", "mikki-house",
     "minerals-jeans", "mohit-industries", "nivia", "obaby", "octave",
@@ -81,7 +81,7 @@ const CLASS_TABLE = {
   ],
   /** Ink on a tinted canvas: key every pixel near the measured tint,
    *  enclosed counters included. */
-  tint: ["dhwaja", "kooki-ethnics", "vriti"],
+  tint: ["dhwaja", "kooki-ethnics"],
   /** Photographic: the file is left untouched. */
   artwork: ["caroline-clothing", "mayur"],
 };

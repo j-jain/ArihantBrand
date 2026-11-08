@@ -210,12 +210,6 @@
   padding-top: 1rem;
 }
 
-.calc__result-note {
-  margin-bottom: 0.5rem;
-  font-weight: 650;
-  color: var(--ink-soft);
-}
-
 .calc__row {
   display: flex;
   justify-content: space-between;

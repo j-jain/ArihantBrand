@@ -18,7 +18,6 @@ import {
   getMarketingStrengths,
   getPageCopy,
   getPartners,
-  getPhotoSlots,
   getSiteSettings,
 } from "@/lib/content";
 import {
@@ -28,12 +27,14 @@ import {
   pageMetadata,
 } from "@/lib/seo";
 import { unitScope } from "@/lib/units";
-import { FeatureHeroMedia } from "../_components/FeatureHeroMedia";
+import { FeatureHeroLogo } from "../_components/FeatureHeroLogo";
 import { UnitHero } from "../_components/UnitHero";
 import { CounterRail } from "./_components/CounterRail";
 
 const UNIT = "marketing" as const;
 const PATH = "/arihant-marketing";
+/** The trimmed Arihant Marketing cut-out's pixel size (public/images/logos). */
+const MARKETING_LOGO = { width: 748, height: 487 } as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getPageCopy(UNIT);
@@ -53,7 +54,6 @@ export default async function ArihantMarketingPage() {
     settings,
     strengths,
     steps,
-    photos,
   ] = await Promise.all([
     getPageCopy(UNIT),
     getBusinesses(),
@@ -62,7 +62,6 @@ export default async function ArihantMarketingPage() {
     getSiteSettings(),
     getMarketingStrengths(),
     getMarketingSteps(),
-    getPhotoSlots(),
   ]);
 
   if (!copy) return null;
@@ -97,13 +96,24 @@ export default async function ArihantMarketingPage() {
           one, beside the proof line that names it. Change round 13 (client's
           request): the trophy and the proof line are gone too, so the hero is
           the claim, its asks and figures beside the building alone. The
-          award is still told on /recognition and the home awards band. */}
+          award is still told on /recognition and the home awards band.
+          Change round 14 (client's request): no photograph at all; the
+          house's logo stands in its frame, so the lockup prints only the
+          name. The `marketingHero` photo slot is kept, unused. */}
       {business ? (
         <UnitHero
           business={business}
           hero={hero}
           feature
-          media={<FeatureHeroMedia main={photos.marketingHero} />}
+          lockupMark={false}
+          media={
+            <FeatureHeroLogo
+              src={business.logo}
+              alt={business.name}
+              width={MARKETING_LOGO.width}
+              height={MARKETING_LOGO.height}
+            />
+          }
         />
       ) : null}
 

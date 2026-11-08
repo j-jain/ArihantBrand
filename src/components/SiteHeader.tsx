@@ -666,7 +666,7 @@ export function SiteHeader({ whatsapp, menuLines }: SiteHeaderProps = {}) {
                   href="/recognition"
                   className="nav-panel__footlink t-small"
                 >
-                  Recognition <span aria-hidden="true">→</span>
+                  Awards <span aria-hidden="true">→</span>
                 </Link>
               </div>
             </div>

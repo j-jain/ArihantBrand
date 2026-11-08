@@ -87,7 +87,8 @@ export const pages: Record<string, PageCopy> = {
       // The film sits on this page, not on Apparels: it is Arihant Marketing's
       // event footage. The asset paths keep their original filenames.
       film: {
-        heading: "Inside Arihant Marketing",
+        // Change round 14 (client's wording): the film is the exhibition's.
+        heading: "Inside Arihant Marketing: Exhibition",
         lead: "A look at the team, the warehouse and the fairs where the season's winners get picked.",
       },
       brands: {
@@ -115,7 +116,8 @@ export const pages: Record<string, PageCopy> = {
       // founding year, the label count and the warehouse are the figures
       // under the asks, so the lead no longer repeats them. Change round 13
       // (client's request): no westernwear, and no sell-through clause.
-      lead: "The group's second distribution house, with a portfolio of its own: the Northeast's leading ladies' ethnic labels, with kidswear and footwear beside them.",
+      // Change round 14 (client's request): menswear in place of footwear.
+      lead: "The group's second distribution house, with a portfolio of its own: the Northeast's leading ladies' ethnic labels, with kidswear and menswear beside them.",
       primaryCta: {
         label: "Shop fast moving brands for your store",
         href: "/contact?intent=retailer",
@@ -274,7 +276,8 @@ export const pages: Record<string, PageCopy> = {
     metaDescription:
       "CMAI's Best Distributor of India 2015, the highest footfall at the region's garment exhibitions, and what retailers, brands and store owners across the Northeast say about Arihant.",
     hero: {
-      heading: "Awards, and who gave them",
+      // Change round 14 (client's wording).
+      heading: "Awards and recognitions",
       headingEmphasis: "Awards",
       // Change round 13: the NEGTA membership is off the awards list and the
       // fair count off the footfall entry, so neither is counted here.
@@ -282,7 +285,8 @@ export const pages: Record<string, PageCopy> = {
       primaryCta: { label: "Work with us", href: "/contact" },
     },
     sections: {
-      awards: { heading: "The trophy case", lead: "A short list. Every entry checkable." },
+      // The awards list prints no heading or lead since change round 14 (the
+      // client's request: "The trophy case" and its line went).
       gallery: {
         heading: "In the cabinet",
         lead: "Certificates and trophies from national brands and trade fairs, photographed as they sit on the shelf.",

@@ -1025,21 +1025,19 @@
     background: var(--paper);
   }
 
+  /* The one shared mark height (globals.css), at the phone's size; each box
+     keeps its logo's proportions from there. */
   .funnel-card__mark {
-    width: 3.9rem;
-    height: 2.25rem;
+    --mark-h: 3.25rem;
   }
 
-  /* The matched pair (globals.css), at the phone's mark size: the same
-     equal-area pair scaled with the box (2.25 / 2.75). */
-  .funnel-card__mark[data-unit="marketing"] {
-    height: 2.13rem;
-    width: calc(2.13rem * 748 / 487);
+  .funnel-card__marks {
+    padding-top: 0.25rem;
   }
 
-  .funnel-card__mark[data-unit="apparels"] {
-    height: 2.37rem;
-    width: calc(2.37rem * 347 / 283);
+  /* The ask's ruled row keeps its own air above it under the marks. */
+  .funnel-card__marks + .funnel-card__cta {
+    margin-top: 0.75rem;
   }
 
   /* --- Awards and testimonials -------------------------------------- */
@@ -2289,6 +2287,24 @@
 
   .feature-media__caption {
     display: none;
+  }
+
+  /* Marketing's logo plate (change round 14): full-bleed like the photograph
+     it replaced, shorter, since a logo needs no 4:3 to read. */
+  .feature-logo {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .feature-logo__plate {
+    border-radius: 0;
+    box-shadow:
+      inset 0 1px 0 var(--line),
+      inset 0 -1px 0 var(--line);
+  }
+
+  .feature-logo__mark {
+    width: 52%;
   }
 }
 

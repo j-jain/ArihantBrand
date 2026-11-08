@@ -948,10 +948,12 @@
 /* Atlas: the store list                                               */
 /* ------------------------------------------------------------------ */
 
+/* All five stores in one row from 768px up (change round 14, the client's
+   request), each entry without its photo caption. */
 .atlas__list {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: 2.5rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: 1.75rem;
   margin: 2.5rem 0 0;
   padding: 0;
   list-style: none;
@@ -1001,11 +1003,10 @@
   color: var(--ink);
 }
 
-.atlas-entry__caption {
-  text-wrap: pretty;
-}
-
+/* The link sits at the entry's foot, so in the one-row list all five line up
+   whatever a name or town wraps to (change round 14). */
 .atlas-entry__dir {
+  margin-top: auto;
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;

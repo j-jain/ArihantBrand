@@ -85,18 +85,16 @@ export default async function ArihantApparelsPage() {
 
       {/* 1 — Hero (paper), one screen (change round 6): the claim, its two
           asks and the figures beside the team on the warehouse floor, with
-          the 2024 fair laid over it. Both are Studio photo slots. */}
+          the 2024 fair laid over it. Both are Studio photo slots. Change
+          round 14 (client's request): the fair photograph carries no
+          caption. */}
       {business ? (
         <UnitHero
           business={business}
           hero={hero}
           feature
           media={
-            <FeatureHeroMedia
-              main={photos.apparelsHero}
-              inset={photos.apparelsHeroInset}
-              caption={photos.apparelsHeroInset.caption}
-            />
+            <FeatureHeroMedia main={photos.apparelsHero} inset={photos.apparelsHeroInset} />
           }
         />
       ) : null}

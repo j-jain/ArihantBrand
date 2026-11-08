@@ -872,39 +872,42 @@ svg {
 /* Which arm keeps the promise (change round 10): the mark(s) of every
    business whose own asks carry the card's destination, set between the body
    and the ask. Marks, not links: the card itself is the link. */
+/* Change round 14 (8 November 2026, the client's request): the row sits at
+   the card's foot, just above the ask, so the two cards' marks share one line
+   whatever the length of the copy above them. */
 .funnel-card__marks {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 1.25rem;
-  margin-top: 0.25rem;
+  gap: 0.5rem 1.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
-/* A size up in change round 13 (client's request): at 1.75rem the Apparels
-   mark, the squarest of the three, read as a speck. The box is only as wide
-   as the widest mark at this height (Retail's), so a pair sits together. */
+.funnel-card__marks + .funnel-card__cta {
+  margin-top: 0;
+}
+
+/* All three marks at ONE height, a size up again (change round 14, the
+   client's request: bigger, aligned, the same height; round 13 had matched
+   the pair by area instead). Each box takes its logo's exact proportions
+   (the trimmed cut-outs: Marketing 748x487, Apparels 347x283, Retail
+   396x228), so every mark fills its box edge to edge and the gap between two
+   is the row's gap and nothing else. */
 .funnel-card__mark {
+  --mark-h: 4.25rem;
   position: relative;
   display: block;
-  width: 4.75rem;
-  height: 2.75rem;
+  height: var(--mark-h);
+  width: calc(var(--mark-h) * 396 / 228);
 }
 
-/* The retailer card's pair, matched (7 November 2026, the client's request:
-   aligned and the same size). At one height the Apparels mark, squarer
-   (347x283) and drawn in thin lines, read smaller than Marketing's
-   (748x487). Each box now takes its logo's exact proportions, so the gap
-   between the two is the row's gap and nothing else, and the two are sized
-   to the same area (Apparels about 12% taller) with their centres on one
-   line. Retail, alone in its card, keeps the box above. */
 .funnel-card__mark[data-unit="marketing"] {
-  height: 2.6rem;
-  width: calc(2.6rem * 748 / 487);
+  width: calc(var(--mark-h) * 748 / 487);
 }
 
 .funnel-card__mark[data-unit="apparels"] {
-  height: 2.9rem;
-  width: calc(2.9rem * 347 / 283);
+  width: calc(var(--mark-h) * 347 / 283);
 }
 
 /* ------------------------------------------------------------------ */
@@ -1357,6 +1360,13 @@ svg {
   padding-left: 0.9rem;
   border-left: 1px solid var(--line);
   letter-spacing: 0.08em;
+}
+
+/* The name alone (Marketing since change round 14, whose hero media is the
+   logo itself): no divider, since there is no mark for it to divide from. */
+.unit-lockup__name:first-child {
+  padding-left: 0;
+  border-left: 0;
 }
 
 /* The unit stat band runs the full measure at display size: on a page whose

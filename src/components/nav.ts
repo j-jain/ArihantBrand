@@ -8,7 +8,8 @@ export interface NavItem {
  *  link to the same page would be the duplicate the earlier rounds removed. */
 export const primaryNav: NavItem[] = [
   { label: "Brands", href: "/brands" },
-  { label: "Recognition", href: "/recognition" },
+  // "Awards" since change round 14 (client's request); the URL stays.
+  { label: "Awards", href: "/recognition" },
   { label: "Trade Notes", href: "/blog" },
   { label: "About", href: "/about" },
 ];

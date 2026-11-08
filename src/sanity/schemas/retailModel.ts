@@ -138,7 +138,7 @@ export const retailModel = defineType({
           name: "disclosure",
           title: "Disclosure (required, always shown)",
           description:
-            "Sits above the fields and is what a screen reader announces on open. It must keep saying that every figure is the visitor's own, that nothing shown is an Arihant projection, and that nothing is sent or stored.",
+            "Sits above the fields and is what a screen reader announces on open. It must keep saying that nothing shown is an offer or a promise, and that nothing is sent or stored. The worksheet's fixed sales and margin figures are never printed (change round 14), so no digit here either.",
           type: "text",
           rows: 5,
           validation: (r) =>
@@ -146,7 +146,7 @@ export const retailModel = defineType({
               .required()
               .custom(
                 noFigures(
-                  "The disclosure must not contain figures. It is the sentence that says no figure here is ours.",
+                  "The disclosure must not contain figures.",
                 ),
               ),
         }),
@@ -158,8 +158,6 @@ export const retailModel = defineType({
           fields: [
             calculatorField("area", "Carpet area"),
             calculatorField("rent", "Monthly rent"),
-            calculatorField("sales", "Expected monthly sales"),
-            calculatorField("margin", "Expected gross margin"),
             calculatorField("otherCosts", "Other running costs"),
           ],
         }),
@@ -172,16 +170,9 @@ export const retailModel = defineType({
             resultLabel("grossMargin", "Gross margin row"),
             resultLabel("statedCosts", "Stated costs row"),
             resultLabel("leftOver", "What the numbers leave row"),
-            resultLabel("salesPerSqFt", "Sales per sq ft row"),
             resultLabel("rentShare", "Rent share row"),
             resultLabel("empty", "Placeholder while a field is blank"),
           ],
-        }),
-        defineField({
-          name: "resultNote",
-          title: "Note above the results",
-          type: "string",
-          validation: (r) => r.required(),
         }),
         defineField({
           name: "leftOverNote",

@@ -273,7 +273,9 @@ export interface CalculatorField {
 }
 
 /** Every string the returns worksheet prints. Nothing in this shape is, or may
- *  become, a number. The worksheet computes only from visitor input. */
+ *  become, a number. Since change round 14 the worksheet's sales and margin
+ *  are fixed in facts.ts (`retail.worksheet*`) and never printed; the visitor
+ *  types the area and the costs. */
 export interface ReturnsCalculatorCopy {
   triggerLabel: string;
   heading: string;
@@ -281,15 +283,12 @@ export interface ReturnsCalculatorCopy {
   fields: {
     area: CalculatorField;
     rent: CalculatorField;
-    sales: CalculatorField;
-    margin: CalculatorField;
     otherCosts: CalculatorField;
   };
   results: {
     grossMargin: string;
     statedCosts: string;
     leftOver: string;
-    salesPerSqFt: string;
     rentShare: string;
     /** Printed in place of a figure while an input it needs is empty. */
     empty: string;
@@ -297,7 +296,6 @@ export interface ReturnsCalculatorCopy {
   /** The honesty rail. Always visible, never collapsed, and referenced by the
    *  dialog's aria-describedby. */
   disclosure: string;
-  resultNote: string;
   /** Printed under the "what your numbers leave" row, which is the one a
    *  reader will otherwise mistake for profit. */
   leftOverNote: string;

@@ -372,9 +372,9 @@ export function StoreAtlas({
               <p className="t-small text-ink-soft">
                 {s.store.city} · {s.store.format}
               </p>
-              {s.store.caption ? (
-                <p className="atlas-entry__caption t-small text-ink-soft">{s.store.caption}</p>
-              ) : null}
+              {/* No photo caption here since change round 14 (client's
+                  request), so the five entries sit in one row; the caption
+                  still names the photograph on the map card. */}
               {storeMapsUrl(s.store) ? (
                 <a
                   className={cn("atlas-entry__dir t-small", trackClass("Store directions"))}

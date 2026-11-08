@@ -234,7 +234,9 @@ export const businesses: Business[] = [
     founded: "Founded 2023",
     leaders: ["Shreyansh Sancheti"],
     positioning: "Multi-brand modern retail, run by the house that supplies the region.",
-    tagline: "Company-run multi-brand stores",
+    // Change round 14 (client's words): the swing tag's line, which is also
+    // the header's Businesses menu line.
+    tagline: "Modern retail multi-brand stores",
     summary: `Arihant's retail arm runs the most modern and professionally run multi-brand stores in Northeast India: ${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, every one of them run by our team.`,
     highlights: [
       `${InWords(facts.retail.storesCompanyOwned)} company-owned, company-run stores and ${inWords(facts.retail.storesFranchisee)} franchisee-owned, company-run stores`,
@@ -316,12 +318,13 @@ export const funnels: Funnel[] = [
 /* The Arihant Retail managed-store model (ModelBoard + worksheet)      */
 /*                                                                      */
 /* NOTE FOR ANY FUTURE EDIT: nothing in this object may state an Arihant */
-/* business figure, and `facts.ts` deliberately holds nothing for it.    */
-/* Franchise economics stay qualitative (PRODUCT.md honesty rails): no   */
-/* investment amount, no return percentage, no payback period. The       */
-/* worksheet below computes only from numbers the visitor types in, and  */
-/* says so on the panel. If you find yourself wanting a number here,     */
-/* that is the rail, not an oversight.                                   */
+/* business figure. Franchise economics stay qualitative (PRODUCT.md     */
+/* honesty rails): no investment amount, no return percentage, no        */
+/* payback period. Since change round 14 (8 November 2026, the client's  */
+/* call) the worksheet's sales per sq ft and margin are FIXED in         */
+/* facts.ts (`retail.worksheetSalesPerSqFt`, `retail.worksheetMarginPct`) */
+/* and never printed; the visitor types the area, the rent and the other */
+/* running costs. Splitting those costs into lines is deferred.          */
 /* ------------------------------------------------------------------ */
 
 export const retailModel: RetailModel = {
@@ -353,7 +356,7 @@ export const retailModel: RetailModel = {
   calculator: {
     triggerLabel: "Work it out on your own numbers",
     heading: "Your numbers, your arithmetic",
-    lead: "Put in your space, your rent and the sales you think the floor will do. We will do the arithmetic and nothing else.",
+    lead: "Put in your space, your rent and your other running costs. We will do the arithmetic.",
     fields: {
       area: {
         label: "Carpet area (sq ft)",
@@ -363,30 +366,22 @@ export const retailModel: RetailModel = {
         label: "Monthly rent (rupees)",
         help: "Enter 0 if you own the property.",
       },
-      sales: {
-        label: "Monthly sales you expect (rupees)",
-        help: "Your expectation, not ours. Nothing here is our estimate.",
-      },
-      margin: {
-        label: "Gross margin you expect to work on (%)",
-        help: "The margin you would negotiate. We publish no margin figure.",
-      },
       otherCosts: {
         label: "Other monthly running costs (rupees)",
         help: "Power, upkeep, anything you would pay yourself.",
       },
     },
     results: {
-      grossMargin: "Gross margin on your sales figure",
+      grossMargin: "Gross margin per month",
       statedCosts: "The costs you listed",
-      leftOver: "What your own numbers leave",
-      salesPerSqFt: "Sales per sq ft per month",
+      leftOver: "What the numbers leave",
       rentShare: "Rent as a share of sales",
       empty: "Fill the fields above",
     },
+    // Change round 14: the sentences that said every figure was the
+    // visitor's own went with the sales and margin fields (now fixed).
     disclosure:
-      "Every number here is yours. This tool does arithmetic on the figures you type in and nothing more. Arihant publishes no investment amount and no return percentage on this website, so nothing below is a projection, an offer, or a promise of performance. Your real costs and your real sales will differ. Nothing you type is sent to us or stored anywhere.",
-    resultNote: "Calculated from what you entered on this page. Not an Arihant estimate.",
+      "Nothing below is an offer or a promise of performance. Your real costs and your real sales will differ. Nothing you type is sent to us or stored anywhere.",
     leftOverNote:
       "This is your gross margin less the costs you listed. It is not a profit figure. Tax, interest, depreciation and working capital are not in it.",
     cta: { label: "Take these numbers to us", href: "/partner#inquiry" },
@@ -450,7 +445,8 @@ export const values = [
 export const marketingStrengths = [
   {
     title: "One partner, every category",
-    text: `We already move ${phrase.marketingBrands} labels across menswear, womenswear, kidswear and denim. Your range slots into routes that are already running.`,
+    // Change round 14 (client's request): no denim, and the routes line went.
+    text: `We already move ${phrase.marketingBrands} labels across menswear, womenswear and kidswear.`,
   },
   {
     title: "A field force you do not have to build",
@@ -693,11 +689,11 @@ export const faqs: Faq[] = [
   {
     page: "marketing",
     question: "How do you handle modern trade and shop-in-shops?",
-    answer:
-      "We run the SIS counter end to end, and the brand does not fund the fixtures or the floor staff:",
+    // Change round 14 (client's request): the fixture and staffing promises
+    // are off this answer; monitoring is on it.
+    answer: "We run the SIS counter end to end:",
     bullets: [
-      "No fixture investment on your side.",
-      "Staff optional: a promoter is not required to open.",
+      "Proper front-end and back-end monitoring.",
       "Replenishment driven by sell-through, not by guesswork.",
       "Planogram audited on every visit, with counter-level reporting back to you.",
     ],
@@ -720,11 +716,6 @@ export const faqs: Faq[] = [
     question: "I already buy from Arihant Marketing. Can I buy from Apparels too?",
     answer:
       "Yes, and most growing counters do. The two houses carry different labels and bill separately, so nothing about your existing terms changes.",
-  },
-  {
-    page: "apparels",
-    question: "Do you sell at the regional garment fairs?",
-    answer: `Yes. Our stand has drawn the highest footfall at the region's last ${facts.apparels.exhibitions} exhibitions. If you are visiting a fair, book a slot with us in advance and we will hold the new season's range aside for you.`,
   },
   {
     page: "apparels",

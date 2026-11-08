@@ -99,7 +99,7 @@ export default async function RecognitionPage() {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Recognition", path: "/recognition" },
+          { name: "Awards", path: "/recognition" },
         ])}
       />
 
@@ -160,16 +160,13 @@ export default async function RecognitionPage() {
         </HeroIntro>
       </section>
 
-      {/* 2 — Trophy case (charcoal, curtain-revealed) ----------------------- */}
-      <section className="on-dark">
+      {/* 2 — The awards (charcoal, curtain-revealed) ----------------------- */}
+      {/* Change round 14 (client's request): no section heading or lead, so
+          the awards themselves open the band; each award's title is the
+          band's h2, which keeps the page outline whole. */}
+      <section className="on-dark" aria-label="Awards">
         <CurtainReveal className="container-site section-pad">
           <div className="m-flow flex flex-col gap-12 md:gap-16">
-            <SectionHeading
-              heading={sections.awards.heading}
-              lead={sections.awards.lead}
-              onDark
-            />
-
             {/* R1/R2: the award is the headline, not the year. A 7rem "2015"
                 used to be the largest thing on the page, which told a reader
                 the date mattered more than what was won. Every award now reads
@@ -182,9 +179,9 @@ export default async function RecognitionPage() {
               {headlineAward ? (
                 <li className={rowClass(headlineAward, true)}>
                   <div className="award-row__body">
-                    <h3 className="t-h2 max-w-[18ch] text-on-charcoal">
+                    <h2 className="t-h2 max-w-[18ch] text-on-charcoal">
                       {headlineAward.title}
-                    </h3>
+                    </h2>
                     {headlineAward.issuer ? (
                       <p className="award-row__issuer t-lead text-on-charcoal-soft">
                         {headlineAward.issuer}
@@ -208,9 +205,9 @@ export default async function RecognitionPage() {
               {otherAwards.map((award) => (
                 <li key={award.title} className={rowClass(award)}>
                   <div className="award-row__body">
-                    <h3 className="t-h3 max-w-[22ch] text-on-charcoal">
+                    <h2 className="t-h3 max-w-[22ch] text-on-charcoal">
                       {award.title}
-                    </h3>
+                    </h2>
                     {/* An award may be its title alone (change round 13:
                         the footfall entry). */}
                     {award.issuer ? (

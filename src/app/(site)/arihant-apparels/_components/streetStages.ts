@@ -11,6 +11,9 @@ export function stagesFrom(faqs: Faq[]) {
   const bullets = faq?.bullets ?? storeStreetCopy.fallback.bullets;
   return {
     lead,
-    stages: storeStreetCopy.titles.map((title, i) => ({ title, text: bullets[i] })),
+    stages: storeStreetCopy.titles.map((title, i) => ({
+      title,
+      text: storeStreetCopy.texts[i] ?? bullets[i],
+    })),
   };
 }

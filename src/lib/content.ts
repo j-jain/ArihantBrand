@@ -204,7 +204,6 @@ interface RawRetailModel {
       Record<keyof RetailModel["calculator"]["results"], string | null>
     > | null;
     disclosure?: string | null;
-    resultNote?: string | null;
     leftOverNote?: string | null;
     cta?: Cta | null;
   } | null;
@@ -539,11 +538,10 @@ const RETAIL_MODEL_QUERY = `*[_type == "retailModel"][0]{
   calculator{
     triggerLabel, heading, lead,
     fields{
-      area{ label, help }, rent{ label, help }, sales{ label, help },
-      margin{ label, help }, otherCosts{ label, help }
+      area{ label, help }, rent{ label, help }, otherCosts{ label, help }
     },
-    results{ grossMargin, statedCosts, leftOver, salesPerSqFt, rentShare, empty },
-    disclosure, resultNote, leftOverNote, cta{ label, href }
+    results{ grossMargin, statedCosts, leftOver, rentShare, empty },
+    disclosure, leftOverNote, cta{ label, href }
   }
 }`;
 
@@ -873,20 +871,16 @@ export function getRetailModel(): Promise<RetailModel> {
           fields: {
             area: field("area"),
             rent: field("rent"),
-            sales: field("sales"),
-            margin: field("margin"),
             otherCosts: field("otherCosts"),
           },
           results: {
             grossMargin: result("grossMargin"),
             statedCosts: result("statedCosts"),
             leftOver: result("leftOver"),
-            salesPerSqFt: result("salesPerSqFt"),
             rentShare: result("rentShare"),
             empty: result("empty"),
           },
           disclosure: c?.disclosure ?? seedCalc.disclosure,
-          resultNote: c?.resultNote ?? seedCalc.resultNote,
           leftOverNote: c?.leftOverNote ?? seedCalc.leftOverNote,
           cta: c?.cta ?? seedCalc.cta,
         },

@@ -29,6 +29,10 @@ interface UnitHeroProps {
   feature?: boolean;
   /** A short line of proof under the figures (Marketing: its award). */
   proof?: string;
+  /** Print the small logo in the lockup above the headline. Default true.
+   *  Marketing passes false since change round 14, because its hero media
+   *  is the logo itself, large; the lockup keeps the name. */
+  lockupMark?: boolean;
 }
 
 /**
@@ -60,21 +64,24 @@ export function UnitHero({
   fit = false,
   feature = false,
   proof,
+  lockupMark = true,
 }: UnitHeroProps) {
   /* Which company this is, said plainly and small. */
   const lockup = (
     // `data-unit` lets one unit's mark take its own size (change round 13:
     // the Apparels mark, the squarest of the three, a size up).
     <div data-hero-reveal data-unit={business.unit} className="unit-lockup flex items-center gap-3">
-      <span className="unit-lockup__logo relative block">
-        <Image
-          src={business.logo}
-          alt=""
-          width={200}
-          height={100}
-          className="absolute inset-0 h-full w-full object-contain object-left"
-        />
-      </span>
+      {lockupMark ? (
+        <span className="unit-lockup__logo relative block">
+          <Image
+            src={business.logo}
+            alt=""
+            width={200}
+            height={100}
+            className="absolute inset-0 h-full w-full object-contain object-left"
+          />
+        </span>
+      ) : null}
       <span className="unit-lockup__name t-label text-ink-soft">{business.name}</span>
     </div>
   );

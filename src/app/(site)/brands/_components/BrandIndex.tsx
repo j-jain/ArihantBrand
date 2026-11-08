@@ -124,7 +124,9 @@ export function BrandIndex({ partners, whatsapp }: BrandIndexProps) {
   const ready = useSyncExternalStore(noopSubscribe, () => true, () => false);
   const [query, setQuery] = useState("");
   const [unit, setUnit] = useState<UnitFilter>("all");
-  const [view, setView] = useState<View>("index");
+  // Logos first (change round 14, the client's request): the page opens on
+  // the logo grid, server markup included; the A to Z index is one tap away.
+  const [view, setView] = useState<View>("logos");
   const [hover, setHover] = useState<Partner | null>(null);
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
   const [selected, setSelected] = useState<Partner | null>(null);
@@ -512,7 +514,7 @@ export function BrandIndex({ partners, whatsapp }: BrandIndexProps) {
           </div>
 
           <div className="bi-seg bi-seg--view" role="group" aria-label="Show labels as">
-            {(["index", "logos"] as View[]).map((v) => (
+            {(["logos", "index"] as View[]).map((v) => (
               <button
                 key={v}
                 type="button"

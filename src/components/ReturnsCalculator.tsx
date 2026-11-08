@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useRef, useState } from "react";
 
-import { num } from "@/content/facts";
+import { facts, num } from "@/content/facts";
 import type { ReturnsCalculatorCopy } from "@/content/types";
 import { Button } from "./Button";
 import { Modal } from "./Modal";
@@ -13,17 +13,20 @@ interface ReturnsCalculatorProps {
   onClose: () => void;
 }
 
-type FieldKey = "area" | "rent" | "sales" | "margin" | "otherCosts";
+type FieldKey = "area" | "rent" | "otherCosts";
 
-const FIELD_ORDER: FieldKey[] = ["area", "rent", "sales", "margin", "otherCosts"];
+const FIELD_ORDER: FieldKey[] = ["area", "rent", "otherCosts"];
 
 const EMPTY: Record<FieldKey, string> = {
   area: "",
   rent: "",
-  sales: "",
-  margin: "",
   otherCosts: "",
 };
+
+/* The two fixed inputs (change round 14, the client's figures), from
+   facts.ts. Used in the arithmetic only: no row, label or note prints them. */
+const SALES_PER_SQ_FT = facts.retail.worksheetSalesPerSqFt;
+const MARGIN_PCT = facts.retail.worksheetMarginPct;
 
 /**
  * Parses a typed figure. Accepts en-IN grouping and stray spaces, because a
@@ -52,13 +55,14 @@ function ratio(value: number, unit: string): string {
 /**
  * The returns worksheet.
  *
- * It is a worksheet, not a projection, and the distinction is load-bearing.
  * Arihant publishes no investment amount and no return percentage (PRODUCT.md
- * honesty rails), so every figure this panel prints is derived from what the
- * visitor typed on this page. There are no default values, no placeholder
- * figures, and nothing that would let an Arihant number in through the back
- * door. The disclosure sits above the fields, is never collapsed, and is what
- * the dialog points `aria-describedby` at.
+ * honesty rails). Since change round 14 (the client's call) the floor's
+ * monthly sales are its carpet area times a fixed sales-per-sq-ft figure and
+ * the gross margin is a fixed share of that, both from facts.ts and neither
+ * printed; the visitor types the area, the rent and the other running costs.
+ * Fields open empty, with no placeholder figures. The disclosure sits above
+ * the fields, is never collapsed, and is what the dialog points
+ * `aria-describedby` at.
  *
  * The visitor's figures are never put in a URL and never prefilled into the
  * inquiry form: that would contradict the sentence promising nothing is sent,
@@ -89,9 +93,10 @@ export function ReturnsCalculator({ copy, open, onClose }: ReturnsCalculatorProp
 
   const results = useMemo(() => {
     const ok = (v: number | null): v is number => v !== null && !Number.isNaN(v);
-    const { area, rent, sales, margin, otherCosts } = parsed;
+    const { area, rent, otherCosts } = parsed;
 
-    const grossMargin = ok(sales) && ok(margin) ? (sales * margin) / 100 : null;
+    const sales = ok(area) && area > 0 ? area * SALES_PER_SQ_FT : null;
+    const grossMargin = sales !== null ? (sales * MARGIN_PCT) / 100 : null;
     // A blank cost field means zero cost, not an unanswerable sum: someone who
     // owns their property should not have to type 0 twice to see a total.
     const statedCosts =
@@ -100,10 +105,9 @@ export function ReturnsCalculator({ copy, open, onClose }: ReturnsCalculatorProp
         : null;
     const leftOver =
       grossMargin !== null && statedCosts !== null ? grossMargin - statedCosts : null;
-    const salesPerSqFt = ok(sales) && ok(area) && area > 0 ? sales / area : null;
-    const rentShare = ok(rent) && ok(sales) && sales > 0 ? (rent / sales) * 100 : null;
+    const rentShare = ok(rent) && sales !== null ? (rent / sales) * 100 : null;
 
-    return { grossMargin, statedCosts, leftOver, salesPerSqFt, rentShare };
+    return { grossMargin, statedCosts, leftOver, rentShare };
   }, [parsed]);
 
   const set = (key: FieldKey, next: string) =>
@@ -130,11 +134,6 @@ export function ReturnsCalculator({ copy, open, onClose }: ReturnsCalculatorProp
       label: copy.results.leftOver,
       value: results.leftOver === null ? null : rupees(results.leftOver),
       note: copy.leftOverNote,
-    },
-    {
-      key: "salesPerSqFt",
-      label: copy.results.salesPerSqFt,
-      value: results.salesPerSqFt === null ? null : rupees(results.salesPerSqFt),
     },
     {
       key: "rentShare",
@@ -205,7 +204,6 @@ export function ReturnsCalculator({ copy, open, onClose }: ReturnsCalculatorProp
         </div>
 
         <div className="calc__out">
-          <p className="calc__result-note t-small">{copy.resultNote}</p>
           <dl>
             {rows.map((row) => (
               <div key={row.key} className="calc__row">

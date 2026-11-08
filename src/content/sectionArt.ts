@@ -29,7 +29,12 @@ export const counterRailLabels = {
 
 export const storeStreetCopy = {
   heading: "From first counter to category leader",
-  titles: ["Seed the anchors", "Widen at the fair", "Add shop-in-shop counters"],
+  // Change round 14 (client's wording): "Widen at fair and D2D".
+  titles: ["Seed the anchors", "Widen at fair and D2D", "Add shop-in-shop counters"],
+  /** Stage bodies the street says in its own words, by stage, in place of
+   *  the FAQ bullet (change round 14, the client's line for stage one). The
+   *  FAQ itself keeps its bullet; stages left empty here read the FAQ. */
+  texts: ["Seed the right-fit multi-brand counters across Northeast India.", null, null],
   key: {
     warehouse: "Our warehouse",
     store: "Store stocking the label",

@@ -3,6 +3,9 @@ import type { Partner } from "./types";
 /* ------------------------------------------------------------------ */
 /* Partner logos (from the brand profile).                              */
 /*                                                                      */
+/* Change round 14 (8 November 2026, the client's request): Catwalk,     */
+/* Chocolate Baby and Vriti are off every wall, with their logo files.   */
+/*                                                                      */
 /* This list is the source of truth for two published figures: the       */
 /* group's label count and Arihant Marketing's brand-partner count       */
 /* (see facts.ts, which derives both from here rather than restating     */
@@ -48,7 +51,6 @@ const popularityOrder: string[] = [
   "little-kangaroos",
   "nivia",
   "twills",
-  "catwalk",
   "deal-jeans",
   "juniper",
   "peppermint",
@@ -72,7 +74,6 @@ const roster: Partner[] = [
   m("Blazo", "blazo"),
   m("Bonny", "bonny"),
   m("Charter", "charter"),
-  m("Chocolate Baby", "chocolate-baby"),
   m("Clubwear", "clubwear"),
   m("Country Wide Shirts", "country-wide-shirts"),
   m("Cross World", "cross-world"),
@@ -110,7 +111,6 @@ const roster: Partner[] = [
   m("Tassel", "tassel"),
   m("Tiny Girl", "tiny-girl", "Kidswear"),
   m("Twills", "twills", "Men's casualwear"),
-  m("Vriti", "vriti"),
   m("Yaaron", "yaaron"),
   m("7L", "7l"),
   // Arihant Apparels portfolio
@@ -119,7 +119,6 @@ const roster: Partner[] = [
   a("Believe-In Shirts", "believe-in-shirts"),
   a("BIBA", "biba", "Women's ethnic wear"),
   a("Caroline Clothing", "caroline-clothing"),
-  a("Catwalk", "catwalk", "Footwear"),
   a("Cool Colors", "cool-colors"),
   a("Dagerrfly", "dagerrfly"),
   a("Dhwaja", "dhwaja"),
