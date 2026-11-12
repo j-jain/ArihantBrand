@@ -74,7 +74,7 @@ export default async function ArihantApparelsPage() {
   return (
     <div>
       {business && contact ? (
-        <JsonLd data={businessJsonLd(settings, business, contact)} />
+        <JsonLd data={businessJsonLd(settings, business, contact, partners)} />
       ) : null}
       <JsonLd
         data={breadcrumbJsonLd([

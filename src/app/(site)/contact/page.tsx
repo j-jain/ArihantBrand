@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { getPageCopy, getSiteSettings } from "@/lib/content";
-import { breadcrumbJsonLd, mapsUrl, pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, mapsUrl, pageMetadata, webPageJsonLd } from "@/lib/seo";
 import {
   ContactChannels,
   DrenchBand,
@@ -44,6 +44,13 @@ export default async function ContactPage() {
   return (
     <>
       <JsonLd data={breadcrumb} />
+      <JsonLd
+        data={webPageJsonLd("ContactPage", {
+          title: copy.metaTitle,
+          description: copy.metaDescription,
+          path: "/contact",
+        })}
+      />
 
       {/* 1 — Hero (compact) */}
       <section

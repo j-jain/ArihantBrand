@@ -9,7 +9,7 @@ import {
 } from "@/components";
 import { phrase } from "@/content/facts";
 import { getPageCopy, getPartners, getSiteSettings } from "@/lib/content";
-import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { brandListJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { whatsappFor } from "@/lib/whatsapp";
 import { BrandIndex } from "./_components/BrandIndex";
 import { BrandListGate } from "./_components/BrandListGate";
@@ -65,6 +65,7 @@ export default async function BrandsPage() {
           { name: "Brand Portfolio", path: PATH },
         ])}
       />
+      <JsonLd data={brandListJsonLd(partners)} />
 
       {/* 1 — Hero (paper) */}
       <section className="bg-paper">

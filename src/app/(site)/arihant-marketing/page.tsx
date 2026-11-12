@@ -80,7 +80,7 @@ export default async function ArihantMarketingPage() {
   return (
     <div>
       {business && contact ? (
-        <JsonLd data={businessJsonLd(settings, business, contact)} />
+        <JsonLd data={businessJsonLd(settings, business, contact, partners)} />
       ) : null}
       <JsonLd
         data={breadcrumbJsonLd([

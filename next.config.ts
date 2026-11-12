@@ -23,6 +23,23 @@ const nextConfig: NextConfig = {
     // Logo tiles render at 128-180px; these are the widths `sizes` resolves to.
     imageSizes: [16, 32, 48, 64, 96, 128, 180, 256, 384],
   },
+  // The project's own vercel.app address served a full second copy of the
+  // site. Its pages already named www.arihant.marketing as canonical; this
+  // sends people and crawlers there for good (12 Nov 2026). The Studio, the
+  // API (the Sanity webhook) and Next's own assets stay on the old address,
+  // so a bookmarked Studio there keeps working.
+  async redirects() {
+    const host = [{ type: "host" as const, value: "arihant-brand.vercel.app" }];
+    return [
+      { source: "/", has: host, destination: "https://www.arihant.marketing/", permanent: true },
+      {
+        source: "/:path((?!studio|api|_next).*)",
+        has: host,
+        destination: "https://www.arihant.marketing/:path",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

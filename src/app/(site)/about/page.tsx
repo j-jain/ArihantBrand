@@ -22,7 +22,7 @@ import {
   getTimeline,
   getValues,
 } from "@/lib/content";
-import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata, webPageJsonLd } from "@/lib/seo";
 import { UNIT_ACCENT } from "@/lib/units";
 import { TowerLedger } from "./_components/TowerLedger";
 
@@ -73,6 +73,13 @@ export default async function AboutPage() {
           { name: "Home", path: "/" },
           { name: "About", path: "/about" },
         ])}
+      />
+      <JsonLd
+        data={webPageJsonLd("AboutPage", {
+          title: copy.metaTitle,
+          description: copy.metaDescription,
+          path: "/about",
+        })}
       />
 
       {/* 1 — Hero (paper) --------------------------------------------------- */}

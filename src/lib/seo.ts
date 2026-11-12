@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { TOWNS, townKey } from "@/content/towns";
+import { OFFICE_POINT, TOWNS, townKey } from "@/content/towns";
 import type {
   Business,
   Faq,
+  Partner,
   Post,
   SiteSettings,
   Store,
@@ -117,6 +118,48 @@ function postalAddress(s: SiteSettings) {
  *  runs: a search engine joins them to this site as one business. */
 const PROFILES = ["https://www.linkedin.com/company/arihant-marketinghy"];
 
+/** Arihant Marketing's listing on Google Maps (Clothing wholesaler, Arihant
+ *  Tower, 2nd Floor; its website field already points here). Joining it to
+ *  the unit's JSON-LD tells Google and AI answers that the listing and this
+ *  site are one business, and keeps it apart from the tile shop of the same
+ *  name in Kalapahar. */
+const MARKETING_MAPS_LISTING = "https://www.google.com/maps?cid=2725169947089833962";
+
+/** The seven states the group sells into, as one list for every entity. */
+const AREA_SERVED = [
+  "Assam",
+  "Meghalaya",
+  "Nagaland",
+  "Manipur",
+  "Mizoram",
+  "Tripura",
+  "Arunachal Pradesh",
+].map((name) => ({ "@type": "State", name }));
+
+/** A site-root path (or an absolute Sanity URL) as an absolute URL. */
+function absoluteUrl(src: string): string {
+  return src.startsWith("http") ? src : `${siteUrl()}${src}`;
+}
+
+/** What each business does, in the words buyers search with. */
+const UNIT_KNOWS_ABOUT: Record<Business["unit"], string[]> = {
+  marketing: ["readymade garments wholesale", "apparel brand distribution", "shop-in-shop counters"],
+  apparels: ["readymade garments wholesale", "apparel brand distribution"],
+  retail: ["multi-brand apparel retail", "apparel store franchise"],
+};
+
+/** One label as a schema.org Brand. */
+function brandEntity(p: Partner) {
+  return { "@type": "Brand", name: p.name, logo: absoluteUrl(p.image) };
+}
+
+/** The office building as a point on the map. */
+const OFFICE_GEO = {
+  "@type": "GeoCoordinates",
+  latitude: OFFICE_POINT.lat,
+  longitude: OFFICE_POINT.lon,
+};
+
 /** The site itself, so Google can show "Arihant Group" as the site name and
  *  match the people who search for it as "Arihant Marketing" (the domain). */
 export function websiteJsonLd(s: SiteSettings) {
@@ -150,6 +193,17 @@ export function organizationJsonLd(s: SiteSettings) {
     foundingDate: "1999",
     address: postalAddress(s),
     hasMap: mapsUrl(s),
+    // One sales desk per business, read from the same contacts the footer
+    // prints, so an AI answer to "how do I contact Arihant" has the right
+    // phone and email for each business.
+    contactPoint: s.contacts.map((c) => ({
+      "@type": "ContactPoint",
+      contactType: "sales",
+      name: c.businessName,
+      ...(c.phones[0] ? { telephone: `+91${c.phones[0].phone}` } : {}),
+      email: c.email,
+      areaServed: AREA_SERVED,
+    })),
     // Genuine, documented awards only (honesty rail: no invented awards). The
     // NEGTA founder role is modelled as membership via `memberOf`, not an award.
     award: ["Best Distributor of India 2015, CMAI (Clothing Manufacturers Association of India)"],
@@ -162,9 +216,21 @@ export function organizationJsonLd(s: SiteSettings) {
   };
 }
 
-/** Marketing/Apparels → WholesaleStore; Retail → ClothingStore. */
-export function businessJsonLd(s: SiteSettings, b: Business, contact: UnitContact) {
+/** Marketing/Apparels → WholesaleStore; Retail → ClothingStore.
+ *
+ *  `partners` (Marketing and Apparels) lists every label the business
+ *  distributes as a schema.org `brand`. This is how a search for "Spykar
+ *  distributor in Northeast India" can reach the business without a page per
+ *  label: each name is already printed on /brands, so the markup states
+ *  nothing a visitor cannot see. */
+export function businessJsonLd(
+  s: SiteSettings,
+  b: Business,
+  contact: UnitContact,
+  partners: Partner[] = [],
+) {
   const type = b.unit === "retail" ? "ClothingStore" : "WholesaleStore";
+  const brands = partners.filter((p) => p.unit === b.unit).map(brandEntity);
   return {
     "@context": "https://schema.org",
     "@type": type,
@@ -172,11 +238,53 @@ export function businessJsonLd(s: SiteSettings, b: Business, contact: UnitContac
     name: b.name,
     url: `${siteUrl()}/${b.slug}`,
     description: b.summary,
+    logo: absoluteUrl(b.logo),
+    image: `${siteUrl()}/images/photos/group-building.webp`,
     parentOrganization: { "@id": `${siteUrl()}/#organization` },
     address: { ...postalAddress(s), streetAddress: `${contact.floor}, ${s.addressLine}, ${s.locality}` },
+    geo: OFFICE_GEO,
+    hasMap: b.unit === "marketing" ? MARKETING_MAPS_LISTING : mapsUrl(s),
+    ...(b.unit === "marketing" ? { sameAs: [MARKETING_MAPS_LISTING, ...PROFILES] } : {}),
     telephone: contact.phones[0] ? `+91${contact.phones[0].phone}` : undefined,
     email: contact.email,
-    areaServed: { "@type": "Place", name: "Northeast India" },
+    areaServed: AREA_SERVED,
+    knowsAbout: UNIT_KNOWS_ABOUT[b.unit],
+    ...(brands.length ? { brand: brands } : {}),
+  };
+}
+
+/** Every label on /brands as one list of schema.org Brands, so a crawler
+ *  reads the whole portfolio in a single pass. */
+export function brandListJsonLd(partners: Partner[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Apparel brands Arihant distributes in Northeast India",
+    numberOfItems: partners.length,
+    itemListElement: partners.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: brandEntity(p),
+    })),
+  };
+}
+
+/** The page itself as an AboutPage or ContactPage, tied to the group. */
+export function webPageJsonLd(
+  type: "AboutPage" | "ContactPage",
+  opts: { title: string; description: string; path: string },
+) {
+  const url = `${siteUrl()}${opts.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": type,
+    "@id": `${url}#webpage`,
+    url,
+    name: opts.title,
+    description: opts.description,
+    inLanguage: "en-IN",
+    isPartOf: { "@id": `${siteUrl()}/#website` },
+    about: { "@id": `${siteUrl()}/#organization` },
   };
 }
 
@@ -262,16 +370,9 @@ export function localBusinessJsonLd(s: SiteSettings) {
     address: postalAddress(s),
     hasMap: mapsUrl(s),
     telephone: `+${s.defaultWhatsapp}`,
+    geo: OFFICE_GEO,
     priceRange: "$$",
-    areaServed: [
-      { "@type": "State", name: "Assam" },
-      { "@type": "State", name: "Meghalaya" },
-      { "@type": "State", name: "Nagaland" },
-      { "@type": "State", name: "Manipur" },
-      { "@type": "State", name: "Mizoram" },
-      { "@type": "State", name: "Tripura" },
-      { "@type": "State", name: "Arunachal Pradesh" },
-    ],
+    areaServed: AREA_SERVED,
     knowsAbout: [
       "readymade garments distribution",
       "apparel wholesale",

@@ -1,5 +1,29 @@
 import { atLeast, facts, inWords, phrase } from "./facts";
+import { byPopularity, partners, partnersOf } from "./partners";
+import { stores } from "./seed";
 import type { PageCopy } from "./types";
+
+/* Search wording (12 Nov 2026, the user's call): buyers type "wholesaler"
+   and "readymade garments", so the titles and search descriptions say it.
+   Headlines on the pages are untouched. Brand and town names below are read
+   from partners.ts and the store list, never typed, so they cannot drift. */
+
+/** "A, B and C" */
+function andList(items: string[]): string {
+  return items.length < 2
+    ? items.join("")
+    : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+}
+
+/** The first `n` labels a buyer would recognise, from one unit or all. */
+function topLabels(n: number, unit?: "marketing" | "apparels"): string[] {
+  return byPopularity(unit ? partnersOf(unit) : partners)
+    .slice(0, n)
+    .map((p) => p.name);
+}
+
+/** The towns with an open Arihant Retail store, in list order. */
+const storeTowns = andList(stores.filter((s) => s.status === "Open").map((s) => s.city));
 
 /** Per-route copy. Sanity `page` documents mirror this; seed is the fallback.
  *
@@ -7,8 +31,8 @@ import type { PageCopy } from "./types";
  *  by hand: that is how group-level and unit-level claims drifted apart. */
 export const pages: Record<string, PageCopy> = {
   home: {
-    metaTitle: "Garment Distributor in Northeast India | Arihant Group",
-    metaDescription: `The leading garment house of Northeast India: ${phrase.groupBrandPartners} brand partners, ${phrase.groupRetailers} retailers, ${phrase.sisCounters} shop-in-shop counters, seven states. Guwahati since the 1990s.`,
+    metaTitle: "Garment Wholesaler & Distributor in Northeast India | Arihant Group",
+    metaDescription: `Northeast India's leading readymade garments wholesaler and distributor, in Guwahati since the 1990s: ${phrase.groupBrandPartners} brand partners, ${phrase.groupRetailers} retailers, ${phrase.sisCounters} shop-in-shop counters, seven states.`,
     hero: {
       heading: "The leading garment house of Northeast India",
       headingEmphasis: "leading",
@@ -61,8 +85,8 @@ export const pages: Record<string, PageCopy> = {
   },
 
   marketing: {
-    metaTitle: "Garment Distributor in Guwahati | Arihant Marketing",
-    metaDescription: `Northeast India's pioneer readymade garments distributor: ${atLeast(facts.marketing.years)} years, ${phrase.marketingRetailers} retailers, ${phrase.sisCounters} shop-in-shop counters, a ${phrase.marketingWarehouse} Guwahati warehouse.`,
+    metaTitle: "Readymade Garments Wholesaler in Guwahati | Arihant Marketing",
+    metaDescription: `Northeast India's pioneer readymade garments wholesaler and distributor of ${andList(topLabels(3, "marketing"))}: ${atLeast(facts.marketing.years)} years, ${phrase.marketingRetailers} retailers, a ${phrase.marketingWarehouse} Guwahati warehouse.`,
     hero: {
       // Change round 6: the positioning in five words, then the proof in one
       // sentence (reach, region, rhythm). Every figure from facts.ts. Change
@@ -104,8 +128,8 @@ export const pages: Record<string, PageCopy> = {
   },
 
   apparels: {
-    metaTitle: "Apparel Distributor in Northeast India | Arihant Apparels",
-    metaDescription: `Founded ${facts.apparels.established}. A Guwahati apparel distributor carrying ${phrase.apparelsBrands} labels across Northeast India and building several of them into category leaders. Stock our labels today.`,
+    metaTitle: "Apparel Wholesaler & Distributor, Northeast India | Arihant Apparels",
+    metaDescription: `Founded ${facts.apparels.established}. A Guwahati apparel wholesaler and distributor of ${phrase.apparelsBrands} labels, including ${andList(topLabels(3, "apparels"))}, building several into category leaders across Northeast India.`,
     hero: {
       // Change round 6 (the client's tagline was the heading from round 2 and
       // stays as Apparels' positioning line): what the house does for a label,
@@ -153,7 +177,7 @@ export const pages: Record<string, PageCopy> = {
 
   retail: {
     metaTitle: "Multi-brand Retail Stores in Guwahati | Arihant Retail",
-    metaDescription: `The most modern and professionally run multi-brand apparel stores in Northeast India. ${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, all company-run. Zero deadstock, asset-light.`,
+    metaDescription: `Multi-brand apparel stores in ${storeTowns}, the most modern and professionally run in Northeast India. ${facts.retail.storesCompanyOwned} company-owned and ${facts.retail.storesFranchisee} franchisee-owned, all company-run.`,
     hero: {
       // Change round 13 (client's request): "multi-brand stores across".
       heading:
@@ -223,8 +247,8 @@ export const pages: Record<string, PageCopy> = {
   },
 
   brands: {
-    metaTitle: `${phrase.groupLabels} Apparel Brands Distributed in Northeast India | Arihant`,
-    metaDescription: `Browse the ${phrase.groupLabels} national apparel labels Arihant distributes across Northeast India: menswear, womenswear, kidswear, denim, ethnic, footwear. Put them on your racks.`,
+    metaTitle: `${topLabels(3).join(", ")} & More, Wholesale in Northeast India | Arihant`,
+    metaDescription: `${topLabels(5).join(", ")} and more: the ${phrase.groupLabels} national apparel labels Arihant distributes wholesale across Northeast India.`,
     hero: {
       heading: "The apparel brands we put on the Northeast's racks",
       lead: `Menswear, womenswear, kidswear, denim, ethnic and footwear. ${phrase.groupLabels} national labels distributed to counters in all seven states by Arihant Marketing and Arihant Apparels.`,
@@ -316,7 +340,7 @@ export const pages: Record<string, PageCopy> = {
 
 
   contact: {
-    metaTitle: "Contact Arihant Group, Guwahati | Trade Inquiries",
+    metaTitle: "Contact Arihant Group, Guwahati | Garment Wholesale Enquiries",
     metaDescription:
       "Reach Arihant Marketing, Arihant Apparels or Arihant Retail at Arihant Tower, Jyotikuchi, Guwahati. Call, WhatsApp or write; we call back within one working day.",
     hero: {

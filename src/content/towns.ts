@@ -33,6 +33,12 @@ export interface Town {
 /** The town the routes stitch out from: the group's home and warehouse. */
 export const RETAIL_HUB = "guwahati";
 
+/** The office, Arihant Tower in Jyotikuchi: the point behind the Arihant
+ *  Marketing listing on Google Maps, read on 12 November 2026. Never printed;
+ *  the units' JSON-LD `geo` reads it, so search engines and AI answers place
+ *  the business on the right building. */
+export const OFFICE_POINT = { lat: 26.1273268, lon: 91.7402891 };
+
 /** Normalise a store's city to a TOWNS key. */
 export function townKey(city: string): string {
   return city.trim().toLowerCase();

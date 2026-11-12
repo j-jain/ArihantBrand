@@ -132,11 +132,14 @@ export function TowerLedger({ businesses, floors, className }: TowerLedgerProps)
                   className="absolute inset-0 h-full w-full object-contain object-left"
                 />
               </span>
+              {/* The spaces between these spans are never drawn (a row of
+                  items ignores them) but keep the words apart in the page's
+                  text, where Google read "2nd FloorSince the 1990s". */}{" "}
               <span className="tower__stamp flex items-baseline gap-3">
-                {floor ? <span className="t-small text-ink-soft">{floor}</span> : null}
+                {floor ? <span className="t-small text-ink-soft">{floor}</span> : null}{" "}
                 <span style={foundedStyle}>{business.founded}</span>
               </span>
-            </span>
+            </span>{" "}
             {/* Who runs it, not what it sells. The home page already
                 carries each unit's positioning line; repeating it here
                 told the reader nothing new (G2). */}
