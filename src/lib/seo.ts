@@ -192,7 +192,9 @@ export function organizationJsonLd(s: SiteSettings) {
     description: s.tagline,
     foundingDate: "1999",
     address: postalAddress(s),
-    hasMap: mapsUrl(s),
+    // No `hasMap` here: schema.org only defines it on a Place, and the
+    // validator flagged it on the company. The LocalBusiness and the three
+    // businesses carry the map.
     // One sales desk per business, read from the same contacts the footer
     // prints, so an AI answer to "how do I contact Arihant" has the right
     // phone and email for each business.

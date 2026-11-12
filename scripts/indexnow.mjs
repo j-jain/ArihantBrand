@@ -37,19 +37,20 @@ const body = {
   urlList,
 };
 
+// Exit codes are set, never forced with process.exit: on Windows a forced
+// exit while fetch's sockets close trips a libuv assertion.
 if (dryRun) {
   console.log(JSON.stringify(body, null, 2));
-  process.exit(0);
-}
-
-const res = await fetch("https://api.indexnow.org/indexnow", {
-  method: "POST",
-  headers: { "Content-Type": "application/json; charset=utf-8" },
-  body: JSON.stringify(body),
-});
-// 200 = accepted, 202 = accepted and the key is still being checked.
-console.log(`IndexNow answered ${res.status} for ${urlList.length} URLs`);
-if (res.status >= 300) {
-  console.log(await res.text());
-  process.exit(1);
+} else {
+  const res = await fetch("https://api.indexnow.org/indexnow", {
+    method: "POST",
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    body: JSON.stringify(body),
+  });
+  // 200 = accepted, 202 = accepted and the key is still being checked.
+  console.log(`IndexNow answered ${res.status} for ${urlList.length} URLs`);
+  if (res.status >= 300) {
+    console.log(await res.text());
+    process.exitCode = 1;
+  }
 }
